@@ -1,0 +1,72 @@
+name: CI/CD SMA Employer
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build SMA Employer
+    runs-on: ubuntu-latest
+    environment: PROD
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build SMA Employer
+        env:
+          REACT_APP_API_URL: ${{ vars.DOMAIN }}/api/
+        run: |
+          echo "Building with API URL: $REACT_APP_API_URL"
+          CI=false npm run build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sma-employer-build
+          path: build/
+          retention-days: 1
+
+  deploy:
+    name: Deploy to PROD Server
+    runs-on: ubuntu-latest
+    environment: PROD
+    needs: build
+
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sma-employer-build
+          path: build
+
+      - name: Copy Build Files to Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ vars.HOST_IP }}
+          username: root
+          key: ${{ secrets.SECRET_KEY }}
+          source: "build/*"
+          target: "/var/www/sma-employer"
+          strip_components: 1
+
+      - name: Finalize Deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.HOST_IP }}
+          username: root
+          key: ${{ secrets.SECRET_KEY }}
+          script: |
+            chown -R www-data:www-data /var/www/sma-employer
+            echo "Deploy SMA Employer frontend to PROD environment successfully!"
