@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from '@/components/Button/index.tsx';
+import Button from '@/components/Button';
 import SectionHeader from '@/components/SectionHeader';
 import ColorSwatch from '@/components/ColorSwatch';
 import Card from '@/components/Card';

@@ -1,11 +1,23 @@
 import { createBrowserRouter, createRoutesFromElements, Route } from "react-router-dom";
+import Layout from '@/pages/layout';
+import Dashboard from '@/pages/dashboard';
 import UiKit from '@/pages/ui-kit';
-import Home from '@/pages/Home';
+import Home from '@/pages/home';
 
 export const routes = createBrowserRouter(
     createRoutesFromElements(
         <Route>
-            <Route index element={<Home />} />
+            <Route element={<Layout />}>
+                {/* <Route index element={<Dashboard />} /> */}
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="recruiters" element={<Dashboard />} />
+                <Route path="jobs" element={<Dashboard />} />
+                <Route path="candidates" element={<Dashboard />} />
+                <Route path="reports" element={<Dashboard />} />
+                <Route path="settings" element={<Dashboard />} />
+                <Route path="help" element={<Dashboard />} />
+            </Route>
+            <Route path="/" element={<Home />} />
             <Route path="ui-kit" element={<UiKit />} />
         </Route>
     )
