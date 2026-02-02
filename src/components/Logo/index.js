@@ -6,9 +6,9 @@ import smaLogoWhite from '@/assets/svg/sma-logo-white.svg';
 const Logo = ({ className = '', iconColor = '', collapsed = false }) => {
   return (
     <Link to="/" className={`flex items-center gap-2 group ${collapsed ? 'justify-center' : ''} ${className}`}>
-      <img 
-        src={iconColor === 'white' ? smaLogoWhite : smaLogo} 
-        alt="SmartRecruit Logo" 
+      <img
+        src={iconColor === 'white' ? smaLogoWhite : smaLogo}
+        alt="SmartRecruit Logo"
         className={`${iconColor || 'text-primary'} ${collapsed ? 'w-8 h-8' : 'w-10 h-10'}`}
       />
       {!collapsed && (
