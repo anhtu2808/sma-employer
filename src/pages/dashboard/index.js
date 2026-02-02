@@ -246,31 +246,59 @@ const Dashboard = () => {
   return (
     <>
       {/* Welcome Section */}
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white">Welcome back, Sarah!</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Here's what's happening with your recruiting team today.
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Button 
-            mode="secondary"
-            shape="rounded"
-            size="sm"
-            className="bg-white dark:bg-gray-800"
-            iconLeft={<span className="material-icons-outlined text-base">filter_list</span>}
-          >
-            Filter
-          </Button>
-          <Button 
-            mode="primary" 
-            shape="rounded"
-            size="sm"
-            iconLeft={<span className="material-icons-outlined text-base">add</span>}
-          >
-            Add Recruiter
-          </Button>
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white">Welcome back, Sarah!</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              Here's what's happening with your recruiting team today.
+            </p>
+          </div>
+          <div className="flex gap-2 sm:gap-3">
+            {/* Mobile: Icon only buttons */}
+            <div className="flex gap-2 sm:hidden">
+              <Button 
+                btnIcon
+                mode="secondary"
+                shape="rounded"
+                size="sm"
+                className="bg-white dark:bg-gray-800"
+                title="Filter"
+              >
+                <span className="material-icons-outlined text-base">filter_list</span>
+              </Button>
+              <Button 
+                btnIcon
+                mode="primary" 
+                shape="rounded"
+                size="sm"
+                title="Add Recruiter"
+              >
+                <span className="material-icons-outlined text-base">add</span>
+              </Button>
+            </div>
+            
+            {/* Desktop: Buttons with text */}
+            <div className="hidden sm:flex gap-3">
+              <Button 
+                mode="secondary"
+                shape="rounded"
+                size="sm"
+                className="bg-white dark:bg-gray-800"
+                iconLeft={<span className="material-icons-outlined text-base">filter_list</span>}
+              >
+                Filter
+              </Button>
+              <Button 
+                mode="primary" 
+                shape="rounded"
+                size="sm"
+                iconLeft={<span className="material-icons-outlined text-base">add</span>}
+              >
+                Add Recruiter
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
