@@ -13,11 +13,13 @@ const RecruiterRegister = () => {
     const [register, { isLoading: isRegistering }] = useRegisterRecruiterMutation();
     const emailRef = useRef(null);
     const taxIdRef = useRef(null);
+    const passwordRef = useRef(null);
     const generalErrorRef = useRef(null);
     const [ercFile, setErcFile] = useState(null);
     const [errors, setErrors] = useState({
         recruiterEmail: "",
         taxIdentificationNumber: "",
+        password: "",
         general: ""
     });
 
@@ -56,11 +58,15 @@ const RecruiterRegister = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrors({ recruiterEmail: "", taxIdentificationNumber: "", general: "" });
+        setErrors({ recruiterEmail: "", taxIdentificationNumber: "", password: "", general: "" });
+        if (formData.password.length < 6) {
+            setErrors(prev => ({ ...prev, password: "Password must be between 6 and 100 characters" }));
+            setTimeout(() => scrollToElement(passwordRef), 100);
+            return;
+        }
 
         if (!ercFile) {
-            const msg = "Please upload your Business License (ERC).";
-            setErrors(prev => ({ ...prev, general: msg }));
+            setErrors(prev => ({ ...prev, general: "Please upload your Business License (ERC)." }));
             setTimeout(() => scrollToElement(generalErrorRef), 100);
             return;
         }
@@ -70,34 +76,39 @@ const RecruiterRegister = () => {
             fileData.append('files', ercFile);
             const uploadResponse = await uploadFile(fileData).unwrap();
             const ercUrl = uploadResponse[0].downloadUrl;
-            const finalRequest = {
-                ...formData,
-                erc: ercUrl
-            };
 
+            const finalRequest = { ...formData, erc: ercUrl };
             await register(finalRequest).unwrap();
             navigate('/register/pending-approval');
 
         } catch (err) {
             console.error("Registration Error:", err);
+
             const apiMessage = err.data?.message;
-            if (apiMessage === "Email already exists") {
+            const fieldErrors = err.data?.data;
+
+            if (fieldErrors && typeof fieldErrors === 'object') {
                 setErrors(prev => ({
                     ...prev,
-                    recruiterEmail: "This email is already in use. Please try another one."
+                    ...fieldErrors
                 }));
+
+                if (fieldErrors.recruiterEmail) setTimeout(() => scrollToElement(emailRef), 100);
+                else if (fieldErrors.password) setTimeout(() => scrollToElement(passwordRef), 100);
+                else if (fieldErrors.taxIdentificationNumber) setTimeout(() => scrollToElement(taxIdRef), 100);
+                else setTimeout(() => scrollToElement(generalErrorRef), 100);
+
+                return;
+            }
+
+            if (apiMessage === "Email already exists") {
+                setErrors(prev => ({ ...prev, recruiterEmail: "This email is already in use." }));
                 setTimeout(() => scrollToElement(emailRef), 100);
             } else if (apiMessage === "Company already registered") {
-                setErrors(prev => ({
-                    ...prev,
-                    taxIdentificationNumber: "This Tax ID has already been registered."
-                }));
+                setErrors(prev => ({ ...prev, taxIdentificationNumber: "This Tax ID has already been registered." }));
                 setTimeout(() => scrollToElement(taxIdRef), 100);
             } else {
-                setErrors(prev => ({
-                    ...prev,
-                    general: apiMessage || "A server error occurred. Please try again later."
-                }));
+                setErrors(prev => ({ ...prev, general: apiMessage || "An unexpected error occurred." }));
                 setTimeout(() => scrollToElement(generalErrorRef), 100);
             }
         }
@@ -144,13 +155,19 @@ const RecruiterRegister = () => {
                                     helperText={errors.recruiterEmail}
                                 />
                             </div>
-                            <Input.Password
-                                label={<>Password <span className="text-red-500">*</span></>}
-                                name="password"
-                                required
-                                onChange={handleChange}
-                                className="!rounded-xl"
-                            />
+                            <div ref={passwordRef}>
+                                <Input.Password
+                                    label={<>Password <span className="text-red-500">*</span></>}
+                                    name="password"
+                                    placeholder="At least 6 characters"
+                                    required
+                                    onChange={handleChange}
+                                    // Hiển thị lỗi nếu có
+                                    error={!!errors.password}
+                                    helperText={errors.password}
+                                    className="!rounded-xl"
+                                />
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
