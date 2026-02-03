@@ -1,33 +1,30 @@
+
 import React from 'react';
-import { Link } from 'react-router-dom';
-import Button from '@/components/Button';
+
+import Hero from './components/HeroHome';
+import Features from './components/FeaturesHome';
+import RecruiterSection from './components/RecruiterSectionHome';
+import Footer from './components/FooterHome';
+import Header from './components/HeaderHome';
 
 const Home = () => {
     return (
-        <div className="min-h-screen bg-surface-light dark:bg-background-dark flex items-center justify-center">
-            <div className="text-center max-w-2xl mx-auto px-6">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-6">
-                    SmartRecruit Employer
-                </div>
-                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-neutral-900 dark:text-white font-heading">
-                    Welcome to SmartRecruit Employer
-                </h1>
-                <p className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed font-body mb-8">
-                    AI-Powered IT Recruitment Platform for Employers
-                </p>
-                <div className="flex gap-4 justify-center">
-                    <Link to="/ui-kit">
-                        <Button mode="primary">
-                            View UI Kit
-                        </Button>
-                    </Link>
-                    <Link to="/register/recruiter">
-                        <Button mode="secondary">
-                            Get Started
-                        </Button>
-                    </Link>
-                </div>
+        <div className="min-h-screen bg-surface-light dark:bg-background-dark flex flex-col font-sans text-neutral-900 dark:text-white">
+            {/* Dynamic Background Elements */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+                <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl translate-x-1/3 -translate-y-1/3" />
+                <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-3xl -translate-x-1/3 translate-y-1/3" />
             </div>
+
+            <Header />
+
+            <main className="flex-grow w-full">
+                <Hero />
+                <Features />
+                <RecruiterSection />
+            </main>
+
+            <Footer />
         </div>
     );
 };
