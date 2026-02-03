@@ -3,6 +3,8 @@ import Layout from '@/pages/layout';
 import Dashboard from '@/pages/dashboard';
 import UiKit from '@/pages/ui-kit';
 import Home from '@/pages/home';
+import RecruiterRegister from '@/pages/register/RecruiterRegister';
+import PendingApproval from '@/pages/register/PendingApproval';
 
 export const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -19,6 +21,8 @@ export const routes = createBrowserRouter(
             </Route>
             <Route path="/" element={<Home />} />
             <Route path="ui-kit" element={<UiKit />} />
+            <Route path="register/recruiter" element={<RecruiterRegister />} />
+            <Route path="register/pending-approval" element={<PendingApproval />} />
         </Route>
     )
 );

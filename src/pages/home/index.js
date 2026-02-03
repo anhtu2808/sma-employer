@@ -21,7 +21,7 @@ const Home = () => {
                             View UI Kit
                         </Button>
                     </Link>
-                    <Link to="/dashboard">
+                    <Link to="/register/recruiter">
                         <Button mode="secondary">
                             Get Started
                         </Button>
