@@ -2,7 +2,7 @@ import { createBrowserRouter, createRoutesFromElements, Route } from "react-rout
 import Layout from '@/pages/layout';
 import Dashboard from '@/pages/dashboard';
 import UiKit from '@/pages/ui-kit';
-import Home from '@/pages/home';
+import Home from '@/pages/Home';
 import RecruiterRegister from '@/pages/register/RecruiterRegister';
 import PendingApproval from '@/pages/register/PendingApproval';
 
