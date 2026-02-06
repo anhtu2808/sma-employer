@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import Hero from './components/HeroHome';
+import Hero from './components/Hero';
 import Features from './components/FeaturesHome';
 import RecruiterSection from './components/RecruiterSectionHome';
 import Footer from './components/FooterHome';
