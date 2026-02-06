@@ -2,10 +2,10 @@
 import React from 'react';
 
 import Hero from './components/Hero';
-import Features from './components/FeaturesHome';
-import RecruiterSection from './components/RecruiterSectionHome';
-import Footer from './components/FooterHome';
-import Header from './components/HeaderHome';
+import Features from './components/Features';
+import RecruiterSection from './components/RecruiterSection';
+import Footer from './components/Footer';
+import Header from './components/Header';
 
 const Home = () => {
     return (
