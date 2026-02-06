@@ -29,7 +29,8 @@ const RecruiterRegister = () => {
         companyName: "",
         description: "",
         companyIndustry: "",
-        size: "",
+        minSize: "",
+        maxSize: "",
         companyEmail: "",
         phone: "",
         address: "",
@@ -62,6 +63,12 @@ const RecruiterRegister = () => {
         if (formData.password.length < 6) {
             setErrors(prev => ({ ...prev, password: "Password must be between 6 and 100 characters" }));
             setTimeout(() => scrollToElement(passwordRef), 100);
+            return;
+        }
+
+        if (Number(formData.minSize) > Number(formData.maxSize)) {
+            setErrors(prev => ({ ...prev, general: "Min size cannot be greater than Max size." }));
+            setTimeout(() => scrollToElement(generalErrorRef), 100);
             return;
         }
 
@@ -121,11 +128,11 @@ const RecruiterRegister = () => {
             <div className="absolute top-[30%] left-[10%] w-[20%] h-[20%] bg-primary/5 rounded-full blur-[60px]" />
 
             <div className="relative z-10 max-w-4xl mx-auto">
-                <div className="flex justify-center mb-10">
+                {/* <div className="flex justify-center mb-10">
                     <div className="p-3 bg-white rounded-2xl shadow-sm border border-neutral-100">
                         <Logo size="lg" />
                     </div>
-                </div>
+                </div> */}
 
                 <header className="text-center mb-12">
                     <h1 className="text-4xl font-black text-neutral-900 font-heading tracking-tight mb-3">
@@ -177,7 +184,24 @@ const RecruiterRegister = () => {
                             </div>
                             <Input label={<>Company Name <span className="text-red-500">*</span></>} name="companyName" required onChange={handleChange} />
                             <Input label={<>Industry <span className="text-red-500">*</span></>} name="companyIndustry" required onChange={handleChange} />
-                            <Input label={<>Company Size <span className="text-red-500">*</span></>} name="size" placeholder="e.g. 50-100" required onChange={handleChange} />
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input
+                                    label={<>Company Min Size <span className="text-red-500">*</span></>}
+                                    name="minSize"
+                                    type="number"
+                                    placeholder="e.g. 50"
+                                    required
+                                    onChange={handleChange}
+                                />
+                                <Input
+                                    label={<>Company Max Size <span className="text-red-500">*</span></>}
+                                    name="maxSize"
+                                    type="number"
+                                    placeholder="e.g. 100"
+                                    required
+                                    onChange={handleChange}
+                                />
+                            </div>
                             <div ref={taxIdRef}>
                                 <Input
                                     label={<>Tax ID <span className="text-red-500">*</span></>}
