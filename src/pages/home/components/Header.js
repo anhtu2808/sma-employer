@@ -19,9 +19,15 @@ const Header = () => {
                 </nav>
 
                 <div className="hidden md:block flex-shrink-0 z-10">
+                    <Link to="/login">
+                        <Button mode="primary" shape="pill">
+                            Sign In
+                        </Button>
+                    </Link>
+                    <span> </span>
                     <Link to="/register/recruiter">
                         <Button mode="primary" shape="pill">
-                            Recruiter Sign In
+                            Create Company
                         </Button>
                     </Link>
                 </div>
