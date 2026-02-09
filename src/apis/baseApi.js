@@ -12,7 +12,7 @@ const stripNullish = (obj) => {
 const rawBaseQuery = fetchBaseQuery({
     baseUrl: process.env.REACT_APP_API_URL,
     prepareHeaders: (headers) => {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("accessToken");
         if (token) {
             headers.set('Authorization', `Bearer ${token}`);
         }
@@ -23,7 +23,7 @@ const rawBaseQuery = fetchBaseQuery({
         try {
             return JSON.parse(text);
         } catch (e) {
-            return text; 
+            return text;
         }
     },
 });
