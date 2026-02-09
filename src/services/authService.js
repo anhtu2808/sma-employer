@@ -26,35 +26,35 @@ const authService = {
         }
     },
 
-    registerAsCandidate: async (userData) => {
-        try {
-            const response = await AuthAPI.post('/candidate/auth/register', userData);
+    // registerAsCandidate: async (userData) => {
+    //     try {
+    //         const response = await AuthAPI.post('/candidate/auth/register', userData);
 
-            if (response.data?.data?.accessToken) {
-                localStorage.setItem('accessToken', response.data.data.accessToken);
-                localStorage.setItem('refreshToken', response.data.data.refreshToken);
-            }
+    //         if (response.data?.data?.accessToken) {
+    //             localStorage.setItem('accessToken', response.data.data.accessToken);
+    //             localStorage.setItem('refreshToken', response.data.data.refreshToken);
+    //         }
 
-            return response;
-        } catch (error) {
-            throw error;
-        }
-    },
+    //         return response;
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // },
 
-    loginWithGoogle: async (idToken) => {
-        try {
-            const response = await AuthAPI.post('/candidate/auth/google-login', { idToken });
-            console.log(response);
-            if (response.data?.data?.accessToken) {
-                localStorage.setItem('accessToken', response.data.data.accessToken);
-                localStorage.setItem('refreshToken', response.data.data.refreshToken);
-            }
+    // loginWithGoogle: async (idToken) => {
+    //     try {
+    //         const response = await AuthAPI.post('/candidate/auth/google-login', { idToken });
+    //         console.log(response);
+    //         if (response.data?.data?.accessToken) {
+    //             localStorage.setItem('accessToken', response.data.data.accessToken);
+    //             localStorage.setItem('refreshToken', response.data.data.refreshToken);
+    //         }
 
-            return response;
-        } catch (error) {
-            throw error;
-        }
-    },
+    //         return response;
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // },
 
     logout: async () => {
         try {

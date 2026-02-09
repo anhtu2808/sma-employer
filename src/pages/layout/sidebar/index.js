@@ -7,6 +7,7 @@ const menuItems = [
   { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
   { icon: 'people', label: 'Recruiters', path: '/recruiters' },
   { icon: 'work_outline', label: 'Jobs', path: '/jobs' },
+  { icon: 'business', label: 'Company', path: '/company' },
   { icon: 'badge', label: 'Candidates', path: '/candidates' },
   { icon: 'insights', label: 'Reports', path: '/reports' },
 ];
@@ -50,10 +51,9 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
                 to={item.path}
                 onClick={onMobileClose}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${collapsed && !isMobile ? 'justify-center px-2' : ''} ${
-                    isActive
-                      ? 'bg-orange-50 dark:bg-primary/20 text-primary font-medium'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white group'
+                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${collapsed && !isMobile ? 'justify-center px-2' : ''} ${isActive
+                    ? 'bg-orange-50 dark:bg-primary/20 text-primary font-medium'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white group'
                   }`
                 }
                 title={collapsed && !isMobile ? item.label : ''}
@@ -85,10 +85,9 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
                 to={item.path}
                 onClick={onMobileClose}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${collapsed && !isMobile ? 'justify-center px-2' : ''} ${
-                    isActive
-                      ? 'bg-orange-50 dark:bg-primary/20 text-primary font-medium'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white group'
+                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${collapsed && !isMobile ? 'justify-center px-2' : ''} ${isActive
+                    ? 'bg-orange-50 dark:bg-primary/20 text-primary font-medium'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white group'
                   }`
                 }
                 title={collapsed && !isMobile ? item.label : ''}
@@ -118,10 +117,10 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
               Unlock premium features like AI candidate matching.
             </p>
-            <Button 
-              fullWidth 
+            <Button
+              fullWidth
               mode="primary"
-              shape="rounded" 
+              shape="rounded"
               className=""
             >
               View Plans
@@ -133,18 +132,18 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
       {/* Logout */}
       <div className={`p-4 border-t border-gray-200 dark:border-gray-800 ${collapsed && !isMobile ? 'flex justify-center' : ''}`}>
         {collapsed && !isMobile ? (
-          <Button 
+          <Button
             btnIcon
-            mode="ghost" 
+            mode="ghost"
             shape="rounded"
             title="Logout"
           >
             <span className="material-icons-outlined">logout</span>
           </Button>
         ) : (
-          <Button 
-            fullWidth 
-            mode="ghost" 
+          <Button
+            fullWidth
+            mode="ghost"
             shape="rounded"
             iconLeft={<span className="material-icons-outlined">logout</span>}
           >
