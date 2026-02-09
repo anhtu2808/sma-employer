@@ -11,7 +11,11 @@ export const jobApi = api.injectEndpoints({
             }),
             providesTags: ['Jobs'],
         }),
+        getJobDetail: builder.query({
+            query: (id) => `${API_VERSION}/jobs/${id}`,
+            providesTags: (result, error, id) => [{ type: 'Jobs', id }],
+        }),
     }),
 });
 
-export const { useGetJobsQuery } = jobApi;
+export const { useGetJobsQuery, useGetJobDetailQuery } = jobApi;
