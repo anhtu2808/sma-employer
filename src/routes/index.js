@@ -7,6 +7,7 @@ import Home from '@/pages/home';
 import RecruiterRegister from '@/pages/register/RecruiterRegister';
 import PendingApproval from '@/pages/register/PendingApproval';
 import JobsList from '@/pages/jobs';
+import JobDetail from '@/pages/job-detail';
 import Login from '@/pages/login';
 
 export const routes = createBrowserRouter(
@@ -17,6 +18,7 @@ export const routes = createBrowserRouter(
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="recruiters" element={<Dashboard />} />
                 <Route path="jobs" element={<JobsList />} />
+                <Route path="jobs/:id" element={<JobDetail />} />
                 <Route path="company" element={<CompanyProfile />} />
                 <Route path="candidates" element={<Dashboard />} />
                 <Route path="reports" element={<Dashboard />} />
