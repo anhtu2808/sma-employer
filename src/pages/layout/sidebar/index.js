@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import Button from '@/components/Button';
+import authService from '@/services/authService';
 
 const menuItems = [
   { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
@@ -19,6 +20,14 @@ const generalItems = [
 
 
 const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false }) => {
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <aside className={`bg-card-light dark:bg-card-dark ${!isMobile ? 'border-r border-gray-200 dark:border-gray-800' : ''} flex flex-col h-full flex-shrink-0 transition-all duration-300 ease-in-out relative ${collapsed && !isMobile ? 'w-20' : 'w-64'}`}>
       {!isMobile && (
@@ -137,6 +146,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
             mode="ghost"
             shape="rounded"
             title="Logout"
+            onClick={handleLogout}
           >
             <span className="material-icons-outlined">logout</span>
           </Button>
@@ -146,6 +156,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
             mode="ghost"
             shape="rounded"
             iconLeft={<span className="material-icons-outlined">logout</span>}
+            onClick={handleLogout}
           >
             Logout
           </Button>
