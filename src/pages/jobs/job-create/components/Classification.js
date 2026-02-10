@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, Input } from 'antd';
+import { Select, Input, Form } from 'antd';
 
 const Classification = () => {
     return (
@@ -10,34 +10,21 @@ const Classification = () => {
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Primary Expertise
-                    </label>
-                    <Select placeholder="Design & Creative" className="w-full h-10" options={[{ value: 'design', label: 'Design & Creative' }, { value: 'dev', label: 'Development' }]} />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Industry Domain
-                    </label>
-                    <Select placeholder="SaaS" className="w-full h-10" options={[{ value: 'saas', label: 'SaaS' }, { value: 'fintech', label: 'Fintech' }]} />
-                </div>
+                <Form.Item name="expertiseId" label="Primary Expertise" className="mb-0">
+                    <Select placeholder="Design & Creative" className="w-full h-10" options={[{ value: 1, label: 'Design & Creative' }, { value: 2, label: 'Development' }]} />
+                </Form.Item>
+                <Form.Item name="domainIds" label="Industry Domain" className="mb-0">
+                    <Select mode="multiple" placeholder="SaaS" className="w-full h-10" options={[{ value: 1, label: 'SaaS' }, { value: 2, label: 'Fintech' }]} />
+                </Form.Item>
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Skills (Tags)
-                </label>
-                <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-2 flex flex-wrap gap-2">
-                    <div className="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-sm flex items-center gap-1">
-                        Figma <button className="hover:text-orange-800">×</button>
-                    </div>
-                    <div className="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-sm flex items-center gap-1">
-                        Prototyping <button className="hover:text-orange-800">×</button>
-                    </div>
-                    <input type="text" placeholder="Type and press Enter..." className="flex-1 outline-none bg-transparent min-w-[150px] text-sm" />
-                </div>
-            </div>
+            <Form.Item name="skillIds" label="Skills (Tags)" className="mb-0">
+                <Select mode="multiple" placeholder="Select skills..." className="w-full" options={[{ value: 1, label: 'Figma' }, { value: 2, label: 'React' }, { value: 3, label: 'Java' }]} />
+            </Form.Item>
+
+            <Form.Item name="benefitIds" label="Benefits" className="mb-0">
+                <Select mode="multiple" placeholder="Select benefits..." className="w-full" options={[{ value: 1, label: 'Remote Work' }, { value: 2, label: 'Health Insurance' }]} />
+            </Form.Item>
         </div>
     );
 };

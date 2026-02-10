@@ -44,8 +44,8 @@ const JobDetail = () => {
                 mode="text"
                 className="self-start text-gray-500 hover:text-primary pl-0 -ml-20"
                 onClick={() => navigate('/jobs')}
+                iconLeft={<span className="material-icons-round text-lg">arrow_back</span>}
             >
-                <span className="material-icons-round text-lg mr-1">arrow_back</span>
                 Back to Jobs
             </Button>
 

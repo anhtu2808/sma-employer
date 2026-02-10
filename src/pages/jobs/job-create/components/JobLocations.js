@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Tag } from 'antd';
+import { Input, Tag, Form, Select } from 'antd';
 
 const JobLocations = () => {
     return (
@@ -9,13 +9,18 @@ const JobLocations = () => {
                 Locations
             </h3>
 
-            <Input prefix={<span className="material-icons-round text-gray-400">search</span>} placeholder="Search city or country..." className="rounded-lg py-2" />
-
-            <div className="flex flex-wrap gap-2 mt-2">
-                <Tag closeIcon closable className="bg-gray-100 border-gray-200 py-1 px-3 rounded-full flex items-center gap-2 text-base">
-                    <span>🇺🇸</span> New York, USA
-                </Tag>
-            </div>
+            <Form.Item name="locationIds" label="Locations" className="mb-0">
+                <Select
+                    mode="multiple"
+                    placeholder="Select locations..."
+                    className="w-full"
+                    options={[
+                        { value: 1, label: 'Hanoi (Headquarters)' },
+                        { value: 2, label: 'Ho Chi Minh City' },
+                        { value: 3, label: 'Da Nang' }
+                    ]}
+                />
+            </Form.Item>
             <div className="h-32 bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-400 text-sm">
                 Map Preview
             </div>

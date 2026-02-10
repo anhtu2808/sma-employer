@@ -1,5 +1,5 @@
 import React from 'react';
-import { Slider, Tag } from 'antd';
+import { Slider, Tag, Form, Switch } from 'antd';
 
 const ScoringWeights = () => {
     return (
@@ -9,30 +9,38 @@ const ScoringWeights = () => {
                     <span className="material-icons-round text-orange-500">psychology</span>
                     AI Scoring Weights
                 </h3>
-                <Tag color="orange" className="bg-orange-100 text-orange-600 border-none m-0 rounded-full px-2">● AI Active</Tag>
+                <Form.Item name="enableAiScoring" valuePropName="checked" initialValue={true} noStyle>
+                    <Switch checkedChildren="AI Active" unCheckedChildren="AI Off" className="bg-orange-500" />
+                </Form.Item>
             </div>
 
             <div className="space-y-6">
                 <div>
                     <div className="flex justify-between mb-1 text-sm">
                         <span className="text-gray-700 dark:text-gray-300 font-medium">Skills Match</span>
-                        <span className="text-orange-500 font-medium">High Importance (80%)</span>
+                        <span className="text-orange-500 font-medium">High Importance (40%)</span>
                     </div>
-                    <Slider defaultValue={80} trackStyle={{ backgroundColor: '#F97316' }} handleStyle={{ borderColor: '#F97316', backgroundColor: '#F97316' }} />
+                    <Form.Item name="weight_1" initialValue={40} noStyle>
+                        <Slider trackStyle={{ backgroundColor: '#F97316' }} handleStyle={{ borderColor: '#F97316', backgroundColor: '#F97316' }} />
+                    </Form.Item>
                 </div>
                 <div>
                     <div className="flex justify-between mb-1 text-sm">
                         <span className="text-gray-700 dark:text-gray-300 font-medium">Experience Level</span>
-                        <span className="text-orange-500 font-medium">Medium (50%)</span>
+                        <span className="text-orange-500 font-medium">Medium (30%)</span>
                     </div>
-                    <Slider defaultValue={50} trackStyle={{ backgroundColor: '#F97316' }} handleStyle={{ borderColor: '#F97316', backgroundColor: '#F97316' }} />
+                    <Form.Item name="weight_2" initialValue={30} noStyle>
+                        <Slider trackStyle={{ backgroundColor: '#F97316' }} handleStyle={{ borderColor: '#F97316', backgroundColor: '#F97316' }} />
+                    </Form.Item>
                 </div>
                 <div>
                     <div className="flex justify-between mb-1 text-sm">
                         <span className="text-gray-700 dark:text-gray-300 font-medium">Education</span>
-                        <span className="text-gray-500 font-medium">Low (20%)</span>
+                        <span className="text-gray-500 font-medium">Low (30%)</span>
                     </div>
-                    <Slider defaultValue={20} trackStyle={{ backgroundColor: '#F97316' }} handleStyle={{ borderColor: '#F97316', backgroundColor: '#F97316' }} />
+                    <Form.Item name="weight_3" initialValue={30} noStyle>
+                        <Slider trackStyle={{ backgroundColor: '#F97316' }} handleStyle={{ borderColor: '#F97316', backgroundColor: '#F97316' }} />
+                    </Form.Item>
                 </div>
             </div>
         </div>

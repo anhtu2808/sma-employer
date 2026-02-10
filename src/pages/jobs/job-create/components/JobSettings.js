@@ -1,5 +1,5 @@
 import React from 'react';
-import { DatePicker, InputNumber, Slider } from 'antd';
+import { DatePicker, InputNumber, Slider, Form } from 'antd';
 
 const JobSettings = () => {
     return (
@@ -10,18 +10,13 @@ const JobSettings = () => {
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Application Deadline
-                    </label>
+                <Form.Item name="expDate" label="Application Deadline" className="mb-0">
                     <DatePicker className="w-full rounded-lg py-2" format="MM/DD/YYYY" placeholder="mm/dd/yyyy" />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Number of Openings
-                    </label>
-                    <InputNumber className="w-full rounded-lg py-1.5" min={1} defaultValue={1} />
-                </div>
+                </Form.Item>
+
+                <Form.Item name="quantity" label="Number of Openings" className="mb-0">
+                    <InputNumber className="w-full rounded-lg py-1.5" min={1} />
+                </Form.Item>
             </div>
 
             <div>
@@ -31,8 +26,10 @@ const JobSettings = () => {
                     </label>
                     <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">Below 40%</span>
                 </div>
-                <Slider defaultValue={40} trackStyle={{ backgroundColor: '#F97316' }} handleStyle={{ borderColor: '#F97316', backgroundColor: '#F97316' }} />
-                <p className="text-xs text-gray-500">Candidates scoring below this will be automatically moved to 'Rejected'.</p>
+                <Form.Item name="autoRejectThreshold" noStyle initialValue={40}>
+                    <Slider trackStyle={{ backgroundColor: '#F97316' }} handleStyle={{ borderColor: '#F97316', backgroundColor: '#F97316' }} />
+                </Form.Item>
+                <p className="text-xs text-gray-500 mt-1">Candidates scoring below this will be automatically moved to 'Rejected'.</p>
             </div>
         </div>
     );
