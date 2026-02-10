@@ -1,34 +1,36 @@
 import React from 'react';
 import Input from '@/components/Input';
+import Form from '@/components/Form';
 
-const GeneralInfo = ({ formData, handleChange }) => {
+const GeneralInfo = () => {
     return (
         <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">General Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Input
-                    label="Company Name"
+                <Form.Item
                     name="companyName"
-                    value={formData.companyName || ''}
-                    onChange={handleChange}
-                    required
-                />
-                <Input
-                    label="Website"
+                    label="Company Name"
+                    rules={[{ required: true, message: 'Please enter company name' }]}
+                >
+                    <Input placeholder="Enter company name" />
+                </Form.Item>
+                <Form.Item
                     name="companyLink"
-                    value={formData.companyLink || ''}
-                    onChange={handleChange}
-                    placeholder="https://..."
-                />
+                    label="Website"
+                    rules={[{ type: 'url', message: 'Please enter a valid URL' }]}
+                >
+                    <Input placeholder="https://..." />
+                </Form.Item>
                 <div className="col-span-full">
-                    <Input.TextArea
-                        label="Description"
+                    <Form.Item
                         name="description"
-                        value={formData.description || ''}
-                        onChange={handleChange}
-                        rows={4}
-                        placeholder="Introduce your company..."
-                    />
+                        label="Description"
+                    >
+                        <Input.TextArea
+                            rows={4}
+                            placeholder="Introduce your company..."
+                        />
+                    </Form.Item>
                 </div>
             </div>
         </div>
