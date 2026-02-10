@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useGetCompanyProfileQuery, useUpdateCompanyProfileMutation, useUploadFileMutation } from '@/apis/apis';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
-import { message } from 'antd';
+import { message, ConfigProvider } from 'antd';
 import GeneralInfo from './components/GeneralInfo';
 import Classification from './components/Classification';
 import ContactInfo from './components/ContactInfo';
@@ -63,36 +63,46 @@ const CompanyProfile = () => {
     if (isLoading) return <div className="p-6">Loading...</div>;
 
     return (
-        <div className="p-6 space-y-6">
-            <header className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Company Profile</h1>
-                <p className="text-gray-500 dark:text-gray-400">Manage your company information</p>
-            </header>
+        <ConfigProvider
+            theme={{
+                token: {
+                    colorPrimary: '#F97316',
+                    colorLink: '#F97316',
+                    borderRadius: 8,
+                },
+            }}
+        >
+            <div className="p-6 space-y-6">
+                <header className="mb-8">
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Company Profile</h1>
+                    <p className="text-gray-500 dark:text-gray-400">Manage your company information</p>
+                </header>
 
-            <Card className="p-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <GeneralInfo formData={formData} handleChange={handleChange} />
-                    <Classification
-                        formData={formData}
-                        handleChange={handleChange}
-                        handleSelectChange={handleSelectChange}
-                    />
-                    <ContactInfo formData={formData} handleChange={handleChange} />
-                    <Location formData={formData} handleChange={handleChange} />
-                    <LegalInfo formData={formData} />
+                <Card className="p-6">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <GeneralInfo formData={formData} handleChange={handleChange} />
+                        <Classification
+                            formData={formData}
+                            handleChange={handleChange}
+                            handleSelectChange={handleSelectChange}
+                        />
+                        <ContactInfo formData={formData} handleChange={handleChange} />
+                        <Location formData={formData} handleChange={handleChange} />
+                        <LegalInfo formData={formData} />
 
-                    <div className="flex justify-start pt-4">
-                        <Button
-                            mode="primary"
-                            type="submit"
-                            disabled={isUpdating}
-                        >
-                            {isUpdating ? 'Updating...' : 'Update Information'}
-                        </Button>
-                    </div>
-                </form>
-            </Card>
-        </div>
+                        <div className="flex justify-start pt-4">
+                            <Button
+                                mode="primary"
+                                type="submit"
+                                disabled={isUpdating}
+                            >
+                                {isUpdating ? 'Updating...' : 'Update Information'}
+                            </Button>
+                        </div>
+                    </form>
+                </Card>
+            </div>
+        </ConfigProvider>
     );
 };
 
