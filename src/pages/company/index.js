@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useGetCompanyProfileQuery, useUpdateCompanyProfileMutation, useUploadFileMutation } from '@/apis/apis';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 import { message } from 'antd';
+import Form from '@/components/Form';
 import GeneralInfo from './components/GeneralInfo';
 import Classification from './components/Classification';
 import ContactInfo from './components/ContactInfo';
@@ -13,44 +14,17 @@ const CompanyProfile = () => {
     const { data: companyData, isLoading, refetch } = useGetCompanyProfileQuery();
     const [updateCompany, { isLoading: isUpdating }] = useUpdateCompanyProfileMutation();
     const [uploadFile, { isLoading: isUploading }] = useUploadFileMutation();
-
-    const [formData, setFormData] = useState({
-        companyName: '',
-        description: '',
-        companyIndustry: undefined,
-        companyType: undefined,
-        minSize: '',
-        maxSize: '',
-        companyEmail: '',
-        phone: '',
-        address: '',
-        district: '',
-        city: '',
-        country: '',
-        taxIdentificationNumber: '',
-        erc: '',
-        companyLink: ''
-    });
+    const [form] = Form.useForm();
 
     useEffect(() => {
         if (companyData && companyData.data) {
-            setFormData(companyData.data);
+            form.setFieldsValue(companyData.data);
         }
-    }, [companyData]);
+    }, [companyData, form]);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleSelectChange = (name, value) => {
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const onFinish = async (values) => {
         try {
-            const { taxIdentificationNumber, erc, ...updateData } = formData;
+            const { taxIdentificationNumber, erc, ...updateData } = values;
             await updateCompany(updateData).unwrap();
             message.success('Company profile updated successfully');
             refetch();
@@ -70,16 +44,12 @@ const CompanyProfile = () => {
             </header>
 
             <Card className="p-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <GeneralInfo formData={formData} handleChange={handleChange} />
-                    <Classification
-                        formData={formData}
-                        handleChange={handleChange}
-                        handleSelectChange={handleSelectChange}
-                    />
-                    <ContactInfo formData={formData} handleChange={handleChange} />
-                    <Location formData={formData} handleChange={handleChange} />
-                    <LegalInfo formData={formData} />
+                <Form form={form} onFinish={onFinish} className="space-y-6">
+                    <GeneralInfo />
+                    <Classification />
+                    <ContactInfo />
+                    <Location />
+                    <LegalInfo />
 
                     <div className="flex justify-start pt-4">
                         <Button
@@ -90,7 +60,7 @@ const CompanyProfile = () => {
                             {isUpdating ? 'Updating...' : 'Update Information'}
                         </Button>
                     </div>
-                </form>
+                </Form>
             </Card>
         </div>
     );

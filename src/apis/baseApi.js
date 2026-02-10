@@ -14,7 +14,16 @@ const rawBaseQuery = fetchBaseQuery({
     prepareHeaders: (headers) => {
         const token = localStorage.getItem("accessToken");
         if (token) {
+            console.log("Attaching token:", token);
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                console.log("Token payload:", payload);
+            } catch (e) {
+                console.error("Failed to decode token", e);
+            }
             headers.set('Authorization', `Bearer ${token}`);
+        } else {
+            console.warn("No access token found in localStorage");
         }
         return headers;
     },

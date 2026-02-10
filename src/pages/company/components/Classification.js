@@ -1,5 +1,6 @@
 import React from 'react';
 import Input from '@/components/Input';
+import Form from '@/components/Form';
 import { Select } from 'antd';
 
 const { Option } = Select;
@@ -21,7 +22,7 @@ const COMPANY_TYPES = [
     { value: 'OTHER', label: 'Other' },
 ];
 
-const Classification = ({ formData, handleChange, handleSelectChange }) => {
+const Classification = () => {
     const selectStyle = {
         width: '100%',
         height: '42px',
@@ -33,46 +34,32 @@ const Classification = ({ formData, handleChange, handleSelectChange }) => {
         <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">Classification</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col gap-2">
-                    <label className="text-sm font-medium text-gray-900 dark:text-white">Industry</label>
+                <Form.Item name="companyIndustry" label="Industry">
                     <Select
                         placeholder="Select Industry"
-                        value={formData.companyIndustry}
-                        onChange={(val) => handleSelectChange('companyIndustry', val)}
                         style={selectStyle}
                     >
                         {INDUSTRIES.map(ind => (
                             <Option key={ind.value} value={ind.value}>{ind.label}</Option>
                         ))}
                     </Select>
-                </div>
-                <div className="flex flex-col gap-2">
-                    <label className="text-sm font-medium text-gray-900 dark:text-white">Company Type</label>
+                </Form.Item>
+                <Form.Item name="companyType" label="Company Type">
                     <Select
                         placeholder="Select Type"
-                        value={formData.companyType}
-                        onChange={(val) => handleSelectChange('companyType', val)}
                         style={selectStyle}
                     >
                         {COMPANY_TYPES.map(type => (
                             <Option key={type.value} value={type.value}>{type.label}</Option>
                         ))}
                     </Select>
-                </div>
-                <Input
-                    label="Min Size"
-                    name="minSize"
-                    type="number"
-                    value={formData.minSize || ''}
-                    onChange={handleChange}
-                />
-                <Input
-                    label="Max Size"
-                    name="maxSize"
-                    type="number"
-                    value={formData.maxSize || ''}
-                    onChange={handleChange}
-                />
+                </Form.Item>
+                <Form.Item name="minSize" label="Min Size">
+                    <Input type="number" />
+                </Form.Item>
+                <Form.Item name="maxSize" label="Max Size">
+                    <Input type="number" />
+                </Form.Item>
             </div>
         </div>
     );

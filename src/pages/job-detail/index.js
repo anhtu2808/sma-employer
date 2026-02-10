@@ -39,13 +39,13 @@ const JobDetail = () => {
     };
 
     return (
-        <div className="p-6 max-w-7xl mx-auto flex flex-col gap-6">
+        <div className="p-6 max-w-7xl mx-auto">
             <Button
                 mode="text"
-                className="self-start text-gray-500 hover:text-primary pl-0"
+                className="self-start text-gray-500 hover:text-primary pl-0 -ml-20"
                 onClick={() => navigate('/jobs')}
+                iconLeft={<span className="material-icons-round text-lg">arrow_back</span>}
             >
-                <span className="material-icons-round text-lg mr-1">arrow_back</span>
                 Back to Jobs
             </Button>
 
