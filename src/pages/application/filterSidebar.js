@@ -1,153 +1,161 @@
 import React, { useState } from 'react';
-import { Slider, Select, Space } from 'antd';
+import { Slider, Select, Tag } from 'antd';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
-import Checkbox from '@/components/Checkbox';
+import { Info, MapPin, Briefcase, DollarSign, Brain, Zap, X } from 'lucide-react';
 
-const FilterSidebar = ({ onApply, onReset }) => {
+const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
     const [filters, setFilters] = useState({
-        status: 'All Statuses',
-        location: 'All Cities',
-        experience: [0, 10],
-        salary: [0, 10000],
-        minScore: 0,
-        skills: []
+        status: currentFilters?.status || undefined,
+        location: currentFilters?.location || undefined,
+        matchLevel: currentFilters?.matchLevel || undefined,
+        minScore: currentFilters?.minScore || undefined,
+        skills: currentFilters?.skills || []
     });
 
-    const handleSkillAdd = (skill) => {
-        if (!filters.skills.includes(skill)) {
-            setFilters({ ...filters, skills: [...filters.skills, skill] });
+    const [skillInput, setSkillInput] = useState('');
+    const handleAddSkill = () => {
+        const trimmed = skillInput.trim();
+        if (trimmed && !filters.skills.includes(trimmed)) {
+            setFilters({ ...filters, skills: [...filters.skills, trimmed] });
+            setSkillInput('');
         }
+    };
+
+    const handleRemoveSkill = (removedSkill) => {
+        setFilters({
+            ...filters,
+            skills: filters.skills.filter(s => s !== removedSkill)
+        });
+    };
+
+    const handleReset = () => {
+        const resetState = {
+            status: undefined,
+            location: undefined,
+            matchLevel: undefined,
+            minScore: undefined,
+            skills: []
+        };
+        setFilters(resetState);
+        onApply(resetState);
     };
 
     return (
         <div className="flex flex-col h-full bg-white dark:bg-surface-dark font-body">
-            <div className="flex-1 overflow-y-auto space-y-8 pb-6">
-                <p className="text-neutral-500 text-sm leading-relaxed">
-                    Narrow down your search to find the perfect candidates.
+            <div className="flex-1 overflow-y-auto space-y-8 pb-6 custom-scrollbar">
+                <p className="text-neutral-400 text-[11px] font-bold uppercase tracking-widest leading-relaxed">
+                    Refine your candidate list using advanced parameters.
                 </p>
 
                 {/* Status Filter */}
                 <div className="space-y-3">
-                    <label className="flex items-center gap-2 text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wider text-[11px]">
-                        <span className="material-icons-round text-base">info_outline</span> Status
+                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white uppercase tracking-tighter font-black text-[11px]">
+                        <Info size={14} className="text-primary" /> Application Status
                     </label>
                     <Select
-                        className="w-full custom-select"
-                        defaultValue="All Statuses"
-                        onChange={(value) => setFilters({ ...filters, status: value })}
+                        className="w-full custom-select-filter"
+                        placeholder="All Statuses"
+                        value={filters.status}
+                        allowClear
+                        onChange={(val) => setFilters({ ...filters, status: val })}
                         options={[
-                            { value: 'All Statuses', label: 'All Statuses' },
                             { value: 'APPLIED', label: 'Applied' },
-                            { value: 'IN_REVIEW', label: 'In Review' },
-                            { value: 'INTERVIEW', label: 'Interview' },
-                            { value: 'HIRED', label: 'Hired' },
+                            { value: 'VIEWED', label: 'Viewed' },
+                            { value: 'SHORTLISTED', label: 'Shortlisted' },
+                            { value: 'NOT_SUITABLE', label: 'Not Suitable' },
+                            { value: 'AUTO_REJECTED', label: 'Auto Rejected' },
                         ]}
                     />
                 </div>
 
                 {/* Location Filter */}
                 <div className="space-y-3">
-                    <label className="flex items-center gap-2 text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wider text-[11px]">
-                        <span className="material-icons-round text-base">location_on</span> Location
+                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white uppercase tracking-tighter font-black text-[11px]">
+                        <MapPin size={14} className="text-primary" /> Location
+                    </label>
+                    <Input
+                        placeholder="e.g. Ho Chi Minh, Ha Noi..."
+                        value={filters.location}
+                        onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+                        className="!rounded-xl"
+                    />
+                </div>
+
+                {/* AI Match Level Filter */}
+                <div className="space-y-3">
+                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white uppercase tracking-tighter font-black text-[11px]">
+                        <Brain size={14} className="text-primary" /> AI Match Level
                     </label>
                     <Select
-                        className="w-full custom-select"
-                        defaultValue="All Cities"
-                        onChange={(value) => setFilters({ ...filters, location: value })}
+                        className="w-full"
+                        placeholder="Any Level"
+                        value={filters.matchLevel}
+                        allowClear
+                        onChange={(val) => setFilters({ ...filters, matchLevel: val })}
                         options={[
-                            { value: 'All Cities', label: 'All Cities' },
-                            { value: 'Hồ Chí Minh', label: 'Ho Chi Minh City' },
-                            { value: 'Hà Nội', label: 'Ha Noi' },
-                            { value: 'Đà Nẵng', label: 'Da Nang' },
+                            { value: 'EXCELLENT', label: 'Excellent' },
+                            { value: 'GOOD', label: 'Good' },
+                            { value: 'FAIR', label: 'Fair' },
+                            { value: 'POOR', label: 'Poor' },
+                            { value: 'NOT_MATCHED', label: 'Not Matched' },
                         ]}
                     />
                 </div>
 
-                {/* Years of Experience Slider */}
+                {/* Minimum Match Score Slider */}
                 <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                        <label className="flex items-center gap-2 text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wider text-[11px]">
-                            <span className="material-icons-round text-base">work_outline</span> Years of Experience
-                        </label>
-                    </div>
+                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white uppercase tracking-tighter font-black text-[11px]">
+                        <Zap size={14} className="text-orange-500" /> Min AI Score: {filters.minScore}%
+                    </label>
                     <Slider
-                        range
-                        defaultValue={[0, 10]}
-                        max={15}
-                        onChange={(val) => setFilters({ ...filters, experience: val })}
+                        value={filters.minScore}
+                        onChange={(val) => setFilters({ ...filters, minScore: val })}
                         trackStyle={{ backgroundColor: '#FF6B35' }}
                         handleStyle={{ borderColor: '#FF6B35' }}
                     />
-                    <div className="flex justify-between text-[11px] font-bold text-neutral-400">
-                        <span>0 years</span>
-                        <span>10+ years</span>
-                    </div>
                 </div>
 
-                {/* Expected Salary Range */}
+                {/* Required Skills (List<String>) */}
                 <div className="space-y-3">
-                    <label className="flex items-center gap-2 text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wider text-[11px]">
-                        <span className="material-icons-round text-base">monetization_on</span> Expected Salary Range (USD)
-                    </label>
-                    <Slider
-                        range
-                        step={500}
-                        max={10000}
-                        defaultValue={[0, 10000]}
-                        onChange={(val) => setFilters({ ...filters, salary: val })}
-                        trackStyle={{ backgroundColor: '#FF6B35' }}
-                    />
-                    <div className="flex justify-between text-[11px] font-bold text-neutral-400">
-                        <span>$0</span>
-                        <span>$10,000+</span>
-                    </div>
-                </div>
-
-                {/* Minimum Match Score */}
-                <div className="space-y-3">
-                    <label className="flex items-center gap-2 text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wider text-[11px]">
-                        <span className="material-icons-round text-base">psychology</span> Minimum Match Score
-                    </label>
-                    <Slider
-                        defaultValue={0}
-                        onChange={(val) => setFilters({ ...filters, minScore: val })}
-                        trackStyle={{ backgroundColor: '#22C55E' }}
-                    />
-                    <div className="flex justify-between text-[11px] font-bold text-neutral-400">
-                        <span>0%</span>
-                        <span>100%</span>
-                    </div>
-                </div>
-
-                {/* Required Skills */}
-                <div className="space-y-3">
-                    <label className="flex items-center gap-2 text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wider text-[11px]">
-                        <span className="material-icons-round text-base">bolt</span> Required Skills
+                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white uppercase tracking-tighter font-black text-[11px]">
+                        <Briefcase size={14} className="text-primary" /> Required Skills
                     </label>
                     <div className="flex gap-2">
-                        <Input placeholder="Add a skill..." className="flex-1" size="small" />
-                        <Button mode="primary" size="sm">Add</Button>
+                        <input
+                            placeholder="Add skill..."
+                            value={skillInput}
+                            onChange={(e) => setSkillInput(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleAddSkill()}
+                            className="flex-1 px-4 py-2 bg-neutral-50 dark:bg-gray-800 border border-neutral-100 dark:border-neutral-700 rounded-xl text-xs font-bold focus:outline-none"
+                        />
+                        <Button mode="primary" size="sm" onClick={handleAddSkill}>Add</Button>
                     </div>
                     <div className="flex flex-wrap gap-2 mt-3">
-                        <span className="text-[10px] text-neutral-400 font-medium">Quick add:</span>
-                        {['Marketing', 'Sales', 'Finance', 'Design'].map(skill => (
-                            <button
+                        {filters.skills.map(skill => (
+                            <Tag
                                 key={skill}
-                                onClick={() => handleSkillAdd(skill)}
-                                className="text-[10px] font-bold text-green-600 hover:underline bg-transparent border-0 p-0 cursor-pointer"
+                                closable
+                                onClose={() => handleRemoveSkill(skill)}
+                                className="bg-orange-50 border-orange-100 text-orange-600 font-bold rounded-lg px-2 py-1 flex items-center gap-1"
+                                closeIcon={<X size={10} />}
                             >
-                                {skill}
-                            </button>
+                                {skill.toUpperCase()}
+                            </Tag>
                         ))}
                     </div>
                 </div>
             </div>
 
             {/* Actions Footer */}
-            <div className="pt-6 border-t border-neutral-100 dark:border-neutral-800 grid grid-cols-2 gap-4">
-                <Button mode="secondary" fullWidth onClick={onReset}>Reset</Button>
-                <Button mode="primary" fullWidth onClick={() => onApply(filters)}>Apply Filter</Button>
+            <div className="flex justify-between items-center border-t border-neutral-100 dark:border-neutral-800 pt-4">
+                <Button mode="secondary" onClick={handleReset}>
+                    Reset
+                </Button>
+
+                <Button mode="primary" onClick={() => onApply(filters)}>
+                    Apply Filter
+                </Button>
             </div>
         </div>
     );

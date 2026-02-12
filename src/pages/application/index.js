@@ -2,27 +2,36 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { useGetApplicationsQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
 import { useGetMyJobsQuery } from '@/apis/jobApi';
 import { Listbox, Transition } from '@headlessui/react';
-import { ChevronDown, Check, Briefcase, Download, Filter, Plus, LayoutGrid, List as ListIcon } from 'lucide-react';
+import { ChevronDown, Check, Briefcase, X, Filter, Plus, LayoutGrid, List as ListIcon } from 'lucide-react';
 import Button from '@/components/Button';
-import Card from '@/components/Card';
 import { Drawer, Avatar, Space, Badge, Spin } from 'antd';
 import FilterSidebar from './filterSidebar';
 import { Search } from 'lucide-react';
+import ApplicationList from './list';
+import KanbanBoard from './kanban';
+import { message } from 'antd';
 
 const STATUS_COLUMNS = [
-    { id: 'APPLIED', title: 'Applied', color: '#3B82F6' },
+    { id: 'APPLIED', title: 'Applied', color: '#FF6B35' },
     { id: 'VIEWED', title: 'Viewed', color: '#6366F1' },
-    { id: 'SHORTLISTED', title: 'Shortlisted', color: '#A855F7' },
+    { id: 'SHORTLISTED', title: 'Shortlisted', color: '#10B981' },
     { id: 'NOT_SUITABLE', title: 'Not Suitable', color: '#EF4444' },
     { id: 'AUTO_REJECTED', title: 'Auto Rejected', color: '#9CA3AF' }
 ];
 
+
 const ApplicationManagement = () => {
     const { data: jobsResponse, isLoading: isJobsLoading } = useGetMyJobsQuery({ page: 0, size: 100 });
     const [selectedJob, setSelectedJob] = useState(null);
+    const [updateStatus] = useUpdateApplicationStatusMutation();
+    const [searchTerm, setSearchTerm] = useState('');
     const [filter, setFilter] = useState({ page: 0, size: 50 });
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [viewMode, setViewMode] = useState('kanban');
+    const [page, setPage] = useState(0);
+    const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+    const [rejectData, setRejectData] = useState({ id: null, status: null });
+    const [rejectReason, setRejectReason] = useState('');
 
     useEffect(() => {
         const jobs = jobsResponse?.data?.content;
@@ -34,9 +43,31 @@ const ApplicationManagement = () => {
     const { data: appData, isLoading: isAppLoading } = useGetApplicationsQuery(
         { ...filter, jobId: selectedJob?.id },
         { skip: !selectedJob?.id }
-    );
 
-    const [updateStatus] = useUpdateApplicationStatusMutation();
+    );
+    useEffect(() => {
+        setFilter(prev => ({ ...prev, page: page }));
+    }, [page]);
+
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            setFilter(prev => ({
+                ...prev,
+                keyword: searchTerm || undefined
+            }));
+        }, 500);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchTerm]);
+
+    const STATUS_AVATAR_STYLES = {
+        APPLIED: "bg-orange-100 text-orange-600",
+        VIEWED: "bg-indigo-100 text-indigo-600",
+        SHORTLISTED: "bg-emerald-100 text-emerald-600",
+        NOT_SUITABLE: "bg-red-100 text-red-600",
+        AUTO_REJECTED: "bg-gray-100 text-gray-600"
+    };
+
 
     const getCandidatesByStatus = (status) => {
         return appData?.data?.content?.filter(app => app.status === status) || [];
@@ -46,8 +77,50 @@ const ApplicationManagement = () => {
 
     const jobs = jobsResponse?.data?.content || [];
 
+    const onDragEnd = async (result) => {
+        const { destination, source, draggableId } = result;
+
+        if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) {
+            return;
+        }
+
+        const applicationId = draggableId;
+        const newStatus = destination.droppableId;
+        if (newStatus === 'NOT_SUITABLE') {
+            setRejectData({ id: applicationId, status: newStatus });
+            setIsRejectModalOpen(true);
+            return;
+        }
+        handleUpdateStatus(applicationId, newStatus);
+    };
+
+    const handleUpdateStatus = async (id, status, reason = null) => {
+        try {
+            await updateStatus({
+                id: id,
+                status: status,
+                rejectReason: reason
+            }).unwrap();
+
+            message.success(`Application moved to ${status} successfully`);
+
+            // Reset states
+            setIsRejectModalOpen(false);
+            setRejectReason('');
+            setRejectData({ id: null, status: null });
+        } catch (error) {
+            const errorMessage = error?.data?.message || "An unexpected error occurred while updating status";
+            message.error(errorMessage);
+            if (error?.data?.code === 400 || error?.data?.status === "BAD_REQUEST") {
+                setIsRejectModalOpen(false);
+            }
+
+            console.error("Update Status Error:", error);
+        }
+    };
+
     return (
-        <div className="h-full flex flex-col space-y-6 animate-fadeIn font-body">
+        <div className="h-full flex flex-col space-y-3 animate-fadeIn font-body">
             {/* Header Area */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-2">
                 <div>
@@ -108,7 +181,7 @@ const ApplicationManagement = () => {
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-surface-dark border-neutral-100 shadow-sm rounded-[24px] p-4">
+            <div className="bg-white dark:bg-surface-dark border border-neutral-100 dark:border-neutral-800 rounded-t-[24px] rounded-b-none p-4">
                 <div className="flex flex-col gap-3">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-4">
@@ -157,10 +230,19 @@ const ApplicationManagement = () => {
                             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400/80" />
                             <input
                                 type="text"
-                                placeholder="Search candidates by name, email, or skills..."
-                                onChange={(e) => setFilter({ ...filter, keyword: e.target.value })}
-                                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-neutral-100 dark:border-neutral-700 rounded-2xl text-xs font-bold transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-neutral-400/60"
+                                placeholder="Search candidates by name or email..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full pl-12 pr-4 py-3 bg-neutral-50 dark:bg-gray-900 border border-neutral-100 dark:border-neutral-700 rounded-2xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-neutral-400/60 dark:text-white shadow-sm"
                             />
+                            {searchTerm && (
+                                <button
+                                    onClick={() => setSearchTerm('')}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                                >
+                                    <Plus size={16} className="rotate-45" />
+                                </button>
+                            )}
                         </div>
 
                         <div className="flex items-center gap-3 w-full lg:w-auto">
@@ -184,58 +266,101 @@ const ApplicationManagement = () => {
                 </div>
             </div>
 
+
             {/* Kanban Board */}
-            <div className="flex-1 overflow-x-auto pb-4 custom-scrollbar relative">
+            <div className="flex-1 min-h-0 relative">
                 {isAppLoading && (
-                    <div className="absolute inset-0 bg-white/40 dark:bg-black/10 z-10 flex items-center justify-center backdrop-blur-[2px] rounded-3xl">
+                    <div className="absolute inset-0 bg-white/40 dark:bg-black/20 z-50 flex items-center justify-center backdrop-blur-sm rounded-[24px]">
                         <Spin size="large" />
                     </div>
                 )}
 
-                <div className="flex gap-6 h-full min-w-max px-2">
-                    {STATUS_COLUMNS.map(column => (
-                        <div key={column.id} className="w-80 flex flex-col bg-neutral-50/50 dark:bg-neutral-900/30 rounded-[32px] p-5 border border-neutral-100 dark:border-neutral-800">
-                            <div className="flex justify-between items-center mb-6 px-2">
-                                <Space>
-                                    <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: column.color }}></div>
-                                    <span className="text-[11px] font-black text-neutral-700 dark:text-white uppercase tracking-widest">{column.title}</span>
-                                    <Badge count={getCandidatesByStatus(column.id).length} showZero color="#fb923c" className="text-[10px] font-black" />
-                                </Space>
-                            </div>
+                {viewMode === 'kanban' ? (
+                    <KanbanBoard
+                        statusColumns={STATUS_COLUMNS}
+                        getCandidatesByStatus={getCandidatesByStatus}
+                        onDragEnd={onDragEnd}
+                        statusAvatarStyles={STATUS_AVATAR_STYLES}
+                    />
+                ) : (
+                    <ApplicationList
+                        data={appData?.data?.content || []}
+                        isLoading={isAppLoading}
+                        totalElements={appData?.data?.totalElements || 0}
+                        totalPages={appData?.data?.totalPages || 0}
+                        currentPage={page}
+                        onPageChange={(newPage) => setPage(newPage)}
+                        onStatusUpdate={handleUpdateStatus}
+                    />
+                )}
+            </div>
 
-                            <div className="flex-1 space-y-4 overflow-y-auto pr-1 custom-scrollbar">
-                                {getCandidatesByStatus(column.id).map(app => (
-                                    <Card
-                                        key={app.applicationId}
-                                        className="!p-4 hover:shadow-xl transition-all border border-neutral-100 dark:border-neutral-800 rounded-2xl group cursor-pointer relative overflow-hidden"
-                                    >
-                                        <div className={`absolute top-0 left-0 w-1 h-full ${app.matchLevel === 'EXCELLENT' ? 'bg-green-500' : 'bg-transparent'}`} />
-                                        <div className="flex gap-4">
-                                            <Avatar size={44} className="bg-orange-100 text-orange-600 font-black text-xs rounded-xl shadow-sm">
-                                                {app.candidateName.substring(0, 2).toUpperCase()}
-                                            </Avatar>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex justify-between items-start">
-                                                    <h4 className="font-bold text-[13px] truncate dark:text-white group-hover:text-primary transition-colors tracking-tight">
-                                                        {app.candidateName}
-                                                    </h4>
-                                                </div>
-                                                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-tighter mt-0.5">{app.location || 'N/A'}</p>
+            {isRejectModalOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-neutral-900/70 backdrop-blur-lg p-2 animate-in fade-in duration-300">
+                    <div className="bg-white dark:bg-surface-dark rounded-[48px] w-full max-w-lg p-6 shadow-2xl relative border border-white/10 animate-in zoom-in duration-300 text-center">
 
-                                                <div className={`mt-3 inline-flex items-center px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${app.aiScore >= 80 ? 'bg-green-50 text-green-600' :
-                                                    app.aiScore >= 50 ? 'bg-orange-50 text-orange-600' : 'bg-red-50 text-red-600'
-                                                    }`}>
-                                                    {app.aiScore || 0}% AI Match
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                ))}
+                        <button
+                            onClick={() => {
+                                setIsRejectModalOpen(false);
+                                setRejectReason('');
+                            }}
+                            className="absolute top-5 right-5 text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-all"
+                        >
+                            <Plus size={22} className="rotate-45" strokeWidth={3} />
+                        </button>
+
+                        <div className="mb-5 mt-4">
+                            <h3 className="text-2xl font-black text-neutral-900 dark:text-white font-heading uppercase tracking-tighter">
+                                Reject Candidate
+                            </h3>
+                            <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-[0.2em] mt-2 italic px-4 leading-relaxed">
+                                Are you sure to move this application to <span className="text-red-500">Not Suitable</span> status? Please state the reason.
+                            </p>
+                        </div>
+
+                        <div className="space-y-3 text-left">
+                            <div className="space-y-3">
+                                <label className="flex justify-between items-center px-2">
+                                    <span className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">
+                                        Reason for rejection
+                                    </span>
+                                    <span className="text-[9px] font-bold text-neutral-300 uppercase tracking-widest italic">
+                                        (Optional)
+                                    </span>
+                                </label>
+                                <textarea
+                                    rows={4}
+                                    autoFocus
+                                    placeholder="Provide a reason or leave it blank to continue..."
+                                    value={rejectReason}
+                                    onChange={(e) => setRejectReason(e.target.value)}
+                                    className="w-full p-6 bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-700 rounded-[32px] text-sm font-bold text-neutral-700 dark:text-neutral-200 focus:outline-none focus:ring-4 focus:ring-red-500/5 transition-all resize-none shadow-inner font-body"
+                                />
                             </div>
                         </div>
-                    ))}
+
+                        <div className="flex justify-between mt-6">
+                            <Button
+                                mode="secondary"
+                                className="!rounded-2xl !h-14 font-black uppercase tracking-widest text-[10px] !text-neutral-400 border-none hover:!bg-neutral-50"
+                                onClick={() => {
+                                    setIsRejectModalOpen(false);
+                                    setRejectReason('');
+                                }}
+                            >
+                                Discard
+                            </Button>
+                            <Button
+                                mode="primary"
+                                className="border-none text-neutral-400"
+                                onClick={() => handleUpdateStatus(rejectData.id, rejectData.status, rejectReason)}
+                            >
+                                Confirm & Reject
+                            </Button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Sidebar Filter */}
             <Drawer
@@ -246,10 +371,18 @@ const ApplicationManagement = () => {
                 width={380}
                 className="custom-drawer"
             >
-                <FilterSidebar onApply={(newFilters) => {
-                    setFilter({ ...filter, ...newFilters });
-                    setIsFilterOpen(false);
-                }} />
+                <FilterSidebar
+                    currentFilters={filter}
+                    onApply={(newFilters) => {
+                        setFilter(prev => ({
+                            ...prev,
+                            ...newFilters,
+                            page: 0
+                        }));
+                        setIsFilterOpen(false);
+                    }}
+                    onReset={(resetState) => setFilter({ ...resetState, jobId: selectedJob?.id, page: 0, size: viewMode === 'kanban' ? 1000 : 10 })}
+                />
             </Drawer>
         </div>
     );
