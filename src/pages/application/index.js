@@ -1,46 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { useGetApplicationsQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
 import { useGetMyJobsQuery } from '@/apis/jobApi';
+import { Listbox, Transition } from '@headlessui/react';
+import { ChevronDown, Check, Briefcase, Download, Filter, Plus, LayoutGrid, List as ListIcon } from 'lucide-react';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
-import SearchInput from '@/components/SearchInput';
-import { Drawer, Avatar, Space, Badge, Select, Spin } from 'antd';
+import { Drawer, Avatar, Space, Badge, Spin } from 'antd';
 import FilterSidebar from './filterSidebar';
+import { Search } from 'lucide-react';
 
 const STATUS_COLUMNS = [
-    { id: 'APPLIED', title: 'Applied', color: '#3B82F6', description: 'New applications' },
-    { id: 'VIEWED', title: 'Viewed', color: '#6366F1', description: 'Opened by recruiter' },
-    { id: 'SHORTLISTED', title: 'Shortlisted', color: '#A855F7', description: 'Potential candidates' },
-    { id: 'NOT_SUITABLE', title: 'Not Suitable', color: '#EF4444', description: 'Rejected candidates' },
-    { id: 'AUTO_REJECTED', title: 'Auto Rejected', color: '#9CA3AF', description: 'Below AI threshold' }
+    { id: 'APPLIED', title: 'Applied', color: '#3B82F6' },
+    { id: 'VIEWED', title: 'Viewed', color: '#6366F1' },
+    { id: 'SHORTLISTED', title: 'Shortlisted', color: '#A855F7' },
+    { id: 'NOT_SUITABLE', title: 'Not Suitable', color: '#EF4444' },
+    { id: 'AUTO_REJECTED', title: 'Auto Rejected', color: '#9CA3AF' }
 ];
 
 const ApplicationManagement = () => {
-    // 1. Lấy danh sách Job của công ty
     const { data: jobsResponse, isLoading: isJobsLoading } = useGetMyJobsQuery({ page: 0, size: 100 });
-
-    // 2. State quản lý Job được chọn và Filter
-    const [selectedJobId, setSelectedJobId] = useState(null);
+    const [selectedJob, setSelectedJob] = useState(null);
     const [filter, setFilter] = useState({ page: 0, size: 50 });
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [viewMode, setViewMode] = useState('kanban');
 
-    // 3. Tự động chọn Job đầu tiên khi danh sách tải xong lần đầu
     useEffect(() => {
         const jobs = jobsResponse?.data?.content;
-        if (jobs && jobs.length > 0 && !selectedJobId) {
-            setSelectedJobId(jobs[0].id);
+        if (jobs && jobs.length > 0 && !selectedJob) {
+            setSelectedJob(jobs[0]);
         }
-    }, [jobsResponse, selectedJobId]);
+    }, [jobsResponse, selectedJob]);
 
-    // 4. RTK Query lấy danh sách ứng viên (chỉ gọi khi đã có selectedJobId)
     const { data: appData, isLoading: isAppLoading } = useGetApplicationsQuery(
-        { ...filter, jobId: selectedJobId },
-        { skip: !selectedJobId }
+        { ...filter, jobId: selectedJob?.id },
+        { skip: !selectedJob?.id }
     );
 
     const [updateStatus] = useUpdateApplicationStatusMutation();
 
-    // Nhóm dữ liệu theo cột Kanban
     const getCandidatesByStatus = (status) => {
         return appData?.data?.content?.filter(app => app.status === status) || [];
     };
@@ -50,121 +47,185 @@ const ApplicationManagement = () => {
     const jobs = jobsResponse?.data?.content || [];
 
     return (
-        <div className="h-full flex flex-col space-y-6 animate-fadeIn">
-            {/* Page Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="h-full flex flex-col space-y-6 animate-fadeIn font-body">
+            {/* Header Area */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-2">
                 <div>
-                    <h1 className="text-3xl font-bold font-heading text-neutral-900 dark:text-white">CV Management</h1>
-                    <p className="text-neutral-500 font-body">Track and manage candidate applications for your jobs</p>
+                    <h1 className="text-xl font-extrabold font-heading text-neutral-900 dark:text-white uppercase tracking-tight">CV Management</h1>
+                    <p className="text-[11px] text-neutral-400 font-medium mt-1 tracking-widest uppercase italic">Track and manage candidate applications for your jobs</p>
                 </div>
 
-                {/* Dropdown chọn Job động */}
-                <div className="w-full md:w-72">
-                    <span className="text-[10px] font-bold text-neutral-400 uppercase mb-1 block">Selected Job Position</span>
-                    <Select
-                        className="w-full custom-job-select"
-                        placeholder="Select a job"
-                        value={selectedJobId}
-                        onChange={(value) => setSelectedJobId(value)}
-                        options={jobs.map(job => ({
-                            value: job.id,
-                            label: (
-                                <div className="flex justify-between items-center w-full">
-                                    <span className="truncate">{job.name}</span>
-                                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full ml-2 ${job.status === 'PUBLISHED' ? 'bg-green-100 text-green-600' : 'bg-neutral-100 text-neutral-500'
-                                        }`}>
-                                        {job.status}
-                                    </span>
-                                </div>
-                            )
-                        }))}
-                    />
+                {/* --- CUSTOM DROPDOWN (LIKE SKILL MANAGEMENT) --- */}
+                <div className="relative w-full md:w-80 mt-4 md:mt-0">
+                    <Listbox value={selectedJob} onChange={setSelectedJob}>
+                        <div className="relative">
+                            <Listbox.Button className="relative w-full cursor-default rounded-2xl bg-white dark:bg-gray-800 border border-neutral-100 dark:border-neutral-700 py-3 pl-12 pr-10 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all">
+                                <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-orange-500" />
+                                <span className="block truncate text-[11px] font-black uppercase tracking-widest text-neutral-700 dark:text-neutral-200">
+                                    {selectedJob ? selectedJob.name : 'Select a Job'}
+                                </span>
+                                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                                    <ChevronDown className="h-4 w-4 text-neutral-400" aria-hidden="true" />
+                                </span>
+                            </Listbox.Button>
+
+                            <Transition
+                                as={Fragment}
+                                leave="transition ease-in duration-100"
+                                leaveFrom="opacity-100"
+                                leaveTo="opacity-0"
+                            >
+                                <Listbox.Options className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-2xl bg-white dark:bg-gray-800 py-2 text-base shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm border border-neutral-100 dark:border-neutral-700 animate-in fade-in zoom-in duration-200">
+                                    {jobs.map((job) => (
+                                        <Listbox.Option
+                                            key={job.id}
+                                            value={job}
+                                            className={({ active }) => `relative cursor-pointer select-none py-3 pl-12 pr-4 transition-colors ${active ? 'bg-primary/5 text-primary' : 'text-neutral-700 dark:text-neutral-300'}`}
+                                        >
+                                            {({ selected }) => (
+                                                <>
+                                                    <div className="flex flex-col">
+                                                        <span className={`block truncate text-[12px] ${selected ? 'font-black text-primary' : 'font-bold'}`}>
+                                                            {job.name}
+                                                        </span>
+                                                        <span className={`text-[8px] ${job.status === 'PUBLISHED' ? 'text-green-500' : 'text-neutral-400'}`}>
+                                                            {job.status}
+                                                        </span>
+                                                    </div>
+                                                    {selected ? (
+                                                        <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-primary">
+                                                            <Check size={16} strokeWidth={3} />
+                                                        </span>
+                                                    ) : null}
+                                                </>
+                                            )}
+                                        </Listbox.Option>
+                                    ))}
+                                </Listbox.Options>
+                            </Transition>
+                        </div>
+                    </Listbox>
                 </div>
             </div>
 
-            {/* Toolbar */}
-            <Card className="!p-4 bg-white dark:bg-surface-dark border-neutral-200">
-                <div className="flex flex-col lg:flex-row gap-4 justify-between items-center">
-                    <div className="flex items-center gap-4">
-                        <div className="hidden md:block">
-                            <h2 className="text-lg font-bold dark:text-white font-heading">
-                                {jobs.find(j => j.id === selectedJobId)?.name || "No Job Selected"}
-                            </h2>
-                            <p className="text-xs text-neutral-400">{appData?.data?.totalElements || 0} candidates found</p>
+            <div className="bg-white dark:bg-surface-dark border-neutral-100 shadow-sm rounded-[24px] p-4">
+                <div className="flex flex-col gap-3">
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-4">
+                            <div className="hidden md:block">
+                                <h3 className="text-lg font-extrabold text-neutral-900 dark:text-white tracking-tight font-heading">
+                                    {selectedJob?.name || "No Job Selected"}
+                                </h3>
+                                <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mt-0.5">
+                                    {appData?.data?.totalElements || 0} candidates found
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex p-1  rounded-xl gap-2">
+                            <Button
+                                mode={viewMode === 'kanban' ? 'primary' : 'ghost'}
+                                size="sm"
+                                onClick={() => setViewMode('kanban')}
+                            >
+                                <div className="flex items-center gap-1 whitespace-nowrap">
+                                    <LayoutGrid size={16} />
+                                    <span className="text-[10px] font-black uppercase tracking-wider">
+                                        Kanban
+                                    </span>
+                                </div>
+                            </Button>
+
+                            <Button
+                                mode={viewMode === 'list' ? 'primary' : 'ghost'}
+                                size="sm"
+                                onClick={() => setViewMode('list')}
+                            >
+                                <div className="flex items-center gap-1 whitespace-nowrap">
+                                    <ListIcon size={16} />
+                                    <span className="text-[10px] font-black uppercase tracking-wider">
+                                        List
+                                    </span>
+                                </div>
+                            </Button>
+
                         </div>
                     </div>
 
-                    <div className="flex flex-1 max-w-md w-full">
-                        <SearchInput
-                            placeholder="Search by name, email, or skills..."
-                            onChange={(e) => setFilter({ ...filter, keyword: e.target.value })}
-                        />
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <div className="flex p-1 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
-                            <Button mode="primary" size="sm">Kanban</Button>
-                            <Button mode="ghost" size="sm">List</Button>
+                    <div className="flex flex-col lg:flex-row justify-between items-center ">
+                        <div className="relative flex-1 w-full">
+                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400/80" />
+                            <input
+                                type="text"
+                                placeholder="Search candidates by name, email, or skills..."
+                                onChange={(e) => setFilter({ ...filter, keyword: e.target.value })}
+                                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-neutral-100 dark:border-neutral-700 rounded-2xl text-xs font-bold transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-neutral-400/60"
+                            />
                         </div>
-                        <Button
-                            mode="secondary"
-                            iconLeft={<span className="material-icons-round">filter_list</span>}
-                            onClick={() => setIsFilterOpen(true)}
-                        >
-                            Filters
-                        </Button>
-                        <Button mode="secondary" iconLeft={<span className="material-icons-round">file_download</span>}>
-                            Export
-                        </Button>
+
+                        <div className="flex items-center gap-3 w-full lg:w-auto">
+                            <Button
+                                mode="secondary"
+                                className=" lg:flex-none !rounded-xl border-neutral-100 !h-11 !pl-6 !text-[11px] font-black uppercase tracking-widest  flex items-center gap-2"
+                                iconLeft={<Filter size={16} />}
+                                onClick={() => setIsFilterOpen(true)}
+                            >
+                                Filters
+                            </Button>
+                            {/* <Button
+                                mode="secondary"
+                                className="flex-1 lg:flex-none  uppercase tracking-widest  flex items-center gap-2"
+                                iconLeft={<Download size={16} />}
+                            >
+                                Export
+                            </Button> */}
+                        </div>
                     </div>
                 </div>
-            </Card>
+            </div>
 
-            {/* Kanban Board Area */}
-            <div className="flex-1 overflow-x-auto pb-4 scrollbar-thin relative">
+            {/* Kanban Board */}
+            <div className="flex-1 overflow-x-auto pb-4 custom-scrollbar relative">
                 {isAppLoading && (
-                    <div className="absolute inset-0 bg-white/50 dark:bg-black/20 z-10 flex items-center justify-center backdrop-blur-sm">
-                        <Spin />
+                    <div className="absolute inset-0 bg-white/40 dark:bg-black/10 z-10 flex items-center justify-center backdrop-blur-[2px] rounded-3xl">
+                        <Spin size="large" />
                     </div>
                 )}
 
-                <div className="flex gap-6 h-full min-w-max">
+                <div className="flex gap-6 h-full min-w-max px-2">
                     {STATUS_COLUMNS.map(column => (
-                        <div key={column.id} className="w-80 flex flex-col bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl p-4 border border-neutral-200 dark:border-neutral-800">
-                            {/* Column Header */}
-                            <div className="flex justify-between items-center mb-4 px-2">
+                        <div key={column.id} className="w-80 flex flex-col bg-neutral-50/50 dark:bg-neutral-900/30 rounded-[32px] p-5 border border-neutral-100 dark:border-neutral-800">
+                            <div className="flex justify-between items-center mb-6 px-2">
                                 <Space>
-                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: column.color }}></div>
-                                    <span className="font-bold text-neutral-800 dark:text-white font-heading">{column.title}</span>
-                                    <Badge count={getCandidatesByStatus(column.id).length} showZero color="#D1D5DB" className="text-neutral-500" />
+                                    <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: column.color }}></div>
+                                    <span className="text-[11px] font-black text-neutral-700 dark:text-white uppercase tracking-widest">{column.title}</span>
+                                    <Badge count={getCandidatesByStatus(column.id).length} showZero color="#fb923c" className="text-[10px] font-black" />
                                 </Space>
                             </div>
 
-                            {/* Candidate Cards */}
-                            <div className="flex-1 space-y-4 overflow-y-auto pr-1">
+                            <div className="flex-1 space-y-4 overflow-y-auto pr-1 custom-scrollbar">
                                 {getCandidatesByStatus(column.id).map(app => (
                                     <Card
                                         key={app.applicationId}
-                                        className="hover:shadow-lg transition-all border-l-4 group cursor-pointer"
-                                        style={{ borderLeftColor: app.matchLevel === 'EXCELLENT' ? '#22C55E' : 'transparent' }}
+                                        className="!p-4 hover:shadow-xl transition-all border border-neutral-100 dark:border-neutral-800 rounded-2xl group cursor-pointer relative overflow-hidden"
                                     >
-                                        <div className="flex gap-3">
-                                            <Avatar size={40} className="bg-primary/10 text-primary font-bold">
+                                        <div className={`absolute top-0 left-0 w-1 h-full ${app.matchLevel === 'EXCELLENT' ? 'bg-green-500' : 'bg-transparent'}`} />
+                                        <div className="flex gap-4">
+                                            <Avatar size={44} className="bg-orange-100 text-orange-600 font-black text-xs rounded-xl shadow-sm">
                                                 {app.candidateName.substring(0, 2).toUpperCase()}
                                             </Avatar>
                                             <div className="flex-1 min-w-0">
-                                                <div className="flex justify-between">
-                                                    <h4 className="font-bold text-sm truncate dark:text-white group-hover:text-primary transition-colors">
+                                                <div className="flex justify-between items-start">
+                                                    <h4 className="font-bold text-[13px] truncate dark:text-white group-hover:text-primary transition-colors tracking-tight">
                                                         {app.candidateName}
                                                     </h4>
-                                                    <span className="material-icons-round text-neutral-400 text-sm">more_vert</span>
                                                 </div>
-                                                <p className="text-xs text-neutral-500 truncate mb-1">{app.location || 'N/A'}</p>
+                                                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-tighter mt-0.5">{app.location || 'N/A'}</p>
 
-                                                <div className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${app.aiScore >= 80 ? 'bg-green-50 text-green-600' :
+                                                <div className={`mt-3 inline-flex items-center px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${app.aiScore >= 80 ? 'bg-green-50 text-green-600' :
                                                     app.aiScore >= 50 ? 'bg-orange-50 text-orange-600' : 'bg-red-50 text-red-600'
                                                     }`}>
-                                                    {app.aiScore || 0}% Match
+                                                    {app.aiScore || 0}% AI Match
                                                 </div>
                                             </div>
                                         </div>
@@ -176,13 +237,14 @@ const ApplicationManagement = () => {
                 </div>
             </div>
 
-            {/* Slide-out Filter Sidebar */}
+            {/* Sidebar Filter */}
             <Drawer
-                title={<span className="font-heading font-bold text-xl">Filter Candidates</span>}
+                title={<span className="font-heading font-black text-lg uppercase tracking-tight">Filter Candidates</span>}
                 placement="right"
                 onClose={() => setIsFilterOpen(false)}
                 open={isFilterOpen}
-                width={360}
+                width={380}
+                className="custom-drawer"
             >
                 <FilterSidebar onApply={(newFilters) => {
                     setFilter({ ...filter, ...newFilters });
