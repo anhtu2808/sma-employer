@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Input as AntInput, Select, ConfigProvider } from 'antd';
 import { useGetJobsQuery } from '@/apis/apis';
 import JobListItem from '@/components/JobListItem';
+import Pagination from '@/components/Pagination';
 import Button from '@/components/Button';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,6 +15,7 @@ const JobsList = () => {
     const [location, setLocation] = useState(null);
 
     // Debounce search term
+    // Debounce search term
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -22,12 +24,22 @@ const JobsList = () => {
         return () => clearTimeout(handler);
     }, [searchTerm]);
 
+    const [page, setPage] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+
+    // Reset page when filters change
+    useEffect(() => {
+        setPage(0);
+    }, [searchTerm, status, workingModel, jobLevel, location, debouncedSearchTerm]);
+
     const { data: jobsData, isLoading: isJobsLoading } = useGetJobsQuery({
         name: debouncedSearchTerm || undefined,
         status,
         workingModel,
         jobLevel,
-        location
+        location,
+        page,
+        size: pageSize
     });
 
     if (isJobsLoading) {
@@ -35,6 +47,7 @@ const JobsList = () => {
     }
 
     const jobs = jobsData?.data?.content || [];
+    const totalPages = jobsData?.data?.totalPages || 0;
 
     const formatDate = (dateString, addDays = 0) => {
         if (!dateString) return '';
@@ -162,29 +175,37 @@ const JobsList = () => {
                     </Button>
                 </div>
             ) : (
-                <div className="flex flex-col gap-4">
-                    {jobs.map((job) => (
-                        <JobListItem
-                            key={job.id}
-                            title={job.name}
-                            status={job.status || 'Active'}
-                            postedTime={formatDate(job.uploadTime || job.createdAt)}
-                            location={job.company?.country || job?.locations?.map(l => l.city).join(', ') || job.workingModel}
-                            salary={formatSalary(job.salaryStart, job.salaryEnd, job.currency)}
-                            expiry={job.expDate ? `Ends on ${new Date(job.expDate).toLocaleDateString()}` : ''}
-                            tags={[
-                                job.jobLevel,
-                                job.workingModel,
-                                ...(job.skills || []).map(s => s.name)
-                            ].filter(Boolean)}
-                            stats={{
-                                applicants: job.applicantsCount,
-                                views: job.viewsCount,
-                            }}
-                            onViewDetails={() => navigate(`/jobs/${job.id}`)}
-                        />
-                    ))}
-                </div>
+                <>
+                    <div className="flex flex-col gap-4">
+                        {jobs.map((job) => (
+                            <JobListItem
+                                key={job.id}
+                                title={job.name}
+                                status={job.status || 'Active'}
+                                postedTime={formatDate(job.uploadTime || job.createdAt)}
+                                location={job.company?.country || job?.locations?.map(l => l.city).join(', ') || job.workingModel}
+                                salary={formatSalary(job.salaryStart, job.salaryEnd, job.currency)}
+                                expiry={job.expDate ? `Ends on ${new Date(job.expDate).toLocaleDateString()}` : ''}
+                                tags={[
+                                    job.jobLevel,
+                                    job.workingModel,
+                                    ...(job.skills || []).map(s => s.name)
+                                ].filter(Boolean)}
+                                stats={{
+                                    applicants: job.applicantsCount,
+                                    views: job.viewsCount,
+                                }}
+                                onViewDetails={() => navigate(`/jobs/${job.id}`)}
+                            />
+                        ))}
+                    </div>
+
+                    <Pagination
+                        currentPage={page}
+                        totalPages={totalPages}
+                        onPageChange={setPage}
+                    />
+                </>
             )}
         </div>
     );

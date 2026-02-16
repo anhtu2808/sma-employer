@@ -55,7 +55,7 @@ const JobCreate = () => {
                 quantity: Number(values.quantity) || 1, // Default to 1 if not set
                 autoRejectThreshold: Number(values.autoRejectThreshold) || 0,
                 expertiseId: values.expertiseId || 0,
-                rootId: 0, // Default as per requirement
+                rootId: null, // Default as per requirement
             };
 
             // Remove temporary fields
