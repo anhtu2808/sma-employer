@@ -23,7 +23,15 @@ export const jobApi = api.injectEndpoints({
             }),
             invalidatesTags: ['Jobs'],
         }),
+        updateJobStatus: builder.mutation({
+            query: ({ id, status }) => ({
+                url: `${API_VERSION}/jobs/${id}/status`,
+                method: 'PUT',
+                body: { jobStatus: status },
+            }),
+            invalidatesTags: ['Jobs'],
+        }),
     }),
 });
 
-export const { useGetJobsQuery, useGetJobDetailQuery, useCreateJobMutation } = jobApi;
+export const { useGetJobsQuery, useGetJobDetailQuery, useCreateJobMutation, useUpdateJobStatusMutation } = jobApi;

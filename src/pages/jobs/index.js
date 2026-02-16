@@ -110,11 +110,11 @@ const JobsList = () => {
                             onChange={setStatus}
                             suffixIcon={<span className="material-icons-round text-gray-400 text-lg">filter_list</span>}
                             options={[
-                                { value: 'ACTIVE', label: 'Active' },
+                                { value: 'PUBLISHED', label: 'Published' },
                                 { value: 'DRAFT', label: 'Draft' },
                                 { value: 'PENDING_REVIEW', label: 'Pending' },
+                                { value: 'SUSPENDED', label: 'Suspended' },
                                 { value: 'CLOSED', label: 'Closed' },
-                                { value: 'EXPIRED', label: 'Expired' },
                             ]}
                         />
                         <Select

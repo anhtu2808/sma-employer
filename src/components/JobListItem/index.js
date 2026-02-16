@@ -1,8 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Dropdown, message } from 'antd';
+import { useUpdateJobStatusMutation } from '@/apis/jobApi';
 import Button from '@/components/Button';
 
 const JobListItem = ({
+    id,
     title,
     status = 'Active',
     postedTime,
@@ -14,7 +17,31 @@ const JobListItem = ({
     onViewDetails,
     className = ''
 }) => {
-    const isActive = status === 'Active';
+    const isActive = status === 'PUBLISHED';
+    const [updateJobStatus] = useUpdateJobStatusMutation();
+
+    const handleStatusChange = async (newStatus) => {
+        try {
+            await updateJobStatus({ id, status: newStatus }).unwrap();
+            message.success(`Job status updated to ${newStatus}`);
+        } catch (error) {
+            console.error('Failed to update job status:', error);
+            message.error('Failed to update job status');
+        }
+    };
+
+    const statusItems = [
+        { label: 'Published', key: 'PUBLISHED' },
+        { label: 'Draft', key: 'DRAFT' },
+        { label: 'Pending Review', key: 'PENDING_REVIEW' },
+        { label: 'Suspended', key: 'SUSPENDED' },
+        { label: 'Closed', key: 'CLOSED' },
+    ];
+
+    const menuProps = {
+        items: statusItems,
+        onClick: ({ key }) => handleStatusChange(key),
+    };
 
     return (
         <div className={`bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center hover:shadow-md transition-shadow ${className}`}>
@@ -90,15 +117,18 @@ const JobListItem = ({
                 >
                     View Details
                 </Button>
-                <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    <span className="material-icons-round">more_horiz</span>
-                </button>
+                <Dropdown menu={menuProps} trigger={['click']} placement="bottomRight">
+                    <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <span className="material-icons-round">more_horiz</span>
+                    </button>
+                </Dropdown>
             </div>
         </div>
     );
 };
 
 JobListItem.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     title: PropTypes.string.isRequired,
     status: PropTypes.string,
     postedTime: PropTypes.string,
