@@ -1,18 +1,53 @@
 import React, { useEffect, useState } from 'react';
+import { Input as AntInput, Select, ConfigProvider } from 'antd';
 import { useGetJobsQuery } from '@/apis/apis';
 import JobListItem from '@/components/JobListItem';
+import Pagination from '@/components/Pagination';
 import Button from '@/components/Button';
 import { useNavigate } from 'react-router-dom';
 
 const JobsList = () => {
     const navigate = useNavigate();
-    const { data: jobsData, isLoading: isJobsLoading } = useGetJobsQuery({});
+    const [searchTerm, setSearchTerm] = useState('');
+    const [status, setStatus] = useState(null);
+    const [workingModel, setWorkingModel] = useState(null);
+    const [jobLevel, setJobLevel] = useState(null);
+    const [location, setLocation] = useState(null);
+
+    // Debounce search term
+    // Debounce search term
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchTerm(searchTerm);
+        }, 500);
+        return () => clearTimeout(handler);
+    }, [searchTerm]);
+
+    const [page, setPage] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+
+    // Reset page when filters change
+    useEffect(() => {
+        setPage(0);
+    }, [searchTerm, status, workingModel, jobLevel, location, debouncedSearchTerm]);
+
+    const { data: jobsData, isLoading: isJobsLoading } = useGetJobsQuery({
+        name: debouncedSearchTerm || undefined,
+        status,
+        workingModel,
+        jobLevel,
+        location,
+        page,
+        size: pageSize
+    });
 
     if (isJobsLoading) {
         return <div className="p-6">Loading...</div>;
     }
 
-    const jobs = jobsData?.data?.content || []; // Assuming paginated response with content
+    const jobs = jobsData?.data?.content || [];
+    const totalPages = jobsData?.data?.totalPages || 0;
 
     const formatDate = (dateString, addDays = 0) => {
         if (!dateString) return '';
@@ -33,7 +68,7 @@ const JobsList = () => {
 
     return (
         <div className="p-6 space-y-6">
-            <header className="flex justify-between items-center mb-8">
+            <header className="flex justify-between items-center">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Jobs</h1>
                     <p className="text-gray-500 dark:text-gray-400">Manage your job postings</p>
@@ -47,13 +82,91 @@ const JobsList = () => {
                 </Button>
             </header>
 
+            {/* Search and Filter Bar */}
+            <ConfigProvider
+                theme={{
+                    token: {
+                        colorPrimary: '#f97316',
+                        colorBorderHover: '#f97316',
+                    },
+                }}
+            >
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+                    <div className="flex-1 w-full">
+                        <AntInput
+                            placeholder="Search by title or company..."
+                            prefix={<span className="material-icons-round text-gray-400 text-xl">search</span>}
+                            className="w-full h-10 rounded-lg"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            allowClear
+                        />
+                    </div>
+                    <div className="flex gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                        <Select
+                            placeholder="All Status"
+                            className="w-32 md:w-36 h-10"
+                            allowClear
+                            onChange={setStatus}
+                            suffixIcon={<span className="material-icons-round text-gray-400 text-lg">filter_list</span>}
+                            options={[
+                                { value: 'PUBLISHED', label: 'Published' },
+                                { value: 'DRAFT', label: 'Draft' },
+                                { value: 'PENDING_REVIEW', label: 'Pending' },
+                                { value: 'SUSPENDED', label: 'Suspended' },
+                                { value: 'CLOSED', label: 'Closed' },
+                            ]}
+                        />
+                        <Select
+                            placeholder="Working Model"
+                            className="w-36 md:w-40 h-10"
+                            allowClear
+                            onChange={setWorkingModel}
+                            options={[
+                                { value: 'ONSITE', label: 'Onsite' },
+                                { value: 'REMOTE', label: 'Remote' },
+                                { value: 'HYBRID', label: 'Hybrid' },
+                            ]}
+                        />
+                        <Select
+                            placeholder="Job Level"
+                            className="w-32 md:w-36 h-10"
+                            allowClear
+                            onChange={setJobLevel}
+                            options={[
+                                { value: 'INTERN', label: 'Intern' },
+                                { value: 'FRESHER', label: 'Fresher' },
+                                { value: 'JUNIOR', label: 'Junior' },
+                                { value: 'MIDDLE', label: 'Middle' },
+                                { value: 'SENIOR', label: 'Senior' },
+                                { value: 'MANAGER', label: 'Manager' },
+                                { value: 'DIRECTOR', label: 'Director' },
+                            ]}
+                        />
+                        <Select
+                            placeholder="All Locations"
+                            className="w-36 md:w-40 h-10"
+                            allowClear
+                            onChange={setLocation}
+                            suffixIcon={<span className="material-icons-round text-gray-400 text-lg">place</span>}
+                            options={[
+                                { value: 'Hanoi', label: 'Hanoi' },
+                                { value: 'Ho Chi Minh City', label: 'Ho Chi Minh' },
+                                { value: 'Da Nang', label: 'Da Nang' },
+                                { value: 'Remote', label: 'Remote' },
+                            ]}
+                        />
+                    </div>
+                </div>
+            </ConfigProvider>
+
             {jobs.length === 0 ? (
                 <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <span className="material-icons-round text-gray-400 text-3xl">work_outline</span>
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900">No jobs posted yet</h3>
-                    <p className="text-gray-500 mt-1 mb-6">Create your first job posting to start hiring.</p>
+                    <h3 className="text-lg font-medium text-gray-900">No jobs found</h3>
+                    <p className="text-gray-500 mt-1 mb-6">Try adjusting your search or filters.</p>
                     <Button
                         mode="primary"
                         onClick={() => navigate('/jobs/create')}
@@ -62,30 +175,37 @@ const JobsList = () => {
                     </Button>
                 </div>
             ) : (
-                <div className="flex flex-col gap-4">
-                    {jobs.map((job) => (
-                        <JobListItem
-                            key={job.id}
-                            title={job.name}
-                            status={job.status || 'Active'}
-                            postedTime={formatDate(job.uploadTime || job.createdAt)}
-                            location={job.company?.country || job.workingModel}
-                            salary={formatSalary(job.salaryStart, job.salaryEnd, job.currency)}
-                            expiry={job.expDate ? `Ends on ${new Date(job.expDate).toLocaleDateString()}` : ''}
-                            tags={[
-                                job.jobLevel,
-                                job.workingModel,
-                                ...(job.skills || []).map(s => s.name)
-                            ].filter(Boolean)}
-                            stats={{
-                                // API doesn't seem to return stats in the snippet, so we'll leave them undefined or handle if available
-                                applicants: job.applicantsCount,
-                                views: job.viewsCount,
-                            }}
-                            onViewDetails={() => navigate(`/jobs/${job.id}`)}
-                        />
-                    ))}
-                </div>
+                <>
+                    <div className="flex flex-col gap-4">
+                        {jobs.map((job) => (
+                            <JobListItem
+                                key={job.id}
+                                title={job.name}
+                                status={job.status || 'Active'}
+                                postedTime={formatDate(job.uploadTime || job.createdAt)}
+                                location={job.company?.country || job?.locations?.map(l => l.city).join(', ') || job.workingModel}
+                                salary={formatSalary(job.salaryStart, job.salaryEnd, job.currency)}
+                                expiry={job.expDate ? `Ends on ${new Date(job.expDate).toLocaleDateString()}` : ''}
+                                tags={[
+                                    job.jobLevel,
+                                    job.workingModel,
+                                    ...(job.skills || []).map(s => s.name)
+                                ].filter(Boolean)}
+                                stats={{
+                                    applicants: job.applicantsCount,
+                                    views: job.viewsCount,
+                                }}
+                                onViewDetails={() => navigate(`/jobs/${job.id}`)}
+                            />
+                        ))}
+                    </div>
+
+                    <Pagination
+                        currentPage={page}
+                        totalPages={totalPages}
+                        onPageChange={setPage}
+                    />
+                </>
             )}
         </div>
     );
