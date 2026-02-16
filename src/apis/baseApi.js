@@ -12,9 +12,18 @@ const stripNullish = (obj) => {
 const rawBaseQuery = fetchBaseQuery({
     baseUrl: process.env.REACT_APP_API_URL,
     prepareHeaders: (headers) => {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("accessToken");
         if (token) {
+            console.log("Attaching token:", token);
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                console.log("Token payload:", payload);
+            } catch (e) {
+                console.error("Failed to decode token", e);
+            }
             headers.set('Authorization', `Bearer ${token}`);
+        } else {
+            console.warn("No access token found in localStorage");
         }
         return headers;
     },
@@ -23,7 +32,7 @@ const rawBaseQuery = fetchBaseQuery({
         try {
             return JSON.parse(text);
         } catch (e) {
-            return text; 
+            return text;
         }
     },
 });
@@ -31,10 +40,12 @@ const rawBaseQuery = fetchBaseQuery({
 const customBaseQuery = (args, api, extra) => {
     if (typeof args === "object") {
         const { params, body, ...rest } = args;
+        const strippedParams = stripNullish(params);
+        console.log("Flux API Params:", strippedParams);
         return rawBaseQuery(
             {
                 ...rest,
-                params: stripNullish(params),
+                params: strippedParams,
                 body
             },
             api,
