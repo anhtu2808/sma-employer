@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@headlessui/react": "^2.2.9",
+    "@phosphor-icons/react": "^2.1.10",
     "@hello-pangea/dnd": "^18.0.1",
     "@react-oauth/google": "^0.13.4",
     "@reduxjs/toolkit": "^2.11.2",
@@ -15,8 +16,7 @@
     "axios": "^1.13.4",
     "clsx": "^2.1.1",
     "lodash": "^4.17.23",
-    "lucide-react": "^0.563.0",
-    "moment": "^2.30.1",
+    "lucide-react": "^0.564.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-redux": "^9.2.0",

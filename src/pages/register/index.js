@@ -6,6 +6,8 @@ import Card from '@/components/Card';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import Logo from '@/components/Logo';
+import { Listbox, Transition } from '@headlessui/react';
+import { ChevronDown, Check } from 'lucide-react';
 
 const RecruiterRegister = () => {
     const navigate = useNavigate();
@@ -23,17 +25,47 @@ const RecruiterRegister = () => {
         general: ""
     });
 
+    const industryOptions = [
+        { id: 'INFORMATION_TECHNOLOGY', name: 'Information Technology' },
+        { id: 'FINTECH', name: 'Fintech' },
+        { id: 'ECOMMERCE', name: 'E-Commerce' },
+        { id: 'HEALTHCARE', name: 'Healthcare' },
+        { id: 'EDUCATION', name: 'Education' },
+        { id: 'LOGISTICS', name: 'Logistics' },
+        { id: 'MANUFACTURING', name: 'Manufacturing' },
+        { id: 'REAL_ESTATE', name: 'Real Estate' },
+        { id: 'GAMING', name: 'Gaming' },
+        { id: 'TELECOMMUNICATION', name: 'Telecommunication' },
+        { id: 'ARTIFICIAL_INTELLIGENCE', name: 'Artificial Intelligence' },
+        { id: 'CYBER_SECURITY', name: 'Cyber Security' },
+        { id: 'BLOCKCHAIN', name: 'Blockchain' },
+        { id: 'IOT', name: 'Internet of Things' }
+    ];
+
+    const companyTypeOptions = [
+        { id: 'PRODUCT', name: 'Product' },
+        { id: 'OUTSOURCING', name: 'Outsourcing' },
+        { id: 'CONSULTING', name: 'Consulting' },
+        { id: 'SERVICE', name: 'Service' },
+        { id: 'SOLUTION', name: 'Solution' },
+        { id: 'SYSTEM_INTEGRATOR', name: 'System Integrator' },
+        { id: 'AGENCY', name: 'Agency' }
+    ];
+
     const [formData, setFormData] = useState({
         recruiterEmail: "",
         password: "",
         companyName: "",
         description: "",
         companyIndustry: "",
+        companyType: "",
         minSize: "",
         maxSize: "",
         companyEmail: "",
         phone: "",
         address: "",
+        district: "",
+        city: "",
         country: "Vietnam",
         taxIdentificationNumber: "",
         companyLink: ""
@@ -183,7 +215,84 @@ const RecruiterRegister = () => {
                                 <h3 className="text-lg font-bold text-neutral-900">Company Profile</h3>
                             </div>
                             <Input label={<>Company Name <span className="text-red-500">*</span></>} name="companyName" required onChange={handleChange} />
-                            <Input label={<>Industry <span className="text-red-500">*</span></>} name="companyIndustry" required onChange={handleChange} />
+                            {/* Thay thế đoạn grid chứa Industry cũ bằng đoạn này */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {/* Industry Dropdown */}
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-bold text-neutral-700">
+                                        Industry <span className="text-red-500">*</span>
+                                    </label>
+                                    <Listbox
+                                        value={formData.companyIndustry}
+                                        onChange={(val) => setFormData({ ...formData, companyIndustry: val })}
+                                    >
+                                        {({ open }) => (
+                                            <div className="relative mt-1">
+                                                <Listbox.Button className={`relative w-full cursor-default rounded-2xl bg-white border border-neutral-200 py-4 pl-4 pr-10 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all ${open ? 'ring-2 ring-primary/20' : ''}`}>
+                                                    <span className="block truncate text-sm font-medium text-neutral-700 uppercase">
+                                                        {industryOptions.find(opt => opt.id === formData.companyIndustry)?.name || 'Select Industry'}
+                                                    </span>
+                                                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                                                        <ChevronDown className={`h-4 w-4 text-neutral-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+                                                    </span>
+                                                </Listbox.Button>
+                                                <Transition as={React.Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
+                                                    <Listbox.Options className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-2xl bg-white py-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none border border-neutral-100 animate-in fade-in zoom-in duration-200">
+                                                        {industryOptions.map((option) => (
+                                                            <Listbox.Option key={option.id} value={option.id} className={({ active }) => `relative cursor-pointer select-none py-3 pl-10 pr-4 transition-colors ${active ? 'bg-primary/5 text-primary' : 'text-neutral-700'}`}>
+                                                                {({ selected }) => (
+                                                                    <>
+                                                                        <span className={`block truncate text-sm ${selected ? 'font-black' : 'font-medium'}`}>{option.name}</span>
+                                                                        {selected ? <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary"><Check size={16} strokeWidth={3} /></span> : null}
+                                                                    </>
+                                                                )}
+                                                            </Listbox.Option>
+                                                        ))}
+                                                    </Listbox.Options>
+                                                </Transition>
+                                            </div>
+                                        )}
+                                    </Listbox>
+                                </div>
+
+                                {/* Company Type Dropdown - NEW */}
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-bold text-neutral-700">
+                                        Company Type <span className="text-red-500">*</span>
+                                    </label>
+                                    <Listbox
+                                        value={formData.companyType}
+                                        onChange={(val) => setFormData({ ...formData, companyType: val })}
+                                    >
+                                        {({ open }) => (
+                                            <div className="relative mt-1">
+                                                <Listbox.Button className={`relative w-full cursor-default rounded-2xl bg-white border border-neutral-200 py-4 pl-4 pr-10 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all ${open ? 'ring-2 ring-primary/20' : ''}`}>
+                                                    <span className="block truncate text-sm font-medium text-neutral-700 uppercase">
+                                                        {companyTypeOptions.find(opt => opt.id === formData.companyType)?.name || 'Select Type'}
+                                                    </span>
+                                                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                                                        <ChevronDown className={`h-4 w-4 text-neutral-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+                                                    </span>
+                                                </Listbox.Button>
+                                                <Transition as={React.Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
+                                                    <Listbox.Options className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-2xl bg-white py-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none border border-neutral-100 animate-in fade-in zoom-in duration-200">
+                                                        {companyTypeOptions.map((option) => (
+                                                            <Listbox.Option key={option.id} value={option.id} className={({ active }) => `relative cursor-pointer select-none py-3 pl-10 pr-4 transition-colors ${active ? 'bg-primary/5 text-primary' : 'text-neutral-700'}`}>
+                                                                {({ selected }) => (
+                                                                    <>
+                                                                        <span className={`block truncate text-sm ${selected ? 'font-black' : 'font-medium'}`}>{option.name}</span>
+                                                                        {selected ? <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary"><Check size={16} strokeWidth={3} /></span> : null}
+                                                                    </>
+                                                                )}
+                                                            </Listbox.Option>
+                                                        ))}
+                                                    </Listbox.Options>
+                                                </Transition>
+                                            </div>
+                                        )}
+                                    </Listbox>
+                                </div>
+                            </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <Input
                                     label={<>Company Min Size <span className="text-red-500">*</span></>}
@@ -228,6 +337,10 @@ const RecruiterRegister = () => {
 
                             <div className="col-span-full">
                                 <Input label={<>Office Address <span className="text-red-500">*</span></>} name="address" required onChange={handleChange} />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <Input label="District" name="district" placeholder="e.g. District 1" onChange={handleChange} />
+                                <Input label="City" name="city" placeholder="e.g. Ho Chi Minh City" onChange={handleChange} />
                             </div>
                             <Input label="Country" name="country" placeholder="Vietnam" onChange={handleChange} />
                             <Input label="Website" name="companyLink" placeholder="https://..." onChange={handleChange} />
