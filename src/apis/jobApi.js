@@ -23,16 +23,7 @@ export const jobApi = api.injectEndpoints({
             }),
             invalidatesTags: ['Jobs'],
         }),
-
-        getMyJobs: builder.query({
-            query: (params) => ({
-                url: `${API_VERSION}/jobs/my-jobs`,
-                method: 'GET',
-                params: params,
-            }),
-            providesTags: ['Jobs'],
-        }),
     }),
 });
 
-export const { useGetJobsQuery, useGetJobDetailQuery, useCreateJobMutation, useGetMyJobsQuery } = jobApi;
+export const { useGetJobsQuery, useGetJobDetailQuery, useCreateJobMutation } = jobApi;

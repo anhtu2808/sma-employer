@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { useGetApplicationsQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
-import { useGetMyJobsQuery } from '@/apis/jobApi';
+import { useGetJobsQuery } from '@/apis/jobApi';
 import { Listbox, Transition } from '@headlessui/react';
 import { ChevronDown, Check, Briefcase, X, Filter, Plus, LayoutGrid, List as ListIcon } from 'lucide-react';
 import Button from '@/components/Button';
@@ -21,7 +21,7 @@ const STATUS_COLUMNS = [
 
 
 const ApplicationManagement = () => {
-    const { data: jobsResponse, isLoading: isJobsLoading } = useGetMyJobsQuery({ page: 0, size: 100 });
+    const { data: jobsResponse, isLoading: isJobsLoading } = useGetJobsQuery({ page: 0, size: 100 });
     const [selectedJob, setSelectedJob] = useState(null);
     const [updateStatus] = useUpdateApplicationStatusMutation();
     const [searchTerm, setSearchTerm] = useState('');
