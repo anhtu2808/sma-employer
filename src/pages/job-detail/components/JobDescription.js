@@ -13,12 +13,12 @@ const JobDescription = ({ job }) => {
                 {/* Expertise and Domains as Tags */}
                 <div className="flex flex-wrap gap-2 mt-4">
                     {job.expertise && (
-                        <Tag color="blue" className="px-3 py-1 text-sm rounded-full m-0">
+                        <Tag color="orange" className="px-3 py-1 text-sm rounded-full m-0">
                             {job.expertise.name}
                         </Tag>
                     )}
                     {job.domains && job.domains.map((domain) => (
-                        <Tag key={domain.id} color="cyan" className="px-3 py-1 text-sm rounded-full m-0">
+                        <Tag key={domain.id} color="orange" className="px-3 py-1 text-sm rounded-full m-0">
                             {domain.name}
                         </Tag>
                     ))}
