@@ -5,7 +5,7 @@ const WorkCompensation = () => {
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <span className="material-icons-round text-green-500">work_outline</span>
+                <span className="material-icons-round text-orange-500">work_outline</span>
                 Work & Compensation
             </h3>
 
