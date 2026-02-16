@@ -63,7 +63,7 @@ const JobCreate = () => {
     };
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
+        <div className="p-6 max-w-[95%] mx-auto">
             <Button
                 mode="text"
                 className="self-start text-gray-500 hover:text-primary pl-0 -ml-20"
