@@ -1,7 +1,22 @@
-import React from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Select, Input, Form } from 'antd';
+import { useGetSkillsQuery } from '@/apis/skillApi';
+import { debounce } from 'lodash';
 
 const Classification = () => {
+    const [skillSearch, setSkillSearch] = useState('');
+    const { data: skills = [], isLoading: skillsLoading, isFetching: skillsFetching } = useGetSkillsQuery({ name: skillSearch || undefined });
+
+    const skillOptions = skills.map((skill) => ({
+        value: skill.id,
+        label: skill.name,
+    }));
+
+    const handleSkillSearch = useMemo(
+        () => debounce((value) => setSkillSearch(value), 300),
+        []
+    );
+
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -19,7 +34,7 @@ const Classification = () => {
             </div>
 
             <Form.Item name="skillIds" label="Skills (Tags)" className="mb-0">
-                <Select mode="multiple" placeholder="Select skills..." className="w-full" options={[{ value: 1, label: 'Figma' }, { value: 2, label: 'React' }, { value: 3, label: 'Java' }]} />
+                <Select mode="multiple" placeholder="Select skills..." className="w-full" showSearch filterOption={false} onSearch={handleSkillSearch} loading={skillsLoading || skillsFetching} options={skillOptions} />
             </Form.Item>
 
             <Form.Item name="benefitIds" label="Benefits" className="mb-0">
