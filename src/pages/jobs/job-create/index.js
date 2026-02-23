@@ -76,11 +76,11 @@ const JobCreate = () => {
         <div className="p-6 max-w-[95%] mx-auto pb-20">
             <Button
                 mode="text"
-                className="mb-4 text-gray-500 hover:text-primary pl-0"
+                className="self-start text-gray-500 hover:text-primary pl-0 -ml-20"
                 onClick={() => navigate('/jobs')}
                 iconLeft={<span className="material-icons-round text-lg">arrow_back</span>}
             >
-                Back
+                Back to Jobs
             </Button>
 
             <Form
