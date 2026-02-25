@@ -38,10 +38,6 @@ const CompanyProfile = () => {
 
     return (
         <div className="p-6 space-y-6">
-            <header className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Company Profile</h1>
-                <p className="text-gray-500 dark:text-gray-400">Manage your company information</p>
-            </header>
 
             <Card className="p-6">
                 <Form form={form} onFinish={onFinish} className="space-y-6">

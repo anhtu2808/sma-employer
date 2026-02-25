@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { useGetJobDetailQuery } from '@/apis/apis';
 import Button from '@/components/Button';
 import { Skeleton, Tabs, ConfigProvider } from 'antd';
@@ -9,8 +9,16 @@ import JobDescription from './components/JobDescription';
 const JobDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { setPageTitle } = useOutletContext();
     const { data: jobData, isLoading, error } = useGetJobDetailQuery(id);
     const job = jobData?.data;
+
+    useEffect(() => {
+        if (job?.title) {
+            setPageTitle(job.title);
+        }
+        return () => setPageTitle('');
+    }, [job?.title, setPageTitle]);
 
     if (isLoading) {
         return <div className="p-8"><Skeleton active /></div>;
