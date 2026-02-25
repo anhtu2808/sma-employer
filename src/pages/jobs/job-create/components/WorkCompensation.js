@@ -18,8 +18,6 @@ const WorkCompensation = () => {
                         { value: 'MIDDLE', label: 'Middle' },
                         { value: 'SENIOR', label: 'Senior' },
                         { value: 'LEAD', label: 'Lead' },
-                        { value: 'MANAGER', label: 'Manager' },
-                        { value: 'DIRECTOR', label: 'Director' }
                     ]} />
                 </Form.Item>
 

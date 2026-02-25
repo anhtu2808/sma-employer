@@ -33,14 +33,6 @@ const PublishCard = ({ onCancel, isLoading, isDraftLoading, setAction }) => {
         >
           Save as Draft
         </Button>
-        <Button
-          mode="ghost"
-          size="lg"
-          onClick={onCancel}
-          className="w-full justify-center"
-        >
-          Cancel
-        </Button>
       </div>
     </div>
   );

@@ -138,7 +138,8 @@ const JobCreate = () => {
           </div>
 
           {/* Sidebar - Right Column */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1">
+            <div className="sticky top-6 space-y-6">
             <PublishCard
               onCancel={() => navigate("/jobs")}
               isLoading={
@@ -149,6 +150,7 @@ const JobCreate = () => {
             />
             <ScoringWeights />
             <ProTips />
+          </div>
           </div>
         </div>
       </Form>
