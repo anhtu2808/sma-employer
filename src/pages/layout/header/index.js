@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const Header = ({ title = 'Dashboard', onMobileMenuClick }) => {
+const Header = ({ title = 'Dashboard', subtitle, onMobileMenuClick }) => {
   const [searchValue, setSearchValue] = useState('');
 
   return (
@@ -14,7 +14,10 @@ const Header = ({ title = 'Dashboard', onMobileMenuClick }) => {
         >
           <span className="material-icons-outlined">menu</span>
         </button>
-        <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{title}</h1>
+        <div>
+          <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight">{title}</h1>
+          {subtitle && <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>}
+        </div>
       </div>
 
       <div className="hidden md:flex flex-1 max-w-xl px-4 lg:px-8">

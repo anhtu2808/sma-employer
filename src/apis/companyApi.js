@@ -4,7 +4,7 @@ import { API_VERSION } from "./baseApi";
 export const companyApi = api.injectEndpoints({
     endpoints: (builder) => ({
         getCompanyProfile: builder.query({
-            query: () => `${API_VERSION}/companies`,
+            query: () => `${API_VERSION}/companies/my-company`,
             providesTags: ['Companies'],
         }),
         updateCompanyProfile: builder.mutation({

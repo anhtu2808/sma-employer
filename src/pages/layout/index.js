@@ -1,12 +1,43 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Drawer } from 'antd';
 import Sidebar from './sidebar';
 import Header from './header';
 
+const routeTitleMap = {
+  '/dashboard': 'Dashboard',
+  '/recruiters': 'Recruiters',
+  '/jobs': 'Jobs',
+  '/jobs/create': 'Create Job',
+  '/company': 'Company',
+  '/candidates': 'Candidates',
+  '/reports': 'Reports',
+  '/settings': 'Settings',
+  '/help': 'Help Center',
+};
+
+const routeSubtitleMap = {
+  '/jobs': 'Manage your job postings',
+  '/candidates': 'Manage your candidates',
+  '/company': 'Manage your company profile',
+};
+
 const Layout = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [pageTitle, setPageTitle] = useState('');
+  const [pageSubtitle, setPageSubtitle] = useState('');
+  const location = useLocation();
+
+  const getTitle = () => {
+    if (pageTitle) return pageTitle;
+    return routeTitleMap[location.pathname] || 'Dashboard';
+  };
+
+  const getSubtitle = () => {
+    if (pageSubtitle) return pageSubtitle;
+    return routeSubtitleMap[location.pathname] || '';
+  };
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -50,10 +81,10 @@ const Layout = () => {
       </Drawer>
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-background-light dark:bg-background-dark transition-colors duration-200">
-        <Header onMobileMenuClick={toggleMobileSidebar} />
+        <Header title={getTitle()} subtitle={getSubtitle()} onMobileMenuClick={toggleMobileSidebar} />
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 scrollbar-thin">
-          <Outlet />
+          <Outlet context={{ setPageTitle, setPageSubtitle }} />
         </div>
       </main>
     </div>
