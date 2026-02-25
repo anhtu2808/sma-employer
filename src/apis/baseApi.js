@@ -10,7 +10,8 @@ const stripNullish = (obj) => {
 };
 
 const rawBaseQuery = fetchBaseQuery({
-    baseUrl: process.env.REACT_APP_API_URL,
+    // baseUrl: process.env.REACT_APP_API_URL,
+    baseUrl: "https://api.smartrecruit.tech",
     prepareHeaders: (headers) => {
         const token = localStorage.getItem("accessToken");
         if (token) {

@@ -32,7 +32,7 @@ const JobDescription = ({ job }) => {
                         job.requirement.split('\n').map((req, idx) => (
                             req.trim() && (
                                 <li key={idx} className="flex gap-3 text-gray-600 dark:text-gray-300 items-start">
-                                    <span className="material-icons-round text-orange-500 text-sm mt-1 shrink-0">check_circle_outline</span>
+                                    <span className="material-icons-round text-orange-500 text-sm mt-1 shrink-0">check_circle</span>
                                     <span>{req}</span>
                                 </li>
                             )
@@ -50,7 +50,7 @@ const JobDescription = ({ job }) => {
                         {job.responsibilities.split('\n').map((resp, idx) => (
                             resp.trim() && (
                                 <li key={idx} className="flex gap-3 text-gray-600 dark:text-gray-300 items-start">
-                                    <span className="material-icons-round text-orange-500 text-sm mt-1 shrink-0">check_circle_outline</span>
+                                    <span className="material-icons-round text-orange-500 text-sm mt-1 shrink-0">check_circle</span>
                                     <span>{resp}</span>
                                 </li>
                             )
@@ -63,17 +63,14 @@ const JobDescription = ({ job }) => {
             {job.benefits && job.benefits.length > 0 && (
                 <section>
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Benefits & Perks</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <ul className="space-y-3">
                         {job.benefits.map((benefit) => (
-                            <div key={benefit.id} className="flex gap-3 items-start p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                                <span className="material-icons-round text-orange-500 mt-0.5">verified</span>
-                                <div>
-                                    <strong className="block text-gray-900 dark:text-white font-medium">{benefit.name}</strong>
-                                    {benefit.description && <span className="text-sm text-gray-500 dark:text-gray-400">{benefit.description}</span>}
-                                </div>
-                            </div>
+                            <li key={benefit.id} className="flex gap-3 text-gray-600 dark:text-gray-300 items-start">
+                                <span className="material-icons-round text-orange-500 text-sm mt-1 shrink-0">check_circle</span>
+                                <span>{benefit.name}{benefit.description ? ` - ${benefit.description}` : ''}</span>
+                            </li>
                         ))}
-                    </div>
+                    </ul>
                 </section>
             )}
 
