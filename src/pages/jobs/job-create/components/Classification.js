@@ -2,14 +2,33 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { Select, Input, Form } from 'antd';
 import { useGetSkillsQuery } from '@/apis/skillApi';
 import { debounce } from 'lodash';
+import { useGetExpertiseQuery, useGetDomainQuery, useGetBenefitQuery } from '@/apis/masterDataApi';
 
 const Classification = () => {
     const [skillSearch, setSkillSearch] = useState('');
     const { data: skills = [], isLoading: skillsLoading, isFetching: skillsFetching } = useGetSkillsQuery({ name: skillSearch || undefined });
+    const { data: expertise = [], isLoading: expertiseLoading } = useGetExpertiseQuery();
+    const { data: domain = [], isLoading: domainLoading } = useGetDomainQuery();
+    const { data: benefit = [], isLoading: benefitLoading } = useGetBenefitQuery();
 
     const skillOptions = skills.map((skill) => ({
         value: skill.id,
         label: skill.name,
+    }));
+    
+    const expertiseOptions = expertise.map((expertise) => ({
+        value: expertise.id,
+        label: expertise.name,
+    }));
+
+    const domainOptions = domain.map((domain) => ({
+        value: domain.id,
+        label: domain.name,
+    }));
+
+    const benefitOptions = benefit.map((benefit) => ({
+        value: benefit.id,
+        label: benefit.name,
     }));
 
     const handleSkillSearch = useMemo(
@@ -26,10 +45,10 @@ const Classification = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Form.Item name="expertiseId" label="Primary Expertise" className="mb-0">
-                    <Select placeholder="Design & Creative" className="w-full h-10" options={[{ value: 1, label: 'Design & Creative' }, { value: 2, label: 'Development' }]} />
+                    <Select placeholder="Design & Creative" className="w-full h-10" options={expertiseOptions} />
                 </Form.Item>
                 <Form.Item name="domainIds" label="Industry Domain" className="mb-0">
-                    <Select mode="multiple" placeholder="SaaS" className="w-full h-10" options={[{ value: 1, label: 'SaaS' }, { value: 2, label: 'Fintech' }]} />
+                    <Select mode="multiple" placeholder="SaaS" className="w-full h-10" options={domainOptions} />
                 </Form.Item>
             </div>
 
@@ -38,7 +57,7 @@ const Classification = () => {
             </Form.Item>
 
             <Form.Item name="benefitIds" label="Benefits" className="mb-0">
-                <Select mode="multiple" placeholder="Select benefits..." className="w-full" options={[{ value: 1, label: 'Remote Work' }, { value: 2, label: 'Health Insurance' }]} />
+                <Select mode="multiple" placeholder="Select benefits..." className="w-full" options={benefitOptions} />
             </Form.Item>
         </div>
     );

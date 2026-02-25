@@ -40,6 +40,7 @@ const rawBaseQuery = fetchBaseQuery({
 const customBaseQuery = (args, api, extra) => {
     if (typeof args === "object") {
         const { params, body, ...rest } = args;
+        console.log("Flux API Body:", body);
         const strippedParams = stripNullish(params);
         console.log("Flux API Params:", strippedParams);
         return rawBaseQuery(

@@ -4,18 +4,25 @@ import { API_VERSION } from "./baseApi";
 export const companyApi = api.injectEndpoints({
     endpoints: (builder) => ({
         getCompanyProfile: builder.query({
-            query: () => `${API_VERSION}/company`,
+            query: () => `${API_VERSION}/companies`,
             providesTags: ['Companies'],
         }),
         updateCompanyProfile: builder.mutation({
             query: (id, data) => ({
-                url: `${API_VERSION}/company/${id}`,
+                url: `${API_VERSION}/companies/${id}`,
                 method: 'PUT',
                 body: data,
             }),
             invalidatesTags: ['Companies'],
         }),
+        getCompanyLocation: builder.query({
+            query: () => ({
+                url: `${API_VERSION}/companies/locations`,
+                method: 'GET',
+            }),
+            transformResponse: (response) => response?.data ?? [],
+        }),
     }),
 });
 
-export const { useGetCompanyProfileQuery, useUpdateCompanyProfileMutation } = companyApi;
+export const { useGetCompanyProfileQuery, useUpdateCompanyProfileMutation, useGetCompanyLocationQuery } = companyApi;

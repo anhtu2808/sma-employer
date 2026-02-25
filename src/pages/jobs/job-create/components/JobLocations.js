@@ -1,7 +1,15 @@
 import React from 'react';
 import { Input, Tag, Form, Select } from 'antd';
+import { useGetCompanyLocationQuery } from '@/apis/companyApi';
 
 const JobLocations = () => {
+    const { data: locations = [], isLoading } = useGetCompanyLocationQuery();
+
+    const locationOptions = locations.map((location) => ({
+        value: location.id,
+        label: `${location.name} - ${location.address}, ${location.district}, ${location.city}, ${location.country}`,
+    }));
+
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-4">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -14,16 +22,9 @@ const JobLocations = () => {
                     mode="multiple"
                     placeholder="Select locations..."
                     className="w-full"
-                    options={[
-                        { value: 1, label: 'Hanoi (Headquarters)' },
-                        { value: 2, label: 'Ho Chi Minh City' },
-                        { value: 3, label: 'Da Nang' }
-                    ]}
+                    options={locationOptions}
                 />
             </Form.Item>
-            <div className="h-32 bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-400 text-sm">
-                Map Preview
-            </div>
         </div>
     );
 };
