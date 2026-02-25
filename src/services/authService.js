@@ -45,7 +45,6 @@ const authService = {
       const response = await AuthAPI.post("/auth/google-login", {
         idToken,
       });
-      console.log(response);
       if (response.data?.data?.accessToken) {
         localStorage.setItem("accessToken", response.data.data.accessToken);
         localStorage.setItem("refreshToken", response.data.data.refreshToken);
