@@ -62,13 +62,6 @@ const ApplicationManagement = () => {
         return () => clearTimeout(delayDebounceFn);
     }, [searchTerm]);
 
-    const STATUS_AVATAR_STYLES = {
-        APPLIED: "bg-orange-100 text-orange-600",
-        VIEWED: "bg-indigo-100 text-indigo-600",
-        SHORTLISTED: "bg-emerald-100 text-emerald-600",
-        NOT_SUITABLE: "bg-red-100 text-red-600",
-        AUTO_REJECTED: "bg-gray-100 text-gray-600"
-    };
 
 
     const getCandidatesByStatus = (status) => {
@@ -150,7 +143,6 @@ const ApplicationManagement = () => {
                         statusColumns={STATUS_COLUMNS}
                         getCandidatesByStatus={getCandidatesByStatus}
                         onDragEnd={onDragEnd}
-                        statusAvatarStyles={STATUS_AVATAR_STYLES}
                     />
                 ) : (
                     <ApplicationList
