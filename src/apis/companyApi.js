@@ -8,7 +8,7 @@ export const companyApi = api.injectEndpoints({
             providesTags: ['Companies'],
         }),
         updateCompanyProfile: builder.mutation({
-            query: (id, data) => ({
+            query: ({ id, data }) => ({
                 url: `${API_VERSION}/companies/${id}`,
                 method: 'PUT',
                 body: data,
