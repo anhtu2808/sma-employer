@@ -23,7 +23,7 @@ export const routes = createBrowserRouter(
                 <Route path="jobs/create" element={<JobCreate />} />
                 <Route path="jobs/:id" element={<JobDetail />} />
                 <Route path="company" element={<CompanyProfile />} />
-                <Route path="candidates" element={<ApplicationManagement />} />
+                <Route path="applications" element={<ApplicationManagement />} />
                 <Route path="reports" element={<Dashboard />} />
                 <Route path="settings" element={<Dashboard />} />
                 <Route path="help" element={<Dashboard />} />

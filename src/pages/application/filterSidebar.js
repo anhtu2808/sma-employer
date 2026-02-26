@@ -44,13 +44,13 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
     return (
         <div className="flex flex-col h-full bg-white dark:bg-surface-dark font-body">
             <div className="flex-1 overflow-y-auto space-y-8 pb-6 custom-scrollbar">
-                <p className="text-neutral-400 text-[11px] font-bold uppercase tracking-widest leading-relaxed">
+                <p className="text-sm text-gray-500 leading-relaxed">
                     Refine your candidate list using advanced parameters.
                 </p>
 
                 {/* Status Filter */}
                 <div className="space-y-3">
-                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white uppercase tracking-tighter font-black text-[11px]">
+                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white font-semibold text-sm">
                         <Info size={14} className="text-primary" /> Application Status
                     </label>
                     <Select
@@ -71,7 +71,7 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
 
                 {/* Location Filter */}
                 <div className="space-y-3">
-                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white uppercase tracking-tighter font-black text-[11px]">
+                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white font-semibold text-sm">
                         <MapPin size={14} className="text-primary" /> Location
                     </label>
                     <Input
@@ -84,7 +84,7 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
 
                 {/* AI Match Level Filter */}
                 <div className="space-y-3">
-                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white uppercase tracking-tighter font-black text-[11px]">
+                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white font-semibold text-sm">
                         <Brain size={14} className="text-primary" /> AI Match Level
                     </label>
                     <Select
@@ -105,7 +105,7 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
 
                 {/* Minimum Match Score Slider */}
                 <div className="space-y-3">
-                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white uppercase tracking-tighter font-black text-[11px]">
+                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white font-semibold text-sm">
                         <Zap size={14} className="text-orange-500" /> Min AI Score: {filters.minScore}%
                     </label>
                     <Slider
@@ -118,7 +118,7 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
 
                 {/* Required Skills (List<String>) */}
                 <div className="space-y-3">
-                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white uppercase tracking-tighter font-black text-[11px]">
+                    <label className="flex items-center gap-2 text-neutral-900 dark:text-white font-semibold text-sm">
                         <Briefcase size={14} className="text-primary" /> Required Skills
                     </label>
                     <div className="flex gap-2">
@@ -127,7 +127,7 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
                             value={skillInput}
                             onChange={(e) => setSkillInput(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && handleAddSkill()}
-                            className="flex-1 px-4 py-2 bg-neutral-50 dark:bg-gray-800 border border-neutral-100 dark:border-neutral-700 rounded-xl text-xs font-bold focus:outline-none"
+                            className="flex-1 px-4 py-2 bg-neutral-50 dark:bg-gray-800 border border-neutral-100 dark:border-neutral-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all"
                         />
                         <Button mode="primary" size="sm" onClick={handleAddSkill}>Add</Button>
                     </div>
@@ -137,7 +137,7 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
                                 key={skill}
                                 closable
                                 onClose={() => handleRemoveSkill(skill)}
-                                className="bg-orange-50 border-orange-100 text-orange-600 font-bold rounded-lg px-2 py-1 flex items-center gap-1"
+                                className="bg-orange-50 border-orange-100 text-orange-600 font-medium rounded-lg px-2 py-1 flex items-center gap-1"
                                 closeIcon={<X size={10} />}
                             >
                                 {skill.toUpperCase()}

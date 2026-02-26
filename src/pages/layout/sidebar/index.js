@@ -9,7 +9,7 @@ const menuItems = [
   { icon: 'people', label: 'Recruiters', path: '/recruiters' },
   { icon: 'work_outline', label: 'Jobs', path: '/jobs' },
   { icon: 'business', label: 'Company', path: '/company' },
-  { icon: 'badge', label: 'Candidates', path: '/candidates' },
+  { icon: 'badge', label: 'Applications', path: '/applications' },
   { icon: 'insights', label: 'Reports', path: '/reports' },
 ];
 
@@ -67,14 +67,12 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
                 }
                 title={collapsed && !isMobile ? item.label : ''}
               >
-                {({ isActive }) => (
                   <>
-                    <span className={`material-icons-outlined ${!isActive ? 'group-hover:text-primary transition-colors' : ''}`}>
+                    <span className="material-icons-outlined group-hover:text-primary transition-colors">
                       {item.icon}
                     </span>
                     {(!collapsed || isMobile) && item.label}
                   </>
-                )}
               </NavLink>
             ))}
           </nav>
@@ -101,14 +99,12 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
                 }
                 title={collapsed && !isMobile ? item.label : ''}
               >
-                {({ isActive }) => (
                   <>
-                    <span className={`material-icons-outlined ${!isActive ? 'group-hover:text-primary transition-colors' : ''}`}>
+                    <span className="material-icons-outlined group-hover:text-primary transition-colors">
                       {item.icon}
                     </span>
                     {(!collapsed || isMobile) && item.label}
                   </>
-                )}
               </NavLink>
             ))}
           </nav>
