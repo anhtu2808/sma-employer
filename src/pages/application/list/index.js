@@ -3,32 +3,29 @@ import { ExternalLink, Mail, Calendar, MapPin, MoreVertical, Brain } from 'lucid
 import moment from 'moment';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Menu, Dropdown } from 'antd';
-
+import { getApplicationStatusConfig } from '@/constrant/application';
 const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPage, onPageChange, onStatusUpdate }) => {
 
     const getStatusMenu = (app) => {
-        const statuses = [
-            { id: 'APPLIED', label: 'Applied', color: 'text-orange-500' },
-            { id: 'VIEWED', label: 'Viewed', color: 'text-indigo-500' },
-            { id: 'SHORTLISTED', label: 'Shortlisted', color: 'text-emerald-500' },
-            { id: 'NOT_SUITABLE', label: 'Not Suitable', color: 'text-red-500' },
-            { id: 'AUTO_REJECTED', label: 'Auto Rejected', color: 'text-gray-500' }
-        ];
+        const statuses = ['APPLIED', 'VIEWED', 'SHORTLISTED', 'NOT_SUITABLE', 'AUTO_REJECTED'];
 
         return {
-            items: statuses.map(s => ({
-                key: s.id,
-                label: (
-                    <span className={`text-[11px] font-bold uppercase tracking-tight ${s.color}`}>
-                        {s.label}
-                    </span>
-                ),
-                disabled:
-                    app.status === s.id ||
-                    app.status === 'NOT_SUITABLE' ||
-                    app.status === 'AUTO_REJECTED',
-                onClick: () => onStatusUpdate(app.applicationId, s.id)
-            }))
+            items: statuses.map(statusId => {
+                const s = getApplicationStatusConfig(statusId);
+                return {
+                    key: statusId,
+                    label: (
+                        <span className={`text-xs font-semibold tracking-wide ${s.textColor}`}>
+                            {s.label}
+                        </span>
+                    ),
+                    disabled:
+                        app.status === statusId ||
+                        app.status === 'NOT_SUITABLE' ||
+                        app.status === 'AUTO_REJECTED',
+                    onClick: () => onStatusUpdate(app.applicationId, statusId)
+                };
+            })
         };
     };
 
@@ -48,17 +45,17 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
 
     return (
         <div className="h-full flex flex-col bg-white dark:bg-surface-dark 
-            rounded-b-[24px] border border-t-0 border-neutral-100 dark:border-neutral-800 overflow-hidden">
+            rounded-2xl border border-neutral-100 dark:border-neutral-800 overflow-hidden">
 
             <div className="flex-1 overflow-y-auto custom-scrollbar">
                 <table className="w-full text-left border-collapse table-fixed">
                     <thead className="sticky top-0 z-20 bg-gray-50 dark:bg-neutral-900 shadow-sm">
                         <tr>
-                            <th className="px-6 py-4 w-[35%] text-[10px] font-black text-neutral-400 uppercase tracking-widest">Candidate</th>
-                            <th className="px-6 py-4 w-[15%] text-[10px] font-black text-neutral-400 uppercase tracking-widest">Status</th>
-                            <th className="px-6 py-4 w-[15%] text-[10px] font-black text-neutral-400 uppercase tracking-widest text-center">AI Match</th>
-                            <th className="px-6 py-4 w-[25%] text-[10px] font-black text-neutral-400 uppercase tracking-widest">Applied Date</th>
-                            <th className="px-6 py-4 w-[10%] text-center text-[10px] font-black text-neutral-400 uppercase tracking-widest">Action</th>
+                            <th className="px-6 py-4 w-[35%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
+                            <th className="px-6 py-4 w-[15%] text-sm font-semibold text-gray-500 tracking-wide">Status</th>
+                            <th className="px-6 py-4 w-[15%] text-sm font-semibold text-gray-500 tracking-wide text-center">AI Match</th>
+                            <th className="px-6 py-4 w-[25%] text-sm font-semibold text-gray-500 tracking-wide">Applied Date</th>
+                            <th className="px-6 py-4 w-[10%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50 dark:divide-neutral-800">
@@ -70,10 +67,10 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                                             {app.candidateName.substring(0, 2).toUpperCase()}
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                                                 {app.candidateName}
                                             </p>
-                                            <p className="text-[11px] text-gray-400 flex items-center gap-1 truncate lowercase leading-none mt-1">
+                                            <p className="text-xs text-gray-500 flex items-center gap-1 truncate lowercase leading-none mt-1">
                                                 <Mail size={12} className="flex-shrink-0" /> {app.candidateEmail}
                                             </p>
                                         </div>
@@ -83,17 +80,17 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                                     <StatusTag status={app.status} />
                                 </td>
                                 <td className="px-6 py-4 text-center">
-                                    <span className={`text-sm font-black ${getScoreColor(app.aiScore)}`}>
+                                    <span className={`text-sm font-semibold ${getScoreColor(app.aiScore)}`}>
                                         {app.aiScore ? `${app.aiScore}%` : '--'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex flex-col gap-0.5">
-                                        <p className="text-xs font-bold text-gray-600 dark:text-neutral-400 flex items-center gap-1.5">
-                                            <Calendar size={13} className="text-gray-300" />
+                                        <p className="text-sm text-gray-700 dark:text-neutral-300 flex items-center gap-1.5">
+                                            <Calendar size={13} className="text-gray-400" />
                                             {moment(app.appliedAt).format('DD MMM, YYYY')}
                                         </p>
-                                        <p className="text-[10px] text-gray-400 flex items-center gap-1.5 truncate">
+                                        <p className="text-xs text-gray-500 flex items-center gap-1.5 truncate">
                                             <MapPin size={12} /> {app.location || 'Vietnam'}
                                         </p>
                                     </div>
@@ -130,8 +127,8 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
 
 
             <div className="flex-shrink-0 px-6 py-4 border-t border-gray-50 dark:border-neutral-800 bg-white dark:bg-surface-dark flex items-center justify-between">
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                    Showing <span className="text-gray-900 dark:text-white">{data.length}</span> of <span className="text-gray-900 dark:text-white">{totalElements}</span> Candidates
+                <p className="text-xs font-medium text-gray-500">
+                    Showing <span className="text-gray-900 dark:text-white font-semibold">{data.length}</span> of <span className="text-gray-900 dark:text-white font-semibold">{totalElements}</span> Candidates
                 </p>
 
                 <div className="flex items-center gap-2">
@@ -150,9 +147,9 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                             <button
                                 key={index}
                                 onClick={() => onPageChange(index)}
-                                className={`w-8 h-8 text-xs font-bold rounded-lg transition-all ${currentPage === index
-                                    ? 'bg-orange-500 text-white shadow-md shadow-orange-200'
-                                    : 'text-gray-500 hover:bg-gray-100'
+                                className={`w-8 h-8 text-sm font-medium rounded-lg transition-all ${currentPage === index
+                                    ? 'bg-orange-500 text-white shadow-sm'
+                                    : 'text-gray-600 hover:bg-gray-100'
                                     }`}
                             >
                                 {index + 1}
@@ -176,16 +173,10 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
 
 // Helper Components
 const StatusTag = ({ status }) => {
-    const config = {
-        APPLIED: { label: 'APPLIED', color: 'bg-orange-50 text-orange-600', dot: 'bg-orange-600' },
-        VIEWED: { label: 'IN REVIEW', color: 'bg-blue-50 text-blue-600', dot: 'bg-blue-600' },
-        SHORTLISTED: { label: 'SHORTLISTED', color: 'bg-emerald-50 text-emerald-600', dot: 'bg-emerald-600' },
-        NOT_SUITABLE: { label: 'REJECTED', color: 'bg-red-50 text-red-600', dot: 'bg-red-600' },
-        AUTO_REJECTED: { label: 'AUTO REJECTED', color: 'bg-gray-100 text-gray-500', dot: 'bg-gray-500' },
-    }[status] || { label: status, color: 'bg-gray-50 text-gray-600', dot: 'bg-gray-600' };
+    const config = getApplicationStatusConfig(status);
 
     return (
-        <span className={`px-3 py-1 rounded-lg text-[10px] font-black flex items-center gap-2 w-fit uppercase tracking-wider ${config.color}`}>
+        <span className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-2 w-fit tracking-wide ${config.color}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
             {config.label}
         </span>

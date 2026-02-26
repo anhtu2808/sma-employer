@@ -11,7 +11,7 @@ const KanbanBoard = ({
 }) => {
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <div className="h-full overflow-x-auto pb-4 custom-scrollbar rounded-b-[24px] border border-t-0 border-neutral-100 dark:border-neutral-800">
+            <div className="h-full overflow-x-auto pb-4 custom-scrollbar rounded-b-2xl border border-t-0 border-neutral-100 dark:border-neutral-800">
                 <div className="flex gap-3 h-full min-w-max">
                     {statusColumns.map((column) => (
                         <div key={column.id} className="w-80 flex flex-col bg-neutral-50/50 dark:bg-neutral-900/30 p-4 border-r border-neutral-100 dark:border-neutral-800 last:border-r-0">
@@ -19,8 +19,8 @@ const KanbanBoard = ({
                             <div className="flex justify-between items-center mb-3 px-2">
                                 <Space>
                                     <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: column.color }} />
-                                    <span className="text-[11px] font-black text-neutral-700 dark:text-white uppercase tracking-widest">{column.title}</span>
-                                    <Badge count={getCandidatesByStatus(column.id).length} showZero color="#fb923c" className="text-[10px] font-black" />
+                                    <span className="text-xs font-bold text-neutral-700 dark:text-white tracking-wide">{column.title}</span>
+                                    <Badge count={getCandidatesByStatus(column.id).length} showZero color="#fb923c" className="text-[10px] font-bold" />
                                 </Space>
                             </div>
 
@@ -57,13 +57,13 @@ const KanbanBoard = ({
                                                                         {app.candidateName.substring(0, 2).toUpperCase()}
                                                                     </Avatar>
                                                                     <div className="flex-1 min-w-0">
-                                                                        <h4 className="font-bold text-[13px] truncate dark:text-white group-hover:text-primary transition-colors tracking-tight">
+                                                                        <h4 className="font-semibold text-sm truncate dark:text-white group-hover:text-primary transition-colors">
                                                                             {app.candidateName}
                                                                         </h4>
-                                                                        <p className="text-[10px] font-bold text-neutral-400 tracking-tighter mt-0.5">
+                                                                        <p className="text-xs text-neutral-500 mt-0.5">
                                                                             {app.candidateEmail || 'N/A'}
                                                                         </p>
-                                                                        <div className={`mt-3 inline-flex items-center px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${app.aiScore >= 80 ? 'bg-green-50 text-green-600' : app.aiScore >= 50 ? 'bg-orange-50 text-orange-600' : 'bg-red-50 text-red-600'}`}>
+                                                                        <div className={`mt-3 inline-flex items-center px-2 py-1 rounded-lg text-xs font-semibold tracking-wide ${app.aiScore >= 80 ? 'bg-green-50 text-green-600' : app.aiScore >= 50 ? 'bg-orange-50 text-orange-600' : 'bg-red-50 text-red-600'}`}>
                                                                             {app.aiScore || 0}% AI Match
                                                                         </div>
                                                                     </div>
