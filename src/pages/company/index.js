@@ -25,8 +25,17 @@ const CompanyProfile = () => {
 
     const onFinish = async (values) => {
         try {
-            const { taxIdentificationNumber, erc, ...updateData } = values;
-            await updateCompany(updateData).unwrap();
+            const { taxIdentificationNumber, erc, locations, email, link, ...rest } = values;
+            const location = locations?.[0] || {};
+            const updateData = {
+                ...rest,
+                companyEmail: email,
+                companyLink: link,
+                address: location.address,
+                district: location.district,
+                city: location.city,
+            };
+            await updateCompany({ id: companyData.data.id, data: updateData }).unwrap();
             message.success('Company profile updated successfully');
             setIsEditing(false);
             refetch();
