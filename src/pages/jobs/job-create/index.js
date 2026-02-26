@@ -79,11 +79,11 @@ const JobCreate = () => {
       criteriaList.forEach((item) => {
         delete submitData[`weight_${item.id}`];
       });
-      
+
       // 1. Always create draft first
       const res = await createJob(submitData).unwrap();
       const jobId = res?.data?.id || res?.id;
-      
+
       // 2. Publish if requested
       if (submitAction === "publish") {
         if (jobId) {
@@ -108,7 +108,7 @@ const JobCreate = () => {
     <div className="p-6 max-w-[95%] mx-auto pb-20">
       <Button
         mode="text"
-        className="self-start text-gray-500 hover:text-primary pl-0 -ml-20"
+        className="self-start text-gray-500 hover:text-primary pl-0 -ml-6"
         onClick={() => navigate("/jobs")}
         iconLeft={
           <span className="material-icons-round text-lg">arrow_back</span>
@@ -140,17 +140,17 @@ const JobCreate = () => {
           {/* Sidebar - Right Column */}
           <div className="lg:col-span-1">
             <div className="sticky top-6 space-y-6">
-            <PublishCard
-              onCancel={() => navigate("/jobs")}
-              isLoading={
-                isPublishing || (submitAction === "publish" && isDrafting)
-              }
-              isDraftLoading={submitAction === "draft" && isDrafting}
-              setAction={setSubmitAction}
-            />
-            <ScoringWeights />
-            <ProTips />
-          </div>
+              <PublishCard
+                onCancel={() => navigate("/jobs")}
+                isLoading={
+                  isPublishing || (submitAction === "publish" && isDrafting)
+                }
+                isDraftLoading={submitAction === "draft" && isDrafting}
+                setAction={setSubmitAction}
+              />
+              <ScoringWeights />
+              <ProTips />
+            </div>
           </div>
         </div>
       </Form>
