@@ -129,7 +129,13 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
                             onKeyPress={(e) => e.key === 'Enter' && handleAddSkill()}
                             className="flex-1 px-4 py-2 bg-neutral-50 dark:bg-gray-800 border border-neutral-100 dark:border-neutral-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all"
                         />
-                        <Button mode="primary" size="sm" onClick={handleAddSkill}>Add</Button>
+                        <Button
+                            shape="round"
+                            mode="primary"
+                            size="sm"
+                            onClick={handleAddSkill}>
+                            Add
+                        </Button>
                     </div>
                     <div className="flex flex-wrap gap-2 mt-3">
                         {filters.skills.map(skill => (
@@ -149,11 +155,18 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
 
             {/* Actions Footer */}
             <div className="flex justify-between items-center border-t border-neutral-100 dark:border-neutral-800 pt-4">
-                <Button mode="secondary" onClick={handleReset}>
+                <Button
+                    shape="round"
+                    mode="secondary"
+                    onClick={handleReset}
+                >
                     Reset
                 </Button>
 
-                <Button mode="primary" onClick={() => onApply(filters)}>
+                <Button
+                    shape="round"
+                    mode="primary"
+                    onClick={() => onApply(filters)}>
                     Apply Filter
                 </Button>
             </div>
