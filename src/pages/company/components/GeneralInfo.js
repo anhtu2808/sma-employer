@@ -8,14 +8,14 @@ const GeneralInfo = () => {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">General Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Form.Item
-                    name="companyName"
+                    name="name"
                     label="Company Name"
                     rules={[{ required: true, message: 'Please enter company name' }]}
                 >
                     <Input placeholder="Enter company name" />
                 </Form.Item>
                 <Form.Item
-                    name="companyLink"
+                    name="link"
                     label="Website"
                     rules={[{ type: 'url', message: 'Please enter a valid URL' }]}
                 >
