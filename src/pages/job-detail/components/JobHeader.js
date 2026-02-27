@@ -1,10 +1,12 @@
 import React from 'react';
 import { Tag, Dropdown, message } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import JobSkills from './JobSkills';
 import Button from '@/components/Button';
 import { useUpdateJobStatusMutation } from '@/apis/jobApi';
 
 const JobHeader = ({ job, formatDate, formatSalary }) => {
+    const navigate = useNavigate();
     const [updateJobStatus] = useUpdateJobStatusMutation();
 
     const handleStatusChange = async (newStatus) => {
@@ -134,6 +136,7 @@ const JobHeader = ({ job, formatDate, formatSalary }) => {
                     mode="primary"
                     size="sm"
                     iconLeft={<span className="material-icons-round text-sm">edit</span>}
+                    onClick={() => navigate(`/jobs/${job.id}/edit`)}
                 >
                     Update Job
                 </Button>

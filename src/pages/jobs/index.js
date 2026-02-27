@@ -171,6 +171,7 @@ const JobsList = () => {
                         {jobs.map((job) => (
                             <JobListItem
                                 key={job.id}
+                                id={job.id}
                                 title={job.name}
                                 status={job.status || 'Active'}
                                 postedTime={formatDate(job.uploadTime || job.createdAt)}
