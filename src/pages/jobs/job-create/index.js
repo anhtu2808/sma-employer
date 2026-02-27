@@ -105,7 +105,7 @@ const JobCreate = () => {
         ...values,
         expDate: values.expDate
           ? dayjs.isDayjs(values.expDate)
-            ? values.expDate.toISOString()
+            ? values.expDate.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
             : values.expDate
           : null,
         scoringCriterias,
