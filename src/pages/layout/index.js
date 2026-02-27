@@ -10,6 +10,7 @@ const routeTitleMap = {
   '/recruiters': 'Recruiters',
   '/jobs': 'Jobs',
   '/jobs/create': 'Create Job',
+  '/jobs/edit': 'Edit Job',
   '/company': 'Company',
   '/applications': 'Applications',
   '/reports': 'Reports',
@@ -22,6 +23,7 @@ const routeSubtitleMap = {
   '/recruiters': 'Manage your recruitment team',
   '/jobs': 'Manage your job postings',
   '/jobs/create': 'Create a new job posting',
+  '/jobs/edit': 'Edit your job posting',
   '/company': 'Manage your company profile',
   '/applications': 'Track and manage candidate applications',
   '/reports': 'View recruitment analytics and reports',
@@ -39,6 +41,7 @@ const Layout = () => {
     const path = location.pathname;
     // Handle dynamic routes like /jobs/:id
     const matchedPath = Object.keys(routeTitleMap).find(route => path === route)
+      || (path.match(/^\/jobs\/\d+\/edit/) ? '/jobs/edit' : null)
       || (path.match(/^\/jobs\/\d+/) ? '/jobs' : null);
 
     const title = routeTitleMap[matchedPath] || 'Dashboard';

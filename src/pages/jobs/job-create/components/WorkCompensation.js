@@ -48,17 +48,7 @@ const WorkCompensation = () => {
                     </div>
                 </div>
 
-                <Form.Item name="employmentType" label="Employment Type" initialValue="FULL_TIME" className="mb-0">
-                    <Select options={[
-                        { value: 'FULL_TIME', label: 'Full-time' },
-                        { value: 'PART_TIME', label: 'Part-time' },
-                        { value: 'CONTRACT', label: 'Contract' },
-                        { value: 'FREELANCE', label: 'Freelance' },
-                        { value: 'INTERNSHIP', label: 'Internship' }
-                    ]} />
-                </Form.Item>
-
-                <div className="md:col-span-2">
+                <div>
                     <Form.Item name="workingModel" label="Working Time/Model" initialValue="ONSITE" className="mb-0">
                         <Select options={[
                             { value: 'ONSITE', label: 'Standard Office Hours (Mon-Fri) - Onsite' },

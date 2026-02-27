@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { message } from "antd";
 import Form from "@/components/Form";
 import Button from "@/components/Button";
 import {
   useCreateJobMutation,
   usePublishJobMutation,
+  useSaveJobDraftMutation,
+  useGetJobDetailQuery,
   useGetCriteriaQuery,
 } from "@/apis/jobApi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import dayjs from "dayjs";
 
 // Components
 import JobIdentity from "./components/JobIdentity";
@@ -17,21 +20,62 @@ import JobDescriptionSection from "./components/JobDescriptionSection";
 import PublishCard from "./components/PublishCard";
 import ScoringWeights from "./components/ScoringWeights";
 import ProTips from "./components/ProTips";
-import JobSettings from "./components/JobSettings"; // Keep for extra settings if needed, or remove if unused.
-// Actually, JobSettings had 'Application Deadline', 'Number of Openings', 'Auto-Reject'.
-// These fit well in a 'Job Settings' section, maybe under Work & Comp or in the sidebar?
-// The image doesn't explicitly show them. I will put them at the bottom of the main col for now.
+import JobSettings from "./components/JobSettings";
 import Classification from "./components/Classification";
 import ScreeningQuestions from "./components/ScreeningQuestions";
 
 const JobCreate = () => {
+  const { id } = useParams();
+  const isEditMode = !!id;
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [submitAction, setSubmitAction] = useState("publish");
 
   const [createJob, { isLoading: isDrafting }] = useCreateJobMutation();
   const [publishJob, { isLoading: isPublishing }] = usePublishJobMutation();
+  const [saveJobDraft, { isLoading: isSaving }] = useSaveJobDraftMutation();
   const { data: criteriaRes } = useGetCriteriaQuery();
+
+  // Fetch existing job data when in edit mode
+  const { data: jobData, isLoading: isJobLoading } = useGetJobDetailQuery(id, {
+    skip: !isEditMode,
+  });
+
+  // Pre-fill form when job data is loaded
+  useEffect(() => {
+    if (isEditMode && jobData?.data) {
+      const job = jobData.data;
+      form.setFieldsValue({
+        name: job.name,
+        about: job.about,
+        responsibilities: job.responsibilities,
+        requirement: job.requirement,
+        enableAiScoring: job.enableAiScoring || false,
+        expDate: job.expDate ? dayjs(job.expDate) : null,
+        salaryStart: job.salaryStart,
+        salaryEnd: job.salaryEnd,
+        currency: job.currency || "VND",
+        experienceTime: job.experienceTime,
+        jobLevel: job.jobLevel,
+        workingModel: job.workingModel,
+        quantity: job.quantity,
+        autoRejectThreshold: job.autoRejectThreshold,
+        expertiseId: job.expertise?.id,
+        skillIds: job.skills?.map((s) => s.id) || [],
+        domainIds: job.domains?.map((d) => d.id) || [],
+        benefitIds: job.benefits?.map((b) => b.id) || [],
+        questionIds: job.questions?.map((q) => q.id) || [],
+        locationIds: job.locationIds || [],
+      });
+
+      // Set scoring criteria weights
+      if (job.scoringCriterias) {
+        job.scoringCriterias.forEach((sc) => {
+          form.setFieldValue(`weight_${sc.criteriaId}`, sc.weight);
+        });
+      }
+    }
+  }, [isEditMode, jobData, form]);
 
   const onFinish = async (values) => {
     try {
@@ -59,7 +103,11 @@ const JobCreate = () => {
 
       const submitData = {
         ...values,
-        expDate: values.expDate ? values.expDate.toISOString() : null,
+        expDate: values.expDate
+          ? dayjs.isDayjs(values.expDate)
+            ? values.expDate.toISOString()
+            : values.expDate
+          : null,
         scoringCriterias,
         skillIds: values.skillIds || [],
         domainIds: values.domainIds || [],
@@ -69,52 +117,65 @@ const JobCreate = () => {
         salaryStart: Number(values.salaryStart) || 0,
         salaryEnd: Number(values.salaryEnd) || 0,
         experienceTime: Number(values.experienceTime) || 0,
-        quantity: Number(values.quantity) || 1, // Default to 1 if not set
+        quantity: Number(values.quantity) || 1,
         autoRejectThreshold: Number(values.autoRejectThreshold) || 0,
         expertiseId: values.expertiseId || 0,
-        rootId: null, // Default as per requirement
+        rootId: null,
       };
 
       // Remove temporary fields
       criteriaList.forEach((item) => {
         delete submitData[`weight_${item.id}`];
       });
+      delete submitData.employmentType;
 
-      // 1. Always create draft first
-      const res = await createJob(submitData).unwrap();
-      const jobId = res?.data?.id || res?.id;
+      if (isEditMode) {
+        // Edit mode: use saveJobDraft
+        await saveJobDraft({ id, body: submitData }).unwrap();
 
-      // 2. Publish if requested
-      if (submitAction === "publish") {
-        if (jobId) {
-          await publishJob({
-            id: jobId,
-            body: submitData,
-          }).unwrap();
+        if (submitAction === "publish") {
+          await publishJob({ id, body: submitData }).unwrap();
+          message.success("Job updated and published successfully!");
+        } else {
+          message.success("Job updated successfully!");
         }
-        message.success("Job published successfully!");
       } else {
-        message.success("Job draft saved successfully!");
+        // Create mode
+        const res = await createJob(submitData).unwrap();
+        const jobId = res?.data?.id || res?.id;
+
+        if (submitAction === "publish") {
+          if (jobId) {
+            await publishJob({ id: jobId, body: submitData }).unwrap();
+          }
+          message.success("Job published successfully!");
+        } else {
+          message.success("Job draft saved successfully!");
+        }
       }
 
       navigate("/jobs");
     } catch (error) {
-      console.error("Failed to create job:", error);
-      message.error("Failed to create job. Please try again.");
+      console.error("Failed to save job:", error);
+      message.error("Failed to save job. Please try again.");
     }
   };
+
+  if (isEditMode && isJobLoading) {
+    return <div className="p-6">Loading job data...</div>;
+  }
 
   return (
     <div className="p-6 max-w-[95%] mx-auto pb-20">
       <Button
         mode="text"
         className="self-start text-gray-500 hover:text-primary pl-0 -ml-6"
-        onClick={() => navigate("/jobs")}
+        onClick={() => navigate(isEditMode ? `/jobs/${id}` : "/jobs")}
         iconLeft={
           <span className="material-icons-round text-lg">arrow_back</span>
         }
       >
-        Back to Jobs
+        {isEditMode ? "Back to Job Detail" : "Back to Jobs"}
       </Button>
 
       <Form form={form} onFinish={onFinish} layout="vertical" className="block">
@@ -141,12 +202,13 @@ const JobCreate = () => {
           <div className="lg:col-span-1">
             <div className="sticky top-6 space-y-6">
               <PublishCard
-                onCancel={() => navigate("/jobs")}
+                onCancel={() => navigate(isEditMode ? `/jobs/${id}` : "/jobs")}
                 isLoading={
-                  isPublishing || (submitAction === "publish" && isDrafting)
+                  isPublishing || (submitAction === "publish" && (isDrafting || isSaving))
                 }
-                isDraftLoading={submitAction === "draft" && isDrafting}
+                isDraftLoading={submitAction === "draft" && (isDrafting || isSaving)}
                 setAction={setSubmitAction}
+                isEditMode={isEditMode}
               />
               <ScoringWeights />
               <ProTips />
