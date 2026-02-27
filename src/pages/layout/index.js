@@ -16,6 +16,7 @@ const routeTitleMap = {
   '/reports': 'Reports',
   '/settings': 'Settings',
   '/help': 'Help Center',
+  '/billing-plans': 'Billing & Plans',
 };
 
 const routeSubtitleMap = {
@@ -29,6 +30,7 @@ const routeSubtitleMap = {
   '/reports': 'View recruitment analytics and reports',
   '/settings': 'Configure your account settings',
   '/help': 'Find answers and get support',
+  '/billing-plans': 'Manage your subscription and view your current usage quotas',
 };
 
 const Layout = () => {
