@@ -24,7 +24,19 @@ const JobSettings = () => {
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Auto-Reject Threshold
                     </label>
-                    <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">Below 40%</span>
+                    <Form.Item
+                        noStyle
+                        shouldUpdate={(prevValues, currentValues) => prevValues.autoRejectThreshold !== currentValues.autoRejectThreshold}
+                    >
+                        {({ getFieldValue }) => {
+                            const threshold = getFieldValue('autoRejectThreshold') ?? 40;
+                            return (
+                                <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">
+                                    Below {threshold}%
+                                </span>
+                            );
+                        }}
+                    </Form.Item>
                 </div>
                 <Form.Item name="autoRejectThreshold" noStyle initialValue={40}>
                     <Slider trackStyle={{ backgroundColor: '#F97316' }} handleStyle={{ borderColor: '#F97316', backgroundColor: '#F97316' }} />
