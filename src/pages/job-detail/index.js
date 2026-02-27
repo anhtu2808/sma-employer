@@ -94,8 +94,8 @@ const JobDetail = () => {
                         key={tab.key}
                         onClick={() => setActiveTab(tab.key)}
                         className={`pb-3 text-sm font-medium transition-colors border-b-2 -mb-px ${activeTab === tab.key
-                                ? 'text-primary border-primary'
-                                : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 border-transparent'
+                            ? 'text-primary border-primary'
+                            : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 border-transparent'
                             }`}
                     >
                         {tab.label}
@@ -164,13 +164,7 @@ const JobDetail = () => {
                             </div>
                         </div>
 
-                        {/* Similar Jobs Card */}
-                        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
-                            <h3 className="font-bold text-gray-900 dark:text-white mb-4">Similar Jobs</h3>
-                            <p className="text-sm text-gray-400 text-center py-4">
-                                Similar jobs will be shown here
-                            </p>
-                        </div>
+
                     </div>
                 </div>
             )}
