@@ -19,30 +19,57 @@ const JobSettings = () => {
                 </Form.Item>
             </div>
 
-            <div>
-                <div className="flex justify-between mb-2">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Auto-Reject Threshold
-                    </label>
-                    <Form.Item
-                        noStyle
-                        shouldUpdate={(prevValues, currentValues) => prevValues.autoRejectThreshold !== currentValues.autoRejectThreshold}
-                    >
-                        {({ getFieldValue }) => {
-                            const threshold = getFieldValue('autoRejectThreshold') ?? 40;
-                            return (
+            <Form.Item
+                noStyle
+                shouldUpdate={(prevValues, currentValues) =>
+                    prevValues.enableAiScoring !== currentValues.enableAiScoring ||
+                    prevValues.autoRejectThreshold !== currentValues.autoRejectThreshold
+                }
+            >
+                {({ getFieldValue, setFieldsValue }) => {
+                    const isAiActive = getFieldValue('enableAiScoring') !== false;
+                    const autoRejectThreshold = getFieldValue('autoRejectThreshold');
+
+                    // Automatically set to 0 if AI is turned off
+                    // If turned back on, restore to default 40 if it was 0
+                    if (!isAiActive && autoRejectThreshold !== 0) {
+                        setTimeout(() => {
+                            setFieldsValue({ autoRejectThreshold: 0 });
+                        }, 0);
+                    } else if (isAiActive && autoRejectThreshold === 0) {
+                        setTimeout(() => {
+                            setFieldsValue({ autoRejectThreshold: 40 });
+                        }, 0);
+                    }
+
+                    const displayThreshold = getFieldValue('autoRejectThreshold') || 0;
+
+                    return (
+                        <div className={`transition-all duration-300 ${!isAiActive ? 'opacity-50 grayscale' : ''}`}>
+                            <div className="flex justify-between mb-2">
+                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Auto-Reject Threshold
+                                </label>
                                 <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">
-                                    Below {threshold}%
+                                    {isAiActive ? `Below ${displayThreshold}%` : 'Disabled'}
                                 </span>
-                            );
-                        }}
-                    </Form.Item>
-                </div>
-                <Form.Item name="autoRejectThreshold" noStyle initialValue={40}>
-                    <Slider trackStyle={{ backgroundColor: '#F97316' }} handleStyle={{ borderColor: '#F97316', backgroundColor: '#F97316' }} />
-                </Form.Item>
-                <p className="text-xs text-gray-500 mt-1">Candidates scoring below this will be automatically moved to 'Rejected'.</p>
-            </div>
+                            </div>
+                            <Form.Item name="autoRejectThreshold" noStyle initialValue={40}>
+                                <Slider 
+                                    trackStyle={{ backgroundColor: '#F97316' }} 
+                                    handleStyle={{ borderColor: '#F97316', backgroundColor: '#F97316' }} 
+                                    disabled={!isAiActive}
+                                />
+                            </Form.Item>
+                            <p className="text-xs text-gray-500 mt-1">
+                                {isAiActive 
+                                    ? "Candidates scoring below this will be automatically moved to 'Rejected'." 
+                                    : "AI Scoring is disabled. Candidates will not be auto-rejected."}
+                            </p>
+                        </div>
+                    );
+                }}
+            </Form.Item>
         </div>
     );
 };

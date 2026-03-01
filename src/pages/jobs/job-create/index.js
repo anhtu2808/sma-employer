@@ -9,7 +9,7 @@ import {
   useGetJobDetailQuery,
   useGetCriteriaQuery,
 } from "@/apis/jobApi";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 
 // Components
@@ -28,54 +28,43 @@ const JobCreate = () => {
   const { id } = useParams();
   const isEditMode = !!id;
   const navigate = useNavigate();
+  const location = useLocation();
   const [form] = Form.useForm();
   const [submitAction, setSubmitAction] = useState("publish");
+  
+  const clonedJobId = location.state?.clonedJobId;
+  const targetId = isEditMode ? id : clonedJobId;
+  const { data: jobData, isLoading: isJobLoading } = useGetJobDetailQuery(targetId, { skip: !targetId });
+  const clonedJob = jobData?.data;
 
   const [createJob, { isLoading: isDrafting }] = useCreateJobMutation();
   const [publishJob, { isLoading: isPublishing }] = usePublishJobMutation();
   const [saveJobDraft, { isLoading: isSaving }] = useSaveJobDraftMutation();
   const { data: criteriaRes } = useGetCriteriaQuery();
 
-  // Fetch existing job data when in edit mode
-  const { data: jobData, isLoading: isJobLoading } = useGetJobDetailQuery(id, {
-    skip: !isEditMode,
-  });
-
-  // Pre-fill form when job data is loaded
-  useEffect(() => {
-    if (isEditMode && jobData?.data) {
-      const job = jobData.data;
-      form.setFieldsValue({
-        name: job.name,
-        about: job.about,
-        responsibilities: job.responsibilities,
-        requirement: job.requirement,
-        enableAiScoring: job.enableAiScoring || false,
-        expDate: job.expDate ? dayjs(job.expDate) : null,
-        salaryStart: job.salaryStart,
-        salaryEnd: job.salaryEnd,
-        currency: job.currency || "VND",
-        experienceTime: job.experienceTime,
-        jobLevel: job.jobLevel,
-        workingModel: job.workingModel,
-        quantity: job.quantity,
-        autoRejectThreshold: job.autoRejectThreshold,
-        expertiseId: job.expertise?.id,
-        skillIds: job.skills?.map((s) => s.id) || [],
-        domainIds: job.domains?.map((d) => d.id) || [],
-        benefitIds: job.benefits?.map((b) => b.id) || [],
-        questionIds: job.questions?.map((q) => q.id) || [],
-        locationIds: job.locationIds || [],
-      });
-
-      // Set scoring criteria weights
-      if (job.scoringCriterias) {
-        job.scoringCriterias.forEach((sc) => {
-          form.setFieldValue(`weight_${sc.criteriaId}`, sc.weight);
+  React.useEffect(() => {
+    if (clonedJob) {
+      const initialValues = {
+        ...clonedJob,
+        expDate: clonedJob.expDate ? dayjs(clonedJob.expDate) : undefined,
+        skillIds: clonedJob.skills?.map(s => s.id) || clonedJob.skillIds,
+        domainIds: clonedJob.domains?.map(d => d.id) || clonedJob.domainIds,
+        benefitIds: clonedJob.benefits?.map(b => b.id) || clonedJob.benefitIds,
+        locationIds: clonedJob.locations?.map(l => l.id) || clonedJob.locationIds,
+        questionIds: clonedJob.questions?.map(q => q.id) || clonedJob.questionIds,
+        expertiseId: clonedJob.expertise?.id || clonedJob.expertiseId,
+      };
+      
+      if (clonedJob.scoringCriterias) {
+        clonedJob.scoringCriterias.forEach((c) => {
+          const criteriaId = c.criteria?.id || c.criteriaId;
+          initialValues[`weight_${criteriaId}`] = c.weight;
+          initialValues[`enable_${criteriaId}`] = c.enable;
         });
       }
+      form.setFieldsValue(initialValues);
     }
-  }, [isEditMode, jobData, form]);
+  }, [clonedJob, form]);
 
   const onFinish = async (values) => {
     try {
@@ -87,16 +76,19 @@ const JobCreate = () => {
           values[`weight_${item.id}`] !== undefined
             ? values[`weight_${item.id}`]
             : item.defaultWeight,
-        enable: values.enableAiScoring,
+        enable:
+          values[`enable_${item.id}`] !== undefined
+            ? values[`enable_${item.id}`]
+            : true,
       }));
 
       const totalWeight = scoringCriterias.reduce(
-        (sum, item) => sum + item.weight,
+        (sum, item) => sum + (item.enable ? item.weight : 0),
         0,
       );
       if (values.enableAiScoring && totalWeight !== 100) {
         message.error(
-          `Total scoring weight must be 100%. Current: ${totalWeight}%`,
+          `Total scoring weight of enabled criteria must be 100%. Current: ${totalWeight}%`,
         );
         return;
       }
@@ -120,12 +112,13 @@ const JobCreate = () => {
         quantity: Number(values.quantity) || 1,
         autoRejectThreshold: Number(values.autoRejectThreshold) || 0,
         expertiseId: values.expertiseId || 0,
-        rootId: null,
+        rootId: clonedJob ? clonedJob.id : null,
       };
 
       // Remove temporary fields
       criteriaList.forEach((item) => {
         delete submitData[`weight_${item.id}`];
+        delete submitData[`enable_${item.id}`];
       });
       delete submitData.employmentType;
 
