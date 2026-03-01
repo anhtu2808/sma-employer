@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGetCompanyProfileQuery, useUpdateCompanyProfileMutation, useUploadFileMutation } from '@/apis/apis';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
@@ -15,6 +15,7 @@ const CompanyProfile = () => {
     const [updateCompany, { isLoading: isUpdating }] = useUpdateCompanyProfileMutation();
     const [uploadFile, { isLoading: isUploading }] = useUploadFileMutation();
     const [form] = Form.useForm();
+    const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         if (companyData && companyData.data) {
@@ -24,9 +25,19 @@ const CompanyProfile = () => {
 
     const onFinish = async (values) => {
         try {
-            const { taxIdentificationNumber, erc, ...updateData } = values;
-            await updateCompany(updateData).unwrap();
+            const { taxIdentificationNumber, erc, locations, email, link, ...rest } = values;
+            const location = locations?.[0] || {};
+            const updateData = {
+                ...rest,
+                companyEmail: email,
+                companyLink: link,
+                address: location.address,
+                district: location.district,
+                city: location.city,
+            };
+            await updateCompany({ id: companyData.data.id, data: updateData }).unwrap();
             message.success('Company profile updated successfully');
+            setIsEditing(false);
             refetch();
         } catch (error) {
             message.error('Failed to update company profile');
@@ -34,31 +45,53 @@ const CompanyProfile = () => {
         }
     };
 
+    const handleCancel = () => {
+        if (companyData?.data) {
+            form.setFieldsValue(companyData.data);
+        }
+        setIsEditing(false);
+    };
+
     if (isLoading) return <div className="p-6">Loading...</div>;
 
     return (
         <div className="p-6 space-y-6">
-            <header className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Company Profile</h1>
-                <p className="text-gray-500 dark:text-gray-400">Manage your company information</p>
-            </header>
 
             <Card className="p-6">
-                <Form form={form} onFinish={onFinish} className="space-y-6">
+                <Form form={form} onFinish={onFinish} className="space-y-6" disabled={!isEditing}>
                     <GeneralInfo />
                     <Classification />
                     <ContactInfo />
                     <Location />
                     <LegalInfo />
 
-                    <div className="flex justify-start pt-4">
-                        <Button
-                            mode="primary"
-                            type="submit"
-                            disabled={isUpdating}
-                        >
-                            {isUpdating ? 'Updating...' : 'Update Information'}
-                        </Button>
+                    <div className="flex justify-start gap-3 pt-4">
+                        {isEditing ? (
+                            <>
+                                <Button
+                                    mode="primary"
+                                    type="submit"
+                                    disabled={isUpdating}
+                                >
+                                    {isUpdating ? 'Saving...' : 'Save Changes'}
+                                </Button>
+                                <Button
+                                    mode="ghost"
+                                    onClick={handleCancel}
+                                    disabled={isUpdating}
+                                >
+                                    Cancel
+                                </Button>
+                            </>
+                        ) : (
+                            <Button
+                                mode="primary"
+                                onClick={(e) => { e.preventDefault(); setIsEditing(true); }}
+                                iconLeft={<span className="material-icons-round text-sm">edit</span>}
+                            >
+                                Edit Information
+                            </Button>
+                        )}
                     </div>
                 </Form>
             </Card>

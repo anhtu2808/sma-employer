@@ -7,10 +7,23 @@ import { Skeleton, Tabs, ConfigProvider, Modal, DatePicker, message } from 'antd
 import dayjs from 'dayjs';
 import JobHeader from './components/JobHeader';
 import JobDescription from './components/JobDescription';
+import { PageHeaderContext } from '@/contexts/PageHeaderContext';
+
+const INDUSTRY_LABELS = {
+    INFORMATION_TECHNOLOGY: 'Information Technology',
+    FINANCE: 'Finance',
+    MARKETING: 'Marketing',
+    CONSTRUCTION: 'Construction',
+    EDUCATION: 'Education',
+    HEALTHCARE: 'Healthcare',
+    OTHER: 'Other',
+};
 
 const JobDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { setHeaderConfig } = useContext(PageHeaderContext);
+    const [activeTab, setActiveTab] = useState('details');
     const { data: jobData, isLoading, error } = useGetJobDetailQuery(id);
     const job = jobData?.data;
 
@@ -79,10 +92,16 @@ const JobDetail = () => {
 
     const formatSalary = (min, max, currency = 'VND') => {
         if (!min && !max) return 'Negotiable';
-        const format = (num) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency }).format(num);
-        if (min && !max) return `From ${format(min)}`;
-        if (!min && max) return `Up to ${format(max)}`;
-        return `${format(min)} - ${format(max)}`;
+        const formatter = (num) => {
+            return new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            }).format(num);
+        };
+        const suffix = currency || 'VND';
+        if (min && !max) return `From ${formatter(min)} ${suffix}`;
+        if (!min && max) return `Up to ${formatter(max)} ${suffix}`;
+        return `${formatter(min)} - ${formatter(max)} ${suffix}`;
     };
 
     const tabItems = [
@@ -120,11 +139,11 @@ const JobDetail = () => {
     ];
 
     return (
-        <div className="p-4 md:p-6 w-full max-w-[95%] mx-auto space-y-4">
-            {/* Tabs Navigation */}
+        <div className="w-full max-w-[95%] mx-auto space-y-4">
+            {/* Back button */}
             <Button
                 mode="text"
-                className="self-start text-gray-500 hover:text-primary pl-0 -ml-20"
+                className="text-gray-500 hover:text-primary pl-0 -ml-6"
                 onClick={() => navigate('/jobs')}
                 iconLeft={<span className="material-icons-round text-lg">arrow_back</span>}
             >

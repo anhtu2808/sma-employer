@@ -1,12 +1,56 @@
-import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import React, { useState, useContext, useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Drawer } from 'antd';
 import Sidebar from './sidebar';
 import Header from './header';
+import { PageHeaderContext } from '@/contexts/PageHeaderContext';
+
+const routeTitleMap = {
+  '/dashboard': 'Dashboard',
+  '/recruiters': 'Recruiters',
+  '/jobs': 'Jobs',
+  '/jobs/create': 'Create Job',
+  '/jobs/edit': 'Edit Job',
+  '/company': 'Company',
+  '/applications': 'Applications',
+  '/reports': 'Reports',
+  '/settings': 'Settings',
+  '/help': 'Help Center',
+  '/billing-plans': 'Billing & Plans',
+};
+
+const routeSubtitleMap = {
+  '/dashboard': 'Overview of your recruitment activities',
+  '/recruiters': 'Manage your recruitment team',
+  '/jobs': 'Manage your job postings',
+  '/jobs/create': 'Create a new job posting',
+  '/jobs/edit': 'Edit your job posting',
+  '/company': 'Manage your company profile',
+  '/applications': 'Track and manage candidate applications',
+  '/reports': 'View recruitment analytics and reports',
+  '/settings': 'Configure your account settings',
+  '/help': 'Find answers and get support',
+  '/billing-plans': 'Manage your subscription and view your current usage quotas',
+};
 
 const Layout = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const location = useLocation();
+  const { setHeaderConfig } = useContext(PageHeaderContext);
+
+  useEffect(() => {
+    const path = location.pathname;
+    // Handle dynamic routes like /jobs/:id
+    const matchedPath = Object.keys(routeTitleMap).find(route => path === route)
+      || (path.match(/^\/jobs\/\d+\/edit/) ? '/jobs/edit' : null)
+      || (path.match(/^\/jobs\/\d+/) ? '/jobs' : null);
+
+    const title = routeTitleMap[matchedPath] || 'Dashboard';
+    const description = routeSubtitleMap[matchedPath] || '';
+
+    setHeaderConfig({ title, description });
+  }, [location.pathname, setHeaderConfig]);
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);

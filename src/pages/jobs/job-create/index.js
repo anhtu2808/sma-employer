@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { message } from "antd";
 import Form from "@/components/Form";
 import Button from "@/components/Button";
 import {
   useCreateJobMutation,
   usePublishJobMutation,
+  useSaveJobDraftMutation,
+  useGetJobDetailQuery,
   useGetCriteriaQuery,
   useGetJobDetailQuery,
 } from "@/apis/jobApi";
@@ -19,14 +21,13 @@ import JobDescriptionSection from "./components/JobDescriptionSection";
 import PublishCard from "./components/PublishCard";
 import ScoringWeights from "./components/ScoringWeights";
 import ProTips from "./components/ProTips";
-import JobSettings from "./components/JobSettings"; // Keep for extra settings if needed, or remove if unused.
-// Actually, JobSettings had 'Application Deadline', 'Number of Openings', 'Auto-Reject'.
-// These fit well in a 'Job Settings' section, maybe under Work & Comp or in the sidebar?
-// The image doesn't explicitly show them. I will put them at the bottom of the main col for now.
+import JobSettings from "./components/JobSettings";
 import Classification from "./components/Classification";
 import ScreeningQuestions from "./components/ScreeningQuestions";
 
 const JobCreate = () => {
+  const { id } = useParams();
+  const isEditMode = !!id;
   const navigate = useNavigate();
   const location = useLocation();
   const [form] = Form.useForm();
@@ -38,6 +39,7 @@ const JobCreate = () => {
 
   const [createJob, { isLoading: isDrafting }] = useCreateJobMutation();
   const [publishJob, { isLoading: isPublishing }] = usePublishJobMutation();
+  const [saveJobDraft, { isLoading: isSaving }] = useSaveJobDraftMutation();
   const { data: criteriaRes } = useGetCriteriaQuery();
 
   React.useEffect(() => {
@@ -93,7 +95,11 @@ const JobCreate = () => {
 
       const submitData = {
         ...values,
-        expDate: values.expDate ? values.expDate.toISOString() : null,
+        expDate: values.expDate
+          ? dayjs.isDayjs(values.expDate)
+            ? values.expDate.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+            : values.expDate
+          : null,
         scoringCriterias,
         skillIds: values.skillIds || [],
         domainIds: values.domainIds || [],
@@ -103,7 +109,7 @@ const JobCreate = () => {
         salaryStart: Number(values.salaryStart) || 0,
         salaryEnd: Number(values.salaryEnd) || 0,
         experienceTime: Number(values.experienceTime) || 0,
-        quantity: Number(values.quantity) || 1, // Default to 1 if not set
+        quantity: Number(values.quantity) || 1,
         autoRejectThreshold: Number(values.autoRejectThreshold) || 0,
         expertiseId: values.expertiseId || 0,
         rootId: clonedJob ? clonedJob.id : null,
@@ -114,42 +120,55 @@ const JobCreate = () => {
         delete submitData[`weight_${item.id}`];
         delete submitData[`enable_${item.id}`];
       });
-      
-      // 1. Always create draft first
-      const res = await createJob(submitData).unwrap();
-      const jobId = res?.data?.id || res?.id;
-      
-      // 2. Publish if requested
-      if (submitAction === "publish") {
-        if (jobId) {
-          await publishJob({
-            id: jobId,
-            body: submitData,
-          }).unwrap();
+      delete submitData.employmentType;
+
+      if (isEditMode) {
+        // Edit mode: use saveJobDraft
+        await saveJobDraft({ id, body: submitData }).unwrap();
+
+        if (submitAction === "publish") {
+          await publishJob({ id, body: submitData }).unwrap();
+          message.success("Job updated and published successfully!");
+        } else {
+          message.success("Job updated successfully!");
         }
-        message.success("Job published successfully!");
       } else {
-        message.success("Job draft saved successfully!");
+        // Create mode
+        const res = await createJob(submitData).unwrap();
+        const jobId = res?.data?.id || res?.id;
+
+        if (submitAction === "publish") {
+          if (jobId) {
+            await publishJob({ id: jobId, body: submitData }).unwrap();
+          }
+          message.success("Job published successfully!");
+        } else {
+          message.success("Job draft saved successfully!");
+        }
       }
 
       navigate("/jobs");
     } catch (error) {
-      console.error("Failed to create job:", error);
-      message.error("Failed to create job. Please try again.");
+      console.error("Failed to save job:", error);
+      message.error("Failed to save job. Please try again.");
     }
   };
+
+  if (isEditMode && isJobLoading) {
+    return <div className="p-6">Loading job data...</div>;
+  }
 
   return (
     <div className="p-6 max-w-[95%] mx-auto pb-20">
       <Button
         mode="text"
-        className="self-start text-gray-500 hover:text-primary pl-0 -ml-20"
-        onClick={() => navigate("/jobs")}
+        className="self-start text-gray-500 hover:text-primary pl-0 -ml-6"
+        onClick={() => navigate(isEditMode ? `/jobs/${id}` : "/jobs")}
         iconLeft={
           <span className="material-icons-round text-lg">arrow_back</span>
         }
       >
-        Back to Jobs
+        {isEditMode ? "Back to Job Detail" : "Back to Jobs"}
       </Button>
 
       <Form form={form} onFinish={onFinish} layout="vertical" className="block">
@@ -175,17 +194,18 @@ const JobCreate = () => {
           {/* Sidebar - Right Column */}
           <div className="lg:col-span-1">
             <div className="sticky top-6 space-y-6">
-            <PublishCard
-              onCancel={() => navigate("/jobs")}
-              isLoading={
-                isPublishing || (submitAction === "publish" && isDrafting)
-              }
-              isDraftLoading={submitAction === "draft" && isDrafting}
-              setAction={setSubmitAction}
-            />
-            <ScoringWeights />
-            <ProTips />
-          </div>
+              <PublishCard
+                onCancel={() => navigate(isEditMode ? `/jobs/${id}` : "/jobs")}
+                isLoading={
+                  isPublishing || (submitAction === "publish" && (isDrafting || isSaving))
+                }
+                isDraftLoading={submitAction === "draft" && (isDrafting || isSaving)}
+                setAction={setSubmitAction}
+                isEditMode={isEditMode}
+              />
+              <ScoringWeights />
+              <ProTips />
+            </div>
           </div>
         </div>
       </Form>

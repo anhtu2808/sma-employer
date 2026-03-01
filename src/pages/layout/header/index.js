@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { PageHeaderContext } from '@/contexts/PageHeaderContext';
 
-const Header = ({ title = 'Dashboard', onMobileMenuClick }) => {
+const Header = ({ onMobileMenuClick }) => {
   const [searchValue, setSearchValue] = useState('');
+  const { headerConfig } = useContext(PageHeaderContext);
 
   return (
     <header className="h-16 sm:h-20 bg-card-light dark:bg-card-dark border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 sm:px-6 lg:px-8 flex-shrink-0 transition-colors duration-200">
@@ -14,7 +16,16 @@ const Header = ({ title = 'Dashboard', onMobileMenuClick }) => {
         >
           <span className="material-icons-outlined">menu</span>
         </button>
-        <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{title}</h1>
+        <div className="flex flex-col">
+          <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
+            {headerConfig.title}
+          </h1>
+          {headerConfig.description && (
+            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+              {headerConfig.description}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="hidden md:flex flex-1 max-w-xl px-4 lg:px-8">

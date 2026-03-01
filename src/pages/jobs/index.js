@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Input as AntInput, Select, ConfigProvider } from 'antd';
+import { Select, ConfigProvider } from 'antd';
+import Input from '@/components/Input';
 import { useGetJobsQuery } from '@/apis/apis';
 import JobListItem from '@/components/JobListItem';
 import Pagination from '@/components/Pagination';
@@ -68,20 +69,6 @@ const JobsList = () => {
 
     return (
         <div className="p-6 space-y-6">
-            <header className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Jobs</h1>
-                    <p className="text-gray-500 dark:text-gray-400">Manage your job postings</p>
-                </div>
-                <Button
-                    mode="primary"
-                    onClick={() => navigate('/jobs/create')}
-                    iconLeft={<span className="material-icons-round">add</span>}
-                >
-                    Post a Job
-                </Button>
-            </header>
-
             {/* Search and Filter Bar */}
             <ConfigProvider
                 theme={{
@@ -91,72 +78,76 @@ const JobsList = () => {
                     },
                 }}
             >
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col md:flex-row gap-4 items-center">
-                    <div className="flex-1 w-full">
-                        <AntInput
-                            placeholder="Search by title or company..."
-                            prefix={<span className="material-icons-round text-gray-400 text-xl">search</span>}
-                            className="w-full h-10 rounded-lg"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            allowClear
-                        />
-                    </div>
-                    <div className="flex gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-                        <Select
-                            placeholder="All Status"
-                            className="w-32 md:w-36 h-10"
-                            allowClear
-                            onChange={setStatus}
-                            suffixIcon={<span className="material-icons-round text-gray-400 text-lg">filter_list</span>}
-                            options={[
-                                { value: 'PUBLISHED', label: 'Published' },
-                                { value: 'DRAFT', label: 'Draft' },
-                                { value: 'PENDING_REVIEW', label: 'Pending' },
-                                { value: 'SUSPENDED', label: 'Suspended' },
-                                { value: 'CLOSED', label: 'Closed' },
-                            ]}
-                        />
-                        <Select
-                            placeholder="Working Model"
-                            className="w-36 md:w-40 h-10"
-                            allowClear
-                            onChange={setWorkingModel}
-                            options={[
-                                { value: 'ONSITE', label: 'Onsite' },
-                                { value: 'REMOTE', label: 'Remote' },
-                                { value: 'HYBRID', label: 'Hybrid' },
-                            ]}
-                        />
-                        <Select
-                            placeholder="Job Level"
-                            className="w-32 md:w-36 h-10"
-                            allowClear
-                            onChange={setJobLevel}
-                            options={[
-                                { value: 'INTERN', label: 'Intern' },
-                                { value: 'FRESHER', label: 'Fresher' },
-                                { value: 'JUNIOR', label: 'Junior' },
-                                { value: 'MIDDLE', label: 'Middle' },
-                                { value: 'SENIOR', label: 'Senior' },
-                                { value: 'MANAGER', label: 'Manager' },
-                                { value: 'DIRECTOR', label: 'Director' },
-                            ]}
-                        />
-                        <Select
-                            placeholder="All Locations"
-                            className="w-36 md:w-40 h-10"
-                            allowClear
-                            onChange={setLocation}
-                            suffixIcon={<span className="material-icons-round text-gray-400 text-lg">place</span>}
-                            options={[
-                                { value: 'Hanoi', label: 'Hanoi' },
-                                { value: 'Ho Chi Minh City', label: 'Ho Chi Minh' },
-                                { value: 'Da Nang', label: 'Da Nang' },
-                                { value: 'Remote', label: 'Remote' },
-                            ]}
-                        />
-                    </div>
+                <div className="bg-white dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-wrap md:flex-nowrap gap-3 items-center">
+                    <Input
+                        placeholder="Search by title or company..."
+                        prefix={<span className="material-icons-round text-gray-400 text-xl">search</span>}
+
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        allowClear
+                    />
+                    <Select
+                        placeholder="All Status"
+                        className="w-full md:w-32 h-10"
+                        allowClear
+                        onChange={setStatus}
+                        suffixIcon={<span className="material-icons-round text-gray-400 text-lg">filter_list</span>}
+                        options={[
+                            { value: 'PUBLISHED', label: 'Published' },
+                            { value: 'DRAFT', label: 'Draft' },
+                            { value: 'PENDING_REVIEW', label: 'Pending' },
+                            { value: 'SUSPENDED', label: 'Suspended' },
+                            { value: 'CLOSED', label: 'Closed' },
+                        ]}
+                    />
+                    <Select
+                        placeholder="Working Model"
+                        className="w-full md:w-40 h-10"
+                        allowClear
+                        onChange={setWorkingModel}
+                        options={[
+                            { value: 'ONSITE', label: 'Onsite' },
+                            { value: 'REMOTE', label: 'Remote' },
+                            { value: 'HYBRID', label: 'Hybrid' },
+                        ]}
+                    />
+                    <Select
+                        placeholder="Job Level"
+                        className="w-full md:w-32 h-10"
+                        allowClear
+                        onChange={setJobLevel}
+                        options={[
+                            { value: 'INTERN', label: 'Intern' },
+                            { value: 'FRESHER', label: 'Fresher' },
+                            { value: 'JUNIOR', label: 'Junior' },
+                            { value: 'MIDDLE', label: 'Middle' },
+                            { value: 'SENIOR', label: 'Senior' },
+                            { value: 'MANAGER', label: 'Manager' },
+                            { value: 'DIRECTOR', label: 'Director' },
+                        ]}
+                    />
+                    <Select
+                        placeholder="All Locations"
+                        className="w-full md:w-36 h-10"
+                        allowClear
+                        onChange={setLocation}
+                        suffixIcon={<span className="material-icons-round text-gray-400 text-lg">place</span>}
+                        options={[
+                            { value: 'Hanoi', label: 'Hanoi' },
+                            { value: 'Ho Chi Minh City', label: 'Ho Chi Minh' },
+                            { value: 'Da Nang', label: 'Da Nang' },
+                            { value: 'Remote', label: 'Remote' },
+                        ]}
+                    />
+                    <Button
+                        mode="primary"
+                        onClick={() => navigate('/jobs/create')}
+                        iconLeft={<span className="material-icons-round">add</span>}
+                        className="shrink-0 ml-auto"
+                    >
+                        Post a Job
+                    </Button>
                 </div>
             </ConfigProvider>
 
@@ -180,6 +171,7 @@ const JobsList = () => {
                         {jobs.map((job) => (
                             <JobListItem
                                 key={job.id}
+                                id={job.id}
                                 title={job.name}
                                 status={job.status || 'Active'}
                                 postedTime={formatDate(job.uploadTime || job.createdAt)}

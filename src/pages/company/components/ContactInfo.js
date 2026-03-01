@@ -8,7 +8,7 @@ const ContactInfo = () => {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">Contact Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Form.Item
-                    name="companyEmail"
+                    name="email"
                     label="Email"
                     rules={[{ required: true, message: 'Please enter email' }, { type: 'email', message: 'Invalid email' }]}
                 >

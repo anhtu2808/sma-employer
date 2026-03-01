@@ -108,7 +108,7 @@ const JobListItem = ({
                 </div>
             </div>
 
-            <div className="flex items-center gap-3 shrink-0 w-full md:w-auto mt-2 md:mt-0">
+            <div className="flex items-center gap-3 shrink-0 w-full md:w-auto mt-2 md:mt-0 self-center">
                 <Button
                     mode="secondary"
                     size="sm"
@@ -118,8 +118,8 @@ const JobListItem = ({
                     View Details
                 </Button>
                 <Dropdown menu={menuProps} trigger={['click']} placement="bottomRight">
-                    <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        <span className="material-icons-round">more_horiz</span>
+                    <button className="flex items-center justify-center w-9 h-9 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-600">
+                        <span className="material-icons-round text-xl">more_horiz</span>
                     </button>
                 </Dropdown>
             </div>

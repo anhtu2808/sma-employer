@@ -91,6 +91,11 @@ const ScoringWeights = () => {
                 valuePropName="checked"
                 initialValue={true}
                 noStyle
+                shouldUpdate={(prevValues, currentValues) => {
+                  return criteriaList.some(
+                    (item) => prevValues[`weight_${item.id}`] !== currentValues[`weight_${item.id}`]
+                  );
+                }}
               >
                 <Switch
                   checkedChildren="AI Active"

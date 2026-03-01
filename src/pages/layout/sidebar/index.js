@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import Button from '@/components/Button';
 import authService from '@/services/authService';
@@ -9,7 +9,8 @@ const menuItems = [
   { icon: 'people', label: 'Recruiters', path: '/recruiters' },
   { icon: 'work_outline', label: 'Jobs', path: '/jobs' },
   { icon: 'business', label: 'Company', path: '/company' },
-  { icon: 'badge', label: 'Candidates', path: '/candidates' },
+  { icon: 'badge', label: 'Applications', path: '/applications' },
+  { icon: 'credit_card', label: 'Billing & Plans', path: '/billing-plans' },
   { icon: 'insights', label: 'Reports', path: '/reports' },
 ];
 
@@ -67,14 +68,12 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
                 }
                 title={collapsed && !isMobile ? item.label : ''}
               >
-                {({ isActive }) => (
-                  <>
-                    <span className={`material-icons-outlined ${!isActive ? 'group-hover:text-primary transition-colors' : ''}`}>
-                      {item.icon}
-                    </span>
-                    {(!collapsed || isMobile) && item.label}
-                  </>
-                )}
+                <>
+                  <span className="material-icons-outlined group-hover:text-primary transition-colors">
+                    {item.icon}
+                  </span>
+                  {(!collapsed || isMobile) && item.label}
+                </>
               </NavLink>
             ))}
           </nav>
@@ -101,14 +100,12 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
                 }
                 title={collapsed && !isMobile ? item.label : ''}
               >
-                {({ isActive }) => (
-                  <>
-                    <span className={`material-icons-outlined ${!isActive ? 'group-hover:text-primary transition-colors' : ''}`}>
-                      {item.icon}
-                    </span>
-                    {(!collapsed || isMobile) && item.label}
-                  </>
-                )}
+                <>
+                  <span className="material-icons-outlined group-hover:text-primary transition-colors">
+                    {item.icon}
+                  </span>
+                  {(!collapsed || isMobile) && item.label}
+                </>
               </NavLink>
             ))}
           </nav>
@@ -126,14 +123,17 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
               Unlock premium features like AI candidate matching.
             </p>
-            <Button
-              fullWidth
-              mode="primary"
-              shape="rounded"
-              className=""
-            >
-              View Plans
-            </Button>
+            <Link to="/billing-plans" className="block w-full">
+              <Button
+                fullWidth
+                mode="primary"
+                shape="rounded"
+                className=""
+                onClick={onMobileClose}
+              >
+                View Plans
+              </Button>
+            </Link>
           </div>
         </div>
       )}

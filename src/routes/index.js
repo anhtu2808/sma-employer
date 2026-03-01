@@ -11,6 +11,7 @@ import JobCreate from '@/pages/jobs/job-create';
 import JobDetail from '@/pages/job-detail';
 import Login from '@/pages/login';
 import ApplicationManagement from "../pages/application";
+import BillingPlans from '@/pages/billing-plans';
 
 export const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -21,12 +22,14 @@ export const routes = createBrowserRouter(
                 <Route path="recruiters" element={<Dashboard />} />
                 <Route path="jobs" element={<JobsList />} />
                 <Route path="jobs/create" element={<JobCreate />} />
+                <Route path="jobs/:id/edit" element={<JobCreate />} />
                 <Route path="jobs/:id" element={<JobDetail />} />
                 <Route path="company" element={<CompanyProfile />} />
-                <Route path="candidates" element={<ApplicationManagement />} />
+                <Route path="applications" element={<ApplicationManagement />} />
                 <Route path="reports" element={<Dashboard />} />
                 <Route path="settings" element={<Dashboard />} />
                 <Route path="help" element={<Dashboard />} />
+                <Route path="billing-plans" element={<BillingPlans />} />
             </Route>
             <Route path="/" element={<Home />} />
             <Route path="ui-kit" element={<UiKit />} />
