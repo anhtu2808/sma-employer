@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '@/components/Button';
 
-const JobHeader = ({ job, formatDate, formatSalary }) => {
+const JobHeader = ({ job, formatDate, formatSalary, onCloneJob, onCloseJob, onEditExpDate, isClosingJob }) => {
     const getInitials = (name) => {
         return name
             ? name
@@ -25,9 +25,19 @@ const JobHeader = ({ job, formatDate, formatSalary }) => {
                     {/* Title Row */}
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                         <div>
-                            <div className="flex items-center gap-3 flex-wrap">
-                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                            <div className="flex items-center gap-3 flex-wrap mb-2">
+                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                                     {job.name}
+                                    {job.status && (
+                                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                                            job.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' :
+                                            job.status === 'CLOSED' ? 'bg-red-100 text-red-700' :
+                                            job.status === 'DRAFT' ? 'bg-gray-100 text-gray-700' :
+                                            'bg-blue-100 text-blue-700'
+                                        }`}>
+                                            {job.status}
+                                        </span>
+                                    )}
                                 </h1>
                                 <span className="text-gray-400 text-xl hidden md:inline">|</span>
                                 <span className="text-gray-500 font-medium">
@@ -35,18 +45,27 @@ const JobHeader = ({ job, formatDate, formatSalary }) => {
                                 </span>
                             </div>
                         </div>
-                        <Button
-                            mode="secondary"
-                            size="sm"
-                            iconLeft={<span className="material-icons-round text-sm">content_copy</span>}
-                            className="shrink-0"
-                            onClick={() => {
-                                // Placeholder for clone action
-                                console.log('Clone job clicked');
-                            }}
-                        >
-                            Clone Job
-                        </Button>
+                        <div className="flex gap-2 flex-wrap shrink-0">
+                            {job.status === 'PUBLISHED' && (
+                                <Button
+                                    mode="danger"
+                                    size="sm"
+                                    iconLeft={<span className="material-icons-round text-sm">block</span>}
+                                    onClick={onCloseJob}
+                                    isLoading={isClosingJob}
+                                >
+                                    Close Job
+                                </Button>
+                            )}
+                            <Button
+                                mode="secondary"
+                                size="sm"
+                                iconLeft={<span className="material-icons-round text-sm">content_copy</span>}
+                                onClick={onCloneJob}
+                            >
+                                Clone Job
+                            </Button>
+                        </div>
                     </div>
 
                     {/* Meta Info Row */}
@@ -76,7 +95,18 @@ const JobHeader = ({ job, formatDate, formatSalary }) => {
                         {job.expDate && (
                             <div className="flex items-center gap-2">
                                 <span className="material-icons-round text-red-500 text-lg">event_busy</span>
-                                <span className="text-red-600 font-medium">Deadline: {formatDate(job.expDate)}</span>
+                                <span className="text-red-600 font-medium flex items-center gap-2">
+                                    Deadline: {formatDate(job.expDate)}
+                                    {job.jobStatus !== 'CLOSED' && (
+                                        <div 
+                                            className="material-icons-round text-sm cursor-pointer hover:text-red-800 transition-colors p-1"
+                                            onClick={onEditExpDate}
+                                            title="Update Expired Date"
+                                        >
+                                            edit
+                                        </div>
+                                    )}
+                                </span>
                             </div>
                         )}
                     </div>

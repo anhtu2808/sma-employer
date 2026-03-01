@@ -39,6 +39,14 @@ export const jobApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Jobs"],
     }),
+    updateExpiredDate: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `${API_VERSION}/jobs/${id}/expired-date`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Jobs"],
+    }),
     saveJobDraft: builder.mutation({
       query: ({ id, body }) => ({
         url: `${API_VERSION}/jobs/${id}/save`,
@@ -59,6 +67,7 @@ export const {
   useCreateJobMutation,
   useUpdateJobStatusMutation,
   usePublishJobMutation,
+  useUpdateExpiredDateMutation,
   useSaveJobDraftMutation,
   useGetCriteriaQuery,
 } = jobApi;

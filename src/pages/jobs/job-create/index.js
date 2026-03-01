@@ -6,8 +6,10 @@ import {
   useCreateJobMutation,
   usePublishJobMutation,
   useGetCriteriaQuery,
+  useGetJobDetailQuery,
 } from "@/apis/jobApi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import dayjs from "dayjs";
 
 // Components
 import JobIdentity from "./components/JobIdentity";
@@ -26,12 +28,41 @@ import ScreeningQuestions from "./components/ScreeningQuestions";
 
 const JobCreate = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [form] = Form.useForm();
   const [submitAction, setSubmitAction] = useState("publish");
+  
+  const clonedJobId = location.state?.clonedJobId;
+  const { data: jobData } = useGetJobDetailQuery(clonedJobId, { skip: !clonedJobId });
+  const clonedJob = jobData?.data;
 
   const [createJob, { isLoading: isDrafting }] = useCreateJobMutation();
   const [publishJob, { isLoading: isPublishing }] = usePublishJobMutation();
   const { data: criteriaRes } = useGetCriteriaQuery();
+
+  React.useEffect(() => {
+    if (clonedJob) {
+      const initialValues = {
+        ...clonedJob,
+        expDate: clonedJob.expDate ? dayjs(clonedJob.expDate) : undefined,
+        skillIds: clonedJob.skills?.map(s => s.id) || clonedJob.skillIds,
+        domainIds: clonedJob.domains?.map(d => d.id) || clonedJob.domainIds,
+        benefitIds: clonedJob.benefits?.map(b => b.id) || clonedJob.benefitIds,
+        locationIds: clonedJob.locations?.map(l => l.id) || clonedJob.locationIds,
+        questionIds: clonedJob.questions?.map(q => q.id) || clonedJob.questionIds,
+        expertiseId: clonedJob.expertise?.id || clonedJob.expertiseId,
+      };
+      
+      if (clonedJob.scoringCriterias) {
+        clonedJob.scoringCriterias.forEach((c) => {
+          const criteriaId = c.criteria?.id || c.criteriaId;
+          initialValues[`weight_${criteriaId}`] = c.weight;
+          initialValues[`enable_${criteriaId}`] = c.enable;
+        });
+      }
+      form.setFieldsValue(initialValues);
+    }
+  }, [clonedJob, form]);
 
   const onFinish = async (values) => {
     try {
@@ -75,7 +106,7 @@ const JobCreate = () => {
         quantity: Number(values.quantity) || 1, // Default to 1 if not set
         autoRejectThreshold: Number(values.autoRejectThreshold) || 0,
         expertiseId: values.expertiseId || 0,
-        rootId: null, // Default as per requirement
+        rootId: clonedJob ? clonedJob.id : null,
       };
 
       // Remove temporary fields
