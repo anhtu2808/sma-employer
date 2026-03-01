@@ -8,9 +8,8 @@ import {
   useSaveJobDraftMutation,
   useGetJobDetailQuery,
   useGetCriteriaQuery,
-  useGetJobDetailQuery,
 } from "@/apis/jobApi";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 
 // Components
@@ -34,7 +33,8 @@ const JobCreate = () => {
   const [submitAction, setSubmitAction] = useState("publish");
   
   const clonedJobId = location.state?.clonedJobId;
-  const { data: jobData } = useGetJobDetailQuery(clonedJobId, { skip: !clonedJobId });
+  const targetId = isEditMode ? id : clonedJobId;
+  const { data: jobData, isLoading: isJobLoading } = useGetJobDetailQuery(targetId, { skip: !targetId });
   const clonedJob = jobData?.data;
 
   const [createJob, { isLoading: isDrafting }] = useCreateJobMutation();

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Tag, Dropdown, message } from 'antd';
-import { useNavigate } from 'react-router-dom';
 import JobSkills from './JobSkills';
 import Button from '@/components/Button';
 import { useUpdateJobStatusMutation } from '@/apis/jobApi';
@@ -16,19 +15,7 @@ const JobHeader = ({ job, formatDate, formatSalary, onCloneJob, onCloseJob, onEd
                 .slice(0, 2)
             : 'JB';
     };
-
-    const statusItems = [
-        { label: 'Published', key: 'PUBLISHED' },
-        { label: 'Draft', key: 'DRAFT' },
-        { label: 'Pending Review', key: 'PENDING_REVIEW' },
-        { label: 'Suspended', key: 'SUSPENDED' },
-        { label: 'Closed', key: 'CLOSED' },
-    ];
-
-    const menuProps = {
-        items: statusItems,
-        onClick: ({ key }) => handleStatusChange(key),
-    };
+ 
     return (
         <div className="border-b border-gray-100 dark:border-gray-700 pb-8">
             <div className="flex flex-col md:flex-row gap-6 items-start">
@@ -83,58 +70,7 @@ const JobHeader = ({ job, formatDate, formatSalary, onCloneJob, onCloseJob, onEd
                             </Button>
                         </div>
                     </div>
-
-                    {/* Meta Info Row */}
-                    <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-gray-500 dark:text-gray-400">
-                        <div className="flex items-center gap-2">
-                            <span className="material-icons-round text-orange-500 text-lg">place</span>
-                            <span>{job.company?.country || job.location || 'Vietnam'}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="material-icons-round text-orange-500 text-lg">payments</span>
-                            <span className="font-medium text-gray-700 dark:text-gray-300">
-                                {formatSalary(job.salaryStart, job.salaryEnd, job.currency)}
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="material-icons-round text-orange-500 text-lg">work_outline</span>
-                            <span className="capitalize">{job.workingModel?.toLowerCase().replace('_', ' ')}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="material-icons-round text-orange-500 text-lg">stars</span>
-                            <span className="capitalize">{job.jobLevel?.toLowerCase()} Level</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="material-icons-round text-orange-500 text-lg">schedule</span>
-                            <span>Posted {formatDate(job.uploadTime || job.createdAt)}</span>
-                        </div>
-                        {job.expDate && (
-                            <div className="flex items-center gap-2">
-                                <span className="material-icons-round text-red-500 text-lg">event_busy</span>
-                                <span className="text-red-600 font-medium flex items-center gap-2">
-                                    Deadline: {formatDate(job.expDate)}
-                                    {job.jobStatus !== 'CLOSED' && (
-                                        <div 
-                                            className="material-icons-round text-sm cursor-pointer hover:text-red-800 transition-colors p-1"
-                                            onClick={onEditExpDate}
-                                            title="Update Expired Date"
-                                        >
-                                            edit
-                                        </div>
-                                    )}
-                                </span>
-                            </div>
-                        )}
-                    </div>
                 </div>
-                <Button
-                    mode="secondary"
-                    size="sm"
-                    className="shrink-0"
-                    iconLeft={<span className="material-icons-round text-sm">content_copy</span>}
-                >
-                    Clone Job
-                </Button>
             </div>
 
             {/* Meta Info Row */}
@@ -201,26 +137,6 @@ const JobHeader = ({ job, formatDate, formatSalary, onCloneJob, onCloseJob, onEd
                 )}
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-                <Button
-                    mode="primary"
-                    size="sm"
-                    iconLeft={<span className="material-icons-round text-sm">edit</span>}
-                    onClick={() => navigate(`/jobs/${job.id}/edit`)}
-                >
-                    Update Job
-                </Button>
-                <Dropdown menu={menuProps} trigger={['click']} placement="bottomRight">
-                    <Button
-                        mode="secondary"
-                        size="sm"
-                        iconLeft={<span className="material-icons-round text-sm">swap_horiz</span>}
-                    >
-                        Change Status
-                    </Button>
-                </Dropdown>
-            </div>
         </div>
     );
 };

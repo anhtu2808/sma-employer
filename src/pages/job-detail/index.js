@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetJobDetailQuery } from '@/apis/apis';
 import { useUpdateJobStatusMutation, useUpdateExpiredDateMutation } from '@/apis/jobApi';
@@ -8,16 +8,6 @@ import dayjs from 'dayjs';
 import JobHeader from './components/JobHeader';
 import JobDescription from './components/JobDescription';
 import { PageHeaderContext } from '@/contexts/PageHeaderContext';
-
-const INDUSTRY_LABELS = {
-    INFORMATION_TECHNOLOGY: 'Information Technology',
-    FINANCE: 'Finance',
-    MARKETING: 'Marketing',
-    CONSTRUCTION: 'Construction',
-    EDUCATION: 'Education',
-    HEALTHCARE: 'Healthcare',
-    OTHER: 'Other',
-};
 
 const JobDetail = () => {
     const { id } = useParams();
