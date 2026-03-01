@@ -43,16 +43,19 @@ const JobCreate = () => {
           values[`weight_${item.id}`] !== undefined
             ? values[`weight_${item.id}`]
             : item.defaultWeight,
-        enable: values.enableAiScoring,
+        enable:
+          values[`enable_${item.id}`] !== undefined
+            ? values[`enable_${item.id}`]
+            : true,
       }));
 
       const totalWeight = scoringCriterias.reduce(
-        (sum, item) => sum + item.weight,
+        (sum, item) => sum + (item.enable ? item.weight : 0),
         0,
       );
       if (values.enableAiScoring && totalWeight !== 100) {
         message.error(
-          `Total scoring weight must be 100%. Current: ${totalWeight}%`,
+          `Total scoring weight of enabled criteria must be 100%. Current: ${totalWeight}%`,
         );
         return;
       }
@@ -78,6 +81,7 @@ const JobCreate = () => {
       // Remove temporary fields
       criteriaList.forEach((item) => {
         delete submitData[`weight_${item.id}`];
+        delete submitData[`enable_${item.id}`];
       });
       
       // 1. Always create draft first
