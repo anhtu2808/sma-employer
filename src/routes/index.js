@@ -10,8 +10,9 @@ import JobsList from '@/pages/jobs';
 import JobCreate from '@/pages/jobs/job-create';
 import JobDetail from '@/pages/job-detail';
 import Login from '@/pages/login';
-import ApplicationManagement from "../pages/application";
+import ApplicationManagement from "@/pages/application";
 import BillingPlans from '@/pages/billing-plans';
+import ApplicationDetail from "@/pages/application/detail";
 
 export const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -26,6 +27,7 @@ export const routes = createBrowserRouter(
                 <Route path="jobs/:id" element={<JobDetail />} />
                 <Route path="company" element={<CompanyProfile />} />
                 <Route path="applications" element={<ApplicationManagement />} />
+                <Route path="applications/:id" element={<ApplicationDetail />} />
                 <Route path="reports" element={<Dashboard />} />
                 <Route path="settings" element={<Dashboard />} />
                 <Route path="help" element={<Dashboard />} />

@@ -1,11 +1,14 @@
 import React from 'react';
-import { ExternalLink, Mail, Calendar, MapPin, MoreVertical, Brain } from 'lucide-react';
+import { ExternalLink, Mail, Calendar, MapPin, MoreVertical } from 'lucide-react';
 import moment from 'moment';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Menu, Dropdown } from 'antd';
+import { ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { Dropdown } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import { getApplicationStatusConfig } from '@/constrant/application';
 import Loading from '@/components/Loading';
+
 const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPage, onPageChange, onStatusUpdate }) => {
+    const navigate = useNavigate();
 
     const getStatusMenu = (app) => {
         const statuses = ['APPLIED', 'VIEWED', 'SHORTLISTED', 'NOT_SUITABLE', 'AUTO_REJECTED'];
@@ -58,8 +61,8 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                                         <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-black text-xs border border-orange-200">
                                             {app.candidateName.substring(0, 2).toUpperCase()}
                                         </div>
-                                        <div className="min-w-0">
-                                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                        <div className="min-w-0 flex-1 cursor-pointer" onClick={() => navigate(`/applications/${app.applicationId}`)}>
+                                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate group-hover:text-primary group-hover:underline transition-colors">
                                                 {app.candidateName}
                                             </p>
                                             <p className="text-xs text-gray-500 flex items-center gap-1 truncate lowercase leading-none mt-1">
@@ -89,6 +92,15 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                                 </td>
                                 <td className="px-6 py-4 text-center">
                                     <div className="flex items-center justify-center gap-1">
+                                        {/* View Details Button */}
+                                        <button
+                                            onClick={() => navigate(`/applications/${app.applicationId}`)}
+                                            className="p-2.5 bg-gray-50 dark:bg-neutral-800 hover:bg-orange-500/10 text-gray-400 hover:text-orange-500 rounded-xl transition-all border border-transparent hover:border-orange-500/20"
+                                            title="View Details"
+                                        >
+                                            <Eye size={16} />
+                                        </button>
+
                                         {/* View CV Button */}
                                         <button
                                             onClick={() => window.open(app.resumeUrl, '_blank')}
