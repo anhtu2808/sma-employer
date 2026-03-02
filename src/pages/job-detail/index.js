@@ -1,21 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetJobDetailQuery } from '@/apis/apis';
+import { useUpdateJobStatusMutation, useUpdateExpiredDateMutation } from '@/apis/jobApi';
 import Button from '@/components/Button';
-import { Skeleton, Tag } from 'antd';
+import { Skeleton, Tabs, ConfigProvider, Modal, DatePicker, message } from 'antd';
+import dayjs from 'dayjs';
 import JobHeader from './components/JobHeader';
 import JobDescription from './components/JobDescription';
 import { PageHeaderContext } from '@/contexts/PageHeaderContext';
-
-const INDUSTRY_LABELS = {
-    INFORMATION_TECHNOLOGY: 'Information Technology',
-    FINANCE: 'Finance',
-    MARKETING: 'Marketing',
-    CONSTRUCTION: 'Construction',
-    EDUCATION: 'Education',
-    HEALTHCARE: 'Healthcare',
-    OTHER: 'Other',
-};
 
 const JobDetail = () => {
     const { id } = useParams();
@@ -25,18 +17,50 @@ const JobDetail = () => {
     const { data: jobData, isLoading, error } = useGetJobDetailQuery(id);
     const job = jobData?.data;
 
-    const tabs = [
-        { key: 'details', label: 'Job Details' },
-        { key: 'applicants', label: 'Applicants' },
-        { key: 'proposed', label: 'Proposed CVs' },
-    ];
+    const [updateJobStatus, { isLoading: isClosingJob }] = useUpdateJobStatusMutation();
+    const [updateExpiredDate, { isLoading: isUpdatingExpDate }] = useUpdateExpiredDateMutation();
+    
+    const [isExpDateModalVisible, setIsExpDateModalVisible] = useState(false);
+    const [newExpDate, setNewExpDate] = useState(null);
 
-    useEffect(() => {
-        if (job?.name) {
-            setHeaderConfig({ title: job.name, description: 'Job details and applicants' });
+    const handleCloseJob = () => {
+        Modal.confirm({
+            title: 'Close Job',
+            content: 'Are you sure you want to close this job? This action cannot be undone.',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk: async () => {
+                try {
+                    await updateJobStatus({ id: job.id, status: 'CLOSED' }).unwrap();
+                    message.success('Job closed successfully');
+                } catch (err) {
+                    message.error('Failed to close job');
+                }
+            }
+        });
+    };
+
+    const handleCloneJob = () => {
+        navigate('/jobs/create', { state: { clonedJobId: job.id } });
+    };
+
+    const handleUpdateExpDate = async () => {
+        if (!newExpDate) {
+            message.warning('Please select a new expiration date');
+            return;
         }
-        return () => setHeaderConfig({ title: 'Jobs', description: 'Manage your job postings' });
-    }, [job?.name, setHeaderConfig]);
+        try {
+            await updateExpiredDate({
+                id: job.id,
+                body: { expDate: newExpDate.toISOString() }
+            }).unwrap();
+            message.success('Expiration date updated successfully');
+            setIsExpDateModalVisible(false);
+        } catch (err) {
+            message.error('Failed to update expiration date');
+        }
+    };
 
     if (isLoading) {
         return <div className="p-8"><Skeleton active /></div>;
@@ -70,11 +94,39 @@ const JobDetail = () => {
         return `${formatter(min)} - ${formatter(max)} ${suffix}`;
     };
 
-    const getInitials = (name) => {
-        return name
-            ? name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-            : 'CO';
-    };
+    const tabItems = [
+        {
+            key: '1',
+            label: 'Job Details',
+            children: (
+                <div className="bg-white dark:bg-gray-800 p-8 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-8">
+                    <JobHeader 
+                        job={job} 
+                        formatDate={formatDate} 
+                        formatSalary={formatSalary} 
+                        onCloseJob={handleCloseJob}
+                        onCloneJob={handleCloneJob}
+                        onEditExpDate={() => {
+                            setNewExpDate(job.expDate ? dayjs(job.expDate) : null);
+                            setIsExpDateModalVisible(true);
+                        }}
+                        isClosingJob={isClosingJob}
+                    />
+                    <JobDescription job={job} />
+                </div>
+            ),
+        },
+        {
+            key: '2',
+            label: 'Applicants',
+            children: <div className="p-4 text-center text-gray-500">No applicants yet.</div>,
+        },
+        {
+            key: '3',
+            label: 'Proposed CVs',
+            children: <div className="p-4 text-center text-gray-500">No proposed CVs.</div>,
+        },
+    ];
 
     return (
         <div className="w-full max-w-[95%] mx-auto space-y-4">
@@ -87,103 +139,33 @@ const JobDetail = () => {
             >
                 Back to Jobs
             </Button>
-            {/* Tab Navigation */}
-            <div className="flex items-center gap-6 border-b border-gray-200 dark:border-gray-700">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.key}
-                        onClick={() => setActiveTab(tab.key)}
-                        className={`pb-3 text-sm font-medium transition-colors border-b-2 -mb-px ${activeTab === tab.key
-                            ? 'text-primary border-primary'
-                            : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 border-transparent'
-                            }`}
-                    >
-                        {tab.label}
-                    </button>
-                ))}
-            </div>
-
-            {/* Tab Content */}
-            {activeTab === 'details' && (
-                /* Two-column layout */
-                <div className="flex flex-col lg:flex-row gap-6">
-                    {/* Main Content - Left Column */}
-                    <div className="flex-1 min-w-0 space-y-6">
-                        {/* Job Header Card */}
-                        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 md:p-8">
-                            <JobHeader job={job} formatDate={formatDate} formatSalary={formatSalary} />
-                        </div>
-
-                        {/* Job Description Card */}
-                        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 md:p-8">
-                            <JobDescription job={job} />
-                        </div>
-                    </div>
-
-                    {/* Sidebar - Right Column */}
-                    <div className="w-full lg:w-80 shrink-0 space-y-6">
-                        {/* Company Info Card */}
-                        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
-                            <div className="flex items-start gap-3 mb-4">
-                                <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-lg font-bold text-gray-600 dark:text-gray-300 shrink-0">
-                                    {job.company?.logo ? (
-                                        <img src={job.company.logo} alt={job.company.name} className="w-full h-full rounded-lg object-cover" />
-                                    ) : (
-                                        getInitials(job.company?.name)
-                                    )}
-                                </div>
-                                <div className="min-w-0">
-                                    <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug">
-                                        {job.company?.name || 'Company Name'}
-                                    </h3>
-                                    {job.company?.link && (
-                                        <a
-                                            href={job.company.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-primary hover:underline text-sm flex items-center gap-1 mt-1"
-                                        >
-                                            {job.company.link.replace(/^https?:\/\/(www\.)?/, '')}
-                                            <span className="material-icons-round text-sm">open_in_new</span>
-                                        </a>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-gray-700">
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-gray-500">Location</span>
-                                    <span className="font-medium text-gray-900 dark:text-white">{job.company?.country || 'N/A'}</span>
-                                </div>
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-gray-500">Industry</span>
-                                    <span className="font-medium text-gray-900 dark:text-white">
-                                        {INDUSTRY_LABELS[job.company?.companyIndustry] || job.company?.companyIndustry || 'N/A'}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                    </div>
+            <ConfigProvider
+                theme={{
+                    token: {
+                        colorPrimary: '#f97316',
+                    },
+                }}
+            >
+                <Tabs defaultActiveKey="1" items={tabItems} className="custom-tabs" />
+            </ConfigProvider>
+            
+            <Modal
+                title="Update Expired Date"
+                open={isExpDateModalVisible}
+                onOk={handleUpdateExpDate}
+                onCancel={() => setIsExpDateModalVisible(false)}
+                confirmLoading={isUpdatingExpDate}
+            >
+                <div className="py-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">New Expiration Date</label>
+                    <DatePicker 
+                        className="w-full" 
+                        value={newExpDate} 
+                        onChange={(date) => setNewExpDate(date)} 
+                        disabledDate={(current) => current && current < dayjs().endOf('day')}
+                    />
                 </div>
-            )}
-
-            {activeTab === 'applicants' && (
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-8 text-center">
-                    <span className="material-icons-round text-gray-300 text-5xl mb-3">people</span>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Applicants</h3>
-                    <p className="text-sm text-gray-400">Applicant management will be shown here</p>
-                </div>
-            )}
-
-            {activeTab === 'proposed' && (
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-8 text-center">
-                    <span className="material-icons-round text-gray-300 text-5xl mb-3">description</span>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Proposed CVs</h3>
-                    <p className="text-sm text-gray-400">AI-proposed candidate CVs will be shown here</p>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };
