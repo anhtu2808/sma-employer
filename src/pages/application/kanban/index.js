@@ -4,11 +4,14 @@ import { Mail, Calendar, MapPin, Brain, Paperclip } from 'lucide-react';
 import moment from 'moment';
 import { getApplicationStatusConfig } from '@/constrant/application';
 
+import { useNavigate } from 'react-router-dom';
+
 const KanbanBoard = ({
     statusColumns,
     getCandidatesByStatus,
     onDragEnd,
 }) => {
+    const navigate = useNavigate();
 
     const getAIMatchTag = (score) => {
         if (!score) return { label: 'N/A', bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-500 dark:text-gray-400' };
@@ -96,7 +99,10 @@ const KanbanBoard = ({
                                                                     </div>
 
                                                                     {/* Candidate Name */}
-                                                                    <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary transition-colors truncate">
+                                                                    <h4 
+                                                                        className="text-base font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary transition-colors truncate cursor-pointer hover:underline"
+                                                                        onClick={() => navigate(`/applications/${app.applicationId}`)}
+                                                                    >
                                                                         {app.candidateName}
                                                                     </h4>
 
