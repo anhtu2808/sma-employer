@@ -2,13 +2,14 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { useGetApplicationsQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
 import { useGetJobsQuery } from '@/apis/jobApi';
 
-import { Drawer, Spin } from 'antd';
+import { Drawer } from 'antd';
 import FilterSidebar from './filterSidebar';
 import ApplicationList from './list';
 import KanbanBoard from './kanban';
 import { message } from 'antd';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import Modal from '@/components/Modal';
+import Loading from '@/components/Loading';
 import ApplicationHeader from './header';
 
 const STATUS_COLUMNS = [
@@ -68,7 +69,7 @@ const ApplicationManagement = () => {
         return appData?.data?.content?.filter(app => app.status === status) || [];
     };
 
-    if (isJobsLoading) return <div className="h-full flex items-center justify-center"><Spin size="large" tip="Loading jobs..." /></div>;
+    if (isJobsLoading) return <Loading className="py-16" />;
 
     const jobs = jobsResponse?.data?.content || [];
 
@@ -134,7 +135,7 @@ const ApplicationManagement = () => {
             <div className="flex-1 min-h-0 relative">
                 {isAppLoading && (
                     <div className="absolute inset-0 bg-white/40 dark:bg-black/20 z-50 flex items-center justify-center backdrop-blur-sm rounded-[24px]">
-                        <Spin size="large" />
+                        <Loading size={92} inline />
                     </div>
                 )}
 

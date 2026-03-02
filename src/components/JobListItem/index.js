@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Dropdown, message } from 'antd';
-import { useUpdateJobStatusMutation } from '@/apis/jobApi';
+import { Eye } from 'lucide-react';
+import { getJobStatusConfig } from '@/constrant';
 import Button from '@/components/Button';
 
 const JobListItem = ({
@@ -17,31 +17,7 @@ const JobListItem = ({
     onViewDetails,
     className = ''
 }) => {
-    const isActive = status === 'PUBLISHED';
-    const [updateJobStatus] = useUpdateJobStatusMutation();
-
-    const handleStatusChange = async (newStatus) => {
-        try {
-            await updateJobStatus({ id, status: newStatus }).unwrap();
-            message.success(`Job status updated to ${newStatus}`);
-        } catch (error) {
-            console.error('Failed to update job status:', error);
-            message.error('Failed to update job status');
-        }
-    };
-
-    const statusItems = [
-        { label: 'Published', key: 'PUBLISHED' },
-        { label: 'Draft', key: 'DRAFT' },
-        { label: 'Pending Review', key: 'PENDING_REVIEW' },
-        { label: 'Suspended', key: 'SUSPENDED' },
-        { label: 'Closed', key: 'CLOSED' },
-    ];
-
-    const menuProps = {
-        items: statusItems,
-        onClick: ({ key }) => handleStatusChange(key),
-    };
+    const statusConfig = getJobStatusConfig(status);
 
     return (
         <div className={`bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center hover:shadow-md transition-shadow ${className}`}>
@@ -50,12 +26,6 @@ const JobListItem = ({
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white hover:text-primary cursor-pointer transition-colors" onClick={onViewDetails}>
                         {title}
                     </h3>
-                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${isActive
-                        ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800'
-                        : 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600'
-                        }`}>
-                        {status}
-                    </span>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
@@ -108,20 +78,21 @@ const JobListItem = ({
                 </div>
             </div>
 
-            <div className="flex items-center gap-3 shrink-0 w-full md:w-auto mt-2 md:mt-0 self-center">
+            <div className="flex items-center gap-4 shrink-0 w-full md:w-auto mt-2 md:mt-0 self-center pr-2">
+                {/* <div className={`h-10 px-4 flex items-center justify-center bg-white border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg text-sm font-medium ${statusConfig.color}`}>
+                    {statusConfig.label}
+                </div> */}
                 <Button
                     mode="secondary"
-                    size="sm"
+                    size="md"
+                    shape="round"
+                    btnIcon
+                    tooltip="View Details"
                     className="border-gray-300 dark:border-gray-600"
                     onClick={onViewDetails}
                 >
-                    View Details
+                    <Eye size={18} />
                 </Button>
-                <Dropdown menu={menuProps} trigger={['click']} placement="bottomRight">
-                    <button className="flex items-center justify-center w-9 h-9 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-600">
-                        <span className="material-icons-round text-xl">more_horiz</span>
-                    </button>
-                </Dropdown>
             </div>
         </div>
     );

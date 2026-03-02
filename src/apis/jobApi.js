@@ -11,6 +11,13 @@ export const jobApi = api.injectEndpoints({
       }),
       providesTags: ["Jobs"],
     }),
+    getMyJobStatusCount: builder.query({
+      query: () => ({
+        url: `${API_VERSION}/jobs/status-count`,
+        method: "GET",
+      }),
+      providesTags: ["Jobs"],
+    }),
     getJobDetail: builder.query({
       query: (id) => `${API_VERSION}/jobs/${id}`,
       providesTags: (result, error, id) => [{ type: "Jobs", id }],
@@ -63,6 +70,7 @@ export const jobApi = api.injectEndpoints({
 
 export const {
   useGetJobsQuery,
+  useGetMyJobStatusCountQuery,
   useGetJobDetailQuery,
   useCreateJobMutation,
   useUpdateJobStatusMutation,
