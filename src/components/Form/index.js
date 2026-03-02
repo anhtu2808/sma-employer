@@ -22,6 +22,7 @@ const Form = ({ children, ...props }) => {
 Form.Item = AntForm.Item;
 Form.List = AntForm.List;
 Form.useForm = AntForm.useForm;
+Form.useWatch = AntForm.useWatch;
 Form.Provider = AntForm.Provider;
 Form.ErrorList = AntForm.ErrorList;
 
