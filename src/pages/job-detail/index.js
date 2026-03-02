@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useGetJobDetailQuery } from '@/apis/apis';
 import { useUpdateJobStatusMutation, useUpdateExpiredDateMutation } from '@/apis/jobApi';
 import Button from '@/components/Button';
+import Loading from '@/components/Loading';
 import { Skeleton, Tabs, ConfigProvider, Modal, DatePicker, message, Select } from 'antd';
 import dayjs from 'dayjs';
 import JobHeader from './components/JobHeader';
@@ -63,7 +64,7 @@ const JobDetail = () => {
     };
 
     if (isLoading) {
-        return <div className="p-8"><Skeleton active /></div>;
+        return <Loading className="py-16" />;
     }
 
     if (error || !job) {
@@ -177,6 +178,7 @@ const JobDetail = () => {
                                 </div>
                                 <Button
                                     mode="primary"
+                                    shape='round'
                                     className="h-10 px-6 shrink-0"
                                     onClick={() => navigate(`/jobs/${job.id}/edit`)}
                                     iconLeft={<span className="material-icons-round text-sm">edit</span>}

@@ -3,6 +3,7 @@ import { useGetPlansQuery } from "@/apis/planApi";
 import { useGetFeatureUsageQuery } from "@/apis/featureUsageApi";
 import Plans from "./plans";
 import { usePageHeader } from "@/hooks/usePageHeader";
+import Loading from "@/components/Loading";
 
 const mapQuotas = (quotas) => {
   if (!Array.isArray(quotas)) return [];
@@ -82,7 +83,7 @@ const BillingPlans = () => {
 
                 <div className="space-y-6">
                   {isUsageLoading ? (
-                    <p className="text-sm text-gray-400">Loading quotas...</p>
+                    <Loading size={84} className="py-4" />
                   ) : quotas.length === 0 ? (
                     <p className="text-sm text-gray-400">No quota data available.</p>
                   ) : (
@@ -116,7 +117,7 @@ const BillingPlans = () => {
       </div>
 
       <div className="w-full">
-        {isPlansLoading ? <p className="text-sm text-gray-400">Loading plans...</p> : <Plans plans={plans} currentPlanId={currentPlanId} />}
+        {isPlansLoading ? <Loading size={96} className="py-8" /> : <Plans plans={plans} currentPlanId={currentPlanId} />}
       </div>
 
       <div className="w-full">

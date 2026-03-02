@@ -1,22 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { Select, ConfigProvider } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ConfigProvider, Tabs } from 'antd';
 import Input from '@/components/Input';
-import { useGetJobsQuery } from '@/apis/apis';
+import { useGetJobsQuery, useGetMyJobStatusCountQuery } from '@/apis/apis';
 import JobListItem from '@/components/JobListItem';
 import Pagination from '@/components/Pagination';
 import Button from '@/components/Button';
+import Loading from '@/components/Loading';
 import { useNavigate } from 'react-router-dom';
+import { JOB_STATUS_TABS } from '@/constrant';
+import JobFilterDrawer from './filter-drawer';
+
+const createDefaultFilters = () => ({
+    workingModel: null,
+    jobLevel: null,
+    locationId: null,
+    expertiseId: null,
+    domainId: [],
+    skillId: [],
+    salaryStart: null,
+    salaryEnd: null,
+    minExperienceTime: null,
+    maxExperienceTime: null,
+});
+
+const isValidNumber = (value) => typeof value === 'number' && !Number.isNaN(value);
 
 const JobsList = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [status, setStatus] = useState(null);
-    const [workingModel, setWorkingModel] = useState(null);
-    const [jobLevel, setJobLevel] = useState(null);
-    const [location, setLocation] = useState(null);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [appliedFilters, setAppliedFilters] = useState(() => createDefaultFilters());
 
-    // Debounce search term
-    // Debounce search term
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -26,26 +41,65 @@ const JobsList = () => {
     }, [searchTerm]);
 
     const [page, setPage] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize] = useState(10);
 
-    // Reset page when filters change
     useEffect(() => {
         setPage(0);
-    }, [searchTerm, status, workingModel, jobLevel, location, debouncedSearchTerm]);
+    }, [debouncedSearchTerm, status, appliedFilters]);
 
-    const { data: jobsData, isLoading: isJobsLoading } = useGetJobsQuery({
-        name: debouncedSearchTerm || undefined,
-        status,
-        workingModel,
-        jobLevel,
-        location,
-        page,
-        size: pageSize
-    });
+    const queryParams = useMemo(
+        () => ({
+            ...(debouncedSearchTerm && { name: debouncedSearchTerm }),
+            ...(status && { status }),
+            ...(appliedFilters.workingModel && { workingModel: appliedFilters.workingModel }),
+            ...(appliedFilters.jobLevel && { jobLevel: appliedFilters.jobLevel }),
+            ...(appliedFilters.locationId != null && { locationId: appliedFilters.locationId }),
+            ...(appliedFilters.expertiseId != null && { expertiseId: appliedFilters.expertiseId }),
+            ...(appliedFilters.domainId?.length > 0 && { domainId: appliedFilters.domainId }),
+            ...(appliedFilters.skillId?.length > 0 && { skillId: appliedFilters.skillId }),
+            ...(isValidNumber(appliedFilters.salaryStart) && { salaryStart: appliedFilters.salaryStart }),
+            ...(isValidNumber(appliedFilters.salaryEnd) && { salaryEnd: appliedFilters.salaryEnd }),
+            ...(isValidNumber(appliedFilters.minExperienceTime) && { minExperienceTime: appliedFilters.minExperienceTime }),
+            ...(isValidNumber(appliedFilters.maxExperienceTime) && { maxExperienceTime: appliedFilters.maxExperienceTime }),
+            page,
+            size: pageSize,
+        }),
+        [appliedFilters, debouncedSearchTerm, page, pageSize, status],
+    );
 
-    if (isJobsLoading) {
-        return <div className="p-6">Loading...</div>;
-    }
+    const { data: jobsData, isLoading: isJobsLoading, isFetching: isJobsFetching } = useGetJobsQuery(queryParams);
+    const { data: jobStatusCountData } = useGetMyJobStatusCountQuery();
+
+    const handleApplyFilters = (nextFilters) => {
+        setAppliedFilters({
+            ...createDefaultFilters(),
+            ...nextFilters,
+            domainId: Array.isArray(nextFilters?.domainId) ? nextFilters.domainId : [],
+            skillId: Array.isArray(nextFilters?.skillId) ? nextFilters.skillId : [],
+        });
+        setPage(0);
+        setIsFilterOpen(false);
+    };
+
+    const handleResetFilters = () => {
+        setAppliedFilters(createDefaultFilters());
+        setPage(0);
+        setIsFilterOpen(false);
+    };
+
+    const statusCountMap = useMemo(() => {
+        const summary = jobStatusCountData?.data;
+        const map = { '': Number(summary?.all || 0) };
+
+        (summary?.statuses || []).forEach((item) => {
+            if (item?.status) {
+                map[item.status] = Number(item.count || 0);
+            }
+        });
+
+        return map;
+    }, [jobStatusCountData]);
+
 
     const jobs = jobsData?.data?.content || [];
     const totalPages = jobsData?.data?.totalPages || 0;
@@ -67,91 +121,84 @@ const JobsList = () => {
         return `${format(min)} - ${format(max)}`;
     };
 
+    const tabItems = JOB_STATUS_TABS.map((tab) => ({
+        key: tab.key,
+        label: (
+            <span>
+                {tab.label}
+                {(statusCountMap[tab.key] || 0) > 0 && (
+                    <span className="ml-1.5 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold rounded-full bg-orange-500 text-white">
+                        {statusCountMap[tab.key]}
+                    </span>
+                )}
+            </span>
+        ),
+    }));
+
     return (
-        <div className="p-6 space-y-6">
-            {/* Search and Filter Bar */}
+        <div className="p-6 space-y-4">
             <ConfigProvider
                 theme={{
                     token: {
                         colorPrimary: '#f97316',
                         colorBorderHover: '#f97316',
                     },
+                    components: {
+                        Tabs: {
+                            inkBarColor: '#f97316',
+                            itemSelectedColor: '#f97316',
+                            itemHoverColor: '#f97316',
+                        },
+                    },
                 }}
             >
-                <div className="bg-white dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-wrap md:flex-nowrap gap-3 items-center">
-                    <Input
-                        placeholder="Search by title or company..."
-                        prefix={<span className="material-icons-round text-gray-400 text-xl">search</span>}
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <div className="px-4 pt-1 flex items-center justify-between">
+                        <Tabs
+                            activeKey={status || ''}
+                            onChange={(key) => setStatus(key || null)}
+                            items={tabItems}
+                            className="flex-1"
+                        />
+                        <Button
+                            mode="primary"
+                            onClick={() => navigate('/jobs/create')}
+                            shape="round"
+                            iconLeft={<span className="material-icons-round">add</span>}
+                            className="shrink-0 ml-4 self-center mb-2"
+                        >
+                            Post a Job
+                        </Button>
+                    </div>
+                </div>
 
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        allowClear
-                    />
-                    <Select
-                        placeholder="All Status"
-                        className="w-full md:w-32 h-10"
-                        allowClear
-                        onChange={setStatus}
-                        suffixIcon={<span className="material-icons-round text-gray-400 text-lg">filter_list</span>}
-                        options={[
-                            { value: 'PUBLISHED', label: 'Published' },
-                            { value: 'DRAFT', label: 'Draft' },
-                            { value: 'PENDING_REVIEW', label: 'Pending' },
-                            { value: 'SUSPENDED', label: 'Suspended' },
-                            { value: 'CLOSED', label: 'Closed' },
-                        ]}
-                    />
-                    <Select
-                        placeholder="Working Model"
-                        className="w-full md:w-40 h-10"
-                        allowClear
-                        onChange={setWorkingModel}
-                        options={[
-                            { value: 'ONSITE', label: 'Onsite' },
-                            { value: 'REMOTE', label: 'Remote' },
-                            { value: 'HYBRID', label: 'Hybrid' },
-                        ]}
-                    />
-                    <Select
-                        placeholder="Job Level"
-                        className="w-full md:w-32 h-10"
-                        allowClear
-                        onChange={setJobLevel}
-                        options={[
-                            { value: 'INTERN', label: 'Intern' },
-                            { value: 'FRESHER', label: 'Fresher' },
-                            { value: 'JUNIOR', label: 'Junior' },
-                            { value: 'MIDDLE', label: 'Middle' },
-                            { value: 'SENIOR', label: 'Senior' },
-                            { value: 'MANAGER', label: 'Manager' },
-                            { value: 'DIRECTOR', label: 'Director' },
-                        ]}
-                    />
-                    <Select
-                        placeholder="All Locations"
-                        className="w-full md:w-36 h-10"
-                        allowClear
-                        onChange={setLocation}
-                        suffixIcon={<span className="material-icons-round text-gray-400 text-lg">place</span>}
-                        options={[
-                            { value: 'Hanoi', label: 'Hanoi' },
-                            { value: 'Ho Chi Minh City', label: 'Ho Chi Minh' },
-                            { value: 'Da Nang', label: 'Da Nang' },
-                            { value: 'Remote', label: 'Remote' },
-                        ]}
-                    />
+                <div className="bg-white dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col md:flex-row gap-3 md:items-center">
+                    <div className="w-full md:flex-1">
+                        <Input
+                            placeholder="Search by job title"
+                            prefix={<span className="material-icons-round text-gray-400 text-xl">search</span>}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            allowClear
+                        />
+                    </div>
+
                     <Button
-                        mode="primary"
-                        onClick={() => navigate('/jobs/create')}
-                        iconLeft={<span className="material-icons-round">add</span>}
-                        className="shrink-0 ml-auto"
+                        mode="secondary"
+                        shape="round"
+                        onClick={() => setIsFilterOpen(true)}
+                        btnIcon
                     >
-                        Post a Job
+                        <span className="material-icons-round text-lg">filter_list</span>
                     </Button>
                 </div>
             </ConfigProvider>
 
-            {jobs.length === 0 ? (
+            {isJobsLoading || isJobsFetching ? (
+                <div className="py-16">
+                    <Loading />
+                </div>
+            ) : jobs.length === 0 ? (
                 <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <span className="material-icons-round text-gray-400 text-3xl">work_outline</span>
@@ -171,17 +218,16 @@ const JobsList = () => {
                         {jobs.map((job) => (
                             <JobListItem
                                 key={job.id}
-                                id={job.id}
                                 title={job.name}
                                 status={job.status || 'Active'}
                                 postedTime={formatDate(job.uploadTime || job.createdAt)}
-                                location={job.company?.country || job?.locations?.map(l => l.city).join(', ') || job.workingModel}
+                                location={job.company?.country || job?.locations?.map((l) => l.city).join(', ') || job.workingModel}
                                 salary={formatSalary(job.salaryStart, job.salaryEnd, job.currency)}
                                 expiry={job.expDate ? `Ends on ${new Date(job.expDate).toLocaleDateString()}` : ''}
                                 tags={[
                                     job.jobLevel,
                                     job.workingModel,
-                                    ...(job.skills || []).map(s => s.name)
+                                    ...(job.skills || []).map((s) => s.name),
                                 ].filter(Boolean)}
                                 stats={{
                                     applicants: job.applicantsCount,
@@ -199,7 +245,16 @@ const JobsList = () => {
                     />
                 </>
             )}
+
+            <JobFilterDrawer
+                open={isFilterOpen}
+                onClose={() => setIsFilterOpen(false)}
+                initialFilters={appliedFilters}
+                onApply={handleApplyFilters}
+                onReset={handleResetFilters}
+            />
         </div>
     );
 };
+
 export default JobsList;

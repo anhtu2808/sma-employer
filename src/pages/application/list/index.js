@@ -4,6 +4,7 @@ import moment from 'moment';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Menu, Dropdown } from 'antd';
 import { getApplicationStatusConfig } from '@/constrant/application';
+import Loading from '@/components/Loading';
 const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPage, onPageChange, onStatusUpdate }) => {
 
     const getStatusMenu = (app) => {
@@ -31,16 +32,7 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
 
 
     if (isLoading) return (
-        <div className="flex items-center justify-center p-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-    );
-
-
-    if (isLoading) return (
-        <div className="flex items-center justify-center p-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
+        <Loading className="py-20" size={96} />
     );
 
     return (
