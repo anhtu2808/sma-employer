@@ -65,25 +65,25 @@ const Location = ({ form, isEditing }) => {
                             {fields.map(({ key, name, ...restField }, index) => (
                                 <div
                                     key={key}
-                                    className={`p-4 border border-gray-100 dark:border-gray-800 rounded-lg bg-gray-50 dark:bg-gray-800/50 ${index !== activeIndex ? 'hidden' : ''}`}
+                                    className={`${index !== activeIndex ? 'hidden' : ''}`}
                                 >
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                                         <Form.Item {...restField} name={[name, 'name']} label="Location Name">
-                                            <Input placeholder="e.g. Headquarters" />
+                                            <Input placeholder="e.g. Headquarters" className="bg-gray-50 dark:bg-gray-800" />
                                         </Form.Item>
                                         <div className="col-span-full">
                                             <Form.Item {...restField} name={[name, 'address']} label="Address">
-                                                <Input placeholder="Street address" />
+                                                <Input placeholder="Street address" className="bg-gray-50 dark:bg-gray-800" />
                                             </Form.Item>
                                         </div>
                                         <Form.Item {...restField} name={[name, 'district']} label="District">
-                                            <Input />
+                                            <Input className="bg-gray-50 dark:bg-gray-800" />
                                         </Form.Item>
                                         <Form.Item {...restField} name={[name, 'city']} label="City">
-                                            <Input />
+                                            <Input className="bg-gray-50 dark:bg-gray-800" />
                                         </Form.Item>
                                         <Form.Item {...restField} name={[name, 'country']} label="Country">
-                                            <Input />
+                                            <Input className="bg-gray-50 dark:bg-gray-800" />
                                         </Form.Item>
                                     </div>
                                 </div>
