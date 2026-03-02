@@ -4,6 +4,7 @@ import Card from '@/components/Card';
 import Button from '@/components/Button';
 import { message } from 'antd';
 import Form from '@/components/Form';
+import Loading from '@/components/Loading';
 import GeneralInfo from './components/GeneralInfo';
 import Classification from './components/Classification';
 import ContactInfo from './components/ContactInfo';
@@ -48,7 +49,7 @@ const CompanyProfile = () => {
         setIsEditing(false);
     };
 
-    if (isLoading) return <div className="p-6">Loading...</div>;
+    if (isLoading) return <Loading className="py-16" />;
 
     return (
         <div className="p-6 space-y-6">

@@ -1,6 +1,7 @@
 import React from "react";
-import { Slider, Form, Switch, Spin, Checkbox } from "antd";
+import { Slider, Form, Switch, Checkbox } from "antd";
 import { useGetCriteriaQuery } from "@/apis/jobApi";
+import Loading from "@/components/Loading";
 
 const ScoringWeights = () => {
   const { data: criteriaRes, isLoading } = useGetCriteriaQuery();
@@ -119,7 +120,7 @@ const ScoringWeights = () => {
 
               {isLoading ? (
                 <div className="flex justify-center p-4">
-                  <Spin />
+                  <Loading inline size={76} />
                 </div>
               ) : (
                 criteriaList.map((criteriaItem) => {

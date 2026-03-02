@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { message } from "antd";
 import Form from "@/components/Form";
 import Button from "@/components/Button";
+import Loading from "@/components/Loading";
 import {
   useCreateJobMutation,
   usePublishJobMutation,
@@ -155,7 +156,7 @@ const JobCreate = () => {
   };
 
   if (isEditMode && isJobLoading) {
-    return <div className="p-6">Loading job data...</div>;
+    return <Loading className="py-16" />;
   }
 
   return (

@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useGetJobDetailQuery } from '@/apis/apis';
 import { useUpdateJobStatusMutation, useUpdateExpiredDateMutation } from '@/apis/jobApi';
 import Button from '@/components/Button';
-import { Skeleton, Tabs, ConfigProvider, Modal, DatePicker, message } from 'antd';
+import Loading from '@/components/Loading';
+import { Tabs, ConfigProvider, Modal, DatePicker, message } from 'antd';
 import dayjs from 'dayjs';
 import JobHeader from './components/JobHeader';
 import JobDescription from './components/JobDescription';
@@ -63,7 +64,7 @@ const JobDetail = () => {
     };
 
     if (isLoading) {
-        return <div className="p-8"><Skeleton active /></div>;
+        return <Loading className="py-16" />;
     }
 
     if (error || !job) {
