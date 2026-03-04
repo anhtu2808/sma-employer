@@ -12,6 +12,8 @@ import JobDetail from '@/pages/job-detail';
 import Login from '@/pages/login';
 import ApplicationManagement from "../pages/application";
 import BillingPlans from '@/pages/billing-plans';
+import Checkout from '@/pages/checkout';
+
 
 export const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -30,6 +32,7 @@ export const routes = createBrowserRouter(
                 <Route path="settings" element={<Dashboard />} />
                 <Route path="help" element={<Dashboard />} />
                 <Route path="billing-plans" element={<BillingPlans />} />
+                <Route path="checkout" element={<Checkout />} />
             </Route>
             <Route path="/" element={<Home />} />
             <Route path="ui-kit" element={<UiKit />} />
