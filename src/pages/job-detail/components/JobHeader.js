@@ -15,128 +15,131 @@ const JobHeader = ({ job, formatDate, formatSalary, onCloneJob, onCloseJob, onEd
                 .slice(0, 2)
             : 'JB';
     };
- 
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'PUBLISHED':
+                return 'success';
+            case 'DRAFT':
+                return 'default';
+            case 'PENDING_REVIEW':
+                return 'warning';
+            case 'SUSPENDED':
+            case 'CLOSED':
+                return 'error';
+            default:
+                return 'default';
+        }
+    };
+
+    const getStatusLabel = (status) => {
+        const labels = {
+            PUBLISHED: 'Published',
+            DRAFT: 'Draft',
+            PENDING_REVIEW: 'Pending Review',
+            SUSPENDED: 'Suspended',
+            CLOSED: 'Closed',
+        };
+        return labels[status] || status || 'Unknown';
+    };
+
     return (
-        <div className="border-b border-gray-100 dark:border-gray-700 pb-8">
-            <div className="flex flex-col md:flex-row gap-6 items-start">
-                {/* Company Logo / Placeholder */}
-                <div className="w-16 h-16 rounded-xl bg-gray-900 text-white flex items-center justify-center text-2xl font-bold shrink-0 shadow-sm">
-                    {getInitials(job.company?.name || job.name)}
+        <div className="pb-4">
+            <div className="flex flex-col gap-6">
+                <div className="flex justify-between items-start gap-4">
+                    <div>
+                        <div className="flex items-center gap-4 mb-2">
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white m-0 leading-none">
+                                {job.name}
+                            </h1>
+                            {job.status && (
+                                <Tag color={getStatusColor(job.status)} className="text-sm px-3 py-1 rounded-full m-0 border-none font-medium flex items-center">
+                                    {getStatusLabel(job.status)}
+                                </Tag>
+                            )}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                            <span className="font-semibold text-gray-900 dark:text-gray-100">{job.company?.name || 'Company Name'}</span>
+                            <span>•</span>
+                            <span>Posted {formatDate(job.createdAt || new Date().toISOString())}</span> {/* Note: Replace with actual creation date if available */}
+                        </div>
+                    </div>
+                    <Button
+                        mode="secondary"
+                        onClick={onCloneJob}
+                        iconLeft={<span className="material-icons-round text-sm">content_copy</span>}
+                        className="shrink-0"
+                    >
+                        Clone Job
+                    </Button>
                 </div>
 
-                <div className="flex-1 w-full">
-                    {/* Title Row */}
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-                        <div>
-                            <div className="flex items-center gap-3 flex-wrap mb-2">
-                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                                    {job.name}
-                                    {job.status && (
-                                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                                            job.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' :
-                                            job.status === 'CLOSED' ? 'bg-red-100 text-red-700' :
-                                            job.status === 'DRAFT' ? 'bg-gray-100 text-gray-700' :
-                                            'bg-blue-100 text-blue-700'
-                                        }`}>
-                                            {job.status}
-                                        </span>
-                                    )}
-                                </h1>
-                                <span className="text-gray-400 text-xl hidden md:inline">|</span>
-                                <span className="text-gray-500 font-medium">
-                                    {job.company?.name || 'Company Name'}
-                                </span>
+                {/* Meta Info Row */}
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-gray-600 dark:text-gray-400">
+                    <div className="flex items-center gap-2">
+                        <span className="material-icons-round text-gray-400 text-lg">place</span>
+                        <span>{job.company?.country || 'Vietnam'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="material-icons-round text-gray-400 text-lg">payments</span>
+                        <span className="font-semibold text-orange-500">
+                            {formatSalary(job.salaryStart, job.salaryEnd, job.currency)}
+                        </span>
+                    </div>
+                    {job.expDate && (
+                        <div className="flex items-center gap-2">
+                            <span className="material-icons-round text-gray-400 text-lg">event</span>
+                            <span>Deadline: {formatDate(job.expDate)}</span>
+                        </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                        <span className="material-icons-round text-gray-400 text-lg">work</span>
+                        <span className="capitalize">{job.quantity || 1} {job.jobLevel?.toLowerCase() || 'years experience'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="material-icons-round text-gray-400 text-lg">person</span>
+                        <span className="capitalize">{job.jobLevel?.toLowerCase() || 'Junior'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="material-icons-round text-gray-400 text-lg">apartment</span>
+                        <span className="uppercase">{job.workingModel || 'ONSITE'}</span>
+                    </div>
+                </div>
+
+
+
+                {/* Expertise & Domain */}
+                <div className="space-y-3 mt-2">
+                    {job.expertise && (
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                            <span className="w-full sm:w-28 text-sm font-bold text-gray-900 dark:text-white shrink-0">Job Expertise:</span>
+                            <Tag color="blue" className="px-3 py-1 text-sm rounded-full m-0 bg-blue-50 text-blue-600 border-none font-medium">
+                                {job.expertise.name}
+                            </Tag>
+                        </div>
+                    )}
+                    {job.domains && job.domains.length > 0 && (
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 flex-wrap">
+                            <span className="w-full sm:w-28 text-sm font-bold text-gray-900 dark:text-white shrink-0">Job Domain:</span>
+                            {job.domains.map((domain) => (
+                                <Tag key={domain.id} color="success" className="px-3 py-1 text-sm rounded-full m-0 bg-green-50 text-green-600 border-none font-medium">
+                                    {domain.name}
+                                </Tag>
+                            ))}
+                        </div>
+                    )}
+                    {/* Skills */}
+                    {job.skills && job.skills.length > 0 && (
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 flex-wrap">
+                            <span className="w-full sm:w-28 text-sm font-bold text-gray-900 dark:text-white shrink-0 pt-1">Skills:</span>
+                            <div className="flex-1">
+                                <JobSkills skills={job.skills} />
                             </div>
                         </div>
-                        <div className="flex gap-2 flex-wrap shrink-0">
-                            {job.status === 'PUBLISHED' && (
-                                <Button
-                                    mode="danger"
-                                    size="sm"
-                                    iconLeft={<span className="material-icons-round text-sm">block</span>}
-                                    onClick={onCloseJob}
-                                    isLoading={isClosingJob}
-                                >
-                                    Close Job
-                                </Button>
-                            )}
-                            <Button
-                                mode="secondary"
-                                size="sm"
-                                iconLeft={<span className="material-icons-round text-sm">content_copy</span>}
-                                onClick={onCloneJob}
-                            >
-                                Clone Job
-                            </Button>
-                        </div>
-                    </div>
+                    )}
                 </div>
+
             </div>
-
-            {/* Meta Info Row */}
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-600 dark:text-gray-400">
-                <div className="flex items-center gap-1.5">
-                    <span className="material-icons-round text-orange-500 text-base">place</span>
-                    <span>{job.company?.country || 'Vietnam'}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                    <span className="material-icons-round text-orange-500 text-base">payments</span>
-                    <span className="font-semibold text-green-600 dark:text-green-400">
-                        {formatSalary(job.salaryStart, job.salaryEnd, job.currency)}
-                    </span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                    <span className="material-icons-round text-orange-500 text-base">stars</span>
-                    <span className="capitalize">{job.jobLevel?.toLowerCase()}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                    <span className="material-icons-round text-orange-500 text-base">apartment</span>
-                    <span className="uppercase">{job.workingModel}</span>
-                </div>
-                {job.expDate && (
-                    <div className="flex items-center gap-1.5">
-                        <span className="material-icons-round text-orange-500 text-base">event</span>
-                        <span>Deadline: {formatDate(job.expDate)}</span>
-                    </div>
-                )}
-                {job.quantity && (
-                    <div className="flex items-center gap-1.5">
-                        <span className="material-icons-round text-orange-500 text-base">group</span>
-                        <span>{job.quantity} {job.quantity > 1 ? 'positions' : 'position'}</span>
-                    </div>
-                )}
-            </div>
-
-            {/* Skills */}
-            {job.skills && job.skills.length > 0 && (
-                <div>
-                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Skills:</p>
-                    <JobSkills skills={job.skills} />
-                </div>
-            )}
-
-            {/* Expertise & Domain */}
-            <div className="space-y-3">
-                {job.expertise && (
-                    <div className="flex items-center gap-3">
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 shrink-0">Job Expertise:</span>
-                        <Tag color="blue" className="px-3 py-0.5 text-sm rounded-full m-0">
-                            {job.expertise.name}
-                        </Tag>
-                    </div>
-                )}
-                {job.domains && job.domains.length > 0 && (
-                    <div className="flex items-center gap-3 flex-wrap">
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 shrink-0">Job Domain:</span>
-                        {job.domains.map((domain) => (
-                            <Tag key={domain.id} color="blue" className="px-3 py-0.5 text-sm rounded-full m-0">
-                                {domain.name}
-                            </Tag>
-                        ))}
-                    </div>
-                )}
-            </div>
-
         </div>
     );
 };

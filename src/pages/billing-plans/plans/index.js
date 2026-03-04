@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PlanCard from "./plan-card";
 
 const formatCurrency = (amount, currency) => {
@@ -94,10 +95,10 @@ const mapPlanToCard = (plan, currentPlanId) => {
     durationsWithPopular.length > 1
       ? "Billed monthly or save on longer terms"
       : basePrice
-      ? basePrice.unit === "YEAR"
-        ? "Billed yearly"
-        : "Billed monthly"
-      : "Pricing unavailable";
+        ? basePrice.unit === "YEAR"
+          ? "Billed yearly"
+          : "Billed monthly"
+        : "Pricing unavailable";
 
   return {
     id: plan?.id,
@@ -116,6 +117,7 @@ const mapPlanToCard = (plan, currentPlanId) => {
 };
 
 const Plans = ({ plans = [], currentPlanId = null }) => {
+  const navigate = useNavigate();
   const [expandedPlanCode, setExpandedPlanCode] = useState(null);
   const [selectedDurationByPlan, setSelectedDurationByPlan] = useState({});
 
@@ -193,6 +195,7 @@ const Plans = ({ plans = [], currentPlanId = null }) => {
           onClose={() => setExpandedPlanCode(null)}
           selectedDuration={selectedDurationByPlan[plan.code]}
           onSelectDuration={(durationKey) => onSelectDuration(plan.code, durationKey)}
+          onSubscribe={() => navigate("/checkout", { state: { plan, selectedDuration: selectedDurationByPlan[plan.code] } })}
         />
       ))}
     </div>
