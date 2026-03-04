@@ -12,6 +12,7 @@ const menuItems = [
   { icon: 'badge', label: 'Applications', path: '/applications' },
   { icon: 'credit_card', label: 'Billing & Plans', path: '/billing-plans' },
   { icon: 'history', label: 'Usage', path: '/usage' },
+  { icon: 'notifications', label: 'Notifications', path: '/notifications' },
   { icon: 'insights', label: 'Reports', path: '/reports' },
 ];
 

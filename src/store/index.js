@@ -3,6 +3,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { combineReducers } from 'redux';
 import { api } from '@/apis/baseApi';
+import notificationReducer from '../pages/notification/components/notification-slice';
 
 // Import your slices here
 // import userReducer from './slices/userSlice';
@@ -17,6 +18,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
     // Add your reducers here
     // user: userReducer,
+    notification: notificationReducer,
     [api.reducerPath]: api.reducer,
 });
 

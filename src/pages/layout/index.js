@@ -4,6 +4,7 @@ import { Drawer } from 'antd';
 import Sidebar from './sidebar';
 import Header from './header';
 import { PageHeaderContext } from '@/contexts/PageHeaderContext';
+import { useNotificationSocket } from '@/hooks/useNotificationSocket';
 
 const routeTitleMap = {
   '/dashboard': 'Dashboard',
@@ -13,11 +14,13 @@ const routeTitleMap = {
   '/jobs/edit': 'Edit Job',
   '/company': 'Company',
   '/applications': 'Applications',
+  '/billing-plans': 'Billing & Plans',
+  '/usage': 'Usage',
+  '/notifications': 'Notifications',
   '/reports': 'Reports',
   '/settings': 'Settings',
   '/help': 'Help Center',
-  '/billing-plans': 'Billing & Plans',
-  '/usage': 'Usage',
+
 };
 
 const routeSubtitleMap = {
@@ -28,11 +31,13 @@ const routeSubtitleMap = {
   '/jobs/edit': 'Edit your job posting',
   '/company': 'Manage your company profile',
   '/applications': 'Track and manage candidate applications',
+  '/billing-plans': 'Manage your subscription plans and billing details',
+  '/usage': 'Monitor your feature consumption and activity logs',
+  '/notifications': 'View your notifications',
   '/reports': 'View recruitment analytics and reports',
   '/settings': 'Configure your account settings',
   '/help': 'Find answers and get support',
-  '/billing-plans': 'Manage your subscription plans and billing details',
-  '/usage': 'Monitor your feature consumption and activity logs',
+
 };
 
 const Layout = () => {
@@ -65,6 +70,8 @@ const Layout = () => {
   const closeMobileSidebar = () => {
     setIsMobileSidebarOpen(false);
   };
+
+  useNotificationSocket();
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-sans antialiased h-screen flex overflow-hidden transition-colors duration-200">
