@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, Navigate } from "react-router-dom";
 import { notification } from "antd";
 import { useCreateSubscriptionMutation } from "@/apis/subscriptionApi";
+import { useGetPaymentStatusQuery } from "@/apis/paymentApi";
 import QRPaymentSection from "./components/QRPaymentSection";
 import OrderSummarySection from "./components/OrderSummarySection";
 
@@ -15,7 +16,30 @@ const Checkout = () => {
     // API logic
     const [createSubscription, { isLoading: isApiLoading }] = useCreateSubscriptionMutation();
     const [qrCodeUrl, setQrCodeUrl] = useState(null);
+    const [paymentId, setPaymentId] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Polling payment status
+    const { data: paymentStatusRes } = useGetPaymentStatusQuery(
+        paymentId,
+        {
+            skip: !paymentId,
+            pollingInterval: 3000, // Poll every 3 seconds
+        }
+    );
+
+    // Watch for payment status changes
+    useEffect(() => {
+        if (paymentStatusRes) {
+            const status = paymentStatusRes.data || paymentStatusRes; // Adjust based on exact backend response wrapper
+            const statusValue = status?.status || status;
+            if (statusValue === 'SUCCESS') {
+                navigate("/checkout/success");
+            } else if (statusValue === 'FAILED') {
+                navigate("/checkout/failed");
+            }
+        }
+    }, [paymentStatusRes, navigate]);
 
     // Initial load handler to generate QR
     useEffect(() => {
@@ -34,8 +58,17 @@ const Checkout = () => {
                 };
 
                 const res = await createSubscription(payload).unwrap();
-                if (res?.data) {
-                    setQrCodeUrl(res.data);
+                if (res?.data?.payment) {
+                    setQrCodeUrl(res.data.payment.qr);
+                    setPaymentId(res.data.payment.id);
+                } else if (res?.data) {
+                    // Fallback to old approach if payment object doesn't exist
+                    if (typeof res.data === 'string') {
+                        setQrCodeUrl(res.data);
+                    } else {
+                        setQrCodeUrl(res.data.qrCodeUrl || res.data.qrCode || res.data.url);
+                        setPaymentId(res.data.paymentId || res.data.id || res.data.subscriptionId);
+                    }
                 }
             } catch (error) {
                 notification.error({
