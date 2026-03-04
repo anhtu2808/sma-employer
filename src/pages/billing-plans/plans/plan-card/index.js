@@ -16,11 +16,13 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
 
   return (
     <article
-      className={`relative rounded-2xl border p-8 shadow-sm transition-all flex flex-col lg:h-[720px] ${isCurrent
-        ? "bg-white border-gray-200"
-        : plan.popular
-          ? "bg-white border-2 border-primary shadow-md"
-          : "bg-white border-gray-200 hover:border-gray-300"
+      className={`relative rounded-2xl border p-8 shadow-sm transition-all flex flex-col lg:h-[720px] ${isExpanded
+        ? "border-primary border-2 shadow-md bg-white"
+        : isCurrent
+          ? "bg-white border-gray-200"
+          : plan.popular
+            ? "bg-white border-gray-200 shadow-md hover:border-gray-300"
+            : "bg-white border-gray-200 hover:border-gray-300"
         }`}
     >
       {plan.popular ? (
