@@ -100,7 +100,7 @@ const OrderSummarySection = ({
                     <div className="w-6 h-6 shrink-0 rounded-full bg-[#faebe6] text-[#fc9c82] flex items-center justify-center font-bold text-[12px] mt-0.5">3</div>
                     <div>
                         <h4 className="text-[#3b4356] font-bold text-[13px] mb-1">Confirm and notify</h4>
-                        <p className="text-[#8492a6] text-[12px] leading-relaxed">Once the transfer is successful, click the "Cancel and go back" button to return to the dashboard.</p>
+                        <p className="text-[#8492a6] text-[12px] leading-relaxed">Once the transfer is successful, click the "Cancel & Go back" button to return to the dashboard.</p>
                     </div>
                 </div>
             </div>

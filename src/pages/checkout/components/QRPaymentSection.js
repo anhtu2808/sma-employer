@@ -9,7 +9,7 @@ const QRPaymentSection = ({
     onBack,
 }) => {
     return (
-        <div className="lg:col-span-6 flex flex-col items-center justify-center text-center relative py-4 lg:py-8 lg:px-12">
+        <div className="lg:col-span-6 flex flex-col items-center text-center relative py-4 lg:py-8 lg:px-12 h-full">
             <h2 className="text-[#111e3b] text-[1.35rem] font-extrabold mb-2 tracking-tight">Scan to Pay</h2>
             <p className="text-[#8492a6] text-[14px] mb-8 font-medium">
                 Open your banking or e-wallet app
@@ -38,34 +38,36 @@ const QRPaymentSection = ({
                 </div>
             </div>
 
-            {/* Scan to Pay Target */}
-            <div className="flex items-center gap-2 text-[#fc9c82] font-semibold bg-[#fff1ed] px-4 py-2 rounded-lg mb-8">
-                <span className="material-icons-round text-xl">qr_code_scanner</span>
-                <span>Scan to pay {totalPrice}</span>
-            </div>
-
-            {/* Back Button */}
-            <Button
-                onClick={onBack}
-                mode="primary"
-                size="lg"
-                shape="rounded"
-                className="text-[#8492a6] hover:text-[#3b4356] text-[13.5px] font-semibold transition-colors mt-auto pt-6 mb-8"
-                iconLeft={<span className="material-icons-round text-[16px]">arrow_back</span>}
-            >
-                Cancel and go back
-            </Button>
-
-            {/* Need Help Box */}
-            <div className="w-full bg-[#fff8f5] border border-[#ffeedd] rounded-2xl p-5 flex gap-3 text-left">
-                <div className="w-6 h-6 shrink-0 rounded-full bg-[#f46a2a] text-white flex items-center justify-center mt-0.5">
-                    <span className="material-icons-round text-[14px]">question_mark</span>
+            <div className="mt-auto w-full flex flex-col items-center">
+                {/* Scan to Pay Target */}
+                <div className="flex items-center gap-2 text-[#fc9c82] font-semibold bg-[#fff1ed] px-4 py-2 rounded-lg mb-8">
+                    <span className="material-icons-round text-xl">qr_code_scanner</span>
+                    <span>Scan to pay {totalPrice}</span>
                 </div>
-                <div>
-                    <h4 className="text-[#3b4356] font-bold text-[14px] mb-1">Need help?</h4>
-                    <p className="text-[#8492a6] text-[12.5px] leading-relaxed pr-2">
-                        Contact our 24/7 support team if you encounter any issues with the payment.
-                    </p>
+
+                {/* Back Button */}
+                <Button
+                    onClick={onBack}
+                    mode="primary"
+                    size="lg"
+                    shape="rounded"
+                    className="text-white text-[13.5px] font-semibold transition-colors mb-8 w-full max-w-[340px]"
+                    iconLeft={<span className="material-icons-round text-[16px]">arrow_back</span>}
+                >
+                    Cancel & Go back
+                </Button>
+
+                {/* Need Help Box */}
+                <div className="w-full bg-[#fff8f5] border border-[#ffeedd] rounded-2xl p-5 flex gap-3 text-left">
+                    <div className="w-6 h-6 shrink-0 rounded-full bg-[#f46a2a] text-white flex items-center justify-center mt-0.5">
+                        <span className="material-icons-round text-[14px]">question_mark</span>
+                    </div>
+                    <div>
+                        <h4 className="text-[#3b4356] font-bold text-[14px] mb-1">Need help?</h4>
+                        <p className="text-[#8492a6] text-[12.5px] leading-relaxed pr-2">
+                            Contact our 24/7 support team if you encounter any issues with the payment.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
