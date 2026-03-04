@@ -13,6 +13,8 @@ import Login from '@/pages/login';
 import ApplicationManagement from "@/pages/application";
 import BillingPlans from '@/pages/billing-plans';
 import Checkout from '@/pages/checkout';
+import PaymentSuccessful from '@/pages/checkout/success';
+import PaymentFailed from '@/pages/checkout/failed';
 import ApplicationDetail from "@/pages/application/detail";
 import Usage from "@/pages/usage";
 import NotificationList from "../pages/notification";
@@ -41,6 +43,8 @@ export const routes = createBrowserRouter(
                 <Route path="notifications" element={<NotificationList />} />
             </Route>
             <Route path="checkout" element={<Checkout />} />
+            <Route path="checkout/success" element={<PaymentSuccessful />} />
+            <Route path="checkout/failed" element={<PaymentFailed />} />
             <Route path="/" element={<Home />} />
             <Route path="ui-kit" element={<UiKit />} />
             <Route path="register/recruiter" element={<RecruiterRegister />} />
