@@ -102,7 +102,6 @@
 
         &:hover:not(:disabled) {
             color: $primary;
-            background: $neutral-100;
         }
 
         &:active:not(:disabled) {
@@ -155,7 +154,7 @@
 
     &.btn-icon-only {
         padding: 0;
-        
+
         &.btn-sm {
             width: 2rem;
             height: 2rem;
