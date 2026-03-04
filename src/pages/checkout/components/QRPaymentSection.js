@@ -14,10 +14,9 @@ const QRPaymentSection = ({
             <div className="w-full mb-8 flex items-center justify-between absolute top-8 left-8">
                 <Button
                     mode="ghost"
-                    className="text-gray-500 hover:text-gray-700 px-0 flex items-center gap-1"
+                    iconLeft={<span className="material-icons-round text-sm mt-[2px]">arrow_back</span>}
                     onClick={onBack}
                 >
-                    <span className="material-icons-round text-sm">arrow_back</span>
                     Back
                 </Button>
             </div>
