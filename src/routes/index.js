@@ -35,9 +35,9 @@ export const routes = createBrowserRouter(
                 <Route path="settings" element={<Dashboard />} />
                 <Route path="help" element={<Dashboard />} />
                 <Route path="billing-plans" element={<BillingPlans />} />
-                <Route path="checkout" element={<Checkout />} />
                 <Route path="usage" element={<Usage />} />
             </Route>
+            <Route path="checkout" element={<Checkout />} />
             <Route path="/" element={<Home />} />
             <Route path="ui-kit" element={<UiKit />} />
             <Route path="register/recruiter" element={<RecruiterRegister />} />

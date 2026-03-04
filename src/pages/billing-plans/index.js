@@ -52,12 +52,6 @@ const BillingPlans = () => {
       <div className="w-full">
         {isPlansLoading ? <Loading size={96} className="py-8" /> : <Plans plans={plans} currentPlanId={currentPlanId} />}
       </div>
-
-      <div className="w-full">
-        <p className="text-xs text-gray-400">
-          Data source: `GET /v1/plans`.
-        </p>
-      </div>
     </div>
   );
 };
