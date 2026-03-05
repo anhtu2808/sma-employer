@@ -20,6 +20,7 @@ const routeTitleMap = {
   '/reports': 'Reports',
   '/settings': 'Settings',
   '/help': 'Help Center',
+  '/blacklist': 'Blacklist',
 
 };
 
@@ -37,6 +38,7 @@ const routeSubtitleMap = {
   '/reports': 'View recruitment analytics and reports',
   '/settings': 'Configure your account settings',
   '/help': 'Find answers and get support',
+  '/blacklist': 'Manage your candidate blacklist',
 
 };
 

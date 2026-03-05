@@ -18,6 +18,7 @@ import PaymentFailed from '@/pages/checkout/failed';
 import ApplicationDetail from "@/pages/application/detail";
 import Usage from "@/pages/usage";
 import NotificationList from "../pages/notification";
+import CompanyBlacklist from "@/pages/blacklist";
 
 
 
@@ -41,6 +42,7 @@ export const routes = createBrowserRouter(
                 <Route path="billing-plans" element={<BillingPlans />} />
                 <Route path="usage" element={<Usage />} />
                 <Route path="notifications" element={<NotificationList />} />
+                <Route path="blacklist" element={<CompanyBlacklist />} />
             </Route>
             <Route path="checkout" element={<Checkout />} />
             <Route path="checkout/success" element={<PaymentSuccessful />} />

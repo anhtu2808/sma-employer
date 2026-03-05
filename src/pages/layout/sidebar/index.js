@@ -10,6 +10,7 @@ const menuItems = [
   { icon: 'work_outline', label: 'Jobs', path: '/jobs' },
   { icon: 'business', label: 'Company', path: '/company' },
   { icon: 'badge', label: 'Applications', path: '/applications' },
+  { icon: 'block', label: 'Blacklist', path: '/blacklist' },
   { icon: 'credit_card', label: 'Billing & Plans', path: '/billing-plans' },
   { icon: 'history', label: 'Usage', path: '/usage' },
   { icon: 'notifications', label: 'Notifications', path: '/notifications' },
