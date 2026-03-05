@@ -22,7 +22,32 @@ export const companyApi = api.injectEndpoints({
             }),
             transformResponse: (response) => response?.data ?? [],
         }),
+
+        // --- BLACKLIST ENDPOINTS ---
+        getBlacklist: builder.query({
+            query: (params) => ({
+                url: `${API_VERSION}/company/blacklist`,
+                method: 'GET',
+                params: params,
+            }),
+            providesTags: ['Blacklist'],
+        }),
+        blockCandidate: builder.mutation({
+            query: (data) => ({
+                url: `${API_VERSION}/company/blacklist`,
+                method: 'POST',
+                body: data,
+            }),
+            invalidatesTags: ['Blacklist', 'Applications'],
+        }),
+        unblockCandidate: builder.mutation({
+            query: (candidateId) => ({
+                url: `${API_VERSION}/company/blacklist/${candidateId}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Blacklist'],
+        }),
     }),
 });
 
-export const { useGetCompanyProfileQuery, useUpdateCompanyProfileMutation, useGetCompanyLocationQuery } = companyApi;
+export const { useGetCompanyProfileQuery, useUpdateCompanyProfileMutation, useGetCompanyLocationQuery, useGetBlacklistQuery, useBlockCandidateMutation, useUnblockCandidateMutation } = companyApi;

@@ -1,9 +1,9 @@
 import React from 'react';
-import { Select, ConfigProvider } from 'antd';
+import { Select, ConfigProvider, Tooltip } from 'antd';
 import { APPLICATION_STATUS, getApplicationStatusConfig } from '@/constrant/application';
 import Button from '@/components/Button';
 
-const Overview = ({ app, onStatusChange, isUpdating }) => {
+const Overview = ({ app, onStatusChange, isUpdating, onOpenBlock }) => {
     const statusConfig = app.status
         ? getApplicationStatusConfig(app.status)
         : { label: 'N/A', textColor: 'text-gray-500' };
@@ -49,6 +49,15 @@ const Overview = ({ app, onStatusChange, isUpdating }) => {
                             Download CV
                         </Button>
                     )}
+                    <Tooltip title="Blacklist this candidate">
+                        <button
+                            type="button"
+                            onClick={onOpenBlock}
+                            className="flex items-center justify-center w-10 h-10 rounded-full border border-red-100 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 shadow-sm"
+                        >
+                            <span className="material-symbols-outlined text-[20px]">block</span>
+                        </button>
+                    </Tooltip>
                 </div>
             </div>
 
