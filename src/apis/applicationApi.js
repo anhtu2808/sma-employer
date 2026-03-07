@@ -34,7 +34,13 @@ export const applicationApi = api.injectEndpoints({
             ],
         }),
 
-
+        getShortlistedExport: builder.query({
+            query: (jobId) => ({
+                url: `/v1/applications/export-shortlisted`,
+                method: 'GET',
+                params: { jobId },
+            }),
+        }),
     }),
 });
 
@@ -42,4 +48,5 @@ export const {
     useGetApplicationsQuery,
     useGetApplicationDetailQuery,
     useUpdateApplicationStatusMutation,
+    useLazyGetShortlistedExportQuery
 } = applicationApi;
