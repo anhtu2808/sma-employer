@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { useGetApplicationsQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
+import { useGetApplicationsQuery, useUpdateApplicationStatusMutation, useLazyGetShortlistedExportQuery } from '@/apis/applicationApi';
 import { useGetJobsQuery } from '@/apis/jobApi';
 
 import { Drawer } from 'antd';
@@ -11,6 +11,7 @@ import { usePageHeader } from '@/hooks/usePageHeader';
 import Modal from '@/components/Modal';
 import Loading from '@/components/Loading';
 import ApplicationHeader from './header';
+import { exportCandidates } from './export';
 
 const STATUS_COLUMNS = [
     { id: 'APPLIED', title: 'Applied', color: '#FF6B35' },
@@ -33,6 +34,7 @@ const ApplicationManagement = () => {
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
     const [rejectData, setRejectData] = useState({ id: null, status: null });
     const [rejectReason, setRejectReason] = useState('');
+    const [triggerExport, { isFetching: isExporting }] = useLazyGetShortlistedExportQuery();
 
     usePageHeader('Application Management', 'Track and manage candidate applications for your jobs');
 
@@ -115,10 +117,27 @@ const ApplicationManagement = () => {
         }
     };
 
+    const handleExportExcel = async (type = 'excel') => {
+        if (!selectedJob) return message.warning("Please select a job first");
+
+        try {
+            const result = await triggerExport(selectedJob.id).unwrap();
+            if (result?.data && result.data.length > 0) {
+                exportCandidates(result.data, selectedJob.name, type);
+                message.success(`Exported ${result.data.length} shortlisted candidates as ${type.toUpperCase()}`);
+            } else {
+                message.warning("No shortlisted candidates found to export");
+            }
+        } catch (error) {
+            console.error("Export error:", error);
+            message.error("Failed to export candidates");
+        }
+    };
+
     return (
         <div className="h-full flex flex-col space-y-3 animate-fadeIn font-body">
 
-            <ApplicationHeader 
+            <ApplicationHeader
                 jobs={jobs}
                 selectedJob={selectedJob}
                 setSelectedJob={setSelectedJob}
@@ -128,6 +147,8 @@ const ApplicationManagement = () => {
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
                 setIsFilterOpen={setIsFilterOpen}
+                isExporting={isExporting}
+                onExport={handleExportExcel}
             />
 
 

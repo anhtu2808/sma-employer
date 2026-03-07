@@ -1,20 +1,38 @@
 import React from 'react';
 import { Select } from 'antd';
-import { Search, Filter, Plus, LayoutGrid, List as ListIcon } from 'lucide-react';
+import { Search, Filter, Plus, LayoutGrid, List as ListIcon, Download } from 'lucide-react';
 import Button from '@/components/Button';
 import { getJobStatusConfig } from '@/constrant/application';
+import { Dropdown } from 'antd';
 
-const ApplicationHeader = ({ 
-    jobs, 
-    selectedJob, 
-    setSelectedJob, 
-    appData, 
-    viewMode, 
-    setViewMode, 
-    searchTerm, 
-    setSearchTerm, 
-    setIsFilterOpen 
+const ApplicationHeader = ({
+    jobs,
+    selectedJob,
+    setSelectedJob,
+    appData,
+    viewMode,
+    setViewMode,
+    searchTerm,
+    setSearchTerm,
+    setIsFilterOpen,
+    isExporting,
+    onExport,
 }) => {
+
+    const exportMenuItems = [
+        {
+            key: 'excel',
+            label: 'Export as Excel (.xlsx)',
+            icon: <span className="material-symbols-outlined text-sm">table_view</span>,
+            onClick: () => onExport('excel')
+        },
+        {
+            key: 'csv',
+            label: 'Export as CSV (.csv)',
+            icon: <span className="material-symbols-outlined text-sm">description</span>,
+            onClick: () => onExport('csv')
+        }
+    ];
     return (
         <div className="bg-white dark:bg-surface-dark shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-2xl p-4">
             <div className="flex flex-col gap-4">
@@ -30,7 +48,7 @@ const ApplicationHeader = ({
                             placeholder="Select a Job"
                             showSearch
                             suffixIcon={<Search size={16} className="text-neutral-400" />}
-                            filterOption={(input, option) => 
+                            filterOption={(input, option) =>
                                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                             }
                             options={jobs.map((job) => ({
@@ -40,7 +58,7 @@ const ApplicationHeader = ({
                             }))}
                             labelRender={(props) => {
                                 if (!props.value) return <span>Select a Job</span>;
-                                
+
                                 const job = jobs.find(j => j.id === props.value);
                                 if (!job) return <span>{props.label}</span>;
 
@@ -139,6 +157,16 @@ const ApplicationHeader = ({
                         >
                             Filters
                         </Button>
+                        <Dropdown menu={{ items: exportMenuItems }} trigger={['click']} disabled={isExporting}>
+                            <Button
+                                mode="secondary"
+                                shape="round"
+                                loading={isExporting}
+                                iconLeft={<Download size={16} />}
+                            >
+                                {isExporting ? 'Exporting...' : 'Export'}
+                            </Button>
+                        </Dropdown>
                     </div>
                 </div>
             </div>
