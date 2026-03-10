@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useGetBlacklistQuery, useUnblockCandidateMutation } from '@/apis/companyApi';
 import { Table, Input, Tag, Space, Button, message, Popconfirm } from 'antd';
 import dayjs from 'dayjs';
+import Pagination from '@/components/Pagination';
 
 const CompanyBlacklist = () => {
     const [keyword, setKeyword] = useState('');
@@ -62,11 +63,11 @@ const CompanyBlacklist = () => {
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50/50">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Candidate</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Reason</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Date</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">By</th>
-                                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest">Action</th>
+                                    <th className="px-6 py-4 text-left text-[13px] font-semibold text-gray-500 tracking-wider">Candidate</th>
+                                    <th className="px-6 py-4 text-left text-[13px] font-semibold text-gray-500 tracking-wider">Reason</th>
+                                    <th className="px-6 py-4 text-left text-[13px] font-semibold text-gray-500 tracking-wider">Date</th>
+                                    <th className="px-6 py-4 text-left text-[13px] font-semibold text-gray-500 tracking-wider">By</th>
+                                    <th className="px-6 py-4 text-right text-[13px] font-semibold text-gray-500 tracking-wider">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-100">
@@ -125,28 +126,12 @@ const CompanyBlacklist = () => {
                     </div>
 
                     {/* Pagination Section */}
-                    <div className="px-6 py-5 border-t border-gray-100 bg-gray-50/30 flex items-center justify-between">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            Showing <span className="text-gray-900">{page * size + 1}</span>-
-                            <span className="text-gray-900">{Math.min((page + 1) * size, response?.data?.totalElements || 0)}</span> of
-                            <span className="text-gray-900 ml-1">{response?.data?.totalElements || 0}</span>
-                        </p>
-                        <div className="flex gap-2">
-                            <button
-                                disabled={page === 0}
-                                onClick={() => setPage(p => p - 1)}
-                                className="h-9 px-4 border border-gray-200 rounded-xl text-xs font-bold text-gray-600 bg-white hover:bg-gray-50 disabled:opacity-40 transition-all shadow-sm"
-                            >
-                                Previous
-                            </button>
-                            <button
-                                disabled={(page + 1) >= (response?.data?.totalPages || 0)}
-                                onClick={() => setPage(p => p + 1)}
-                                className="h-9 px-4 bg-primary text-white rounded-xl text-xs font-bold hover:bg-primary-dark disabled:opacity-40 transition-all shadow-md shadow-primary/20"
-                            >
-                                Next
-                            </button>
-                        </div>
+                    <div className="px-6 py-5 border-t border-gray-100 bg-gray-50/30 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <Pagination
+                            currentPage={page}
+                            totalPages={response?.data?.totalPages || 0}
+                            onPageChange={(newPage) => setPage(newPage)}
+                        />
                     </div>
                 </div>
             </div>
