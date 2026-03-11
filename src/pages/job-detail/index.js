@@ -8,6 +8,7 @@ import { Skeleton, Tabs, ConfigProvider, Modal, DatePicker, message, Select } fr
 import dayjs from 'dayjs';
 import JobHeader from './components/JobHeader';
 import JobDescription from './components/JobDescription';
+import JobApplicants from './components/JobApplicants';
 import { PageHeaderContext } from '@/contexts/PageHeaderContext';
 
 const JobDetail = () => {
@@ -194,7 +195,7 @@ const JobDetail = () => {
         {
             key: '2',
             label: 'Applicants',
-            children: <div className="p-4 text-center text-gray-500">No applicants yet.</div>,
+            children: <JobApplicants jobId={job.id} />,
         },
         {
             key: '3',
