@@ -52,11 +52,11 @@ const JobHeader = ({ job, formatDate, formatSalary, onCloneJob, onCloseJob, onEd
                             <h1 className="text-3xl font-bold text-gray-900 dark:text-white m-0 leading-none">
                                 {job.name}
                             </h1>
-                            {job.status && (
+                            {/* {job.status && (
                                 <Tag color={getStatusColor(job.status)} className="text-sm px-3 py-1 rounded-full m-0 border-none font-medium flex items-center">
                                     {getStatusLabel(job.status)}
                                 </Tag>
-                            )}
+                            )} */}
                         </div>
                         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                             <span className="font-semibold text-gray-900 dark:text-gray-100">{job.company?.name || 'Company Name'}</span>

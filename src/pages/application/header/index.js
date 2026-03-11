@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select } from 'antd';
-import { Search, Filter, Plus, LayoutGrid, List as ListIcon, Download } from 'lucide-react';
+import { Search, Filter, Plus, LayoutGrid, List as ListIcon, Download, Archive } from 'lucide-react';
 import Button from '@/components/Button';
 import { getJobStatusConfig } from '@/constrant/application';
 import { Dropdown } from 'antd';
@@ -17,6 +17,7 @@ const ApplicationHeader = ({
     setIsFilterOpen,
     isExporting,
     onExport,
+    onArchiveJob,
 }) => {
 
     const exportMenuItems = [
@@ -78,13 +79,27 @@ const ApplicationHeader = ({
                                 const job = option.data.job;
                                 const statusConfig = getJobStatusConfig(job.status);
                                 return (
-                                    <div className="flex flex-col py-1">
-                                        <span className="truncate text-[14px] font-medium text-neutral-900 dark:text-neutral-100">
-                                            {job.name}
-                                        </span>
-                                        <span className={`text-[11px] font-normal mt-0.5 ${statusConfig.color}`}>
-                                            {statusConfig.label}
-                                        </span>
+                                    <div className="flex items-center justify-between py-1">
+                                        <div className="flex flex-col min-w-0 flex-1">
+                                            <span className="truncate text-[14px] font-medium text-neutral-900 dark:text-neutral-100">
+                                                {job.name}
+                                            </span>
+                                            <span className={`text-[11px] font-normal mt-0.5 ${statusConfig.color}`}>
+                                                {statusConfig.label}
+                                            </span>
+                                        </div>
+                                        {job.status === 'CLOSED' && onArchiveJob && (
+                                            <button
+                                                className="p-1.5 rounded-lg hover:bg-orange-50 text-gray-400 hover:text-orange-500 transition-all shrink-0 ml-2"
+                                                title="Archive Job"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onArchiveJob(job);
+                                                }}
+                                            >
+                                                <Archive size={15} />
+                                            </button>
+                                        )}
                                     </div>
                                 );
                             }}

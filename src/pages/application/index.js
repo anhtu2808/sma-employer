@@ -1,12 +1,12 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { useGetApplicationsQuery, useUpdateApplicationStatusMutation, useLazyGetShortlistedExportQuery } from '@/apis/applicationApi';
-import { useGetJobsQuery } from '@/apis/jobApi';
+import { useGetJobsQuery, useUpdateJobStatusMutation } from '@/apis/jobApi';
 
 import { Drawer } from 'antd';
 import FilterSidebar from './filterSidebar';
 import ApplicationList from './list';
 import KanbanBoard from './kanban';
-import { message } from 'antd';
+import { message, Modal as AntModal } from 'antd';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import Modal from '@/components/Modal';
 import Loading from '@/components/Loading';
@@ -35,6 +35,7 @@ const ApplicationManagement = () => {
     const [rejectData, setRejectData] = useState({ id: null, status: null });
     const [rejectReason, setRejectReason] = useState('');
     const [triggerExport, { isFetching: isExporting }] = useLazyGetShortlistedExportQuery();
+    const [updateJobStatus] = useUpdateJobStatusMutation();
 
     usePageHeader('Application Management', 'Track and manage candidate applications for your jobs');
 
@@ -149,6 +150,22 @@ const ApplicationManagement = () => {
                 setIsFilterOpen={setIsFilterOpen}
                 isExporting={isExporting}
                 onExport={handleExportExcel}
+                onArchiveJob={(job) => {
+                    AntModal.confirm({
+                        title: 'Archive Job',
+                        content: 'Are you sure you want to archive this job? It will be moved to the Archived section.',
+                        okText: 'Yes, Archive',
+                        cancelText: 'Cancel',
+                        onOk: async () => {
+                            try {
+                                await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
+                                message.success('Job archived successfully');
+                            } catch {
+                                message.error('Failed to archive job');
+                            }
+                        }
+                    });
+                }}
             />
 
 
