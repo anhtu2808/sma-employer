@@ -1,5 +1,5 @@
 import React from "react";
-import { Slider, Form, Switch, Checkbox } from "antd";
+import { Slider, Form, Switch, Checkbox, Tooltip } from "antd";
 import { useGetCriteriaQuery } from "@/apis/jobApi";
 import Loading from "@/components/Loading";
 
@@ -13,12 +13,13 @@ const ScoringWeights = () => {
       shouldUpdate={(prevValues, currentValues) => {
         // Update if AI scoring toggle changes
         if (prevValues.enableAiScoring !== currentValues.enableAiScoring) return true;
-        
+
         // Update if any criteria enable or weight changes
         for (const criteriaItem of criteriaList) {
           if (prevValues[`enable_${criteriaItem.id}`] !== currentValues[`enable_${criteriaItem.id}`]) return true;
           if (prevValues[`weight_${criteriaItem.id}`] !== currentValues[`weight_${criteriaItem.id}`]) return true;
         }
+        if (prevValues.autoRejectThreshold !== currentValues.autoRejectThreshold) return true;
         return false;
       }}
     >
@@ -29,7 +30,7 @@ const ScoringWeights = () => {
         // If AI is turned back active, we reset them to default values
         const updates = {};
         let needsUpdate = false;
-        
+
         if (!isAiActive) {
           criteriaList.forEach((criteria) => {
             if (getFieldValue(`enable_${criteria.id}`) !== false) {
@@ -71,8 +72,8 @@ const ScoringWeights = () => {
 
         // Ensure we don't exceed 100 if something gets enabled
         if (currentTotalWeight > 100) {
-           // We might want to auto-adjust, but for now just showing it exceeds is okay,
-           // or we can prevent the slider from moving past the available limit.
+          // We might want to auto-adjust, but for now just showing it exceeds is okay,
+          // or we can prevent the slider from moving past the available limit.
         }
 
         const isOver100 = currentTotalWeight > 100;
@@ -107,9 +108,8 @@ const ScoringWeights = () => {
             </div>
 
             <div
-              className={`space-y-6 transition-all duration-300 ${
-                !isAiActive ? "opacity-50 grayscale pointer-events-none" : ""
-              }`}
+              className={`space-y-6 transition-all duration-300 ${!isAiActive ? "opacity-50 grayscale pointer-events-none" : ""
+                }`}
             >
               <div className="flex justify-between items-center bg-orange-50 dark:bg-orange-900/20 p-3 rounded-lg border border-orange-100 dark:border-orange-900/30">
                 <span className="text-sm text-gray-700 dark:text-gray-300">Total Allocated Weight:</span>
@@ -126,7 +126,7 @@ const ScoringWeights = () => {
                 criteriaList.map((criteriaItem) => {
                   const isEnabled = getFieldValue(`enable_${criteriaItem.id}`) !== false;
                   const currentWeight = getFieldValue(`weight_${criteriaItem.id}`) || 0;
-                  
+
                   // Limit the highest value this slider can be dragged to based on remaining available weight.
                   // It can go up to its current value + whatever is left to reach 100.
                   const maxAllowed = isEnabled ? Math.min(100, currentWeight + remainingWeight) : 100;
@@ -141,8 +141,8 @@ const ScoringWeights = () => {
                             initialValue={true}
                             noStyle
                           >
-                            <Checkbox 
-                              disabled={!isAiActive || (!isEnabled && maxAllowed < currentWeight)} 
+                            <Checkbox
+                              disabled={!isAiActive || (!isEnabled && maxAllowed < currentWeight)}
                               onChange={(e) => {
                                 // If enabling, and current weight would push it over 100, reduce it
                                 if (e.target.checked) {
@@ -186,6 +186,64 @@ const ScoringWeights = () => {
                   );
                 })
               )}
+
+              {/* Auto-Reject Threshold */}
+              <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+                <div className="flex justify-between mb-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Auto-Reject Threshold
+                  </label>
+                  <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded flex items-center gap-1">
+                    {isAiActive ? (
+                      <>
+                        <Tooltip title="This is the percentage scale used to automatically reject CVs with matching scores lower than the set threshold.">
+                          <span className="material-icons-round text-[14px] cursor-help">error_outline</span>
+                        </Tooltip>
+                        <span>Below {getFieldValue('autoRejectThreshold') || 40}%</span>
+                      </>
+                    ) : (
+                      'Disabled'
+                    )}
+                  </span>
+                </div>
+
+                <Form.Item name="autoRejectThreshold" noStyle initialValue={40}>
+                  <Slider
+                    trackStyle={{ backgroundColor: '#F97316' }}
+                    handleStyle={{ borderColor: '#F97316', backgroundColor: '#F97316' }}
+                    disabled={!isAiActive}
+                    onChange={(val) => {
+                      // Logic to set threshold based on AI state is handled in the effect below
+                    }}
+                  />
+                </Form.Item>
+                <p className="text-xs text-gray-500 mt-1">
+                  {isAiActive
+                    ? "Candidates scoring below this will be automatically moved to 'Rejected'."
+                    : "AI Scoring is disabled. Candidates will not be auto-rejected."}
+                </p>
+              </div>
+
+              {/* Effect to sync threshold with AI state */}
+              <Form.Item
+                noStyle
+                shouldUpdate={(prevValues, currentValues) =>
+                  prevValues.enableAiScoring !== currentValues.enableAiScoring ||
+                  prevValues.autoRejectThreshold !== currentValues.autoRejectThreshold
+                }
+              >
+                {({ getFieldValue, setFieldsValue }) => {
+                  const aiActive = getFieldValue('enableAiScoring') !== false;
+                  const threshold = getFieldValue('autoRejectThreshold');
+
+                  if (!aiActive && threshold !== 0) {
+                    setTimeout(() => setFieldsValue({ autoRejectThreshold: 0 }), 0);
+                  } else if (aiActive && threshold === 0) {
+                    setTimeout(() => setFieldsValue({ autoRejectThreshold: 40 }), 0);
+                  }
+                  return null;
+                }}
+              </Form.Item>
             </div>
           </div>
         );

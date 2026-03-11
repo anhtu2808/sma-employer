@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Form } from 'antd';
+import { Input, Form, DatePicker, InputNumber } from 'antd';
 
 const JobIdentity = () => {
     return (
@@ -12,16 +12,30 @@ const JobIdentity = () => {
                     name="name"
                     label={<span className="text-gray-500 uppercase text-xs font-bold tracking-wider">Job Title</span>}
                     rules={[{ required: true, message: 'Please enter job title' }]}
-                    className="mb-1"
+                    className="mb-4"
                 >
                     <Input
                         placeholder="e.g. Senior React Developer"
                         className="text-lg font-bold border border-gray-300 rounded-lg px-3 py-2 focus:shadow-none focus:border-primary hover:border-gray-400"
                     />
                 </Form.Item>
-                <div className="flex items-center gap-2 text-gray-500 text-sm">
-                    <span className="material-icons-round text-base">domain</span>
-                    <span>My Company (Smart Recruit)</span>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <Form.Item
+                        name="expDate"
+                        label={<span className="text-gray-500 uppercase text-xs font-bold tracking-wider">Application Deadline</span>}
+                        className="mb-0"
+                    >
+                        <DatePicker className="w-full rounded-lg py-2" format="MM/DD/YYYY" placeholder="mm/dd/yyyy" />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="quantity"
+                        label={<span className="text-gray-500 uppercase text-xs font-bold tracking-wider">Number of Openings</span>}
+                        className="mb-0"
+                    >
+                        <InputNumber className="w-full rounded-lg py-1.5" min={1} />
+                    </Form.Item>
                 </div>
             </div>
         </div>
