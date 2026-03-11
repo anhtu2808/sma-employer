@@ -21,7 +21,6 @@ import JobDescriptionSection from "./components/JobDescriptionSection";
 import PublishCard from "./components/PublishCard";
 import ScoringWeights from "./components/ScoringWeights";
 import ProTips from "./components/ProTips";
-import JobSettings from "./components/JobSettings";
 import Classification from "./components/Classification";
 import ScreeningQuestions from "./components/ScreeningQuestions";
 
@@ -32,7 +31,7 @@ const JobCreate = () => {
   const location = useLocation();
   const [form] = Form.useForm();
   const [submitAction, setSubmitAction] = useState("publish");
-  
+
   const clonedJobId = location.state?.clonedJobId;
   const targetId = isEditMode ? id : clonedJobId;
   const { data: jobData, isLoading: isJobLoading } = useGetJobDetailQuery(targetId, { skip: !targetId });
@@ -55,7 +54,7 @@ const JobCreate = () => {
         questionIds: clonedJob.questions?.map(q => q.id) || clonedJob.questionIds,
         expertiseId: clonedJob.expertise?.id || clonedJob.expertiseId,
       };
-      
+
       if (clonedJob.scoringCriterias) {
         clonedJob.scoringCriterias.forEach((c) => {
           const criteriaId = c.criteria?.id || c.criteriaId;
@@ -182,19 +181,11 @@ const JobCreate = () => {
             <Classification />
             <JobLocations />
             <ScreeningQuestions />
-
-            {/* Additional Settings (Optional but important) */}
-            <div className="pt-4">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                Additional Settings
-              </h3>
-              <JobSettings />
-            </div>
           </div>
 
           {/* Sidebar - Right Column */}
           <div className="lg:col-span-1">
-            <div className="sticky top-6 space-y-6">
+            <div className="top-6 space-y-6">
               <PublishCard
                 onCancel={() => navigate(isEditMode ? `/jobs/${id}` : "/jobs")}
                 isLoading={

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Eye } from 'lucide-react';
+import { Eye, Archive, ArchiveRestore, Trash2 } from 'lucide-react';
 import { getJobStatusConfig } from '@/constrant';
 import Button from '@/components/Button';
 
@@ -15,6 +15,9 @@ const JobListItem = ({
     tags = [],
     stats = {},
     onViewDetails,
+    onArchive,
+    onUnarchive,
+    onDelete,
     className = ''
 }) => {
     const statusConfig = getJobStatusConfig(status);
@@ -78,10 +81,46 @@ const JobListItem = ({
                 </div>
             </div>
 
-            <div className="flex items-center gap-4 shrink-0 w-full md:w-auto mt-2 md:mt-0 self-center pr-2">
-                {/* <div className={`h-10 px-4 flex items-center justify-center bg-white border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg text-sm font-medium ${statusConfig.color}`}>
-                    {statusConfig.label}
-                </div> */}
+            <div className="flex items-center gap-2 shrink-0 w-full md:w-auto mt-2 md:mt-0 self-center pr-2">
+                {status === 'CLOSED' && onArchive && (
+                    <Button
+                        mode="secondary"
+                        size="md"
+                        shape="round"
+                        btnIcon
+                        tooltip="Archive Job"
+                        className="border-gray-300 dark:border-gray-600 hover:!border-orange-400 hover:!text-orange-500"
+                        onClick={(e) => { e.stopPropagation(); onArchive(); }}
+                    >
+                        <Archive size={18} />
+                    </Button>
+                )}
+                {status === 'ARCHIVED' && onUnarchive && (
+                    <Button
+                        mode="secondary"
+                        size="md"
+                        shape="round"
+                        btnIcon
+                        tooltip="Unarchive Job"
+                        className="border-gray-300 dark:border-gray-600 hover:!border-emerald-400 hover:!text-emerald-500"
+                        onClick={(e) => { e.stopPropagation(); onUnarchive(); }}
+                    >
+                        <ArchiveRestore size={18} />
+                    </Button>
+                )}
+                {(status === 'DRAFT' || status === 'SUSPENDED') && onDelete && (
+                    <Button
+                        mode="secondary"
+                        size="md"
+                        shape="round"
+                        btnIcon
+                        tooltip="Delete Job"
+                        className="border-gray-300 dark:border-gray-600 hover:!border-red-400 hover:!text-red-500"
+                        onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                    >
+                        <Trash2 size={18} />
+                    </Button>
+                )}
                 <Button
                     mode="secondary"
                     size="md"
@@ -113,6 +152,9 @@ JobListItem.propTypes = {
         ctr: PropTypes.number
     }),
     onViewDetails: PropTypes.func,
+    onArchive: PropTypes.func,
+    onUnarchive: PropTypes.func,
+    onDelete: PropTypes.func,
     className: PropTypes.string
 };
 

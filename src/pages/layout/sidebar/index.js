@@ -8,18 +8,20 @@ const menuItems = [
   { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
   { icon: 'people', label: 'Recruiters', path: '/recruiters' },
   { icon: 'work_outline', label: 'Jobs', path: '/jobs' },
-  { icon: 'business', label: 'Company', path: '/company' },
+
   { icon: 'badge', label: 'Applications', path: '/applications' },
   { icon: 'block', label: 'Blacklist', path: '/blacklist' },
   { icon: 'credit_card', label: 'Billing & Plans', path: '/billing-plans' },
   { icon: 'history', label: 'Usage', path: '/usage' },
   { icon: 'notifications', label: 'Notifications', path: '/notifications' },
-  { icon: 'insights', label: 'Reports', path: '/reports' },
+
 ];
 
 const generalItems = [
+  { icon: 'business', label: 'Company', path: '/company' },
   { icon: 'settings', label: 'Settings', path: '/settings' },
   { icon: 'help_outline', label: 'Help Center', path: '/help' },
+  { icon: 'insights', label: 'Reports', path: '/reports' },
 ];
 
 

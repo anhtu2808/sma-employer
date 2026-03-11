@@ -2,12 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ConfigProvider, Tabs } from 'antd';
 import Input from '@/components/Input';
 import { useGetJobsQuery, useGetMyJobStatusCountQuery } from '@/apis/apis';
+import { useUpdateJobStatusMutation } from '@/apis/jobApi';
 import JobListItem from '@/components/JobListItem';
 import Pagination from '@/components/Pagination';
 import Button from '@/components/Button';
 import Loading from '@/components/Loading';
 import { useNavigate } from 'react-router-dom';
 import { JOB_STATUS_TABS } from '@/constrant';
+import { Modal, message } from 'antd';
 import JobFilterDrawer from './filter-drawer';
 
 const createDefaultFilters = () => ({
@@ -31,6 +33,7 @@ const JobsList = () => {
     const [status, setStatus] = useState(null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [appliedFilters, setAppliedFilters] = useState(() => createDefaultFilters());
+    const [updateJobStatus] = useUpdateJobStatusMutation();
 
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
     useEffect(() => {
@@ -234,6 +237,55 @@ const JobsList = () => {
                                     views: job.viewsCount,
                                 }}
                                 onViewDetails={() => navigate(`/jobs/${job.id}`)}
+                                onArchive={job.status === 'CLOSED' ? () => {
+                                    Modal.confirm({
+                                        title: 'Archive Job',
+                                        content: 'Are you sure you want to archive this job? It will be moved to the Archived section.',
+                                        okText: 'Yes, Archive',
+                                        cancelText: 'Cancel',
+                                        onOk: async () => {
+                                            try {
+                                                await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
+                                                message.success('Job archived successfully');
+                                            } catch {
+                                                message.error('Failed to archive job');
+                                            }
+                                        }
+                                    });
+                                } : undefined}
+                                onUnarchive={job.status === 'ARCHIVED' ? () => {
+                                    Modal.confirm({
+                                        title: 'Unarchive Job',
+                                        content: 'Are you sure you want to unarchive this job? It will be moved back to Draft status.',
+                                        okText: 'Yes, Unarchive',
+                                        cancelText: 'Cancel',
+                                        onOk: async () => {
+                                            try {
+                                                await updateJobStatus({ id: job.id, status: 'DRAFT' }).unwrap();
+                                                message.success('Job unarchived successfully');
+                                            } catch {
+                                                message.error('Failed to unarchive job');
+                                            }
+                                        }
+                                    });
+                                } : undefined}
+                                onDelete={(job.status === 'DRAFT' || job.status === 'SUSPENDED') ? () => {
+                                    Modal.confirm({
+                                        title: 'Delete Job',
+                                        content: 'Are you sure you want to delete this job?',
+                                        okText: 'Yes, Delete',
+                                        okButtonProps: { danger: true },
+                                        cancelText: 'Cancel',
+                                        onOk: async () => {
+                                            try {
+                                                await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
+                                                message.success('Job deleted successfully');
+                                            } catch {
+                                                message.error('Failed to delete job');
+                                            }
+                                        }
+                                    });
+                                } : undefined}
                             />
                         ))}
                     </div>

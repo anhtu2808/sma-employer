@@ -13,6 +13,7 @@ export const JOB_STATUS_TABS = [
     { key: 'PENDING_REVIEW', label: 'Pending' },
     { key: 'SUSPENDED', label: 'Suspended' },
     { key: 'CLOSED', label: 'Closed' },
+    { key: 'ARCHIVED', label: 'Archived' },
 ];
 
 export const WORKING_MODEL_OPTIONS = [
