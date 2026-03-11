@@ -22,6 +22,10 @@ const NotificationItem = ({ noti }) => {
                     color: 'text-red-500',
                     bg: 'bg-red-50 dark:bg-red-900/20'
                 };
+            case 'PAYMENT_SUCCESS':
+                return { icon: 'check_circle', color: 'text-green-500' };
+            case 'PAYMENT_FAILURE':
+                return { icon: 'payments', color: 'text-red-500' };
             default:
                 return {
                     icon: 'notifications',
@@ -51,6 +55,10 @@ const NotificationItem = ({ noti }) => {
         switch (noti.notificationType) {
             case 'SYSTEM':
                 navigate('/billing-plans');
+                break;
+            case 'PAYMENT_SUCCESS':
+            case 'PAYMENT_FAILURE':
+                navigate('/dashboard/billing-plans');
                 break;
             default:
                 console.log("No specific route for this type");
