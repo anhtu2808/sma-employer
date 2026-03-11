@@ -303,15 +303,17 @@ const JobDetail = () => {
                                         </Button>
                                     </>
                                 )}
-                                <Button
-                                    mode="primary"
-                                    shape="round"
-                                    className="w-full h-10"
-                                    onClick={() => navigate(`/jobs/${job.id}/edit`)}
-                                    iconLeft={<span className="material-icons-round text-sm">edit</span>}
-                                >
-                                    Edit Job
-                                </Button>
+                                {job.status === 'DRAFT' && (
+                                    <Button
+                                        mode="primary"
+                                        shape="round"
+                                        className="w-full h-10"
+                                        onClick={() => navigate(`/jobs/${job.id}/edit`)}
+                                        iconLeft={<span className="material-icons-round text-sm">edit</span>}
+                                    >
+                                        Edit Job
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     </div>
