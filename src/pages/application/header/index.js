@@ -52,11 +52,13 @@ const ApplicationHeader = ({
                             filterOption={(input, option) =>
                                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                             }
-                            options={jobs.map((job) => ({
-                                value: job.id,
-                                label: job.name,
-                                job: job
-                            }))}
+                            options={jobs
+                                .filter(job => job.status === 'CLOSED' || job.status === 'PUBLISHED')
+                                .map((job) => ({
+                                    value: job.id,
+                                    label: job.name,
+                                    job: job
+                                }))}
                             labelRender={(props) => {
                                 if (!props.value) return <span>Select a Job</span>;
 
