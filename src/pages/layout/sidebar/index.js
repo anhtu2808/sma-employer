@@ -3,19 +3,9 @@ import { NavLink, Link } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import Button from '@/components/Button';
 import authService from '@/services/authService';
+import { useGetNotificationsQuery } from '@/apis/notificationApi';
 
-const menuItems = [
-  { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
-  { icon: 'people', label: 'Recruiters', path: '/recruiters' },
-  { icon: 'work_outline', label: 'Jobs', path: '/jobs' },
 
-  { icon: 'badge', label: 'Applications', path: '/applications' },
-  { icon: 'block', label: 'Blacklist', path: '/blacklist' },
-  { icon: 'credit_card', label: 'Billing & Plans', path: '/billing-plans' },
-  { icon: 'history', label: 'Usage', path: '/usage' },
-  { icon: 'notifications', label: 'Notifications', path: '/notifications' },
-
-];
 
 const generalItems = [
   { icon: 'business', label: 'Company', path: '/company' },
@@ -33,6 +23,31 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
       console.error('Logout failed:', error);
     }
   };
+
+  const { data } = useGetNotificationsQuery({
+    page: 0,
+    size: 1,
+    isRead: false
+  });
+  const unreadCount = data?.data?.unreadCount || 0;
+
+  const menuItems = [
+    { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
+    { icon: 'people', label: 'Recruiters', path: '/recruiters' },
+    { icon: 'work_outline', label: 'Jobs', path: '/jobs' },
+
+    { icon: 'badge', label: 'Applications', path: '/applications' },
+    { icon: 'block', label: 'Blacklist', path: '/blacklist' },
+    { icon: 'credit_card', label: 'Billing & Plans', path: '/billing-plans' },
+    { icon: 'history', label: 'Usage', path: '/usage' },
+    {
+      icon: 'notifications',
+      label: 'Notifications',
+      path: '/notifications',
+      badge: unreadCount > 0 ? unreadCount : null
+    },
+
+  ];
 
   return (
     <aside className={`bg-card-light dark:bg-card-dark ${!isMobile ? 'border-r border-gray-200 dark:border-gray-800' : ''} flex flex-col h-full flex-shrink-0 transition-all duration-300 ease-in-out relative ${collapsed && !isMobile ? 'w-20' : 'w-64'}`}>
@@ -74,10 +89,24 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
                 title={collapsed && !isMobile ? item.label : ''}
               >
                 <>
-                  <span className="material-icons-outlined group-hover:text-primary transition-colors">
-                    {item.icon}
-                  </span>
-                  {(!collapsed || isMobile) && item.label}
+                  <div className="relative flex items-center justify-center">
+                    <span className="material-icons-outlined group-hover:text-primary transition-colors">
+                      {item.icon}
+                    </span>
+                    {collapsed && !isMobile && item.badge > 0 && (
+                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white dark:border-card-dark rounded-full"></span>
+                    )}
+                  </div>
+
+                  {(!collapsed || isMobile) && (
+                    <span className="flex-1 text-left">{item.label}</span>
+                  )}
+
+                  {(!collapsed || isMobile) && item.badge > 0 && (
+                    <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                      {item.badge > 99 ? '99+' : item.badge}
+                    </span>
+                  )}
                 </>
               </NavLink>
             ))}
