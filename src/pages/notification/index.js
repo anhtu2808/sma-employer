@@ -4,7 +4,7 @@ import NotificationItem from './components/notification-item';
 import SearchInput from '@/components/SearchInput';
 
 const NotificationList = () => {
-    const [filter, setFilter] = useState({ page: 0, size: 10, isRead: null, type: null, keyword: '' });
+    const [filter, setFilter] = useState({ page: 0, size: 10, isRead: null, types: null, keyword: '' });
 
     const { data, isLoading } = useGetNotificationsQuery(filter);
     const [markAllAsRead] = useMarkAllAsReadMutation();
@@ -17,9 +17,11 @@ const NotificationList = () => {
     const endEntry = Math.min(((paging?.pageNumber || 0) + 1) * (paging?.pageSize || 10), paging?.totalElements || 0);
 
     const tabs = [
-        { label: 'All', value: { isRead: null, type: null } },
-        { label: 'Unread', value: { isRead: false, type: null }, count: unreadCount },
-        { label: 'System Alerts', value: { isRead: null, type: 'SYSTEM' } },
+        { label: 'All', value: { isRead: null, types: null } },
+        { label: 'Unread', value: { isRead: false, types: null }, count: unreadCount },
+        { label: 'Applications', value: { isRead: null, types: ['APPLICATION_STATUS'] } },
+        { label: 'Payments', value: { isRead: null, types: ['PAYMENT_SUCCESS', 'PAYMENT_FAILURE'] } },
+        { label: 'System Alerts', value: { isRead: null, types: ['SYSTEM', 'COMPANY_REGISTRATION'] } },
     ];
 
     return (
@@ -32,7 +34,7 @@ const NotificationList = () => {
                             <button
                                 key={tab.label}
                                 onClick={() => setFilter({ ...filter, ...tab.value, page: 0 })}
-                                className={`whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm transition-all ${(filter.isRead === tab.value.isRead && filter.type === tab.value.type)
+                                className={`whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm transition-all ${(filter.isRead === tab.value.isRead && JSON.stringify(filter.types) === JSON.stringify(tab.value.types))
                                     ? 'border-primary text-primary'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                     }`}

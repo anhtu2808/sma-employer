@@ -26,6 +26,8 @@ const NotificationItem = ({ noti }) => {
                 return { icon: 'check_circle', color: 'text-green-500' };
             case 'PAYMENT_FAILURE':
                 return { icon: 'payments', color: 'text-red-500' };
+            case 'APPLICATION_STATUS':
+                return { icon: 'contact_page', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' };
             default:
                 return {
                     icon: 'notifications',
@@ -58,7 +60,14 @@ const NotificationItem = ({ noti }) => {
                 break;
             case 'PAYMENT_SUCCESS':
             case 'PAYMENT_FAILURE':
-                navigate('/dashboard/billing-plans');
+                navigate('/billing-plans');
+                break;
+            case 'APPLICATION_STATUS':
+                if (noti.relatedEntityId) {
+                    navigate(`/applications/${noti.relatedEntityId}`);
+                } else {
+                    navigate('/applications');
+                }
                 break;
             default:
                 console.log("No specific route for this type");
