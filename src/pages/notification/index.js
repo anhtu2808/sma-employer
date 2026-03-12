@@ -19,6 +19,7 @@ const NotificationList = () => {
     const tabs = [
         { label: 'All', value: { isRead: null, types: null } },
         { label: 'Unread', value: { isRead: false, types: null }, count: unreadCount },
+        { label: 'Jobs', value: { isRead: null, types: ['FLAGGED_JOB'] } },
         { label: 'Applications', value: { isRead: null, types: ['APPLICATION_STATUS'] } },
         { label: 'Payments', value: { isRead: null, types: ['PAYMENT_SUCCESS', 'PAYMENT_FAILURE'] } },
         { label: 'System Alerts', value: { isRead: null, types: ['SYSTEM', 'COMPANY_REGISTRATION'] } },
