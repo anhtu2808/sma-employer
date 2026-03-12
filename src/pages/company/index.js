@@ -52,7 +52,7 @@ const CompanyProfile = () => {
     if (isLoading) return <Loading className="py-16" />;
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="space-y-4">
 
             <Card className="p-6">
                 <Form form={form} onFinish={onFinish} className="space-y-6" disabled={!isEditing}>

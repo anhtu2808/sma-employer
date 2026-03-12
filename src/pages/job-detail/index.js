@@ -311,7 +311,7 @@ const JobDetail = () => {
                                         onClick={() => navigate(`/jobs/${job.id}/edit`)}
                                         iconLeft={<span className="material-icons-round text-sm">edit</span>}
                                     >
-                                        Edit Job
+                                        Edit
                                     </Button>
                                 )}
                             </div>
@@ -333,7 +333,7 @@ const JobDetail = () => {
     ];
 
     return (
-        <div className="w-full max-w-[95%] mx-auto space-y-4 pb-12">
+        <div className="space-y-4">
             {/* Back button */}
             <Button
                 mode="text"

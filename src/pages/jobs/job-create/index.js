@@ -159,7 +159,7 @@ const JobCreate = () => {
   }
 
   return (
-    <div className="p-6 max-w-[95%] mx-auto pb-20">
+    <div className="space-y-4">
       <Button
         mode="text"
         className="self-start text-gray-500 hover:text-primary pl-0 -ml-6"
@@ -185,7 +185,7 @@ const JobCreate = () => {
 
           {/* Sidebar - Right Column */}
           <div className="lg:col-span-1">
-            <div className="top-6 space-y-6">
+            <div className="space-y-4">
               <PublishCard
                 onCancel={() => navigate(isEditMode ? `/jobs/${id}` : "/jobs")}
                 isLoading={
