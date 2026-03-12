@@ -28,6 +28,8 @@ const NotificationItem = ({ noti }) => {
                 return { icon: 'payments', color: 'text-red-500' };
             case 'APPLICATION_STATUS':
                 return { icon: 'contact_page', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' };
+            case 'FLAGGED_JOB':
+                return { icon: 'work_outline', color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' };
             default:
                 return {
                     icon: 'notifications',
@@ -67,6 +69,13 @@ const NotificationItem = ({ noti }) => {
                     navigate(`/applications/${noti.relatedEntityId}`);
                 } else {
                     navigate('/applications');
+                }
+                break;
+            case 'FLAGGED_JOB':
+                if (noti.relatedEntityId) {
+                    navigate(`/jobs/${noti.relatedEntityId}`);
+                } else {
+                    navigate('/jobs');
                 }
                 break;
             default:
