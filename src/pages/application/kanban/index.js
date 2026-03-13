@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Mail, Calendar, MapPin, Brain, Paperclip } from 'lucide-react';
 import moment from 'moment';
@@ -12,6 +12,22 @@ const KanbanBoard = ({
     onDragEnd,
 }) => {
     const navigate = useNavigate();
+    const [draggingColumn, setDraggingColumn] = useState(null);
+
+    const isValidDrop = (sourceId, targetId) => {
+        if (!draggingColumn) return true;
+        if (sourceId === targetId) return true;
+        if (sourceId === 'VIEWED') {
+            return ['SHORTLISTED', 'APPROVED', 'REJECTED'].includes(targetId);
+        }
+        if (sourceId === 'SHORTLISTED') {
+            return ['REJECTED', 'APPROVED'].includes(targetId);
+        }
+        if (sourceId === 'REJECTED') {
+            return ['APPROVED'].includes(targetId);
+        }
+        return false;
+    };
 
     const getAIMatchTag = (score) => {
         if (!score) return { label: 'N/A', bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-500 dark:text-gray-400' };
@@ -33,7 +49,13 @@ const KanbanBoard = ({
     };
 
     return (
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext 
+            onDragStart={(start) => setDraggingColumn(start.source.droppableId)}
+            onDragEnd={(result) => {
+                setDraggingColumn(null);
+                onDragEnd(result);
+            }}
+        >
             <div className="h-full overflow-x-auto pb-4 custom-scrollbar">
                 <div className="flex gap-6 h-full min-w-max px-1 pt-1">
                     {statusColumns.map((column) => {
@@ -58,15 +80,24 @@ const KanbanBoard = ({
                                 </div>
 
                                 {/* Droppable Area */}
-                                <Droppable droppableId={column.id}>
-                                    {(provided, snapshot) => (
-                                        <div
-                                            {...provided.droppableProps}
-                                            ref={provided.innerRef}
-                                            className={`flex-1 space-y-3 overflow-y-auto pr-1 custom-scrollbar transition-colors rounded-xl ${snapshot.isDraggingOver ? 'bg-primary/5' : ''}`}
-                                        >
+                                <Droppable droppableId={column.id} isDropDisabled={draggingColumn ? !isValidDrop(draggingColumn, column.id) : false}>
+                                    {(provided, snapshot) => {
+                                        const isColumnValidDrop = draggingColumn && isValidDrop(draggingColumn, column.id) && column.id !== draggingColumn;
+                                        const isColumnInvalidDrop = draggingColumn && !isValidDrop(draggingColumn, column.id) && column.id !== draggingColumn;
+
+                                        return (
+                                            <div
+                                                {...provided.droppableProps}
+                                                ref={provided.innerRef}
+                                                className={`flex-1 space-y-3 overflow-y-auto pr-1 custom-scrollbar transition-all duration-300 rounded-xl
+                                                    ${snapshot.isDraggingOver ? 'bg-primary/10 ring-2 ring-primary/30 shadow-inner' : ''}
+                                                    ${isColumnValidDrop && !snapshot.isDraggingOver ? 'bg-emerald-50/50 dark:bg-emerald-900/10 ring-1 ring-emerald-500/30 shadow-inner' : ''}
+                                                    ${isColumnInvalidDrop ? 'opacity-30 bg-gray-50/50 dark:bg-gray-800/20 grayscale pointer-events-none' : ''}
+                                                `}
+                                            >
                                             {candidates.map((app, index) => {
-                                                const isTerminal = app.status === 'NOT_SUITABLE' || app.status === 'AUTO_REJECTED';
+                                                const isNotDraggable = app.status === 'APPLIED' || app.status === 'AUTO_REJECTED' || app.status === 'APPROVED';
+                                                const isTerminalStyle = app.status === 'AUTO_REJECTED';
                                                 const matchTag = getAIMatchTag(app.aiScore);
 
                                                 return (
@@ -74,7 +105,7 @@ const KanbanBoard = ({
                                                         key={app.applicationId.toString()}
                                                         draggableId={app.applicationId.toString()}
                                                         index={index}
-                                                        isDragDisabled={isTerminal}
+                                                        isDragDisabled={isNotDraggable}
                                                     >
                                                         {(provided, snapshot) => (
                                                             <div
@@ -82,9 +113,9 @@ const KanbanBoard = ({
                                                                 {...provided.draggableProps}
                                                                 {...provided.dragHandleProps}
                                                                 style={{ ...provided.draggableProps.style }}
-                                                                className={`${snapshot.isDragging ? 'z-50 shadow-2xl scale-[1.02]' : ''} ${isTerminal ? 'opacity-60' : ''}`}
+                                                                className={`${snapshot.isDragging ? 'z-50 shadow-2xl scale-[1.02]' : ''} ${isTerminalStyle ? 'opacity-60' : ''}`}
                                                             >
-                                                                <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing group">
+                                                                <div className={`bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-shadow ${!isNotDraggable ? 'hover:shadow-md cursor-grab active:cursor-grabbing' : ''} group`}>
                                                                     {/* Top Row: AI Match Tag + Status */}
                                                                     <div className="flex justify-between items-start mb-2">
                                                                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${matchTag.bg} ${matchTag.text}`}>
@@ -141,7 +172,8 @@ const KanbanBoard = ({
                                             })}
                                             {provided.placeholder}
                                         </div>
-                                    )}
+                                        );
+                                    }}
                                 </Droppable>
                             </div>
                         );

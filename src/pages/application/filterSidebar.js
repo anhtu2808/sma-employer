@@ -63,7 +63,8 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
                             { value: 'APPLIED', label: 'Applied' },
                             { value: 'VIEWED', label: 'Viewed' },
                             { value: 'SHORTLISTED', label: 'Shortlisted' },
-                            { value: 'NOT_SUITABLE', label: 'Not Suitable' },
+                            { value: 'REJECTED', label: 'Rejected' },
+                            { value: 'APPROVED', label: 'Approved' },
                             { value: 'AUTO_REJECTED', label: 'Auto Rejected' },
                         ]}
                     />

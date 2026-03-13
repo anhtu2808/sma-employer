@@ -68,8 +68,17 @@ const JobApplicants = ({ jobId }) => {
         }
     };
 
+    const isStatusUpdateDisabled = (current, target) => {
+        if (current === target) return true;
+        if (current === 'VIEWED') return !['SHORTLISTED', 'APPROVED', 'REJECTED'].includes(target);
+        if (current === 'SHORTLISTED') return !['REJECTED', 'APPROVED'].includes(target);
+        if (current === 'REJECTED') return target !== 'APPROVED';
+        if (['APPLIED', 'APPROVED', 'AUTO_REJECTED'].includes(current)) return true;
+        return true;
+    };
+
     const getStatusMenu = (app) => {
-        const statuses = ['APPLIED', 'VIEWED', 'SHORTLISTED', 'NOT_SUITABLE', 'AUTO_REJECTED'];
+        const statuses = ['APPLIED', 'VIEWED', 'SHORTLISTED', 'REJECTED', 'APPROVED', 'AUTO_REJECTED'];
         return {
             items: statuses.map(statusId => {
                 const s = getApplicationStatusConfig(statusId);
@@ -80,12 +89,9 @@ const JobApplicants = ({ jobId }) => {
                             {s.label}
                         </span>
                     ),
-                    disabled:
-                        app.status === statusId ||
-                        app.status === 'NOT_SUITABLE' ||
-                        app.status === 'AUTO_REJECTED',
+                    disabled: isStatusUpdateDisabled(app.status, statusId),
                     onClick: () => {
-                        if (statusId === 'NOT_SUITABLE') {
+                        if (statusId === 'REJECTED') {
                             setRejectData({ id: app.applicationId, status: statusId });
                             setIsRejectModalOpen(true);
                         } else {
@@ -291,7 +297,7 @@ const JobApplicants = ({ jobId }) => {
             >
                 <div className="text-left space-y-4">
                     <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                        Are you sure to move this application to <span className="text-red-500 font-medium">Not Suitable</span> status? Please state the reason.
+                        Are you sure to move this application to <span className="text-red-500 font-medium">Rejected</span> status? Please state the reason.
                     </p>
                     <div className="space-y-2">
                         <label className="flex justify-between items-center px-1">

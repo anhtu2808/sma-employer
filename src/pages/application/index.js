@@ -14,11 +14,11 @@ import ApplicationHeader from './header';
 import { exportCandidates } from './export';
 
 const STATUS_COLUMNS = [
-    { id: 'APPLIED', title: 'Applied', color: '#FF6B35' },
+    { id: 'APPLIED', title: 'Applied', color: '#01afffff' },
     { id: 'VIEWED', title: 'Viewed', color: '#6366F1' },
-    { id: 'SHORTLISTED', title: 'Shortlisted', color: '#10B981' },
-    { id: 'NOT_SUITABLE', title: 'Not Suitable', color: '#EF4444' },
-    { id: 'AUTO_REJECTED', title: 'Auto Rejected', color: '#9CA3AF' }
+    { id: 'SHORTLISTED', title: 'Shortlisted', color: '#FF6B35' },
+    { id: 'REJECTED', title: 'Rejected', color: '#EF4444' },
+    { id: 'APPROVED', title: 'Approved', color: '#10B981' }
 ];
 
 
@@ -85,7 +85,7 @@ const ApplicationManagement = () => {
 
         const applicationId = draggableId;
         const newStatus = destination.droppableId;
-        if (newStatus === 'NOT_SUITABLE') {
+        if (newStatus === 'REJECTED') {
             setRejectData({ id: applicationId, status: newStatus });
             setIsRejectModalOpen(true);
             return;
@@ -210,7 +210,7 @@ const ApplicationManagement = () => {
             >
                 <div className="text-left space-y-4">
                     <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                        Are you sure to move this application to <span className="text-red-500 font-medium">Not Suitable</span> status? Please state the reason.
+                        Are you sure to move this application to <span className="text-red-500 font-medium">Rejected</span> status? Please state the reason.
                     </p>
 
                     <div className="space-y-2">
