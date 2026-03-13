@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import JobHeader from './components/JobHeader';
 import JobDescription from './components/JobDescription';
 import JobApplicants from './components/JobApplicants';
+import ProposedCVs from './components/ProposedCVs';
 import { PageHeaderContext } from '@/contexts/PageHeaderContext';
 
 const JobDetail = () => {
@@ -328,7 +329,7 @@ const JobDetail = () => {
         {
             key: '3',
             label: 'Proposed CVs',
-            children: <div className="p-4 text-center text-gray-500">No proposed CVs.</div>,
+            children: <ProposedCVs jobId={job.id} />,
         },
     ];
 
