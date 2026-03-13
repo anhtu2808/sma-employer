@@ -25,7 +25,9 @@ export const exportCandidates = (data, jobTitle = 'Candidates', type = 'excel') 
     const dateStr = new Date().toISOString().split('T')[0];
     const cleanJobTitle = jobTitle.replace(/[^a-zA-Z0-9]/g, '_');
 
-    if (type === 'csv') {
+    const fileType = type.toLowerCase();
+
+    if (fileType === 'csv') {
         XLSX.writeFile(workbook, `${cleanJobTitle}_${dateStr}.csv`, { bookType: 'csv' });
     } else {
         worksheet['!cols'] = [{ wch: 6 }, { wch: 25 }, { wch: 30 }, { wch: 15 }, { wch: 25 }, { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 40 }, { wch: 20 }, { wch: 45 }, { wch: 60 }];

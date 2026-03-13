@@ -35,10 +35,10 @@ export const applicationApi = api.injectEndpoints({
         }),
 
         getShortlistedExport: builder.query({
-            query: (jobId) => ({
-                url: `/v1/applications/export-shortlisted`,
+            query: ({ jobId, type }) => ({
+                url: `/v1/applications/export-approved`,
                 method: 'GET',
-                params: { jobId },
+                params: { jobId, type },
             }),
         }),
     }),
