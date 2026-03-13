@@ -27,7 +27,7 @@ const createDefaultFilters = () => ({
 
 const isValidNumber = (value) => typeof value === 'number' && !Number.isNaN(value);
 
-const JobsList = () => {
+const JobsList = ({ archivedOnly = false }) => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [status, setStatus] = useState(null);
@@ -53,7 +53,7 @@ const JobsList = () => {
     const queryParams = useMemo(
         () => ({
             ...(debouncedSearchTerm && { name: debouncedSearchTerm }),
-            ...(status && { status }),
+            ...((archivedOnly ? 'ARCHIVED' : status) && { status: archivedOnly ? 'ARCHIVED' : status }),
             ...(appliedFilters.workingModel && { workingModel: appliedFilters.workingModel }),
             ...(appliedFilters.jobLevel && { jobLevel: appliedFilters.jobLevel }),
             ...(appliedFilters.locationId != null && { locationId: appliedFilters.locationId }),
@@ -67,7 +67,7 @@ const JobsList = () => {
             page,
             size: pageSize,
         }),
-        [appliedFilters, debouncedSearchTerm, page, pageSize, status],
+        [appliedFilters, debouncedSearchTerm, page, pageSize, status, archivedOnly],
     );
 
     const { data: jobsData, isLoading: isJobsLoading, isFetching: isJobsFetching } = useGetJobsQuery(queryParams);
@@ -155,25 +155,27 @@ const JobsList = () => {
                     },
                 }}
             >
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                    <div className="px-4 pt-1 flex items-center justify-between">
-                        <Tabs
-                            activeKey={status || ''}
-                            onChange={(key) => setStatus(key || null)}
-                            items={tabItems}
-                            className="flex-1"
-                        />
-                        <Button
-                            mode="primary"
-                            onClick={() => navigate('/jobs/create')}
-                            shape="round"
-                            iconLeft={<span className="material-icons-round">add</span>}
-                            className="shrink-0 ml-4 self-center mb-2"
-                        >
-                            Post a Job
-                        </Button>
+                {!archivedOnly && (
+                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <div className="px-4 pt-1 flex items-center justify-between">
+                            <Tabs
+                                activeKey={status || ''}
+                                onChange={(key) => setStatus(key || null)}
+                                items={tabItems}
+                                className="flex-1"
+                            />
+                            <Button
+                                mode="primary"
+                                onClick={() => navigate('/jobs/create')}
+                                shape="round"
+                                iconLeft={<span className="material-icons-round">add</span>}
+                                className="shrink-0 ml-4 self-center mb-2"
+                            >
+                                Post a Job
+                            </Button>
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <div className="bg-white dark:bg-gray-800 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col md:flex-row gap-3 md:items-center">
                     <div className="w-full md:flex-1">

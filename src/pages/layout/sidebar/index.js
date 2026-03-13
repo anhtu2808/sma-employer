@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import Button from '@/components/Button';
 import authService from '@/services/authService';
@@ -9,6 +9,7 @@ import { useGetNotificationsQuery } from '@/apis/notificationApi';
 
 const generalItems = [
   { icon: 'business', label: 'Company', path: '/company' },
+  { icon: 'archive', label: 'Archived Jobs', path: '/jobs/archived' },
   { icon: 'settings', label: 'Settings', path: '/settings' },
   { icon: 'help_outline', label: 'Help Center', path: '/help' },
   { icon: 'insights', label: 'Reports', path: '/reports' },
@@ -16,6 +17,7 @@ const generalItems = [
 
 
 const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false }) => {
+  const location = useLocation();
   const handleLogout = async () => {
     try {
       await authService.logout();
@@ -80,12 +82,13 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
                 key={item.path}
                 to={item.path}
                 onClick={onMobileClose}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${collapsed && !isMobile ? 'justify-center px-2' : ''} ${isActive
+                className={({ isActive }) => {
+                  const checkActive = item.path === '/jobs' && location.pathname.startsWith('/jobs/archived') ? false : isActive;
+                  return `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${collapsed && !isMobile ? 'justify-center px-2' : ''} ${checkActive
                     ? 'bg-orange-50 dark:bg-primary/20 text-primary font-medium'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white group'
-                  }`
-                }
+                    }`
+                }}
                 title={collapsed && !isMobile ? item.label : ''}
               >
                 <>

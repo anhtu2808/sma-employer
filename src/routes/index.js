@@ -29,6 +29,7 @@ export const routes = createBrowserRouter(
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="recruiters" element={<Recruiters />} />
                 <Route path="jobs" element={<JobsList />} />
+                <Route path="jobs/archived" element={<JobsList archivedOnly={true} />} />
                 <Route path="jobs/create" element={<JobCreate />} />
                 <Route path="jobs/:id/edit" element={<JobCreate />} />
                 <Route path="jobs/:id" element={<JobDetail />} />
