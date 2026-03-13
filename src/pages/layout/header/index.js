@@ -53,22 +53,7 @@ const Header = ({ onMobileMenuClick }) => {
         </div>
       </div>
 
-      <div className="hidden md:flex flex-1 max-w-xl px-4 lg:px-8">
-        <div className="relative group w-full">
-          <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
-            <span className="material-icons-outlined">search</span>
-          </span>
-          <input
-            type="text"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl leading-5 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm transition-colors"
-            placeholder="Search recruiters, jobs, or candidates..."
-          />
-        </div>
-      </div>
-
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 ml-auto">
         <Link
           to="/ui-kit"
           className="p-2 text-gray-400 hover:text-primary dark:text-gray-500 dark:hover:text-primary transition-colors"

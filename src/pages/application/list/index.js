@@ -10,8 +10,17 @@ import Loading from '@/components/Loading';
 const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPage, onPageChange, onStatusUpdate }) => {
     const navigate = useNavigate();
 
+    const isStatusUpdateDisabled = (current, target) => {
+        if (current === target) return true;
+        if (current === 'VIEWED') return !['SHORTLISTED', 'APPROVED', 'REJECTED'].includes(target);
+        if (current === 'SHORTLISTED') return !['REJECTED', 'APPROVED'].includes(target);
+        if (current === 'REJECTED') return target !== 'APPROVED';
+        if (['APPLIED', 'APPROVED'].includes(current)) return true;
+        return true;
+    };
+
     const getStatusMenu = (app) => {
-        const statuses = ['APPLIED', 'VIEWED', 'SHORTLISTED', 'NOT_SUITABLE', 'AUTO_REJECTED'];
+        const statuses = ['APPLIED', 'VIEWED', 'SHORTLISTED', 'REJECTED', 'APPROVED'];
 
         return {
             items: statuses.map(statusId => {
@@ -23,10 +32,7 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                             {s.label}
                         </span>
                     ),
-                    disabled:
-                        app.status === statusId ||
-                        app.status === 'NOT_SUITABLE' ||
-                        app.status === 'AUTO_REJECTED',
+                    disabled: isStatusUpdateDisabled(app.status, statusId),
                     onClick: () => onStatusUpdate(app.applicationId, statusId)
                 };
             })

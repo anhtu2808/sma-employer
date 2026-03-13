@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { message, Input } from 'antd';
 import { useGetApplicationDetailQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
@@ -50,9 +50,19 @@ const ApplicationDetail = () => {
     const candidateId = appResponse?.data?.resumeDetail?.candidateId;
 
 
+    const app = normalizeApplicationDetail(appResponse?.data);
+
+    // Auto update status from APPLIED to VIEWED when recruiter opens detail
+    useEffect(() => {
+        if (app?.status === 'APPLIED') {
+            updateStatus({ id, status: 'VIEWED' }).unwrap().catch(err => {
+                console.error("Failed to auto-update status to VIEWED", err);
+            });
+        }
+    }, [app?.status, id, updateStatus]);
+
     if (isLoading) return <Loading className="py-16" />;
 
-    const app = normalizeApplicationDetail(appResponse?.data);
     if (!app) {
         return (
             <div className="flex items-center justify-center py-20">
