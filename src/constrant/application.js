@@ -13,10 +13,10 @@ export const getJobStatusConfig = (statusEnum) => {
 
 export const APPLICATION_STATUS = {
     APPLIED: { label: 'Applied', color: 'bg-gray-50 text-gray-400', dot: 'bg-gray-400', textColor: 'text-gray-400' },
-    VIEWED: { label: 'Viewed', color: 'bg-blue-50 text-blue-600', dot: 'bg-blue-600', textColor: 'text-blue-500' },
-    SHORTLISTED: { label: 'Shortlisted', color: 'bg-emerald-50 text-emerald-600', dot: 'bg-emerald-600', textColor: 'text-emerald-500' },
+    VIEWED: { label: 'Viewed', color: 'bg-blue-50 text-indigo-500', dot: 'bg-indigo-500', textColor: 'text-indigo-500' },
+    SHORTLISTED: { label: 'Shortlisted', color: 'bg-orange-50 text-orange-600', dot: 'bg-orange-600', textColor: 'text-orange-500' },
     REJECTED: { label: 'Rejected', color: 'bg-red-50 text-red-600', dot: 'bg-red-600', textColor: 'text-red-500' },
-    APPROVED: { label: 'Approved', color: 'bg-cyan-50 text-cyan-600', dot: 'bg-cyan-600', textColor: 'text-cyan-500' },
+    APPROVED: { label: 'Approved', color: 'bg-green-50 text-green-600', dot: 'bg-green-600', textColor: 'text-green-500' },
 };
 
 export const getApplicationStatusConfig = (statusEnum) => {
