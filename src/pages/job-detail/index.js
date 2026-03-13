@@ -1,21 +1,19 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetJobDetailQuery } from '@/apis/apis';
 import { useUpdateJobStatusMutation, useUpdateExpiredDateMutation } from '@/apis/jobApi';
 import Button from '@/components/Button';
 import Loading from '@/components/Loading';
-import { Skeleton, Tabs, ConfigProvider, Modal, DatePicker, message, Select } from 'antd';
+import { Tabs, ConfigProvider, Modal, DatePicker, message } from 'antd';
 import dayjs from 'dayjs';
 import JobHeader from './components/JobHeader';
 import JobDescription from './components/JobDescription';
 import JobApplicants from './components/JobApplicants';
-import { PageHeaderContext } from '@/contexts/PageHeaderContext';
+import JobAiQuotaTab from './components/JobAiQuotaTab';
 
 const JobDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { setHeaderConfig } = useContext(PageHeaderContext);
-    const [activeTab, setActiveTab] = useState('details');
     const { data: jobData, isLoading, error } = useGetJobDetailQuery(id);
     const job = jobData?.data;
 
@@ -329,6 +327,11 @@ const JobDetail = () => {
             key: '3',
             label: 'Proposed CVs',
             children: <div className="p-4 text-center text-gray-500">No proposed CVs.</div>,
+        },
+        {
+            key: '4',
+            label: 'AI Usage',
+            children: <JobAiQuotaTab jobId={job.id} />,
         },
     ];
 
