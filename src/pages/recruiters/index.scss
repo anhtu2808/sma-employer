@@ -1,0 +1,12 @@
+.simple-select .ant-select-selector {
+  border: 1px solid #e5e7eb !important;
+  box-shadow: none !important;
+  background: #ffffff !important;
+}
+
+.simple-select:hover .ant-select-selector,
+.simple-select.ant-select-focused .ant-select-selector,
+.simple-select.ant-select-open .ant-select-selector {
+  border-color: #e5e7eb !important;
+  box-shadow: none !important;
+}

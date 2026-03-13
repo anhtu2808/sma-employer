@@ -1,6 +1,7 @@
 import { createBrowserRouter, createRoutesFromElements, Route } from "react-router-dom";
 import Layout from '@/pages/layout';
 import Dashboard from '@/pages/dashboard';
+import Recruiters from '@/pages/recruiters';
 import CompanyProfile from '@/pages/company';
 import UiKit from '@/pages/ui-kit';
 import Home from '@/pages/home';
@@ -28,7 +29,7 @@ export const routes = createBrowserRouter(
             <Route element={<Layout />}>
                 {/* <Route index element={<Dashboard />} /> */}
                 <Route path="dashboard" element={<Dashboard />} />
-                <Route path="recruiters" element={<Dashboard />} />
+                <Route path="recruiters" element={<Recruiters />} />
                 <Route path="jobs" element={<JobsList />} />
                 <Route path="jobs/create" element={<JobCreate />} />
                 <Route path="jobs/:id/edit" element={<JobCreate />} />
