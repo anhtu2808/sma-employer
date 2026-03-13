@@ -65,7 +65,6 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
                             { value: 'SHORTLISTED', label: 'Shortlisted' },
                             { value: 'REJECTED', label: 'Rejected' },
                             { value: 'APPROVED', label: 'Approved' },
-                            { value: 'AUTO_REJECTED', label: 'Auto Rejected' },
                         ]}
                     />
                 </div>

@@ -42,9 +42,26 @@ const ApplicationManagement = () => {
     useEffect(() => {
         const jobs = jobsResponse?.data?.content;
         if (jobs && jobs.length > 0 && !selectedJob) {
+            const savedJobId = sessionStorage.getItem('sma_employer_selected_job_id');
+            if (savedJobId) {
+                const savedJob = jobs.find(j => j.id === Number(savedJobId) || j.id === savedJobId);
+                if (savedJob) {
+                    setSelectedJob(savedJob);
+                    return;
+                }
+            }
             setSelectedJob(jobs[0]);
         }
     }, [jobsResponse, selectedJob]);
+
+    const handleSetSelectedJob = (job) => {
+        setSelectedJob(job);
+        if (job) {
+            sessionStorage.setItem('sma_employer_selected_job_id', job.id);
+        } else {
+            sessionStorage.removeItem('sma_employer_selected_job_id');
+        }
+    };
 
     const { data: appData, isLoading: isAppLoading } = useGetApplicationsQuery(
         { ...filter, jobId: selectedJob?.id },
@@ -141,7 +158,7 @@ const ApplicationManagement = () => {
             <ApplicationHeader
                 jobs={jobs}
                 selectedJob={selectedJob}
-                setSelectedJob={setSelectedJob}
+                setSelectedJob={handleSetSelectedJob}
                 appData={appData}
                 viewMode={viewMode}
                 setViewMode={setViewMode}

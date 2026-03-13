@@ -73,12 +73,12 @@ const JobApplicants = ({ jobId }) => {
         if (current === 'VIEWED') return !['SHORTLISTED', 'APPROVED', 'REJECTED'].includes(target);
         if (current === 'SHORTLISTED') return !['REJECTED', 'APPROVED'].includes(target);
         if (current === 'REJECTED') return target !== 'APPROVED';
-        if (['APPLIED', 'APPROVED', 'AUTO_REJECTED'].includes(current)) return true;
+        if (['APPLIED', 'APPROVED'].includes(current)) return true;
         return true;
     };
 
     const getStatusMenu = (app) => {
-        const statuses = ['APPLIED', 'VIEWED', 'SHORTLISTED', 'REJECTED', 'APPROVED', 'AUTO_REJECTED'];
+        const statuses = ['APPLIED', 'VIEWED', 'SHORTLISTED', 'REJECTED', 'APPROVED'];
         return {
             items: statuses.map(statusId => {
                 const s = getApplicationStatusConfig(statusId);
