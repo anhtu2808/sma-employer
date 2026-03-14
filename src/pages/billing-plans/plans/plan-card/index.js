@@ -1,4 +1,5 @@
 import Button from "@/components/Button";
+import { useNavigate } from "react-router-dom";
 
 const getSaveBadgeStyle = (savePercent) => {
   if (savePercent >= 40) {
@@ -10,19 +11,29 @@ const getSaveBadgeStyle = (savePercent) => {
   return "bg-gray-100 text-gray-500";
 };
 
-const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSelectDuration, onSubscribe }) => {
+const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSelectDuration, isSelected, onClick }) => {
+  const navigate = useNavigate();
   const isCurrent = plan.current;
-  const canExpand = !isCurrent && plan.durations.length > 0;
+  const hasDurations = plan.durations && plan.durations.length > 0;
+  const canExpand = !isCurrent && hasDurations;
+
+  const handleAction = () => {
+    if (isCurrent) return;
+    if (hasDurations) {
+      onExpand();
+    } else {
+      navigate('/checkout', { state: { plan } });
+    }
+  };
 
   return (
     <article
-      className={`relative rounded-2xl border p-8 shadow-sm transition-all flex flex-col lg:h-[720px] ${isExpanded
-        ? "border-primary border-2 shadow-md bg-white"
+      onClick={onClick}
+      className={`relative rounded-2xl border p-8 shadow-sm transition-all flex flex-col lg:h-[720px] cursor-pointer ${isSelected
+        ? "bg-white border-2 border-primary shadow-md"
         : isCurrent
-          ? "bg-white border-gray-200"
-          : plan.popular
-            ? "bg-white border-gray-200 shadow-md hover:border-gray-300"
-            : "bg-white border-gray-200 hover:border-gray-300"
+          ? "bg-white border-gray-200 cursor-default"
+          : "bg-white border-gray-200 hover:border-gray-300"
         }`}
     >
       {plan.popular ? (
@@ -60,9 +71,12 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
 
           <button
             type="button"
-            disabled={!canExpand}
-            onClick={() => (canExpand ? onExpand() : null)}
-            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all mb-8 ${!canExpand
+            disabled={isCurrent}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAction();
+            }}
+            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all mb-8 ${isCurrent
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : plan.popular
                 ? "bg-primary hover:bg-primary-dark text-white shadow-md"
@@ -86,7 +100,10 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
             <Button
               mode="ghost"
               className="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors -mt-2 -mr-2"
-              onClick={onClose}
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+              }}
               btnIcon
             >
               <span className="material-icons-round text-[20px]">close</span>
@@ -100,7 +117,10 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
                 <button
                   type="button"
                   key={duration.key}
-                  onClick={() => onSelectDuration(duration.key)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelectDuration(duration.key);
+                  }}
                   className={`text-left block p-4 bg-white border shadow-sm rounded-xl transition-all relative overflow-hidden ${selected ? "border-primary ring-1 ring-primary" : "border-gray-100 hover:border-gray-200"
                     }`}
                 >
@@ -136,9 +156,15 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
           <Button
             mode="primary"
             shape="rounded"
-            fullWidth
-            className="mt-auto shadow-md"
-            onClick={onSubscribe}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!selectedDuration && plan.durations.length > 0) {
+                navigate('/checkout', { state: { plan, selectedDuration: plan.durations[0].key } });
+              } else {
+                navigate('/checkout', { state: { plan, selectedDuration } });
+              }
+            }}
+            className="w-full bg-primary hover:bg-primary-dark text-white font-bold rounded-xl transition-all shadow-md mt-auto text-sm tracking-wide"
           >
             Subscribe Now
           </Button>

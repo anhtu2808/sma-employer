@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import PlanCard from "./plan-card";
 
 const formatCurrency = (amount, currency) => {
@@ -117,8 +116,8 @@ const mapPlanToCard = (plan, currentPlanId) => {
 };
 
 const Plans = ({ plans = [], currentPlanId = null }) => {
-  const navigate = useNavigate();
   const [expandedPlanCode, setExpandedPlanCode] = useState(null);
+  const [selectedPlanCode, setSelectedPlanCode] = useState(null);
   const [selectedDurationByPlan, setSelectedDurationByPlan] = useState({});
 
   const sortedPlans = useMemo(() => {
@@ -185,19 +184,27 @@ const Plans = ({ plans = [], currentPlanId = null }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
-      {mappedPlans.map((plan) => (
-        <PlanCard
-          key={plan.code}
-          plan={plan}
-          isExpanded={expandedPlanCode === plan.code}
-          onExpand={() => setExpandedPlanCode(plan.code)}
-          onClose={() => setExpandedPlanCode(null)}
-          selectedDuration={selectedDurationByPlan[plan.code]}
-          onSelectDuration={(durationKey) => onSelectDuration(plan.code, durationKey)}
-          onSubscribe={() => navigate("/checkout", { state: { plan, selectedDuration: selectedDurationByPlan[plan.code] } })}
-        />
-      ))}
+    <div className="space-y-3">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+          Choose your plan
+        </h2>
+      </div>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
+        {mappedPlans.map((plan) => (
+          <PlanCard
+            key={plan.code}
+            plan={plan}
+            isSelected={selectedPlanCode === plan.code}
+            onClick={() => setSelectedPlanCode(plan.code)}
+            isExpanded={expandedPlanCode === plan.code}
+            onExpand={() => setExpandedPlanCode(plan.code)}
+            onClose={() => setExpandedPlanCode(null)}
+            selectedDuration={selectedDurationByPlan[plan.code]}
+            onSelectDuration={(durationKey) => onSelectDuration(plan.code, durationKey)}
+          />
+        ))}
+      </div>
     </div>
   );
 };
