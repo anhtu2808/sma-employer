@@ -7,7 +7,7 @@ import JobListItem from '@/components/JobListItem';
 import Pagination from '@/components/Pagination';
 import Button from '@/components/Button';
 import Loading from '@/components/Loading';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { JOB_STATUS_TABS } from '@/constrant';
 import { Modal, message } from 'antd';
 import JobFilterDrawer from './filter-drawer';
@@ -29,8 +29,9 @@ const isValidNumber = (value) => typeof value === 'number' && !Number.isNaN(valu
 
 const JobsList = ({ archivedOnly = false }) => {
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [searchTerm, setSearchTerm] = useState('');
-    const [status, setStatus] = useState(null);
+    const status = archivedOnly ? 'ARCHIVED' : (searchParams.get('tab') || null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [appliedFilters, setAppliedFilters] = useState(() => createDefaultFilters());
     const [updateJobStatus] = useUpdateJobStatusMutation();
@@ -160,7 +161,15 @@ const JobsList = ({ archivedOnly = false }) => {
                         <div className="px-4 pt-1 flex items-center justify-between">
                             <Tabs
                                 activeKey={status || ''}
-                                onChange={(key) => setStatus(key || null)}
+                                onChange={(key) => {
+                                    const newParams = new URLSearchParams(searchParams);
+                                    if (key) {
+                                        newParams.set('tab', key);
+                                    } else {
+                                        newParams.delete('tab');
+                                    }
+                                    setSearchParams(newParams);
+                                }}
                                 items={tabItems}
                                 className="flex-1"
                             />
