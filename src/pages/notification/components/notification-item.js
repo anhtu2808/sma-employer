@@ -83,9 +83,17 @@ const NotificationItem = ({ noti }) => {
         }
     };
 
-    const handleDismiss = (e) => {
+    const handleDismiss = async (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        console.log("Dismissed noti:", noti.id);
+
+        if (!noti.isRead) {
+            try {
+                await markAsRead(noti.id).unwrap();
+            } catch (err) {
+                console.error("Lỗi:", err);
+            }
+        }
     };
 
     return (

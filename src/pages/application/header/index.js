@@ -22,16 +22,16 @@ const ApplicationHeader = ({
 
     const exportMenuItems = [
         {
-            key: 'excel',
+            key: 'XLSX',
             label: 'Export as Excel (.xlsx)',
             icon: <span className="material-symbols-outlined text-sm">table_view</span>,
-            onClick: () => onExport('excel')
+            onClick: () => onExport('XLSX')
         },
         {
-            key: 'csv',
+            key: 'CSV',
             label: 'Export as CSV (.csv)',
             icon: <span className="material-symbols-outlined text-sm">description</span>,
-            onClick: () => onExport('csv')
+            onClick: () => onExport('CSV')
         }
     ];
     return (

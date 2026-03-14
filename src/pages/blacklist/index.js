@@ -28,8 +28,9 @@ const CompanyBlacklist = () => {
     };
 
     return (
-        <main className="flex-1 overflow-y-auto custom-scroll">
-            <div className="max-w-7xl mx-auto space-y-4">
+        <div className="h-full flex flex-col">
+
+            <div className="p-6 mx-auto w-full space-y-4">
 
                 {/* Action Bar  */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-[20px] border border-gray-200 shadow-sm">
@@ -135,7 +136,7 @@ const CompanyBlacklist = () => {
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     );
 };
 
