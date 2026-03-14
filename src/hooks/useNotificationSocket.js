@@ -4,12 +4,36 @@ import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { api } from '@/apis/baseApi';
 import { setRealtimePreview } from '../pages/notification/components/notification-slice';
+import toast from "react-hot-toast";
+import NotificationToast from '@/components/NotificationToast';
 
 export const useNotificationSocket = () => {
     const dispatch = useDispatch();
+    const token = localStorage.getItem('accessToken');
+    const getIcon = (type) => {
+        switch (type) {
+            case 'SYSTEM':
+                return 'error_outline';
+
+            case 'PAYMENT_SUCCESS':
+                return 'check_circle';
+
+            case 'PAYMENT_FAILURE':
+                return 'payments';
+
+            case 'APPLICATION_STATUS':
+                return 'contact_page';
+
+            case 'FLAGGED_JOB':
+                return 'work_outline';
+
+            default:
+                return 'notifications';
+        }
+    };
     const getUserIdFromToken = (token) => {
         try {
-            const base64Url = token.split('.')[1]; // Lấy phần Payload của JWT
+            const base64Url = token.split('.')[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
             const jsonPayload = decodeURIComponent(
                 atob(base64)
@@ -18,8 +42,6 @@ export const useNotificationSocket = () => {
                     .join('')
             );
             const payload = JSON.parse(jsonPayload);
-
-            // Lưu ý: Nhân kiểm tra trong Token của Nhân trường ID tên là 'id' hay 'sub' hay 'userId' nhé
             return payload.userId || payload.sub;
         } catch (error) {
             console.error("Error decoding token:", error);
@@ -28,7 +50,6 @@ export const useNotificationSocket = () => {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('accessToken');
         if (!token) return;
 
         const socket = new SockJS("https://api.smartrecruit.tech/ws-smartrecruit");
@@ -51,7 +72,20 @@ export const useNotificationSocket = () => {
                 client.subscribe('/user/queue/notifications', (message) => {
                     console.log("🔥 WS RECEIVED:", message.body);
                     const newNoti = JSON.parse(message.body);
-                    dispatch(setRealtimePreview(newNoti));
+                    if (!newNoti?.title && !newNoti?.message) {
+                        return;
+                    }
+                    const icon = getIcon(newNoti.notificationType);
+
+                    toast.custom((t) => (
+                        <NotificationToast
+                            t={t}
+                            icon={icon}
+                            title={newNoti.title}
+                            message={newNoti.message}
+                        />
+                    ), { duration: 5000 });
+
                     dispatch(api.util.invalidateTags(['Notifications']));
                 });
             },
@@ -65,5 +99,5 @@ export const useNotificationSocket = () => {
         return () => {
             client.deactivate();
         };
-    }, [dispatch]);
+    }, [dispatch, token]);
 };
