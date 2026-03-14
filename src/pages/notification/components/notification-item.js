@@ -100,7 +100,7 @@ const NotificationItem = ({ noti }) => {
         <div
             className={`group rounded-xl p-5 shadow-sm border transition-all hover:shadow-md relative ${!noti.isRead
                 ? 'bg-orange-50 dark:bg-orange-900/10 border-orange-100 dark:border-orange-900/20'
-                : 'bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 hover:border-gray-200'
+                : 'bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 hover:border-gray-200'
                 }`}
         >
             {!noti.isRead && (
