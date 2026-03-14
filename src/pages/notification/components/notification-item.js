@@ -109,7 +109,7 @@ const NotificationItem = ({ noti }) => {
 
             <div className="flex gap-4 items-start">
                 <div className="flex-shrink-0">
-                    <div className={`h-10 w-10 rounded-full flex items-center justify-center shadow-sm ${!noti.isRead ? 'bg-white dark:bg-gray-800' : 'bg-gray-100 dark:bg-gray-700'
+                    <div className={`h-10 w-10 rounded-full flex items-center justify-center shadow-sm ${!noti.isRead ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-800'
                         }`}>
                         <span className={`material-symbols-outlined ${config.color}`}>{config.icon}</span>
                     </div>
