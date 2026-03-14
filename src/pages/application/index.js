@@ -135,20 +135,24 @@ const ApplicationManagement = () => {
         }
     };
 
-    const handleExportExcel = async (type = 'excel') => {
+    const handleExportExcel = async (type = 'XLSX') => {
         if (!selectedJob) return message.warning("Please select a job first");
 
         try {
-            const result = await triggerExport(selectedJob.id).unwrap();
+            const result = await triggerExport({
+                jobId: selectedJob.id,
+                type: type
+            }).unwrap();
+
             if (result?.data && result.data.length > 0) {
                 exportCandidates(result.data, selectedJob.name, type);
-                message.success(`Exported ${result.data.length} shortlisted candidates as ${type.toUpperCase()}`);
+                message.success(`Exported ${result.data.length} candidates successfully`);
             } else {
-                message.warning("No shortlisted candidates found to export");
+                message.warning("No approved candidates found to export");
             }
         } catch (error) {
             console.error("Export error:", error);
-            message.error("Failed to export candidates");
+            message.error(error?.data?.message || "Failed to export candidates");
         }
     };
 
