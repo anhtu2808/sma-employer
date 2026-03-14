@@ -3,7 +3,8 @@ import { NavLink, Link, useLocation } from 'react-router-dom';
 import Logo from '@/components/Logo';
 import Button from '@/components/Button';
 import authService from '@/services/authService';
-import { useGetNotificationsQuery, useGetMyRecruiterInfoQuery } from '@/apis/apis';
+import { useGetNotificationsQuery } from '@/apis/notificationApi';
+import { useGetMyRecruiterInfoQuery } from '@/apis/recruiterApi';
 
 
 
