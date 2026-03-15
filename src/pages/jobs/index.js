@@ -232,7 +232,7 @@ const JobsList = ({ archivedOnly = false }) => {
                                 tags={[
                                     job.jobLevel,
                                     job.workingModel,
-                                    ...(job.skills || []).map((s) => s.name),
+                                    ...(Array.isArray(job.skills) ? [...job.skills].sort((a, b) => a.name.localeCompare(b.name)).map((s) => s.name) : []),
                                 ].filter(Boolean)}
                                 stats={{
                                     applicants: job.applicantsCount,
