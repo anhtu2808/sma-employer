@@ -23,10 +23,14 @@ export const applicationApi = api.injectEndpoints({
         }),
 
         updateApplicationStatus: builder.mutation({
-            query: ({ id, status, rejectReason }) => ({
+            query: ({ id, status, rejectReason, showToCandidate }) => ({
                 url: `${API_VERSION}/applications/${id}/status`,
                 method: "PATCH",
-                params: { status, rejectReason },
+                params: {
+                    status,
+                    rejectReason,
+                    showToCandidate
+                },
             }),
             invalidatesTags: (result, error, { id }) => [
                 { type: "Applications", id },
