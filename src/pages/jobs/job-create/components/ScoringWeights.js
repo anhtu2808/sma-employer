@@ -5,7 +5,7 @@ import Loading from "@/components/Loading";
 
 const ScoringWeights = () => {
   const { data: criteriaRes, isLoading } = useGetCriteriaQuery();
-  const criteriaList = criteriaRes?.data || [];
+  const criteriaList = Array.isArray(criteriaRes?.data) ? criteriaRes.data : [];
 
   return (
     <Form.Item

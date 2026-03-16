@@ -106,6 +106,7 @@ const JobCreate = () => {
         benefitIds: values.benefitIds || [],
         questionIds: values.questionIds || [],
         locationIds: values.locationIds || [],
+        highlightJob: values.highlightJob || false,
         salaryStart: Number(values.salaryStart) || 0,
         salaryEnd: Number(values.salaryEnd) || 0,
         experienceTime: Number(values.experienceTime) || 0,
