@@ -79,6 +79,12 @@ const Overview = ({ app, onStatusChange, isUpdating, onOpenBlock }) => {
                 {app.aiScore != null && (
                     <span>AI Score: <span className="font-semibold text-orange-500">{app.aiScore}%</span></span>
                 )}
+                {app.isRejectedByAi && (
+                    <span className="flex items-center gap-1.5 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2.5 py-1 rounded bg-opacity-80 border border-red-200 dark:border-red-800/50">
+                        <span className="material-symbols-outlined text-[14px]">psychology</span>
+                        AI REJECTED
+                    </span>
+                )}
                 {app.source && <span>Source: {app.source}</span>}
             </div>
         </div>

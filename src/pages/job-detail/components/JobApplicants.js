@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import {
     Search, Filter, Plus,
     ExternalLink, Mail, Calendar, MapPin, MoreVertical,
-    ChevronLeft, ChevronRight, Eye, Users
+    ChevronLeft, ChevronRight, Eye, Users, Brain
 } from 'lucide-react';
 
 const JobApplicants = ({ jobId }) => {
@@ -191,7 +191,15 @@ const JobApplicants = ({ jobId }) => {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <StatusTag status={app.status} />
+                                                <div className="flex flex-col gap-1.5">
+                                                    <StatusTag status={app.status} />
+                                                    {app.isRejectedByAi && (
+                                                        <span className="w-fit text-[10px] font-bold tracking-wide text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-md border border-red-200 dark:border-red-800/50 flex items-center gap-1">
+                                                            <Brain size={10} className="flex-shrink-0" />
+                                                            AI REJECTED
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <span className={`text-sm font-semibold ${getScoreColor(app.aiScore)}`}>
