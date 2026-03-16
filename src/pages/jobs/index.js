@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ConfigProvider, Tabs } from 'antd';
 import Input from '@/components/Input';
 import { useGetJobsQuery, useGetMyJobStatusCountQuery } from '@/apis/apis';
-import { useUpdateJobStatusMutation } from '@/apis/jobApi';
+import { useUpdateJobStatusMutation, useDeleteJobMutation } from '@/apis/jobApi';
 import JobListItem from '@/components/JobListItem';
 import Pagination from '@/components/Pagination';
 import Button from '@/components/Button';
@@ -35,6 +35,7 @@ const JobsList = ({ archivedOnly = false }) => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [appliedFilters, setAppliedFilters] = useState(() => createDefaultFilters());
     const [updateJobStatus] = useUpdateJobStatusMutation();
+    const [deleteJob] = useDeleteJobMutation();
 
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
     useEffect(() => {
@@ -283,13 +284,13 @@ const JobsList = ({ archivedOnly = false }) => {
                                 onDelete={(job.status === 'DRAFT' || job.status === 'SUSPENDED') ? () => {
                                     Modal.confirm({
                                         title: 'Delete Job',
-                                        content: 'Are you sure you want to delete this job?',
+                                        content: 'Are you sure you want to delete this job? This action cannot be undone.',
                                         okText: 'Yes, Delete',
                                         okButtonProps: { danger: true },
                                         cancelText: 'Cancel',
                                         onOk: async () => {
                                             try {
-                                                await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
+                                                await deleteJob(job.id).unwrap();
                                                 message.success('Job deleted successfully');
                                             } catch {
                                                 message.error('Failed to delete job');

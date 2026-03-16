@@ -62,6 +62,13 @@ export const jobApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Jobs"],
     }),
+    deleteJob: builder.mutation({
+      query: (id) => ({
+        url: `${API_VERSION}/jobs/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Jobs"],
+    }),
     getCriteria: builder.query({
       query: () => `${API_VERSION}/criteria`,
     }),
@@ -85,6 +92,7 @@ export const {
   usePublishJobMutation,
   useUpdateExpiredDateMutation,
   useSaveJobDraftMutation,
+  useDeleteJobMutation,
   useGetCriteriaQuery,
   useGetProposedCvsQuery,
 } = jobApi;
