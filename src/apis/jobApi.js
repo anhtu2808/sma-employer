@@ -65,6 +65,14 @@ export const jobApi = api.injectEndpoints({
     getCriteria: builder.query({
       query: () => `${API_VERSION}/criteria`,
     }),
+    getProposedCvs: builder.query({
+      query: ({ id, page, size }) => ({
+        url: `${API_VERSION}/jobs/${id}/proposed-cv`,
+        method: "GET",
+        params: { page, size },
+      }),
+      providesTags: (result, error, { id }) => [{ type: "Jobs", id: `PROPOSED_${id}` }],
+    }),
   }),
 });
 
@@ -78,4 +86,5 @@ export const {
   useUpdateExpiredDateMutation,
   useSaveJobDraftMutation,
   useGetCriteriaQuery,
+  useGetProposedCvsQuery,
 } = jobApi;
