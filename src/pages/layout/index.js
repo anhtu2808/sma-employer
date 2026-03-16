@@ -75,7 +75,7 @@ const Layout = () => {
     setIsMobileSidebarOpen(false);
   };
 
-  useNotificationSocket();
+  // useNotificationSocket();
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-sans antialiased h-screen flex overflow-hidden transition-colors duration-200">

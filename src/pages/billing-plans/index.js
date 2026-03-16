@@ -1,12 +1,20 @@
 import { useMemo } from "react";
 import { useGetPlansQuery } from "@/apis/planApi";
+import { PLAN_TYPES, PLAN_TARGETS } from "@/constrant/plan";
 import Plans from "./plans";
-import { usePageHeader } from "@/hooks/usePageHeader";
+import Addons from "./addons";
 import Loading from "@/components/Loading";
 
 const BillingPlans = () => {
-  usePageHeader("Billing & Plans", "Manage your subscription plans and billing details.");
-  const { data: plans = [], isLoading: isPlansLoading } = useGetPlansQuery();
+  const { data: plans = [], isLoading: isPlansLoading } = useGetPlansQuery({
+    planType: PLAN_TYPES.MAIN,
+    planTarget: PLAN_TARGETS.COMPANY,
+  });
+
+  const { data: addons = [], isLoading: isAddonsLoading } = useGetPlansQuery({
+    planType: PLAN_TYPES.ADDONS_QUOTA,
+    planTarget: PLAN_TARGETS.COMPANY,
+  });
 
   const currentPlan = useMemo(() => {
     if (!Array.isArray(plans)) return null;
@@ -14,6 +22,10 @@ const BillingPlans = () => {
   }, [plans]);
   const currentPlanId = currentPlan?.id ?? null;
   const currentPlanName = currentPlan?.name;
+
+  if (isPlansLoading || isAddonsLoading) {
+    return <Loading />
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -50,7 +62,11 @@ const BillingPlans = () => {
       </div>
 
       <div className="w-full">
-        {isPlansLoading ? <Loading size={96} className="py-8" /> : <Plans plans={plans} currentPlanId={currentPlanId} />}
+        <Plans plans={plans} currentPlanId={currentPlanId} />
+      </div>
+
+      <div className="w-full">
+        <Addons plans={addons} />
       </div>
     </div>
   );

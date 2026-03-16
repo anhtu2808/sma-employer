@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 
-export const exportCandidates = (data, jobTitle = 'Candidates', type = 'excel') => {
+export const exportCandidates = (data, jobTitle = 'Candidates', type = 'XLSX') => {
     if (!data || data.length === 0) return;
 
     const formattedData = data.map((item, index) => ({

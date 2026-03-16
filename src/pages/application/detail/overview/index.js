@@ -12,6 +12,15 @@ const Overview = ({ app, onStatusChange, isUpdating, onOpenBlock }) => {
         value: key,
         label: val.label,
     }));
+    const handleSelectChange = (value) => {
+        if (value === 'REJECTED') {
+            const reason = prompt("Enter rejection reason (Optional):");
+            const show = window.confirm("Show this reason to candidate?");
+            onStatusChange(value, reason, show);
+        } else {
+            onStatusChange(value);
+        }
+    };
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 md:p-6">
@@ -33,7 +42,7 @@ const Overview = ({ app, onStatusChange, isUpdating, onOpenBlock }) => {
                     <ConfigProvider theme={{ token: { colorPrimary: '#f97316', colorBorderHover: '#f97316' } }}>
                         <Select
                             value={app.status}
-                            onChange={onStatusChange}
+                            onChange={handleSelectChange}
                             loading={isUpdating}
                             className="w-full md:w-40 h-10"
                             options={statusOptions}

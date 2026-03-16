@@ -12,6 +12,7 @@ import Modal from '@/components/Modal';
 import Loading from '@/components/Loading';
 import ApplicationHeader from './header';
 import { exportCandidates } from './export';
+import { Checkbox } from 'antd';
 
 const STATUS_COLUMNS = [
     { id: 'APPLIED', title: 'Applied', color: '#01afffff' },
@@ -36,6 +37,7 @@ const ApplicationManagement = () => {
     const [rejectReason, setRejectReason] = useState('');
     const [triggerExport, { isFetching: isExporting }] = useLazyGetShortlistedExportQuery();
     const [updateJobStatus] = useUpdateJobStatusMutation();
+    const [showToCandidate, setShowToCandidate] = useState(false);
 
     usePageHeader('Application Management', 'Track and manage candidate applications for your jobs');
 
@@ -110,12 +112,13 @@ const ApplicationManagement = () => {
         handleUpdateStatus(applicationId, newStatus);
     };
 
-    const handleUpdateStatus = async (id, status, reason = null) => {
+    const handleUpdateStatus = async (id, status, reason = null, showReason = false) => {
         try {
             await updateStatus({
                 id: id,
                 status: status,
-                rejectReason: reason
+                rejectReason: reason,
+                showToCandidate: showReason
             }).unwrap();
 
             message.success(`Application moved to ${status} successfully`);
@@ -124,6 +127,7 @@ const ApplicationManagement = () => {
             setIsRejectModalOpen(false);
             setRejectReason('');
             setRejectData({ id: null, status: null });
+            setShowToCandidate(false);
         } catch (error) {
             const errorMessage = error?.data?.message || "An unexpected error occurred while updating status";
             message.error(errorMessage);
@@ -135,20 +139,24 @@ const ApplicationManagement = () => {
         }
     };
 
-    const handleExportExcel = async (type = 'excel') => {
+    const handleExportExcel = async (type = 'XLSX') => {
         if (!selectedJob) return message.warning("Please select a job first");
 
         try {
-            const result = await triggerExport(selectedJob.id).unwrap();
+            const result = await triggerExport({
+                jobId: selectedJob.id,
+                type: type
+            }).unwrap();
+
             if (result?.data && result.data.length > 0) {
                 exportCandidates(result.data, selectedJob.name, type);
-                message.success(`Exported ${result.data.length} shortlisted candidates as ${type.toUpperCase()}`);
+                message.success(`Exported ${result.data.length} candidates successfully`);
             } else {
-                message.warning("No shortlisted candidates found to export");
+                message.warning("No approved candidates found to export");
             }
         } catch (error) {
             console.error("Export error:", error);
-            message.error("Failed to export candidates");
+            message.error(error?.data?.message || "Failed to export candidates");
         }
     };
 
@@ -220,7 +228,7 @@ const ApplicationManagement = () => {
                     setIsRejectModalOpen(false);
                     setRejectReason('');
                 }}
-                onSubmit={() => handleUpdateStatus(rejectData.id, rejectData.status, rejectReason)}
+                onSubmit={() => handleUpdateStatus(rejectData.id, rejectData.status, rejectReason, showToCandidate)}
                 submitText="Confirm & Reject"
                 danger
                 width={500}
@@ -230,7 +238,7 @@ const ApplicationManagement = () => {
                         Are you sure to move this application to <span className="text-red-500 font-medium">Rejected</span> status? Please state the reason.
                     </p>
 
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                         <label className="flex justify-between items-center px-1">
                             <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
                                 Reason for rejection
@@ -247,6 +255,16 @@ const ApplicationManagement = () => {
                             onChange={(e) => setRejectReason(e.target.value)}
                             className="w-full p-4 bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm text-neutral-700 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50 transition-all resize-none font-body"
                         />
+                        <div className="flex items-center gap-2 px-1">
+                            <Checkbox
+                                id="showReason"
+                                checked={showToCandidate}
+                                onChange={(e) => setShowToCandidate(e.target.checked)}
+                            />
+                            <label htmlFor="showReason" className="text-sm text-neutral-600 dark:text-neutral-400 cursor-pointer select-none">
+                                Allow candidate to see this rejection reason
+                            </label>
+                        </div>
                     </div>
                 </div>
             </Modal>

@@ -4,6 +4,7 @@ import Logo from '@/components/Logo';
 import Button from '@/components/Button';
 import authService from '@/services/authService';
 import { useGetNotificationsQuery } from '@/apis/notificationApi';
+import { useGetMyRecruiterInfoQuery } from '@/apis/recruiterApi';
 
 
 
@@ -13,6 +14,11 @@ const generalItems = [
   { icon: 'settings', label: 'Settings', path: '/settings' },
   { icon: 'help_outline', label: 'Help Center', path: '/help' },
   { icon: 'insights', label: 'Reports', path: '/reports' },
+];
+
+const billingMenuItems = [
+  { icon: 'credit_card', label: 'Billing & Plans', path: '/billing-plans' },
+  { icon: 'history', label: 'Usage', path: '/usage' },
 ];
 
 
@@ -33,22 +39,24 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
   });
   const unreadCount = data?.data?.unreadCount || 0;
 
+  // Get recruiter info to check role permissions
+  const { data: myInfoData } = useGetMyRecruiterInfoQuery();
+  const isRecruiter = Boolean(myInfoData?.data);
+
   const menuItems = [
     { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
     { icon: 'people', label: 'Recruiters', path: '/recruiters' },
     { icon: 'work_outline', label: 'Jobs', path: '/jobs' },
-
     { icon: 'badge', label: 'Applications', path: '/applications' },
     { icon: 'block', label: 'Blacklist', path: '/blacklist' },
-    { icon: 'credit_card', label: 'Billing & Plans', path: '/billing-plans' },
-    { icon: 'history', label: 'Usage', path: '/usage' },
+    // Only show Billing & Usage for recruiters (ROOT and RECRUITER)
+    ...(isRecruiter ? billingMenuItems : []),
     {
       icon: 'notifications',
       label: 'Notifications',
       path: '/notifications',
       badge: unreadCount > 0 ? unreadCount : null
     },
-
   ];
 
   return (
@@ -149,8 +157,8 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
         </div>
       </div>
 
-      {/* Upgrade Plan Card */}
-      {(!collapsed || isMobile) && (
+      {/* Upgrade Plan Card - Only for recruiters */}
+      {(!collapsed || isMobile) && isRecruiter && (
         <div className="p-4">
           <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-3">
