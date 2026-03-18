@@ -17,13 +17,13 @@ const Header = () => {
                 </div>
 
                 <nav className="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                    <Link to="/" className="text-sm font-medium text-primary">Home</Link>
-                    <a href="#features" className="text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">Features</a>
-                    <Link to="/ui-kit" className="text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">UI Kit</Link>
                     {isAuthenticated && (
-                        <Link to="/dashboard" className="text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">
-                            Dashboard
-                        </Link>
+                        <>
+                            <Link to="/" className="text-sm font-medium text-primary">Home</Link>
+                            <Link to="/dashboard" className="text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">
+                                Dashboard
+                            </Link>
+                        </>
                     )}
                 </nav>
 
@@ -31,13 +31,13 @@ const Header = () => {
                     {!isAuthenticated && (
                         <>
                             <Link to="/login">
-                                <Button mode="primary" shape="pill">
+                                <Button mode="primary" shape="rounded">
                                     Sign In
                                 </Button>
                             </Link>
                             <span> </span>
                             <Link to="/register/recruiter">
-                                <Button mode="primary" shape="pill">
+                                <Button mode="secondary" shape="rounded">
                                     Sign Up Company
                                 </Button>
                             </Link>
