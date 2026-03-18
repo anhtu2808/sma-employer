@@ -1,5 +1,6 @@
 import React from 'react';
-import { Input, Form } from 'antd';
+import { Form, Input } from 'antd';
+import TiptapEditor from '@/components/TiptapEditor';
 
 const JobDescriptionSection = () => {
     return (
@@ -10,16 +11,9 @@ const JobDescriptionSection = () => {
             </h3>
 
             <div>
-                <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-primary focus-within:border-primary">
-                    <Form.Item name="about" noStyle>
-                        <Input.TextArea
-                            placeholder="Describe the role, responsibilities, and what you're looking for..."
-                            rows={8}
-                            className="border-none focus:shadow-none resize-none p-4"
-                            bordered={false}
-                        />
-                    </Form.Item>
-                </div>
+                <Form.Item name="about" className="mb-0">
+                    <TiptapEditor placeholder="Describe the role, responsibilities, and what you're looking for..." />
+                </Form.Item>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -28,7 +22,7 @@ const JobDescriptionSection = () => {
                 </Form.Item>
 
                 <Form.Item name="requirement" label="Requirements" className="mb-0">
-                    <Input.TextArea placeholder="List qualifications..." rows={5} className="rounded-lg" />
+                    <Input.TextArea placeholder="List key duties..." rows={5} className="rounded-lg" />
                 </Form.Item>
             </div>
         </div>
