@@ -6,7 +6,7 @@ const Features = () => {
     const features = [
         {
             title: "Easy CV Upload",
-            description: "Upload your resume in PDF or DOCX format. Our system automatically extracts and organizes your information.",
+            description: "Upload your resume in PDF format. Our system automatically extracts and organizes your information.",
             icon: (
                 <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -32,8 +32,8 @@ const Features = () => {
             )
         },
         {
-            title: "ATS Scoring",
-            description: "Get an ATS-friendly score with detailed feedback on structure, keywords, and formatting.",
+            title: "AI Scoring",
+            description: "Get an AI score with detailed feedback on structure, keywords, and formatting.",
             icon: (
                 <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -64,7 +64,6 @@ const Features = () => {
         <section id="features" className="py-20 bg-white/50 dark:bg-neutral-900/50">
             <div className="container mx-auto px-6 max-w-6xl">
                 <div className="text-center max-w-2xl mx-auto mb-16">
-                    <span className="text-primary font-semibold text-sm tracking-uppercase mb-2 block tracking-wider uppercase">Features</span>
                     <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6 font-heading">
                         AI-Powered Recruitment Tools
                     </h2>
