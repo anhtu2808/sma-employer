@@ -1,6 +1,6 @@
 import React from 'react';
-import { Input, Form } from 'antd';
-import SimpleTextEditor from '@/components/SimpleTextEditor';
+import { Form, Input } from 'antd';
+import TiptapEditor from '@/components/TiptapEditor';
 
 const JobDescriptionSection = () => {
     return (
@@ -10,17 +10,19 @@ const JobDescriptionSection = () => {
                 About the Role
             </h3>
 
-            <Form.Item name="about">
-                <SimpleTextEditor placeholder="Describe the role, responsibilities, and what you're looking for..." showCount maxLength={5000} />
-            </Form.Item>
+            <div>
+                <Form.Item name="about" className="mb-0">
+                    <TiptapEditor placeholder="Describe the role, responsibilities, and what you're looking for..." />
+                </Form.Item>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Form.Item name="responsibilities" label="Responsibilities" className="mb-0">
-                    <SimpleTextEditor placeholder="List key duties..." showCount maxLength={5000} />
+                    <Input.TextArea placeholder="List key duties..." rows={5} className="rounded-lg" />
                 </Form.Item>
 
                 <Form.Item name="requirement" label="Requirements" className="mb-0">
-                    <SimpleTextEditor placeholder="List qualifications..." showCount maxLength={5000} />
+                    <Input.TextArea placeholder="List key duties..." rows={5} className="rounded-lg" />
                 </Form.Item>
             </div>
         </div>

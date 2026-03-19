@@ -85,6 +85,9 @@ const Location = ({ form, isEditing }) => {
                                         <Form.Item {...restField} name={[name, 'country']} label="Country">
                                             <Input className="bg-gray-50 dark:bg-gray-800" />
                                         </Form.Item>
+                                        <Form.Item {...restField} name={[name, 'googleMapLink']} label="Google Maps Link">
+                                            <Input placeholder="https://goo.gl/maps/..." className="bg-gray-50 dark:bg-gray-800" />
+                                        </Form.Item>
                                     </div>
                                 </div>
                             ))}

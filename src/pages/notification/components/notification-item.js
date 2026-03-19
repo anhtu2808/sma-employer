@@ -30,6 +30,8 @@ const NotificationItem = ({ noti }) => {
                 return { icon: 'contact_page', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' };
             case 'FLAGGED_JOB':
                 return { icon: 'work_outline', color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' };
+            case 'INVITATION':
+                return { icon: 'forward_to_inbox', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' };
             default:
                 return {
                     icon: 'notifications',
@@ -78,6 +80,9 @@ const NotificationItem = ({ noti }) => {
                     navigate('/jobs');
                 }
                 break;
+            case 'INVITATION':
+                navigate('/invitations');
+                break;
             default:
                 console.log("No specific route for this type");
         }
@@ -100,7 +105,7 @@ const NotificationItem = ({ noti }) => {
         <div
             className={`group rounded-xl p-5 shadow-sm border transition-all hover:shadow-md relative ${!noti.isRead
                 ? 'bg-orange-50 dark:bg-orange-900/10 border-orange-100 dark:border-orange-900/20'
-                : 'bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 hover:border-gray-200'
+                : 'bg-gray-50 dark:bg-gray-900 border-gray-100 dark:border-gray-800 hover:border-gray-200'
                 }`}
         >
             {!noti.isRead && (
@@ -109,7 +114,7 @@ const NotificationItem = ({ noti }) => {
 
             <div className="flex gap-4 items-start">
                 <div className="flex-shrink-0">
-                    <div className={`h-10 w-10 rounded-full flex items-center justify-center shadow-sm ${!noti.isRead ? 'bg-white dark:bg-gray-800' : 'bg-gray-100 dark:bg-gray-700'
+                    <div className={`h-10 w-10 rounded-full flex items-center justify-center shadow-sm ${!noti.isRead ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-800'
                         }`}>
                         <span className={`material-symbols-outlined ${config.color}`}>{config.icon}</span>
                     </div>

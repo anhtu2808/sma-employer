@@ -54,9 +54,9 @@ const JobListItem = ({
 
                 {tags && tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 pt-1">
-                        {tags.map((tag, index) => (
+                        {tags.map((tag) => (
                             <span
-                                key={index}
+                                key={tag}
                                 className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300 font-medium"
                             >
                                 {tag}

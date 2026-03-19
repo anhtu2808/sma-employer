@@ -117,9 +117,17 @@ const KanbanBoard = ({
                                                                     <div className={`bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-shadow ${!isNotDraggable ? 'hover:shadow-md cursor-grab active:cursor-grabbing' : ''} group`}>
                                                                         {/* Top Row: AI Match Tag + Status */}
                                                                         <div className="flex justify-between items-start mb-2">
-                                                                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${matchTag.bg} ${matchTag.text}`}>
-                                                                                {matchTag.label}
-                                                                            </span>
+                                                                            <div className="flex items-center gap-2">
+                                                                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${matchTag.bg} ${matchTag.text}`}>
+                                                                                    {matchTag.label}
+                                                                                </span>
+                                                                                {app.isRejectedByAi && (
+                                                                                    <span className="text-[10px] font-bold tracking-wide text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-1.5 py-0.5 rounded flex items-center gap-1 border border-red-200 dark:border-red-800">
+                                                                                        <Brain size={10} />
+                                                                                        AI REJECTED
+                                                                                    </span>
+                                                                                )}
+                                                                            </div>
                                                                             {app.aiScore != null && (
                                                                                 <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded flex items-center gap-1">
                                                                                     <Brain size={10} />

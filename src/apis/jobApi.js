@@ -62,8 +62,36 @@ export const jobApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Jobs"],
     }),
+    deleteJob: builder.mutation({
+      query: (id) => ({
+        url: `${API_VERSION}/jobs/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Jobs"],
+    }),
     getCriteria: builder.query({
       query: () => `${API_VERSION}/criteria`,
+    }),
+    getProposedCvs: builder.query({
+      query: ({ id, page, size }) => ({
+        url: `${API_VERSION}/jobs/${id}/proposed-cv`,
+        method: "GET",
+        params: { page, size },
+      }),
+      providesTags: (result, error, { id }) => [{ type: "Jobs", id: `PROPOSED_${id}` }],
+    }),
+    getResumeDetail: builder.query({
+      query: (id) => ({
+        url: `${API_VERSION}/resumes/${id}`,
+        method: "GET"
+      }),
+    }),
+    inviteCandidate: builder.mutation({
+      query: (body) => ({
+        url: `${API_VERSION}/invitations`,
+        method: "POST",
+        body,
+      }),
     }),
   }),
 });
@@ -77,5 +105,9 @@ export const {
   usePublishJobMutation,
   useUpdateExpiredDateMutation,
   useSaveJobDraftMutation,
+  useDeleteJobMutation,
   useGetCriteriaQuery,
+  useGetProposedCvsQuery,
+  useGetResumeDetailQuery,
+  useInviteCandidateMutation,
 } = jobApi;

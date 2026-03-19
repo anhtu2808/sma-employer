@@ -12,6 +12,15 @@ const Overview = ({ app, onStatusChange, isUpdating, onOpenBlock }) => {
         value: key,
         label: val.label,
     }));
+    const handleSelectChange = (value) => {
+        if (value === 'REJECTED') {
+            const reason = prompt("Enter rejection reason (Optional):");
+            const show = window.confirm("Show this reason to candidate?");
+            onStatusChange(value, reason, show);
+        } else {
+            onStatusChange(value);
+        }
+    };
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 md:p-6">
@@ -33,7 +42,7 @@ const Overview = ({ app, onStatusChange, isUpdating, onOpenBlock }) => {
                     <ConfigProvider theme={{ token: { colorPrimary: '#f97316', colorBorderHover: '#f97316' } }}>
                         <Select
                             value={app.status}
-                            onChange={onStatusChange}
+                            onChange={handleSelectChange}
                             loading={isUpdating}
                             className="w-full md:w-40 h-10"
                             options={statusOptions}
@@ -69,6 +78,12 @@ const Overview = ({ app, onStatusChange, isUpdating, onOpenBlock }) => {
                 )}
                 {app.aiScore != null && (
                     <span>AI Score: <span className="font-semibold text-orange-500">{app.aiScore}%</span></span>
+                )}
+                {app.isRejectedByAi && (
+                    <span className="flex items-center gap-1.5 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2.5 py-1 rounded bg-opacity-80 border border-red-200 dark:border-red-800/50">
+                        <span className="material-symbols-outlined text-[14px]">psychology</span>
+                        AI REJECTED
+                    </span>
                 )}
                 {app.source && <span>Source: {app.source}</span>}
             </div>

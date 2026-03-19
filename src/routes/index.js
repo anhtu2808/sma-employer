@@ -10,6 +10,7 @@ import PendingApproval from '@/pages/register/approval';
 import JobsList from '@/pages/jobs';
 import JobCreate from '@/pages/jobs/job-create';
 import JobDetail from '@/pages/job-detail';
+import ProposedCVDetail from '@/pages/proposed-cv-detail';
 import Login from '@/pages/login';
 import ApplicationManagement from "@/pages/application";
 import BillingPlans from '@/pages/billing-plans';
@@ -18,6 +19,7 @@ import ApplicationDetail from "@/pages/application/detail";
 import Usage from "@/pages/usage";
 import NotificationList from "../pages/notification";
 import CompanyBlacklist from "@/pages/blacklist";
+import NotificationSettings from "@/pages/setting";
 
 
 
@@ -33,11 +35,12 @@ export const routes = createBrowserRouter(
                 <Route path="jobs/create" element={<JobCreate />} />
                 <Route path="jobs/:id/edit" element={<JobCreate />} />
                 <Route path="jobs/:id" element={<JobDetail />} />
+                <Route path="jobs/:jobId/proposed-cvs/:resumeId" element={<ProposedCVDetail />} />
                 <Route path="company" element={<CompanyProfile />} />
                 <Route path="applications" element={<ApplicationManagement />} />
                 <Route path="applications/:id" element={<ApplicationDetail />} />
                 <Route path="reports" element={<Dashboard />} />
-                <Route path="settings" element={<Dashboard />} />
+                <Route path="settings" element={<NotificationSettings />} />
                 <Route path="help" element={<Dashboard />} />
                 <Route path="billing-plans" element={<BillingPlans />} />
                 <Route path="usage" element={<Usage />} />

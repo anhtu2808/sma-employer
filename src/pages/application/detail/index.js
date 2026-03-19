@@ -36,6 +36,10 @@ const normalizeApplicationDetail = (payload) => {
         })),
         aiScore: ai.aiOverallScore,
         source: payload.source,
+        rejectReason: info.rejectReason,
+        showRejectReason: info.showRejectReason,
+        reviewedAt: info.reviewedAt,
+        reviewedByEmail: info.reviewedByEmail,
     };
 };
 
@@ -71,9 +75,12 @@ const ApplicationDetail = () => {
         );
     }
 
-    const handleStatusChange = async (newStatus) => {
+    const handleStatusChange = async (newStatus, reason = null, showReason = false) => {
         try {
-            await updateStatus({ id, status: newStatus }).unwrap();
+            await updateStatus({
+                id, status: newStatus, rejectReason: reason,
+                showToCandidate: showReason
+            }).unwrap();
             message.success(`Status updated to ${APPLICATION_STATUS[newStatus]?.label || newStatus}`);
         } catch (error) {
             message.error(error?.data?.message || 'Failed to update status');
@@ -114,7 +121,49 @@ const ApplicationDetail = () => {
                 isUpdating={isUpdating}
                 onOpenBlock={() => setIsBlockModalOpen(true)}
             />
+            {(app.status === 'REJECTED' || app.status === 'APPROVED') && (
+                <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-[24px] p-6 shadow-sm">
+                    <div className="flex items-center gap-2 mb-4">
+                        <span className={`material-icons-round ${app.status === 'REJECTED' ? 'text-red-500' : 'text-green-500'}`}>
+                            {app.status === 'REJECTED' ? 'cancel' : 'check_circle'}
+                        </span>
+                        <h3 className="font-bold text-gray-800 dark:text-neutral-200">
+                            Decision History
+                        </h3>
+                    </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                            <div className="flex flex-col">
+                                <span className="text-xs font-semibold text-gray-500 tracking-wider">Processed By</span>
+                                <span className="text-sm font-medium text-gray-700 dark:text-neutral-300">
+                                    {app.reviewedByEmail || 'System / Auto'}
+                                </span>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-xs font-semibold text-gray-500 tracking-wider">Processed At</span>
+                                <span className="text-sm font-medium text-gray-700 dark:text-neutral-300">
+                                    {app.reviewedAt ? new Date(app.reviewedAt).toLocaleString() : 'N/A'}
+                                </span>
+                            </div>
+                        </div>
+
+                        {app.status === 'REJECTED' && (
+                            <div className="flex flex-col p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl border border-neutral-100 dark:border-neutral-800">
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-xs font-bold text-red-600 uppercase">Rejection Reason</span>
+                                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${app.showRejectReason ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'}`}>
+                                        {app.showRejectReason ? 'Visible to Candidate' : 'Internal Only'}
+                                    </span>
+                                </div>
+                                <p className="text-sm text-gray-600 dark:text-neutral-400 italic">
+                                    {app.rejectReason || "No reason provided."}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
             <Modal
                 open={isBlockModalOpen}
                 title="Block Candidate"

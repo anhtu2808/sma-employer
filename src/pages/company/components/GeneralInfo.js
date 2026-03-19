@@ -1,7 +1,7 @@
 import React from 'react';
 import Input from '@/components/Input';
 import Form from '@/components/Form';
-import SimpleTextEditor from '@/components/SimpleTextEditor';
+import TiptapEditor from '@/components/TiptapEditor';
 
 const GeneralInfo = () => {
     return (
@@ -27,11 +27,7 @@ const GeneralInfo = () => {
                         name="description"
                         label="Description"
                     >
-                        <SimpleTextEditor
-                            placeholder="Introduce your company..."
-                            showCount
-                            maxLength={5000}
-                        />
+                        <TiptapEditor placeholder="Introduce your company..." />
                     </Form.Item>
                 </div>
             </div>
