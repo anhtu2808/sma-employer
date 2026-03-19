@@ -4,8 +4,7 @@ import { useGetCriteriaQuery } from "@/apis/jobApi";
 import Loading from "@/components/Loading";
 
 const ScoringWeights = () => {
-  const { data: criteriaRes, isLoading } = useGetCriteriaQuery();
-  const criteriaList = Array.isArray(criteriaRes?.data) ? criteriaRes.data : [];
+  const { data: criteriaList = [], isLoading } = useGetCriteriaQuery();
 
   return (
     <Form.Item
@@ -46,7 +45,7 @@ const ScoringWeights = () => {
           if (allDisabled && criteriaList.length > 0) {
             criteriaList.forEach((criteria) => {
               updates[`enable_${criteria.id}`] = true;
-              updates[`weight_${criteria.id}`] = criteria.defaultWeight;
+              updates[`weight_${criteria.id}`] = criteria.weight;
               needsUpdate = true;
             });
           }
@@ -163,7 +162,7 @@ const ScoringWeights = () => {
                       </div>
                       <Form.Item
                         name={`weight_${criteriaItem.id}`}
-                        initialValue={criteriaItem.defaultWeight}
+                        initialValue={criteriaItem.weight}
                         noStyle
                       >
                         <Slider

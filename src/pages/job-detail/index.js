@@ -176,7 +176,6 @@ const JobDetail = () => {
                                         <Button
                                             mode="secondary"
                                             shape="round"
-                                            className="w-full h-10"
                                             loading={isClosingJob}
                                             iconLeft={<span className="material-icons-round text-sm">publish</span>}
                                             onClick={async () => {
@@ -193,7 +192,6 @@ const JobDetail = () => {
                                         <Button
                                             mode="secondary"
                                             shape="round"
-                                            className="w-full h-10"
                                             loading={isClosingJob}
                                             iconLeft={<span className="material-icons-round text-sm">delete</span>}
                                             onClick={() => {
@@ -222,7 +220,7 @@ const JobDetail = () => {
                                     <Button
                                         mode="secondary"
                                         shape="round"
-                                        className="w-full h-10"
+                                        className=""
                                         loading={isClosingJob}
                                         iconLeft={<span className="material-icons-round text-sm">delete</span>}
                                         onClick={() => {
@@ -250,7 +248,7 @@ const JobDetail = () => {
                                     <Button
                                         mode="secondary"
                                         shape="round"
-                                        className="w-full h-10"
+                                        className=""
                                         loading={isClosingJob}
                                         iconLeft={<span className="material-icons-round text-sm">cancel</span>}
                                         onClick={() => handleCloseJob()}
@@ -263,7 +261,7 @@ const JobDetail = () => {
                                         <Button
                                             mode="secondary"
                                             shape="round"
-                                            className="w-full h-10"
+                                            className=""
                                             loading={isClosingJob}
                                             iconLeft={<span className="material-icons-round text-sm">restart_alt</span>}
                                             onClick={async () => {
@@ -280,7 +278,7 @@ const JobDetail = () => {
                                         <Button
                                             mode="secondary"
                                             shape="round"
-                                            className="w-full h-10"
+                                            className=""
                                             loading={isClosingJob}
                                             iconLeft={<span className="material-icons-round text-sm">archive</span>}
                                             onClick={() => {
@@ -308,7 +306,7 @@ const JobDetail = () => {
                                     <Button
                                         mode="primary"
                                         shape="round"
-                                        className="w-full h-10"
+                                        className=""
                                         onClick={() => navigate(`/jobs/${job.id}/edit`)}
                                         iconLeft={<span className="material-icons-round text-sm">edit</span>}
                                     >

@@ -1,0 +1,26 @@
+.preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+}
+
+.preloader__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+
+.preloader__logo {
+    width: 56px;
+    height: 56px;
+}
+
+.preloader__animation {
+    width: 80px;
+    height: 80px;
+}

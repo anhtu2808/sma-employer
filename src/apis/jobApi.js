@@ -30,6 +30,14 @@ export const jobApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Jobs"],
     }),
+    createJobDraft: builder.mutation({
+      query: (body) => ({
+        url: `${API_VERSION}/jobs/save`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Jobs"],
+    }),
     updateJobStatus: builder.mutation({
       query: ({ id, status }) => ({
         url: `${API_VERSION}/jobs/${id}/status`,
@@ -70,7 +78,12 @@ export const jobApi = api.injectEndpoints({
       invalidatesTags: ["Jobs"],
     }),
     getCriteria: builder.query({
-      query: () => `${API_VERSION}/criteria`,
+      query: ({ name, page = 0, size = 10 } = {}) => ({
+        url: `${API_VERSION}/criteria`,
+        method: "GET",
+        params: { name, page, size },
+      }),
+      transformResponse: (response) => response?.data?.content ?? [],
     }),
     getProposedCvs: builder.query({
       query: ({ id, page, size }) => ({
@@ -101,6 +114,7 @@ export const {
   useGetMyJobStatusCountQuery,
   useGetJobDetailQuery,
   useCreateJobMutation,
+  useCreateJobDraftMutation,
   useUpdateJobStatusMutation,
   usePublishJobMutation,
   useUpdateExpiredDateMutation,

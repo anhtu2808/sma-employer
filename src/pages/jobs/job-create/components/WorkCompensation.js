@@ -32,7 +32,7 @@ const WorkCompensation = () => {
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Salary Range (Annual)
+                        Salary Range
                     </label>
                     <div className="flex gap-2">
                         <Form.Item name="salaryStart" noStyle>

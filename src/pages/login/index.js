@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { message } from "antd";
 import Logo from "@/components/Logo";
@@ -14,6 +14,12 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (authService.isAuthenticated()) {
+            navigate("/dashboard", { replace: true });
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -47,7 +53,7 @@ const Login = () => {
 
             if (res.data.code === 200) {
                 message.success(res.data.message || "Login successfully");
-                navigate("/");
+                navigate("/dashboard");
             } else {
                 message.error(res.data.message || "Login failed");
             }

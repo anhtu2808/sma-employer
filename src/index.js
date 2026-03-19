@@ -6,13 +6,14 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import store, { persistor } from "./store";
 import "./index.css";
 import App from "./App";
+import Preloader from "./components/Preloader";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <GoogleOAuthProvider clientId="655715793583-tsavpaijv2vm9374q2g1ml43i9heugq7.apps.googleusercontent.com">
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+      <PersistGate loading={<Preloader />} persistor={persistor}>
         <App />
       </PersistGate>
     </Provider>
