@@ -86,6 +86,13 @@ export const jobApi = api.injectEndpoints({
         method: "GET"
       }),
     }),
+    inviteCandidate: builder.mutation({
+      query: (body) => ({
+        url: `${API_VERSION}/invitations`,
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -102,4 +109,5 @@ export const {
   useGetCriteriaQuery,
   useGetProposedCvsQuery,
   useGetResumeDetailQuery,
+  useInviteCandidateMutation,
 } = jobApi;

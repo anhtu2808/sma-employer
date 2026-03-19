@@ -1,7 +1,25 @@
 import React from 'react';
 import Button from '@/components/Button';
+import { useParams } from 'react-router-dom';
+import { useInviteCandidateMutation } from '@/apis/jobApi';
+import { message } from 'antd';
 
 const Overview = ({ cvData }) => {
+    const { jobId } = useParams();
+    const [inviteCandidate, { isLoading }] = useInviteCandidateMutation();
+
+    const handleInvite = async () => {
+        try {
+            await inviteCandidate({
+                candidateId: cvData.candidateId,
+                jobId: Number(jobId)
+            }).unwrap();
+            message.success('Candidate invited successfully!');
+        } catch (error) {
+            message.error(error?.data?.message || 'Failed to invite candidate');
+        }
+    };
+
     return (
         <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 md:p-6 mb-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5">
@@ -30,16 +48,15 @@ const Overview = ({ cvData }) => {
                 </div>
 
                 <div className="flex items-center gap-3 w-full md:w-auto flex-wrap">
-                    {cvData.resumeUrl && (
-                        <Button
-                            mode="ghost"
-                            size="md"
-                            shape="round"
-                            onClick={() => window.open(cvData.resumeUrl, '_blank')}
-                        >
-                            Open CV Original
-                        </Button>
-                    )}
+                    <Button
+                        mode="primary"
+                        size="md"
+                        shape="round"
+                        loading={isLoading}
+                        onClick={handleInvite}
+                    >
+                        Invite Candidate
+                    </Button>
                 </div>
             </div>
         </div>
