@@ -19,8 +19,8 @@ const Header = () => {
                 <nav className="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                     {isAuthenticated && (
                         <>
-                            <Link to="/" className="text-sm font-medium text-primary">Home</Link>
-                            <Link to="/dashboard" className="text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">
+                            <Link to="/" className="text-sm text-primary font-bold">Home</Link>
+                            <Link to="/dashboard" className="text-sm font-bold text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">
                                 Dashboard
                             </Link>
                         </>

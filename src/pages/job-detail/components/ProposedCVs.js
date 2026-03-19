@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useGetProposedCvsQuery } from '../../../apis/jobApi';
 import Loading from '@/components/Loading';
 import { ChevronLeft, ChevronRight, Eye, ExternalLink, MapPin, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ProposedCVs = ({ jobId }) => {
+  const navigate = useNavigate();
   const [params, setParams] = useState({ page: 0, size: 10 });
   const { data: response, isFetching } = useGetProposedCvsQuery({ id: jobId, ...params }, { skip: !jobId });
   const data = response?.data || { content: [], totalElements: 0, pageNumber: params.page, pageSize: params.size, totalPages: 0 };
@@ -86,7 +88,7 @@ const ProposedCVs = ({ jobId }) => {
                       <td className="px-6 py-4 text-center">
                         <div className="flex items-center justify-center gap-1">
                           <button
-                            onClick={() => console.log('View profile for', app.candidateId)}
+                            onClick={() => navigate(`/jobs/${jobId}/proposed-cvs/${app.resumeId}`)}
                             className="p-2.5 bg-gray-50 dark:bg-neutral-800 hover:bg-orange-500/10 text-gray-400 hover:text-orange-500 rounded-xl transition-all border border-transparent hover:border-orange-500/20"
                             title="View Profile"
                           >
