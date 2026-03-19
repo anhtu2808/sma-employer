@@ -80,6 +80,12 @@ export const jobApi = api.injectEndpoints({
       }),
       providesTags: (result, error, { id }) => [{ type: "Jobs", id: `PROPOSED_${id}` }],
     }),
+    getResumeDetail: builder.query({
+      query: (id) => ({
+        url: `${API_VERSION}/resumes/${id}`,
+        method: "GET"
+      }),
+    }),
   }),
 });
 
@@ -95,4 +101,5 @@ export const {
   useDeleteJobMutation,
   useGetCriteriaQuery,
   useGetProposedCvsQuery,
+  useGetResumeDetailQuery,
 } = jobApi;
