@@ -10,6 +10,7 @@ import Classification from './components/Classification';
 import ContactInfo from './components/ContactInfo';
 import Location from './components/Location';
 import LegalInfo from './components/LegalInfo';
+import CompanyImages from './components/CompanyImages';
 
 const CompanyProfile = () => {
     const { data: companyData, isLoading, refetch } = useGetCompanyProfileQuery();
@@ -20,17 +21,45 @@ const CompanyProfile = () => {
 
     useEffect(() => {
         if (companyData && companyData.data) {
-            form.setFieldsValue(companyData.data);
+            const data = companyData.data;
+            form.setFieldsValue({
+                ...data,
+                companyIndustry: data.companyIndustry || data.companyindustry,
+            });
         }
     }, [companyData, form]);
 
     const onFinish = async (values) => {
         try {
-            const { taxIdentificationNumber, erc, email, link, ...rest } = values;
+            const { taxIdentificationNumber, erc, email, link, images, companyIndustry, locations, ...rest } = values;
             const updateData = {
                 ...rest,
+                minSize: rest.minSize ? Number(rest.minSize) : 0,
+                maxSize: rest.maxSize ? Number(rest.maxSize) : 0,
+                companyindustry: companyIndustry,
+                taxIdentificationNumber: taxIdentificationNumber !== undefined ? taxIdentificationNumber : companyData.data?.taxIdentificationNumber,
+                erc: erc !== undefined ? erc : companyData.data?.erc,
                 companyEmail: email,
                 companyLink: link,
+                locations: (locations || []).map((loc, index) => {
+                    const originalLoc = (companyData.data?.locations || [])[index] || {};
+                    const result = {
+                        ...originalLoc,
+                        ...loc,
+                    };
+                    const finalId = loc.id || originalLoc.id;
+                    if (finalId) result.id = finalId;
+                    else delete result.id;
+                    return result;
+                }),
+                images: (images || []).map((img) => {
+                    const result = {
+                        url: img.url,
+                        description: img.description || '',
+                    };
+                    if (img.id) result.id = img.id;
+                    return result;
+                }),
             };
             await updateCompany({ id: companyData.data.id, data: updateData }).unwrap();
             message.success('Company profile updated successfully');
@@ -61,6 +90,7 @@ const CompanyProfile = () => {
                     <ContactInfo />
                     <Location form={form} isEditing={isEditing} />
                     <LegalInfo />
+                    <CompanyImages form={form} isEditing={isEditing} />
 
                     <div className="flex justify-start gap-3 pt-4">
                         {isEditing ? (
