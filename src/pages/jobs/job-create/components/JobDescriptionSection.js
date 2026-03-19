@@ -1,5 +1,6 @@
 import React from 'react';
 import { Input, Form } from 'antd';
+import SimpleTextEditor from '@/components/SimpleTextEditor';
 
 const JobDescriptionSection = () => {
     return (
@@ -9,26 +10,17 @@ const JobDescriptionSection = () => {
                 About the Role
             </h3>
 
-            <div>
-                <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-primary focus-within:border-primary">
-                    <Form.Item name="about" noStyle>
-                        <Input.TextArea
-                            placeholder="Describe the role, responsibilities, and what you're looking for..."
-                            rows={8}
-                            className="border-none focus:shadow-none resize-none p-4"
-                            bordered={false}
-                        />
-                    </Form.Item>
-                </div>
-            </div>
+            <Form.Item name="about">
+                <SimpleTextEditor placeholder="Describe the role, responsibilities, and what you're looking for..." showCount maxLength={5000} />
+            </Form.Item>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Form.Item name="responsibilities" label="Responsibilities" className="mb-0">
-                    <Input.TextArea placeholder="List key duties..." rows={5} className="rounded-lg" />
+                    <SimpleTextEditor placeholder="List key duties..." showCount maxLength={5000} />
                 </Form.Item>
 
                 <Form.Item name="requirement" label="Requirements" className="mb-0">
-                    <Input.TextArea placeholder="List qualifications..." rows={5} className="rounded-lg" />
+                    <SimpleTextEditor placeholder="List qualifications..." showCount maxLength={5000} />
                 </Form.Item>
             </div>
         </div>

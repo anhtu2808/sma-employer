@@ -1,6 +1,7 @@
 import React from 'react';
 import Input from '@/components/Input';
 import Form from '@/components/Form';
+import SimpleTextEditor from '@/components/SimpleTextEditor';
 
 const GeneralInfo = () => {
     return (
@@ -26,9 +27,10 @@ const GeneralInfo = () => {
                         name="description"
                         label="Description"
                     >
-                        <Input.TextArea
-                            rows={4}
+                        <SimpleTextEditor
                             placeholder="Introduce your company..."
+                            showCount
+                            maxLength={5000}
                         />
                     </Form.Item>
                 </div>
