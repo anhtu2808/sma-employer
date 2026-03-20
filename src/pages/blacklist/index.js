@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useGetBlacklistQuery, useUnblockCandidateMutation } from '@/apis/companyApi';
-import { Table, Input, Tag, Space, Button, message, Popconfirm } from 'antd';
+import { message, Popconfirm } from 'antd';
 import dayjs from 'dayjs';
+import Loading from '@/components/Loading';
 import Pagination from '@/components/Pagination';
 
 const CompanyBlacklist = () => {
@@ -16,7 +17,7 @@ const CompanyBlacklist = () => {
         sort: 'blockDate,desc'
     });
 
-    const [unblockCandidate, { isLoading: isUnblocking }] = useUnblockCandidateMutation();
+    const [unblockCandidate] = useUnblockCandidateMutation();
 
     const handleUnblock = async (candidateId) => {
         try {
@@ -73,7 +74,11 @@ const CompanyBlacklist = () => {
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-100">
                                 {isLoading ? (
-                                    <tr><td colSpan="5" className="text-center py-20 text-gray-400 font-medium italic">Loading your blacklist...</td></tr>
+                                    <tr>
+                                        <td colSpan="5" className="px-6 py-10">
+                                            <Loading size={88} className="py-0" />
+                                        </td>
+                                    </tr>
                                 ) : response?.data?.content?.length === 0 ? (
                                     <tr><td colSpan="5" className="text-center py-20 text-gray-400 font-medium">No candidates in blacklist</td></tr>
                                 ) : response?.data?.content?.map((item) => (

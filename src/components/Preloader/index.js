@@ -1,6 +1,5 @@
 import React from 'react';
-import Lottie from 'lottie-react';
-import loadingAnimation from '@/assets/lottie/loading.json';
+import Loading from '@/components/Loading';
 import smaLogo from '@/assets/svg/sma-logo.svg';
 import './Preloader.css';
 
@@ -10,7 +9,7 @@ const Preloader = () => {
             <div className="preloader__content">
                 <img src={smaLogo} alt="SmartRecruit" className="preloader__logo" />
                 <div className="preloader__animation">
-                    <Lottie animationData={loadingAnimation} loop autoplay />
+                    <Loading inline size={120} />
                 </div>
             </div>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useGetNotificationsQuery, useMarkAllAsReadMutation } from '@/apis/notificationApi';
 import NotificationItem from './components/notification-item';
+import Loading from '@/components/Loading';
 import SearchInput from '@/components/SearchInput';
 import { ChevronLeft, ChevronRight, } from 'lucide-react';
 
@@ -13,9 +14,6 @@ const NotificationList = () => {
     const paging = data?.data?.notifications;
     const notifications = paging?.content || [];
     const unreadCount = data?.data?.unreadCount || 0;
-
-    const startEntry = (paging?.pageNumber || 0) * (paging?.pageSize || 10) + 1;
-    const endEntry = Math.min(((paging?.pageNumber || 0) + 1) * (paging?.pageSize || 10), paging?.totalElements || 0);
 
     const tabs = [
         { label: 'All', value: { isRead: null, types: null } },
@@ -96,8 +94,8 @@ const NotificationList = () => {
             {/* Notifications List */}
             <div className="flex-1 overflow-y-auto space-y-4 pr-2 pt-4">
                 {isLoading ? (
-                    <div className="animate-pulse space-y-4">
-                        {[1, 2, 3].map(i => <div key={i} className="h-24 bg-gray-200 rounded-xl" />)}
+                    <div className="bg-white rounded-xl border border-dashed">
+                        <Loading size={96} className="py-12" />
                     </div>
                 ) : notifications.length > 0 ? (
                     notifications.map((noti) => (
