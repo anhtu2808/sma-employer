@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Form, Select, Input, Switch, Divider, message } from 'antd';
 import Button from '@/components/Button';
-import { useGetJobQuestionsQuery, useCreateJobQuestionMutation, useUpdateJobQuestionMutation } from '@/apis/jobApi';
+import { useGetJobQuestionsQuery, useCreateJobQuestionMutation, useUpdateJobQuestionMutation, useDeleteJobQuestionMutation } from '@/apis/jobApi';
 
 const ScreeningQuestions = () => {
     const { data: questionsData, isLoading: isQuestionsLoading, isError } = useGetJobQuestionsQuery();
     const [createJobQuestion, { isLoading: isCreating }] = useCreateJobQuestionMutation();
     const [updateJobQuestion, { isLoading: isUpdating }] = useUpdateJobQuestionMutation();
+    const [deleteJobQuestion] = useDeleteJobQuestionMutation();
 
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [newQuestion, setNewQuestion] = useState('');
@@ -80,6 +81,15 @@ const ScreeningQuestions = () => {
             handleCancelEdit();
         } catch (error) {
             message.error(error?.data?.message || 'Failed to update question');
+        }
+    };
+
+    const handleDeleteQuestion = async (id) => {
+        try {
+            await deleteJobQuestion(id).unwrap();
+            message.success('Question deleted successfully!');
+        } catch (error) {
+            message.error(error?.data?.message || 'Failed to delete question');
         }
     };
 
@@ -161,6 +171,18 @@ const ScreeningQuestions = () => {
                                             title="Edit question"
                                         >
                                             <span className="material-icons-outlined text-base">edit</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (window.confirm('Are you sure you want to delete this question?')) {
+                                                    handleDeleteQuestion(q.id);
+                                                }
+                                            }}
+                                            className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
+                                            title="Delete question"
+                                        >
+                                            <span className="material-icons-outlined text-base">delete</span>
                                         </button>
                                     </div>
                                 </div>

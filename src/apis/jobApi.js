@@ -117,6 +117,13 @@ export const jobApi = api.injectEndpoints({
       }),
       invalidatesTags: ["JobQuestions"],
     }),
+    deleteJobQuestion: builder.mutation({
+      query: (id) => ({
+        url: `${API_VERSION}/job-questions/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["JobQuestions"],
+    }),
   }),
 });
 
@@ -137,4 +144,5 @@ export const {
   useGetJobQuestionsQuery,
   useCreateJobQuestionMutation,
   useUpdateJobQuestionMutation,
+  useDeleteJobQuestionMutation,
 } = jobApi;
