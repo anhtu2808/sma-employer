@@ -93,6 +93,22 @@ export const jobApi = api.injectEndpoints({
         body,
       }),
     }),
+    getJobQuestions: builder.query({
+      query: (params) => ({
+        url: `${API_VERSION}/job-questions`,
+        method: "GET",
+        params: { page: 0, size: 100, deleted: false, ...params },
+      }),
+      providesTags: ["JobQuestions"],
+    }),
+    createJobQuestion: builder.mutation({
+      query: (body) => ({
+        url: `${API_VERSION}/job-questions`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["JobQuestions"],
+    }),
   }),
 });
 
@@ -110,4 +126,6 @@ export const {
   useGetProposedCvsQuery,
   useGetResumeDetailQuery,
   useInviteCandidateMutation,
+  useGetJobQuestionsQuery,
+  useCreateJobQuestionMutation,
 } = jobApi;
