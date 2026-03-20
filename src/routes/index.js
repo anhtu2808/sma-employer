@@ -20,6 +20,7 @@ import Usage from "@/pages/usage";
 import NotificationList from "../pages/notification";
 import CompanyBlacklist from "@/pages/blacklist";
 import NotificationSettings from "@/pages/setting";
+import ForgotPassword from "@/pages/forgot-password";
 
 
 
@@ -53,6 +54,7 @@ export const routes = createBrowserRouter(
             <Route path="register/recruiter" element={<RecruiterRegister />} />
             <Route path="register/pending-approval" element={<PendingApproval />} />
             <Route path="login" element={<Login />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
         </Route>
     )
 );

@@ -42,15 +42,24 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
   // Get recruiter info to check role permissions
   const { data: myInfoData } = useGetMyRecruiterInfoQuery();
   const isRecruiter = Boolean(myInfoData?.data);
+  const isRootRecruiter = myInfoData?.data?.isRootRecruiter === true;
+
+  const filteredBillingItems = isRootRecruiter 
+    ? billingMenuItems 
+    : billingMenuItems.filter(item => item.path !== '/billing-plans');
+
+  const filteredGeneralItems = isRootRecruiter
+    ? generalItems
+    : generalItems.filter(item => item.path !== '/company');
 
   const menuItems = [
     { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
-    { icon: 'people', label: 'Recruiters', path: '/recruiters' },
+    ...(isRootRecruiter ? [{ icon: 'people', label: 'Recruiters', path: '/recruiters' }] : []),
     { icon: 'work_outline', label: 'Jobs', path: '/jobs' },
     { icon: 'badge', label: 'Applications', path: '/applications' },
     { icon: 'block', label: 'Blacklist', path: '/blacklist' },
     // Only show Billing & Usage for recruiters (ROOT and RECRUITER)
-    ...(isRecruiter ? billingMenuItems : []),
+    ...(isRecruiter ? filteredBillingItems : []),
     {
       icon: 'notifications',
       label: 'Notifications',
@@ -132,7 +141,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
             </p>
           )}
           <nav className="space-y-1">
-            {generalItems.map((item) => (
+            {filteredGeneralItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
@@ -157,8 +166,8 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
         </div>
       </div>
 
-      {/* Upgrade Plan Card - Only for recruiters */}
-      {(!collapsed || isMobile) && isRecruiter && (
+      {/* Upgrade Plan Card - Only for root recruiters */}
+      {(!collapsed || isMobile) && isRecruiter && isRootRecruiter && (
         <div className="p-4">
           <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-3">
