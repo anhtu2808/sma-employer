@@ -83,7 +83,7 @@ const JobHeader = ({ job, formatDate, formatSalary, onCloneJob, onCloseJob, onEd
                     <div className="flex items-center gap-2">
                         <span className="material-icons-round text-gray-400 text-lg">payments</span>
                         <span className="font-semibold text-orange-500">
-                            {formatSalary(job.salaryStart, job.salaryEnd, job.currency)}
+                            {formatSalary(job.salaryStart, job.salaryEnd)}
                         </span>
                     </div>
                     {job.expDate && (

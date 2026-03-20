@@ -83,18 +83,12 @@ const JobDetail = () => {
         return new Date(dateString).toLocaleDateString();
     };
 
-    const formatSalary = (min, max, currency = 'VND') => {
+    const formatSalary = (min, max) => {
         if (!min && !max) return 'Negotiable';
-        const formatter = (num) => {
-            return new Intl.NumberFormat('en-US', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-            }).format(num);
-        };
-        const suffix = currency || 'VND';
-        if (min && !max) return `From ${formatter(min)} ${suffix}`;
-        if (!min && max) return `Up to ${formatter(max)} ${suffix}`;
-        return `${formatter(min)} - ${formatter(max)} ${suffix}`;
+        const format = (num) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(num);
+        if (min && !max) return `From ${format(min)}`;
+        if (!min && max) return `Up to ${format(max)}`;
+        return `${format(min)} - ${format(max)}`;
     };
 
     const tabItems = [

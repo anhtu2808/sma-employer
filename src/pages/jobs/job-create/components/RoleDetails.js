@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, InputNumber, Select, Radio, Form } from 'antd';
+import { Input, InputNumber, Radio, Form } from 'antd';
 
 const RoleDetails = () => {
     return (
@@ -18,17 +18,14 @@ const RoleDetails = () => {
                         </label>
                         <div className="flex items-center gap-2">
                             <Form.Item name="salaryStart" noStyle>
-                                <Input prefix="$" placeholder="Min" className="rounded-lg" />
+                                <Input prefix="₫" placeholder="Min" className="rounded-lg" />
                             </Form.Item>
                             <span>-</span>
                             <Form.Item name="salaryEnd" noStyle>
-                                <Input prefix="$" placeholder="Max" className="rounded-lg" />
+                                <Input prefix="₫" placeholder="Max" className="rounded-lg" />
                             </Form.Item>
                         </div>
                     </div>
-                    <Form.Item name="currency" initialValue="VND">
-                        <Select className="w-full h-10" options={[{ value: 'USD', label: 'USD ($)' }, { value: 'VND', label: 'VND (₫)' }]} />
-                    </Form.Item>
                 </div>
 
                 {/* Column 2 */}

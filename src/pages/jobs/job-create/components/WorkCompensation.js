@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Select, InputNumber } from 'antd';
+import { Form, Input, InputNumber, Select } from 'antd';
 
 const WorkCompensation = () => {
     return (
@@ -36,14 +36,11 @@ const WorkCompensation = () => {
                     </label>
                     <div className="flex gap-2">
                         <Form.Item name="salaryStart" noStyle>
-                            <Input prefix="$" placeholder="Min" />
+                            <Input prefix="₫" placeholder="Min" />
                         </Form.Item>
                         <span className="self-center text-gray-400">-</span>
                         <Form.Item name="salaryEnd" noStyle>
-                            <Input prefix="$" placeholder="Max" />
-                        </Form.Item>
-                        <Form.Item name="currency" noStyle initialValue="VND">
-                            <Select style={{ width: 80 }} options={[{ value: 'VND', label: 'VND' }, { value: 'USD', label: 'USD' }]} />
+                            <Input prefix="₫" placeholder="Max" />
                         </Form.Item>
                     </div>
                 </div>

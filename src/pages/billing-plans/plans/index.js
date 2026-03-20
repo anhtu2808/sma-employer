@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import PlanCard from "./plan-card";
 
-const formatCurrency = (amount, currency) => {
+const formatCurrency = (amount) => {
   if (amount == null || Number.isNaN(Number(amount))) return "-";
-  const resolvedCurrency = currency || "VND";
-  const locale = resolvedCurrency === "VND" ? "vi-VN" : "en-US";
-  return new Intl.NumberFormat(locale, {
+  return new Intl.NumberFormat("vi-VN", {
     style: "currency",
-    currency: resolvedCurrency,
+    currency: "VND",
     maximumFractionDigits: 2,
   }).format(Number(amount));
 };
@@ -36,8 +34,8 @@ const mapPlanToCard = (plan, currentPlanId) => {
 
   if (lifetimePrice) {
     const total = Number(lifetimePrice.salePrice ?? lifetimePrice.originalPrice ?? 0);
-    const currency = lifetimePrice.currency || plan.currency || "VND";
-    const priceLabel = total === 0 ? "Free" : formatCurrency(total, currency);
+    const currency = "VND";
+    const priceLabel = total === 0 ? "Free" : formatCurrency(total);
     const note = total === 0 ? "Lifetime access" : "Billed once";
     return {
       id: plan?.id,
@@ -60,7 +58,7 @@ const mapPlanToCard = (plan, currentPlanId) => {
       id: price.id,
       months: toMonths(price.duration, price.unit),
       total: Number(price.salePrice ?? price.originalPrice ?? 0),
-      currency: price.currency || plan.currency || "VND",
+      currency: "VND",
       unit: price.unit,
     }))
     .filter((price) => price.months > 0);
@@ -78,8 +76,8 @@ const mapPlanToCard = (plan, currentPlanId) => {
     return {
       key: String(price.id ?? `${plan.id}-${price.months}m`),
       months: price.months,
-      total: formatCurrency(price.total, price.currency),
-      monthly: `${formatCurrency(monthly, price.currency)} / month`,
+      total: formatCurrency(price.total),
+      monthly: `${formatCurrency(monthly)} / month`,
       savePercent,
     };
   });
@@ -106,7 +104,7 @@ const mapPlanToCard = (plan, currentPlanId) => {
     description,
     current: isCurrent,
     popular: isPopular,
-    basePriceLabel: basePrice ? formatCurrency(baseMonthly, basePrice.currency) : "-",
+    basePriceLabel: basePrice ? formatCurrency(baseMonthly) : "-",
     baseUnit: "/ month",
     note,
     cta: isCurrent ? "Current Plan" : `Upgrade to ${name}`,
@@ -115,7 +113,7 @@ const mapPlanToCard = (plan, currentPlanId) => {
   };
 };
 
-const Plans = ({ plans = [], currentPlanId = null }) => {
+const Plans = ({ plans = [], currentPlanId = null, onOpenPaymentModal }) => {
   const [expandedPlanCode, setExpandedPlanCode] = useState(null);
   const [selectedPlanCode, setSelectedPlanCode] = useState(null);
   const [selectedDurationByPlan, setSelectedDurationByPlan] = useState({});
@@ -202,6 +200,7 @@ const Plans = ({ plans = [], currentPlanId = null }) => {
             onClose={() => setExpandedPlanCode(null)}
             selectedDuration={selectedDurationByPlan[plan.code]}
             onSelectDuration={(durationKey) => onSelectDuration(plan.code, durationKey)}
+            onOpenPaymentModal={onOpenPaymentModal}
           />
         ))}
       </div>
