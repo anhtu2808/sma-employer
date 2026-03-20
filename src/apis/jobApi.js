@@ -109,6 +109,14 @@ export const jobApi = api.injectEndpoints({
       }),
       invalidatesTags: ["JobQuestions"],
     }),
+    updateJobQuestion: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `${API_VERSION}/job-questions/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["JobQuestions"],
+    }),
   }),
 });
 
@@ -128,4 +136,5 @@ export const {
   useInviteCandidateMutation,
   useGetJobQuestionsQuery,
   useCreateJobQuestionMutation,
+  useUpdateJobQuestionMutation,
 } = jobApi;
