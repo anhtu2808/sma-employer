@@ -2,9 +2,9 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PageHeaderContext } from '@/contexts/PageHeaderContext';
 import { useGetNotificationsQuery } from '@/apis/notificationApi';
+import { useGetMyRecruiterInfoQuery } from '@/apis/recruiterApi';
 import { useSelector, useDispatch } from 'react-redux';
 import { hidePreview } from '../../notification/components/notification-slice';
-import { setRealtimePreview } from '../../notification/components/notification-slice';
 import dayjs from 'dayjs';
 
 const Header = ({ onMobileMenuClick }) => {
@@ -19,6 +19,8 @@ const Header = ({ onMobileMenuClick }) => {
     keyword: ''
   });
   const unreadCount = data?.data?.unreadCount || 0;
+  const { data: myInfoData } = useGetMyRecruiterInfoQuery();
+  const user = myInfoData?.data?.user;
   const dispatch = useDispatch();
   const { preview, showPreview } = useSelector(state => state.notification);
   useEffect(() => {
@@ -118,14 +120,20 @@ const Header = ({ onMobileMenuClick }) => {
         {/* User Profile */}
         <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 border-l border-gray-200 dark:border-gray-700">
           <div className="text-right hidden md:block">
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">Sarah Wilson</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Head of Talent</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">{user?.fullName || 'User'}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
           </div>
-          <img
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEH8DYTzMMQiZnm_iy5mL-yY2n7Rvq6SsI6n2_zwGLU0XFMVSz1PiEK-bOUFHsj-fplhI1l4XvZGDlZwDDGlg5nhiafEpOIySdsPLjyBWlftuziXVTBbYuIzX-1ZAVw71ke3_67dbC6uFapWOZkM62V7lUOEek2ZZP9Ti0F472l_GdlsYg2j7TTHh1UGrKnQnV5L3wFmtcwCPkoKWOvYKpU0Nf9yNfP5jjgWPZ4ghrRqz6wlkbVAyeqVe29gi-owRwvwbAME2rg2Iv"
-            alt="User avatar"
-            className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm"
-          />
+          {user?.avatar ? (
+            <img
+              src={user.avatar}
+              alt={user.fullName || 'User avatar'}
+              className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm"
+            />
+          ) : (
+            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 border-2 border-white dark:border-gray-700 shadow-sm flex items-center justify-center text-primary font-bold text-sm">
+              {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
+            </div>
+          )}
         </div>
       </div>
     </header>

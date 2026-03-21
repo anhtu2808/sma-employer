@@ -10,25 +10,22 @@ import NotificationToast from '@/components/NotificationToast';
 export const useNotificationSocket = () => {
     const dispatch = useDispatch();
     const token = localStorage.getItem('accessToken');
-    const getIcon = (type) => {
+    const getIconConfig = (type) => {
         switch (type) {
             case 'SYSTEM':
-                return 'error_outline';
-
+                return { icon: 'error_outline', color: 'text-red-500', bg: 'bg-red-100' };
             case 'PAYMENT_SUCCESS':
-                return 'check_circle';
-
+                return { icon: 'check_circle', color: 'text-green-500', bg: 'bg-green-100' };
             case 'PAYMENT_FAILURE':
-                return 'payments';
-
+                return { icon: 'payments', color: 'text-red-500', bg: 'bg-red-100' };
             case 'APPLICATION_STATUS':
-                return 'contact_page';
-
+                return { icon: 'contact_page', color: 'text-blue-500', bg: 'bg-blue-100' };
             case 'FLAGGED_JOB':
-                return 'work_outline';
-
+                return { icon: 'work_outline', color: 'text-orange-500', bg: 'bg-orange-100' };
+            case 'INVITATION':
+                return { icon: 'forward_to_inbox', color: 'text-indigo-500', bg: 'bg-indigo-100' };
             default:
-                return 'notifications';
+                return { icon: 'notifications', color: 'text-orange-500', bg: 'bg-orange-100' };
         }
     };
     const getUserIdFromToken = (token) => {
@@ -75,12 +72,14 @@ export const useNotificationSocket = () => {
                     if (!newNoti?.title && !newNoti?.message) {
                         return;
                     }
-                    const icon = getIcon(newNoti.notificationType);
+                    const iconConfig = getIconConfig(newNoti.notificationType);
 
                     toast.custom((t) => (
                         <NotificationToast
                             t={t}
-                            icon={icon}
+                            icon={iconConfig.icon}
+                            iconColor={iconConfig.color}
+                            iconBg={iconConfig.bg}
                             title={newNoti.title}
                             message={newNoti.message}
                         />
