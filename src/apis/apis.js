@@ -16,10 +16,24 @@ export const authApi = api.injectEndpoints({
                 body: data,
             }),
         }),
+        forgotPassword: builder.mutation({
+            query: (data) => ({
+                url: `${API_VERSION}/auth/forgot-password`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
+        resetPassword: builder.mutation({
+            query: (data) => ({
+                url: `${API_VERSION}/auth/reset-password`,
+                method: 'POST',
+                body: data,
+            }),
+        }),
     }),
 });
 
-export const { useRegisterRecruiterMutation, useUploadFileMutation } = authApi;
+export const { useRegisterRecruiterMutation, useUploadFileMutation, useForgotPasswordMutation, useResetPasswordMutation } = authApi;
 export * from "./companyApi";
 export * from "./jobApi";
 export * from "./recruiterApi";

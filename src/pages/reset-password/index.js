@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
 import SideDecorator from "@/pages/forgot-password/side-decorator";
+import { useResetPasswordMutation } from "@/apis/apis";
+import authService from "@/services/authService";
 
 const ResetPassword = () => {
     const location = useLocation();
@@ -11,7 +13,8 @@ const ResetPassword = () => {
     const [email, setEmail] = useState("");
     const [otp, setOtp] = useState("");
     const [newPassword, setNewPassword] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [resetPassword, { isLoading: isResetting }] = useResetPasswordMutation();
+    const [isLoggingIn, setIsLoggingIn] = useState(false);
 
     useEffect(() => {
         if (!location.state?.email) {
@@ -24,13 +27,29 @@ const ResetPassword = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        // Simulate API call for now
-        setTimeout(() => {
-            setLoading(false);
-            message.success("Password has been reset successfully. Please login.");
-            navigate("/login");
-        }, 1500);
+        
+        try {
+            // First reset password
+            await resetPassword({ email, otp, newPassword }).unwrap();
+            
+            // Then auto-login
+            setIsLoggingIn(true);
+            const response = await authService.login({ email, password: newPassword });
+            
+            if (response.data.code === 200) {
+                await authService.verifyRecruiterRole();
+                message.success("Password reset and logged in successfully");
+                navigate("/dashboard");
+            } else {
+                message.error(response.data.message || "Reset successful but login failed");
+                navigate("/login");
+            }
+        } catch (error) {
+            console.error("Failed to reset password:", error);
+            message.error(error.data?.message || error.response?.data?.message || error.message || "Failed to reset password");
+        } finally {
+            setIsLoggingIn(false);
+        }
     };
 
     return (
@@ -103,12 +122,12 @@ const ResetPassword = () => {
                             mode="primary"
                             size="lg"
                             fullWidth
-                            disabled={loading}
-                            loading={loading}
+                            disabled={isResetting || isLoggingIn}
+                            loading={isResetting || isLoggingIn}
                             className="mt-6 font-bold"
                             iconRight={<span className="material-icons-round ml-1" style={{ fontSize: '20px' }}>check_circle</span>}
                         >
-                            Reset Password
+                            {isLoggingIn ? "Logging in..." : isResetting ? "Resetting..." : "Reset Password"}
                         </Button>
                     </form>
                 </div>

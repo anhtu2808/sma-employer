@@ -4,21 +4,24 @@ import { useNavigate } from "react-router-dom";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
 import SideDecorator from "./side-decorator";
+import { useForgotPasswordMutation } from "@/apis/apis";
 
 const ForgotPassword = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [forgotPassword, { isLoading: loading }] = useForgotPasswordMutation();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        // Simulate API call for now
-        setTimeout(() => {
-            setLoading(false);
+        
+        try {
+            await forgotPassword({ email }).unwrap();
             message.success("Password reset link sent to your email");
             navigate("/reset-password", { state: { email } });
-        }, 1500);
+        } catch (error) {
+            console.error("Failed to send reset link:", error);
+            message.error(error.data?.message || "Failed to send reset link");
+        }
     };
 
     return (
