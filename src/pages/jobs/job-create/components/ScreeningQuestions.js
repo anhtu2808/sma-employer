@@ -10,6 +10,7 @@ const ScreeningQuestions = () => {
     const [deleteJobQuestion] = useDeleteJobQuestionMutation();
 
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [showAvailableQuestions, setShowAvailableQuestions] = useState(false);
     const [newQuestion, setNewQuestion] = useState('');
     const [newDescription, setNewDescription] = useState('');
     const [newIsRequired, setNewIsRequired] = useState(false);
@@ -117,78 +118,97 @@ const ScreeningQuestions = () => {
                 />
             </Form.Item>
 
-            {/* Questions list with edit */}
+            {/* Questions list with toggle */}
             {questionsList.length > 0 && (
                 <div className="space-y-2 mt-2">
-                    <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Available Questions</p>
-                    {questionsList.map(q => (
-                        <div key={q.id}>
-                            {editingQuestion?.id === q.id ? (
-                                /* ── Edit Form ── */
-                                <div className="p-4 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/30 dark:bg-blue-900/10 space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Edit Question</h4>
-                                        <button type="button" onClick={handleCancelEdit} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-                                            <span className="material-icons-outlined text-lg">close</span>
-                                        </button>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Question <span className="text-red-500">*</span>
-                                        </label>
-                                        <Input value={editQuestion} onChange={(e) => setEditQuestion(e.target.value)} />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-                                        <Input.TextArea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows={2} />
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <Switch size="small" checked={editIsRequired} onChange={setEditIsRequired} />
-                                            <span className="text-sm text-gray-600 dark:text-gray-400">Required question</span>
+                    <div className="flex items-center gap-3">
+                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Available Questions</p>
+                        <Switch
+                            size="small"
+                            checked={showAvailableQuestions}
+                            onChange={setShowAvailableQuestions}
+                        />
+                        <span className="text-xs text-gray-400 dark:text-gray-500">
+                            {showAvailableQuestions ? 'Hide' : 'Show'} ({questionsList.length})
+                        </span>
+                    </div>
+
+                    <div style={{
+                        maxHeight: showAvailableQuestions ? '2000px' : '0px',
+                        overflow: 'hidden',
+                        transition: 'max-height 0.35s ease-in-out',
+                    }}>
+                        <div className="space-y-2">
+                            {questionsList.map(q => (
+                                <div key={q.id}>
+                                    {editingQuestion?.id === q.id ? (
+                                        /* ── Edit Form ── */
+                                        <div className="p-4 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/30 dark:bg-blue-900/10 space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Edit Question</h4>
+                                                <button type="button" onClick={handleCancelEdit} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                                                    <span className="material-icons-outlined text-lg">close</span>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                    Question <span className="text-red-500">*</span>
+                                                </label>
+                                                <Input value={editQuestion} onChange={(e) => setEditQuestion(e.target.value)} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                                                <Input.TextArea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows={2} />
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <Switch size="small" checked={editIsRequired} onChange={setEditIsRequired} />
+                                                    <span className="text-sm text-gray-600 dark:text-gray-400">Required question</span>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <Button mode="default" size="sm" shape="round" onClick={handleCancelEdit}>Cancel</Button>
+                                                    <Button mode="primary" size="sm" shape="round" loading={isUpdating} onClick={handleUpdateQuestion}>Save</Button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="flex gap-2">
-                                            <Button mode="default" size="sm" shape="round" onClick={handleCancelEdit}>Cancel</Button>
-                                            <Button mode="primary" size="sm" shape="round" loading={isUpdating} onClick={handleUpdateQuestion}>Save</Button>
+                                    ) : (
+                                        /* ── Question Row ── */
+                                        <div className="flex items-center justify-between p-3 rounded-lg border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors group">
+                                            <div className="flex-1 min-w-0 mr-3">
+                                                <p className="text-sm text-gray-800 dark:text-gray-200 truncate">{q.question}</p>
+                                                {q.description && <p className="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">{q.description}</p>}
+                                            </div>
+                                            <div className="flex items-center gap-2 flex-shrink-0">
+                                                {q.isRequired && (
+                                                    <span className="text-[10px] font-semibold text-red-500 bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded">Required</span>
+                                                )}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleStartEdit(q)}
+                                                    className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-primary transition-all"
+                                                    title="Edit question"
+                                                >
+                                                    <span className="material-icons-outlined text-base">edit</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        if (window.confirm('Are you sure you want to delete this question?')) {
+                                                            handleDeleteQuestion(q.id);
+                                                        }
+                                                    }}
+                                                    className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
+                                                    title="Delete question"
+                                                >
+                                                    <span className="material-icons-outlined text-base">delete</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
-                            ) : (
-                                /* ── Question Row ── */
-                                <div className="flex items-center justify-between p-3 rounded-lg border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors group">
-                                    <div className="flex-1 min-w-0 mr-3">
-                                        <p className="text-sm text-gray-800 dark:text-gray-200 truncate">{q.question}</p>
-                                        {q.description && <p className="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">{q.description}</p>}
-                                    </div>
-                                    <div className="flex items-center gap-2 flex-shrink-0">
-                                        {q.isRequired && (
-                                            <span className="text-[10px] font-semibold text-red-500 bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded">Required</span>
-                                        )}
-                                        <button
-                                            type="button"
-                                            onClick={() => handleStartEdit(q)}
-                                            className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-primary transition-all"
-                                            title="Edit question"
-                                        >
-                                            <span className="material-icons-outlined text-base">edit</span>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                if (window.confirm('Are you sure you want to delete this question?')) {
-                                                    handleDeleteQuestion(q.id);
-                                                }
-                                            }}
-                                            className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
-                                            title="Delete question"
-                                        >
-                                            <span className="material-icons-outlined text-base">delete</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
+                            ))}
                         </div>
-                    ))}
+                    </div>
                 </div>
             )}
 

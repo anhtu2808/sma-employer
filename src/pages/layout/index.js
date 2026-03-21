@@ -22,6 +22,7 @@ const routeTitleMap = {
   '/settings': 'Settings',
   '/help': 'Help Center',
   '/blacklist': 'Blacklist',
+  '/invitations': 'Invitations',
 
 };
 
@@ -41,6 +42,7 @@ const routeSubtitleMap = {
   '/settings': 'Configure your account settings',
   '/help': 'Find answers and get support',
   '/blacklist': 'Manage your candidate blacklist',
+  '/invitations': 'Manage candidate invitations',
 
 };
 

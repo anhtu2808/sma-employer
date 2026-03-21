@@ -57,6 +57,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
     ...(isRootRecruiter ? [{ icon: 'people', label: 'Recruiters', path: '/recruiters' }] : []),
     { icon: 'work_outline', label: 'Jobs', path: '/jobs' },
     { icon: 'badge', label: 'Applications', path: '/applications' },
+    { icon: 'mail_outline', label: 'Invitations', path: '/invitations' },
     { icon: 'block', label: 'Blacklist', path: '/blacklist' },
     // Only show Billing & Usage for recruiters (ROOT and RECRUITER)
     ...(isRecruiter ? filteredBillingItems : []),

@@ -21,6 +21,7 @@ import NotificationList from "../pages/notification";
 import CompanyBlacklist from "@/pages/blacklist";
 import NotificationSettings from "@/pages/setting";
 import ForgotPassword from "@/pages/forgot-password";
+import InvitationList from "@/pages/invitations";
 
 
 
@@ -47,6 +48,7 @@ export const routes = createBrowserRouter(
                 <Route path="usage" element={<Usage />} />
                 <Route path="notifications" element={<NotificationList />} />
                 <Route path="blacklist" element={<CompanyBlacklist />} />
+                <Route path="invitations" element={<InvitationList />} />
             </Route>
             <Route path="checkout" element={<Checkout />} />
             <Route path="/" element={<Home />} />
