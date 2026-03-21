@@ -29,15 +29,21 @@ const Login = () => {
             const response = await authService.login({ email, password });
 
             if (response.data.code === 200) {
+                // Verify the user has RECRUITER role
+                await authService.verifyRecruiterRole();
                 message.success(response.data.message || "Login successfully");
                 navigate("/dashboard");
             } else {
                 message.error(response.data.message || "Login failed");
             }
         } catch (error) {
-            message.error(
-                error.response.data.message || "An error occurred during login",
-            );
+            if (error.message === "ACCESS_DENIED") {
+                message.error("Access denied. Only Recruiter accounts can access this system.");
+            } else {
+                message.error(
+                    error.response?.data?.message || "An error occurred during login",
+                );
+            }
         } finally {
             setLoading(false);
         }
@@ -52,13 +58,19 @@ const Login = () => {
             );
 
             if (res.data.code === 200) {
+                // Verify the user has RECRUITER role
+                await authService.verifyRecruiterRole();
                 message.success(res.data.message || "Login successfully");
                 navigate("/dashboard");
             } else {
                 message.error(res.data.message || "Login failed");
             }
         } catch (error) {
-            message.error(error.response?.data?.message || "Google login failed");
+            if (error.message === "ACCESS_DENIED") {
+                message.error("Access denied. Only Recruiter accounts can access this system.");
+            } else {
+                message.error(error.response?.data?.message || "Google login failed");
+            }
         } finally {
             setLoading(false);
         }

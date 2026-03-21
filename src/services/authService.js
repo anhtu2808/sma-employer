@@ -82,6 +82,28 @@ const authService = {
     }
   },
 
+  verifyRecruiterRole: async () => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const response = await AuthAPI.get("/recruiter/me", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const role = response.data?.data?.user?.role;
+      if (role !== "RECRUITER") {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        throw new Error("ACCESS_DENIED");
+      }
+      return response;
+    } catch (error) {
+      if (error.message !== "ACCESS_DENIED") {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+      }
+      throw error;
+    }
+  },
+
   isAuthenticated: () => {
     return !!localStorage.getItem("accessToken");
   },

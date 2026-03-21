@@ -20,6 +20,10 @@ import Usage from "@/pages/usage";
 import NotificationList from "../pages/notification";
 import CompanyBlacklist from "@/pages/blacklist";
 import NotificationSettings from "@/pages/setting";
+import ForgotPassword from "@/pages/forgot-password";
+import ResetPassword from "@/pages/reset-password";
+import InvitationList from "@/pages/invitations";
+import InvitationDetail from "@/pages/invitations/detail";
 
 
 
@@ -46,6 +50,8 @@ export const routes = createBrowserRouter(
                 <Route path="usage" element={<Usage />} />
                 <Route path="notifications" element={<NotificationList />} />
                 <Route path="blacklist" element={<CompanyBlacklist />} />
+                <Route path="invitations" element={<InvitationList />} />
+                <Route path="invitations/:id" element={<InvitationDetail />} />
             </Route>
             <Route path="checkout" element={<Checkout />} />
             <Route path="/" element={<Home />} />
@@ -53,6 +59,8 @@ export const routes = createBrowserRouter(
             <Route path="register/recruiter" element={<RecruiterRegister />} />
             <Route path="register/pending-approval" element={<PendingApproval />} />
             <Route path="login" element={<Login />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
+            <Route path="reset-password" element={<ResetPassword />} />
         </Route>
     )
 );

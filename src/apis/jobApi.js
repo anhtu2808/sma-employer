@@ -22,9 +22,17 @@ export const jobApi = api.injectEndpoints({
       query: (id) => `${API_VERSION}/jobs/${id}`,
       providesTags: (result, error, id) => [{ type: "Jobs", id }],
     }),
-    createJob: builder.mutation({
+    createPublishJob: builder.mutation({
       query: (body) => ({
-        url: `${API_VERSION}/jobs`,
+        url: `${API_VERSION}/jobs/publish`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Jobs"],
+    }),
+    createSaveJobDraft: builder.mutation({
+      query: (body) => ({
+        url: `${API_VERSION}/jobs/save`,
         method: "POST",
         body,
       }),
@@ -106,6 +114,37 @@ export const jobApi = api.injectEndpoints({
         body,
       }),
     }),
+    getJobQuestions: builder.query({
+      query: (params) => ({
+        url: `${API_VERSION}/job-questions`,
+        method: "GET",
+        params: { page: 0, size: 100, deleted: false, ...params },
+      }),
+      providesTags: ["JobQuestions"],
+    }),
+    createJobQuestion: builder.mutation({
+      query: (body) => ({
+        url: `${API_VERSION}/job-questions`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["JobQuestions"],
+    }),
+    updateJobQuestion: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `${API_VERSION}/job-questions/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["JobQuestions"],
+    }),
+    deleteJobQuestion: builder.mutation({
+      query: (id) => ({
+        url: `${API_VERSION}/job-questions/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["JobQuestions"],
+    }),
   }),
 });
 
@@ -113,8 +152,8 @@ export const {
   useGetJobsQuery,
   useGetMyJobStatusCountQuery,
   useGetJobDetailQuery,
-  useCreateJobMutation,
-  useCreateJobDraftMutation,
+  useCreatePublishJobMutation,
+  useCreateSaveJobDraftMutation,
   useUpdateJobStatusMutation,
   usePublishJobMutation,
   useUpdateExpiredDateMutation,
@@ -124,4 +163,8 @@ export const {
   useGetProposedCvsQuery,
   useGetResumeDetailQuery,
   useInviteCandidateMutation,
+  useGetJobQuestionsQuery,
+  useCreateJobQuestionMutation,
+  useUpdateJobQuestionMutation,
+  useDeleteJobQuestionMutation,
 } = jobApi;

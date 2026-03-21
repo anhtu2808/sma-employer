@@ -45,7 +45,7 @@ const ScoringWeights = () => {
           if (allDisabled && criteriaList.length > 0) {
             criteriaList.forEach((criteria) => {
               updates[`enable_${criteria.id}`] = true;
-              updates[`weight_${criteria.id}`] = criteria.weight;
+              updates[`weight_${criteria.id}`] = criteria.weight || criteria.defaultWeight || 0;
               needsUpdate = true;
             });
           }
@@ -162,7 +162,7 @@ const ScoringWeights = () => {
                       </div>
                       <Form.Item
                         name={`weight_${criteriaItem.id}`}
-                        initialValue={criteriaItem.weight}
+                        initialValue={criteriaItem.weight || criteriaItem.defaultWeight || 0}
                         noStyle
                       >
                         <Slider

@@ -5,14 +5,15 @@ import { useInviteCandidateMutation } from '@/apis/jobApi';
 import { message } from 'antd';
 
 const Overview = ({ cvData }) => {
-    const { jobId } = useParams();
+    const { jobId, resumeId } = useParams();
     const [inviteCandidate, { isLoading }] = useInviteCandidateMutation();
 
     const handleInvite = async () => {
         try {
             await inviteCandidate({
                 candidateId: cvData.candidateId,
-                jobId: Number(jobId)
+                jobId: Number(jobId),
+                proposedResumeId: Number(resumeId)
             }).unwrap();
             message.success('Candidate invited successfully!');
         } catch (error) {
