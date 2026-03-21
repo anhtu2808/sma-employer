@@ -1,14 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { message } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
-import SideDecorator from "./side-decorator";
+import SideDecorator from "@/pages/forgot-password/side-decorator";
 
-const ForgotPassword = () => {
+const ResetPassword = () => {
+    const location = useLocation();
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
+    const [otp, setOtp] = useState("");
+    const [newPassword, setNewPassword] = useState("");
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!location.state?.email) {
+            message.error("Please enter your email first");
+            navigate("/forgot-password");
+        } else {
+            setEmail(location.state.email);
+        }
+    }, [location, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,8 +28,8 @@ const ForgotPassword = () => {
         // Simulate API call for now
         setTimeout(() => {
             setLoading(false);
-            message.success("Password reset link sent to your email");
-            navigate("/reset-password", { state: { email } });
+            message.success("Password has been reset successfully. Please login.");
+            navigate("/login");
         }, 1500);
     };
 
@@ -38,10 +50,10 @@ const ForgotPassword = () => {
 
                 <div className="w-full max-w-md mx-auto py-12 relative z-10">
                     <h2 className="text-[2.25rem] font-extrabold text-[#3a2b25] dark:text-white mb-3 tracking-tight leading-tight">
-                        Reset your password
+                        Create new password
                     </h2>
                     <p className="text-[#8c746a] dark:text-gray-400 mb-10 text-[0.95rem] leading-relaxed">
-                        Enter the email address associated with your account and we'll send you a link to reset your password.
+                        Enter the OTP sent to your email and your new password to regain access.
                     </p>
 
                     <form className="space-y-6" onSubmit={handleSubmit}>
@@ -51,11 +63,38 @@ const ForgotPassword = () => {
                             </label>
                             <Input
                                 type="email"
-                                placeholder="name@company.com"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
+                                disabled
+                                className="bg-gray-100 dark:bg-gray-800 text-gray-500 cursor-not-allowed"
                                 prefix={<span className="material-icons-round text-gray-400" style={{ fontSize: '20px' }}>mail</span>}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="block text-[0.85rem] font-bold text-[#3a2b25] dark:text-gray-300">
+                                OTP Code
+                            </label>
+                            <Input
+                                type="text"
+                                placeholder="Enter 6-digit OTP"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                                required
+                                prefix={<span className="material-icons-round text-gray-400" style={{ fontSize: '20px' }}>vpn_key</span>}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="block text-[0.85rem] font-bold text-[#3a2b25] dark:text-gray-300">
+                                New Password
+                            </label>
+                            <Input
+                                type="password"
+                                placeholder="••••••••"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                required
+                                prefix={<span className="material-icons-round text-gray-400" style={{ fontSize: '20px' }}>lock</span>}
                             />
                         </div>
 
@@ -67,9 +106,9 @@ const ForgotPassword = () => {
                             disabled={loading}
                             loading={loading}
                             className="mt-6 font-bold"
-                            iconRight={<span className="material-icons-round ml-1" style={{ fontSize: '20px' }}>arrow_forward</span>}
+                            iconRight={<span className="material-icons-round ml-1" style={{ fontSize: '20px' }}>check_circle</span>}
                         >
-                            Send Reset Link
+                            Reset Password
                         </Button>
                     </form>
                 </div>
@@ -78,4 +117,4 @@ const ForgotPassword = () => {
     );
 };
 
-export default ForgotPassword;
+export default ResetPassword;

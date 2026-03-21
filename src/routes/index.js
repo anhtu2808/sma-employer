@@ -21,6 +21,7 @@ import NotificationList from "../pages/notification";
 import CompanyBlacklist from "@/pages/blacklist";
 import NotificationSettings from "@/pages/setting";
 import ForgotPassword from "@/pages/forgot-password";
+import ResetPassword from "@/pages/reset-password";
 import InvitationList from "@/pages/invitations";
 import InvitationDetail from "@/pages/invitations/detail";
 
@@ -59,6 +60,7 @@ export const routes = createBrowserRouter(
             <Route path="register/pending-approval" element={<PendingApproval />} />
             <Route path="login" element={<Login />} />
             <Route path="forgot-password" element={<ForgotPassword />} />
+            <Route path="reset-password" element={<ResetPassword />} />
         </Route>
     )
 );
