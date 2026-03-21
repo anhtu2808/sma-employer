@@ -1,15 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { ConfigProvider, Tabs, Tag, Empty, Pagination } from 'antd';
+import { ConfigProvider, Tabs, Tag, Empty } from 'antd';
+import Pagination from '@/components/Pagination';
 import { useGetMyInvitationsQuery } from '@/apis/invitationApi';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import Loading from '@/components/Loading';
-
-const STATUS_CONFIG = {
-    INVITED: { color: 'blue', label: 'Invited' },
-    RECEIVED: { color: 'orange', label: 'Received' },
-    ACCEPTED: { color: 'green', label: 'Accepted' },
-    DECLINED: { color: 'red', label: 'Declined' },
-};
+import { Eye } from 'lucide-react';
+import Button from '@/components/Button';
+import { useNavigate } from 'react-router-dom';
 
 const INVITATION_STATUS_TABS = [
     { key: '', label: 'All' },
@@ -21,6 +18,7 @@ const INVITATION_STATUS_TABS = [
 
 const InvitationList = () => {
     usePageHeader('Invitations', 'Manage candidate invitations');
+    const navigate = useNavigate();
 
     const [page, setPage] = useState(0);
     const [statusFilter, setStatusFilter] = useState('');
@@ -37,6 +35,7 @@ const InvitationList = () => {
 
     const invitations = response?.data?.content || [];
     const totalElements = response?.data?.totalElements || 0;
+    const totalPages = response?.data?.totalPages || Math.ceil(totalElements / 10);
 
     // Compute status counts from the full dataset
     const statusCountMap = useMemo(() => {
@@ -63,11 +62,6 @@ const InvitationList = () => {
             </span>
         ),
     }));
-
-    const getStatusTag = (status) => {
-        const config = STATUS_CONFIG[status] || { color: 'default', label: status };
-        return <Tag color={config.color} className="!text-xs !font-semibold !px-2.5 !py-0.5 !rounded-full !border-0">{config.label}</Tag>;
-    };
 
     const formatSalary = (start, end, currency) => {
         if (!start && !end) return 'Negotiable';
@@ -173,6 +167,21 @@ const InvitationList = () => {
                                         )}
                                     </div>
                                 </div>
+
+                                {/* Right: Status & Actions */}
+                                <div className="flex flex-col justify-center items-center flex-shrink-0 ml-4 self-stretch">
+                                    <Button
+                                        mode="secondary"
+                                        size="md"
+                                        shape="round"
+                                        btnIcon
+                                        tooltip="View Details"
+                                        className="border-gray-200 dark:border-gray-700 hover:!border-primary hover:!text-primary transition-colors"
+                                        onClick={() => navigate(`/invitations/${inv.id}`)}
+                                    >
+                                        <Eye size={18} />
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -180,16 +189,12 @@ const InvitationList = () => {
             )}
 
             {/* Pagination */}
-            {totalElements > 10 && (
-                <div className="flex justify-center pt-2">
-                    <Pagination
-                        current={page + 1}
-                        total={totalElements}
-                        pageSize={10}
-                        onChange={(p) => setPage(p - 1)}
-                        showSizeChanger={false}
-                    />
-                </div>
+            {totalPages > 1 && (
+                <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={setPage}
+                />
             )}
         </div>
     );

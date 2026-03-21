@@ -11,7 +11,14 @@ export const invitationApi = api.injectEndpoints({
       }),
       providesTags: ["Invitations"],
     }),
+    getInvitationById: builder.query({
+      query: (id) => ({
+        url: `${API_VERSION}/invitations/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["Invitations"],
+    }),
   }),
 });
 
-export const { useGetMyInvitationsQuery } = invitationApi;
+export const { useGetMyInvitationsQuery, useGetInvitationByIdQuery } = invitationApi;
