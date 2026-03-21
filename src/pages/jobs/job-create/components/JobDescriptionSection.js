@@ -13,7 +13,7 @@ const JobDescriptionSection = () => {
 
             <div>
                 <Form.Item name="about" className="mb-0">
-                    <TiptapEditor placeholder="Describe the role, responsibilities, and what you're looking for..." />
+                    <SimpleTextEditor placeholder="Describe the role, responsibilities, and what you're looking for..." />
                 </Form.Item>
             </div>
 

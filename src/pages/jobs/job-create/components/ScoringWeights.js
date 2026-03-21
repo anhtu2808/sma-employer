@@ -4,9 +4,7 @@ import { useGetCriteriaQuery } from "@/apis/jobApi";
 import Loading from "@/components/Loading";
 
 const ScoringWeights = () => {
-  const { data: criteriaRes, isLoading } = useGetCriteriaQuery();
-  const criteriaData = criteriaRes?.data;
-  const criteriaList = Array.isArray(criteriaData) ? criteriaData : (Array.isArray(criteriaData?.content) ? criteriaData.content : []);
+  const { data: criteriaList = [], isLoading } = useGetCriteriaQuery();
 
   return (
     <Form.Item

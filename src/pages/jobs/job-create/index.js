@@ -71,8 +71,6 @@ const JobCreate = () => {
   const onFinish = async (values) => {
     try {
       console.log("Submit action:", submitAction);
-      const criteriaData = criteriaRes?.data;
-      const criteriaList = Array.isArray(criteriaData) ? criteriaData : (Array.isArray(criteriaData?.content) ? criteriaData.content : []);
       const scoringCriterias = criteriaList.map((item) => ({
         criteriaId: item.id,
         weight:
