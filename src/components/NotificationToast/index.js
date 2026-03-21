@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const NotificationToast = ({ t, icon, title, message }) => {
+const NotificationToast = ({ t, icon, iconColor = 'text-orange-500', iconBg = 'bg-orange-100', title, message }) => {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
@@ -19,8 +19,8 @@ const NotificationToast = ({ t, icon, title, message }) => {
         >
             <div className="flex gap-3">
 
-                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-orange-100">
-                    <span className="material-symbols-outlined text-orange-500">
+                <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${iconBg}`}>
+                    <span className={`material-symbols-outlined ${iconColor}`}>
                         {icon}
                     </span>
                 </div>

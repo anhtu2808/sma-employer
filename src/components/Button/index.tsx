@@ -6,7 +6,7 @@ const Button: ButtonComponentType = ({
   children,
   mode = 'primary',
   size = 'md',
-  shape = 'pill',
+  shape = 'rounded',
   btnIcon = false,
   iconLeft = null,
   iconRight = null,
