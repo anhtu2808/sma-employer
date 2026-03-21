@@ -27,15 +27,15 @@ const ResetPassword = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         try {
             // First reset password
             await resetPassword({ email, otp, newPassword }).unwrap();
-            
+
             // Then auto-login
             setIsLoggingIn(true);
             const response = await authService.login({ email, password: newPassword });
-            
+
             if (response.data.code === 200) {
                 await authService.verifyRecruiterRole();
                 message.success("Password reset and logged in successfully");
@@ -125,7 +125,6 @@ const ResetPassword = () => {
                             disabled={isResetting || isLoggingIn}
                             loading={isResetting || isLoggingIn}
                             className="mt-6 font-bold"
-                            iconRight={<span className="material-icons-round ml-1" style={{ fontSize: '20px' }}>check_circle</span>}
                         >
                             {isLoggingIn ? "Logging in..." : isResetting ? "Resetting..." : "Reset Password"}
                         </Button>
