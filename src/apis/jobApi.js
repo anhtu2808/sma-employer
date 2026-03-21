@@ -22,9 +22,17 @@ export const jobApi = api.injectEndpoints({
       query: (id) => `${API_VERSION}/jobs/${id}`,
       providesTags: (result, error, id) => [{ type: "Jobs", id }],
     }),
-    createJob: builder.mutation({
+    createPublishJob: builder.mutation({
       query: (body) => ({
-        url: `${API_VERSION}/jobs`,
+        url: `${API_VERSION}/jobs/publish`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Jobs"],
+    }),
+    createSaveJobDraft: builder.mutation({
+      query: (body) => ({
+        url: `${API_VERSION}/jobs/save`,
         method: "POST",
         body,
       }),
@@ -131,7 +139,8 @@ export const {
   useGetJobsQuery,
   useGetMyJobStatusCountQuery,
   useGetJobDetailQuery,
-  useCreateJobMutation,
+  useCreatePublishJobMutation,
+  useCreateSaveJobDraftMutation,
   useUpdateJobStatusMutation,
   usePublishJobMutation,
   useUpdateExpiredDateMutation,

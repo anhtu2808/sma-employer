@@ -4,7 +4,8 @@ import Form from "@/components/Form";
 import Button from "@/components/Button";
 import Loading from "@/components/Loading";
 import {
-  useCreateJobMutation,
+  useCreatePublishJobMutation,
+  useCreateSaveJobDraftMutation,
   usePublishJobMutation,
   useSaveJobDraftMutation,
   useGetJobDetailQuery,
@@ -37,7 +38,8 @@ const JobCreate = () => {
   const { data: jobData, isLoading: isJobLoading } = useGetJobDetailQuery(targetId, { skip: !targetId });
   const clonedJob = jobData?.data;
 
-  const [createJob, { isLoading: isDrafting }] = useCreateJobMutation();
+  const [createPublishJob, { isLoading: isPublishingNew }] = useCreatePublishJobMutation();
+  const [createSaveJobDraft, { isLoading: isSavingNew }] = useCreateSaveJobDraftMutation();
   const [publishJob, { isLoading: isPublishing }] = usePublishJobMutation();
   const [saveJobDraft, { isLoading: isSaving }] = useSaveJobDraftMutation();
   const { data: criteriaRes } = useGetCriteriaQuery();
@@ -69,13 +71,14 @@ const JobCreate = () => {
   const onFinish = async (values) => {
     try {
       console.log("Submit action:", submitAction);
-      const criteriaList = criteriaRes?.data || [];
+      const criteriaData = criteriaRes?.data;
+      const criteriaList = Array.isArray(criteriaData) ? criteriaData : (Array.isArray(criteriaData?.content) ? criteriaData.content : []);
       const scoringCriterias = criteriaList.map((item) => ({
         criteriaId: item.id,
         weight:
           values[`weight_${item.id}`] !== undefined
             ? values[`weight_${item.id}`]
-            : item.defaultWeight,
+            : (item.weight || item.defaultWeight || 0),
         enable:
           values[`enable_${item.id}`] !== undefined
             ? values[`enable_${item.id}`]
@@ -124,26 +127,20 @@ const JobCreate = () => {
       delete submitData.employmentType;
 
       if (isEditMode) {
-        // Edit mode: use saveJobDraft
-        await saveJobDraft({ id, body: submitData }).unwrap();
-
         if (submitAction === "publish") {
           await publishJob({ id, body: submitData }).unwrap();
           message.success("Job updated and published successfully!");
         } else {
+          await saveJobDraft({ id, body: submitData }).unwrap();
           message.success("Job updated successfully!");
         }
       } else {
         // Create mode
-        const res = await createJob(submitData).unwrap();
-        const jobId = res?.data?.id || res?.id;
-
         if (submitAction === "publish") {
-          if (jobId) {
-            await publishJob({ id: jobId, body: submitData }).unwrap();
-          }
+          await createPublishJob(submitData).unwrap();
           message.success("Job published successfully!");
         } else {
+          await createSaveJobDraft(submitData).unwrap();
           message.success("Job draft saved successfully!");
         }
       }
@@ -189,10 +186,8 @@ const JobCreate = () => {
             <div className="space-y-4">
               <PublishCard
                 onCancel={() => navigate(isEditMode ? `/jobs/${id}` : "/jobs")}
-                isLoading={
-                  isPublishing || (submitAction === "publish" && (isDrafting || isSaving))
-                }
-                isDraftLoading={submitAction === "draft" && (isDrafting || isSaving)}
+                isLoading={submitAction === "publish" && (isEditMode ? isPublishing : isPublishingNew)}
+                isDraftLoading={submitAction === "draft" && (isEditMode ? isSaving : isSavingNew)}
                 setAction={setSubmitAction}
                 isEditMode={isEditMode}
               />
