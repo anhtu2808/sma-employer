@@ -1,18 +1,29 @@
 import Button from "@/components/Button";
 
-const formatCurrency = (amount, currency) => {
+const formatCurrency = (amount) => {
   if (amount == null || Number.isNaN(Number(amount))) return "-";
-  const resolvedCurrency = currency || "VND";
-  const locale = resolvedCurrency === "VND" ? "vi-VN" : "en-US";
-  return new Intl.NumberFormat(locale, {
+  return new Intl.NumberFormat("vi-VN", {
     style: "currency",
-    currency: resolvedCurrency,
+    currency: "VND",
     maximumFractionDigits: 2,
   }).format(Number(amount));
 };
 
-const Addons = ({ plans = [] }) => {
+const Addons = ({ plans = [], onOpenPaymentModal }) => {
   if (!plans || plans.length === 0) return null;
+
+  const handleAddonClick = (addon, priceObj) => {
+    const addonPlan = {
+      id: addon.id,
+      name: addon.name,
+      description: addon.description,
+      basePriceLabel: formatCurrency(priceObj.salePrice ?? priceObj.originalPrice ?? 0),
+      baseUnit: "",
+      priceId: priceObj.id,
+      durations: [],
+    };
+    onOpenPaymentModal(addonPlan, null);
+  };
 
   return (
     <div className="space-y-4 pt-4">
@@ -24,11 +35,10 @@ const Addons = ({ plans = [] }) => {
           const prices = Array.isArray(addon?.planPrices) ? addon.planPrices : [];
           const activePrices = prices.filter((price) => price?.isActive !== false);
           const priceObj = activePrices[0] || {};
-          
+
           const priceAmount = priceObj.salePrice ?? priceObj.originalPrice ?? 0;
-          const currency = priceObj.currency || addon.currency || "VND";
           const unit = priceObj.unit === "MONTH" ? "/ user / month" : priceObj.unit ? `/ ${priceObj.unit.toLowerCase()}` : "/ month";
-          
+
           const isAdded = Boolean(addon.isCurrent);
 
           return (
@@ -48,13 +58,14 @@ const Addons = ({ plans = [] }) => {
               </div>
               <div className="flex items-center gap-4 flex-shrink-0 w-full sm:w-auto justify-between sm:justify-end">
                 <span className="text-sm font-semibold text-gray-900">
-                  {priceAmount > 0 ? `+${formatCurrency(priceAmount, currency)}` : "Free"}{" "}
+                  {priceAmount > 0 ? `+${formatCurrency(priceAmount)}` : "Free"}{" "}
                   {priceAmount > 0 && <span className="text-gray-500 font-normal">{unit}</span>}
                 </span>
                 <Button
                   mode={isAdded ? "secondary" : "primary"}
                   shape="rounded"
                   className="!text-sm !font-semibold"
+                  onClick={() => handleAddonClick(addon, priceObj)}
                 >
                   {isAdded ? "Manage" : "Add to plan"}
                 </Button>

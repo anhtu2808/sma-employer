@@ -1,5 +1,4 @@
 import Button from "@/components/Button";
-import { useNavigate } from "react-router-dom";
 
 const getSaveBadgeStyle = (savePercent) => {
   if (savePercent >= 40) {
@@ -11,8 +10,7 @@ const getSaveBadgeStyle = (savePercent) => {
   return "bg-gray-100 text-gray-500";
 };
 
-const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSelectDuration, isSelected, onClick }) => {
-  const navigate = useNavigate();
+const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSelectDuration, isSelected, onClick, onOpenPaymentModal }) => {
   const isCurrent = plan.current;
   const hasDurations = plan.durations && plan.durations.length > 0;
   const canExpand = !isCurrent && hasDurations;
@@ -22,7 +20,7 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
     if (hasDurations) {
       onExpand();
     } else {
-      navigate('/checkout', { state: { plan } });
+      onOpenPaymentModal(plan, null);
     }
   };
 
@@ -158,11 +156,10 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
             shape="rounded"
             onClick={(e) => {
               e.stopPropagation();
-              if (!selectedDuration && plan.durations.length > 0) {
-                navigate('/checkout', { state: { plan, selectedDuration: plan.durations[0].key } });
-              } else {
-                navigate('/checkout', { state: { plan, selectedDuration } });
-              }
+              const duration = !selectedDuration && plan.durations.length > 0
+                ? plan.durations[0].key
+                : selectedDuration;
+              onOpenPaymentModal(plan, duration);
             }}
             className="w-full bg-primary hover:bg-primary-dark text-white font-bold rounded-xl transition-all shadow-md mt-auto text-sm tracking-wide"
           >

@@ -59,14 +59,13 @@ const authService = {
   logout: async () => {
     try {
       const refreshToken = localStorage.getItem("refreshToken");
-      const response = await AuthAPI.post("/auth/logout", refreshToken);
-      if (response.data?.data === true && response.data.code === 200) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-      }
-      window.location.href = "/login";
+      await AuthAPI.post("/auth/logout", refreshToken);
     } catch (error) {
-      throw error;
+      console.error("Logout API failed:", error);
+    } finally {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      window.location.href = "/login";
     }
   },
 

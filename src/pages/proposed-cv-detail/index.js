@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useGetResumeDetailQuery } from '@/apis/jobApi';
 import Loading from '@/components/Loading';
 import Overview from './Overview';
-import PdfResume from '@/pages/application/detail/pdf-resume';
+import PdfViewer from '@/pages/application/detail/pdf-viewer';
 
 const ProposedCVDetail = () => {
     const { jobId, resumeId } = useParams();
@@ -41,10 +41,10 @@ const ProposedCVDetail = () => {
             <Overview cvData={cvData} />
 
             {cvData.resumeUrl && (
-                <PdfResume 
-                    resumeUrl={cvData.resumeUrl} 
-                    resumeName={cvData.fileName || cvData.resumeName} 
-                    candidateName={cvData.resumeName} 
+                <PdfViewer
+                    resumeUrl={cvData.resumeUrl}
+                    resumeName={cvData.fileName || cvData.resumeName}
+                    candidateName={cvData.resumeName}
                 />
             )}
         </div>

@@ -42,7 +42,7 @@ const JobCreate = () => {
   const [createSaveJobDraft, { isLoading: isSavingNew }] = useCreateSaveJobDraftMutation();
   const [publishJob, { isLoading: isPublishing }] = usePublishJobMutation();
   const [saveJobDraft, { isLoading: isSaving }] = useSaveJobDraftMutation();
-  const { data: criteriaRes } = useGetCriteriaQuery();
+  const { data: criteriaList = [] } = useGetCriteriaQuery();
 
   React.useEffect(() => {
     if (clonedJob) {
@@ -110,12 +110,12 @@ const JobCreate = () => {
         questionIds: values.questionIds || [],
         locationIds: values.locationIds || [],
         highlightJob: values.highlightJob || false,
-        salaryStart: Number(values.salaryStart) || 0,
-        salaryEnd: Number(values.salaryEnd) || 0,
-        experienceTime: Number(values.experienceTime) || 0,
-        quantity: Number(values.quantity) || 1,
-        autoRejectThreshold: Number(values.autoRejectThreshold) || 0,
-        expertiseId: values.expertiseId || 0,
+        salaryStart: values.salaryStart != null && values.salaryStart !== '' ? Number(values.salaryStart) : null,
+        salaryEnd: values.salaryEnd != null && values.salaryEnd !== '' ? Number(values.salaryEnd) : null,
+        experienceTime: values.experienceTime != null ? Number(values.experienceTime) : null,
+        quantity: values.quantity != null ? Number(values.quantity) : null,
+        autoRejectThreshold: values.autoRejectThreshold != null ? Number(values.autoRejectThreshold) : null,
+        expertiseId: values.expertiseId || null,
         rootId: clonedJob ? clonedJob.id : null,
       };
 
@@ -134,21 +134,29 @@ const JobCreate = () => {
           await saveJobDraft({ id, body: submitData }).unwrap();
           message.success("Job updated successfully!");
         }
+        navigate(`/jobs/${id}`);
       } else {
         // Create mode
         if (submitAction === "publish") {
-          await createPublishJob(submitData).unwrap();
+          const res = await createPublishJob(submitData).unwrap();
+          const jobId = res?.data?.id || res?.id;
           message.success("Job published successfully!");
+          navigate(jobId ? `/jobs/${jobId}` : "/jobs");
         } else {
-          await createSaveJobDraft(submitData).unwrap();
+          const res = await createSaveJobDraft(submitData).unwrap();
+          const jobId = res?.data?.id || res?.id;
           message.success("Job draft saved successfully!");
+          navigate(jobId ? `/jobs/${jobId}` : "/jobs");
         }
       }
-
-      navigate("/jobs");
     } catch (error) {
       console.error("Failed to save job:", error);
-      message.error("Failed to save job. Please try again.");
+      const validationErrors = error?.data?.data;
+      if (validationErrors && typeof validationErrors === "object") {
+        Object.values(validationErrors).forEach((msg) => message.error(msg));
+      } else {
+        message.error(error?.data?.message || "Failed to save job. Please try again.");
+      }
     }
   };
 

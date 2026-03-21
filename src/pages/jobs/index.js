@@ -118,9 +118,9 @@ const JobsList = ({ archivedOnly = false }) => {
         return date.toLocaleDateString();
     };
 
-    const formatSalary = (min, max, currency = 'VND') => {
+    const formatSalary = (min, max) => {
         if (!min && !max) return 'Negotiable';
-        const format = (num) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency }).format(num);
+        const format = (num) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(num);
         if (min && !max) return `From ${format(min)}`;
         if (!min && max) return `Up to ${format(max)}`;
         return `${format(min)} - ${format(max)}`;
@@ -237,7 +237,7 @@ const JobsList = ({ archivedOnly = false }) => {
                                 status={job.status || 'Active'}
                                 postedTime={formatDate(job.uploadTime || job.createdAt)}
                                 location={job.company?.country || job?.locations?.map((l) => l.city).join(', ') || job.workingModel}
-                                salary={formatSalary(job.salaryStart, job.salaryEnd, job.currency)}
+                                salary={formatSalary(job.salaryStart, job.salaryEnd)}
                                 expiry={job.expDate ? `Ends on ${new Date(job.expDate).toLocaleDateString()}` : ''}
                                 tags={[
                                     job.jobLevel,

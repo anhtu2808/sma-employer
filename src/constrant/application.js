@@ -27,3 +27,17 @@ export const getApplicationStatusConfig = (statusEnum) => {
         textColor: 'text-gray-500'
     };
 };
+
+const ALLOWED_TRANSITIONS = {
+    VIEWED: ['SHORTLISTED', 'REJECTED', 'APPROVED'],
+    SHORTLISTED: ['REJECTED', 'APPROVED'],
+    REJECTED: [],
+    APPROVED: [],
+};
+
+export const getAllowedNextStatuses = (currentStatus, isRejectedByAi = false) => {
+    if (currentStatus === 'REJECTED' && isRejectedByAi) {
+        return ['SHORTLISTED', 'APPROVED'];
+    }
+    return ALLOWED_TRANSITIONS[currentStatus] || [];
+};
