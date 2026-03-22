@@ -92,6 +92,38 @@ export const jobApi = api.injectEndpoints({
         params: { name, page, size },
       }),
       transformResponse: (response) => response?.data?.content ?? [],
+      providesTags: ["Criteria"],
+    }),
+    getCriteriaPaginated: builder.query({
+      query: ({ name, page = 0, size = 10 } = {}) => ({
+        url: `${API_VERSION}/criteria`,
+        method: "GET",
+        params: { name, page, size },
+      }),
+      providesTags: ["Criteria"],
+    }),
+    createCriteria: builder.mutation({
+      query: (body) => ({
+        url: `${API_VERSION}/criteria`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Criteria"],
+    }),
+    updateCriteria: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `${API_VERSION}/criteria/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Criteria"],
+    }),
+    deleteCriteria: builder.mutation({
+      query: (id) => ({
+        url: `${API_VERSION}/criteria/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Criteria"],
     }),
     getProposedCvs: builder.query({
       query: ({ id, page, size }) => ({
@@ -160,6 +192,10 @@ export const {
   useSaveJobDraftMutation,
   useDeleteJobMutation,
   useGetCriteriaQuery,
+  useGetCriteriaPaginatedQuery,
+  useCreateCriteriaMutation,
+  useUpdateCriteriaMutation,
+  useDeleteCriteriaMutation,
   useGetProposedCvsQuery,
   useGetResumeDetailQuery,
   useInviteCandidateMutation,

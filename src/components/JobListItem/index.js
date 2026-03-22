@@ -29,9 +29,20 @@ const JobListItem = ({
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white hover:text-primary cursor-pointer transition-colors" onClick={onViewDetails}>
                         {title}
                     </h3>
+                    {statusConfig && (
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${statusConfig.badgeColor || statusConfig.color}`}>
+                            {statusConfig.label}
+                        </span>
+                    )}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
+                    {postedTime && (
+                        <div className="flex items-center gap-1">
+                            <span className="material-icons-round text-base">schedule</span>
+                            <span>Posted {postedTime}</span>
+                        </div>
+                    )}
                     {location && (
                         <div className="flex items-center gap-1">
                             <span className="material-icons-round text-base">place</span>
@@ -66,16 +77,15 @@ const JobListItem = ({
                 )}
 
                 <div className="flex items-center gap-6 pt-1">
-                    {stats.applicants !== undefined && (
+                    {stats.applicants != null && (
                         <div className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">
                             <span className="material-icons-round text-green-600 text-lg">people_alt</span>
                             <span>{stats.applicants} applicants</span>
-                        </div>
-                    )}
-                    {stats.views !== undefined && (
-                        <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-                            <span className="material-icons-round text-lg">visibility</span>
-                            <span>{stats.views} views</span>
+                            {stats.newApplicants > 0 && (
+                                <span className="ml-1 px-1.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                                    {stats.newApplicants} new
+                                </span>
+                            )}
                         </div>
                     )}
                 </div>
@@ -148,8 +158,7 @@ JobListItem.propTypes = {
     tags: PropTypes.arrayOf(PropTypes.string),
     stats: PropTypes.shape({
         applicants: PropTypes.number,
-        views: PropTypes.number,
-        ctr: PropTypes.number
+        newApplicants: PropTypes.number,
     }),
     onViewDetails: PropTypes.func,
     onArchive: PropTypes.func,

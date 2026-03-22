@@ -1,10 +1,12 @@
 export const JOB_STATUS = {
-    DRAFT: { label: 'Draft', color: 'text-neutral-400' },
-    PENDING_REVIEW: { label: 'Pending Review', color: 'text-neutral-400' },
-    REJECTED: { label: 'Rejected', color: 'text-red-500' },
-    PUBLISHED: { label: 'Published', color: 'text-green-500' },
-    CLOSED: { label: 'Closed', color: 'text-neutral-500' },
-    COMPLETED: { label: 'Completed', color: 'text-blue-500' }
+    DRAFT: { label: 'Draft', color: 'text-neutral-400', badgeColor: 'bg-gray-100 text-gray-500' },
+    PENDING_REVIEW: { label: 'Pending Review', color: 'text-neutral-400', badgeColor: 'bg-yellow-50 text-yellow-600' },
+    REJECTED: { label: 'Rejected', color: 'text-red-500', badgeColor: 'bg-red-50 text-red-600' },
+    PUBLISHED: { label: 'Published', color: 'text-green-500', badgeColor: 'bg-green-50 text-green-600' },
+    CLOSED: { label: 'Closed', color: 'text-neutral-500', badgeColor: 'bg-gray-100 text-gray-600' },
+    COMPLETED: { label: 'Completed', color: 'text-blue-500', badgeColor: 'bg-blue-50 text-blue-600' },
+    SUSPENDED: { label: 'Suspended', color: 'text-orange-500', badgeColor: 'bg-orange-50 text-orange-600' },
+    ARCHIVED: { label: 'Archived', color: 'text-neutral-400', badgeColor: 'bg-gray-100 text-gray-500' },
 };
 
 export const getJobStatusConfig = (statusEnum) => {

@@ -23,7 +23,7 @@ const routeTitleMap = {
   '/help': 'Help Center',
   '/blacklist': 'Blacklist',
   '/invitations': 'Invitations',
-
+  '/scoring-criteria': 'Scoring Criteria',
 };
 
 const routeSubtitleMap = {
@@ -43,7 +43,7 @@ const routeSubtitleMap = {
   '/help': 'Find answers and get support',
   '/blacklist': 'Manage your candidate blacklist',
   '/invitations': 'Manage candidate invitations',
-
+  '/scoring-criteria': 'Manage your AI evaluation criteria and scoring rules',
 };
 
 const Layout = () => {

@@ -24,6 +24,7 @@ import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
 import InvitationList from "@/pages/invitations";
 import InvitationDetail from "@/pages/invitations/detail";
+import ScoringCriteria from "@/pages/scoring-criteria";
 
 
 
@@ -52,6 +53,7 @@ export const routes = createBrowserRouter(
                 <Route path="blacklist" element={<CompanyBlacklist />} />
                 <Route path="invitations" element={<InvitationList />} />
                 <Route path="invitations/:id" element={<InvitationDetail />} />
+                <Route path="scoring-criteria" element={<ScoringCriteria />} />
             </Route>
             <Route path="checkout" element={<Checkout />} />
             <Route path="/" element={<Home />} />

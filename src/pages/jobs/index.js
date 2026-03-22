@@ -46,11 +46,11 @@ const JobsList = ({ archivedOnly = false }) => {
     }, [searchTerm]);
 
     const [page, setPage] = useState(0);
-    const [pageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(5);
 
     useEffect(() => {
         setPage(0);
-    }, [debouncedSearchTerm, status, appliedFilters]);
+    }, [debouncedSearchTerm, status, appliedFilters, pageSize]);
 
     const queryParams = useMemo(
         () => ({
@@ -245,8 +245,8 @@ const JobsList = ({ archivedOnly = false }) => {
                                     ...(Array.isArray(job.skills) ? [...job.skills].sort((a, b) => a.name.localeCompare(b.name)).map((s) => s.name) : []),
                                 ].filter(Boolean)}
                                 stats={{
-                                    applicants: job.applicantsCount,
-                                    views: job.viewsCount,
+                                    applicants: job.totalApplications,
+                                    newApplicants: job.newApplications,
                                 }}
                                 onViewDetails={() => navigate(`/jobs/${job.id}`)}
                                 onArchive={job.status === 'CLOSED' ? () => {
@@ -302,11 +302,22 @@ const JobsList = ({ archivedOnly = false }) => {
                         ))}
                     </div>
 
-                    <Pagination
-                        currentPage={page}
-                        totalPages={totalPages}
-                        onPageChange={setPage}
-                    />
+                    <div className="flex items-center justify-between">
+                        <Pagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            onPageChange={setPage}
+                        />
+                        <select
+                            value={pageSize}
+                            onChange={(e) => setPageSize(Number(e.target.value))}
+                            className="h-10 px-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-300"
+                        >
+                            {[5, 10, 20, 50].map((size) => (
+                                <option key={size} value={size}>{size} / page</option>
+                            ))}
+                        </select>
+                    </div>
                 </>
             )}
 
