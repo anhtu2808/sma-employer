@@ -302,22 +302,13 @@ const JobsList = ({ archivedOnly = false }) => {
                         ))}
                     </div>
 
-                    <div className="flex items-center justify-between">
-                        <Pagination
-                            currentPage={page}
-                            totalPages={totalPages}
-                            onPageChange={setPage}
-                        />
-                        <select
-                            value={pageSize}
-                            onChange={(e) => setPageSize(Number(e.target.value))}
-                            className="h-10 px-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-300"
-                        >
-                            {[5, 10, 20, 50].map((size) => (
-                                <option key={size} value={size}>{size} / page</option>
-                            ))}
-                        </select>
-                    </div>
+                    <Pagination
+                        currentPage={page}
+                        totalPages={totalPages}
+                        onPageChange={setPage}
+                        pageSize={pageSize}
+                        onPageSizeChange={setPageSize}
+                    />
                 </>
             )}
 

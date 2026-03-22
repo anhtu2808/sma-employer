@@ -15,6 +15,7 @@ const ScoringCriteria = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCriteria, setEditingCriteria] = useState(null);
   const [form] = Form.useForm();
@@ -28,12 +29,12 @@ const ScoringCriteria = () => {
 
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchTerm, pageSize]);
 
   const queryParams = {
     ...(debouncedSearchTerm && { name: debouncedSearchTerm }),
     page,
-    size: 10,
+    size: pageSize,
   };
 
   const { data: criteriaData, isLoading, isFetching } = useGetCriteriaPaginatedQuery(queryParams);
@@ -212,6 +213,8 @@ const ScoringCriteria = () => {
             currentPage={page}
             totalPages={totalPages}
             onPageChange={setPage}
+            pageSize={pageSize}
+            onPageSizeChange={setPageSize}
           />
         </>
       )}
