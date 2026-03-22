@@ -2,14 +2,14 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { Select, Input, Form } from 'antd';
 import { useGetSkillsQuery } from '@/apis/skillApi';
 import { debounce } from 'lodash';
-import { useGetExpertiseQuery, useGetDomainQuery, useGetBenefitQuery } from '@/apis/masterDataApi';
+import { useGetExpertiseQuery, useGetDomainQuery } from '@/apis/masterDataApi';
+import BenefitsManager from './BenefitsManager';
 
 const Classification = () => {
     const [skillSearch, setSkillSearch] = useState('');
     const { data: skills = [], isLoading: skillsLoading, isFetching: skillsFetching } = useGetSkillsQuery({ name: skillSearch || undefined });
     const { data: expertise = [], isLoading: expertiseLoading } = useGetExpertiseQuery();
     const { data: domain = [], isLoading: domainLoading } = useGetDomainQuery();
-    const { data: benefit = [], isLoading: benefitLoading } = useGetBenefitQuery();
 
     const skillOptions = skills.map((skill) => ({
         value: skill.id,
@@ -24,11 +24,6 @@ const Classification = () => {
     const domainOptions = domain.map((domain) => ({
         value: domain.id,
         label: domain.name,
-    }));
-
-    const benefitOptions = benefit.map((benefit) => ({
-        value: benefit.id,
-        label: benefit.name,
     }));
 
     const handleSkillSearch = useMemo(
@@ -56,9 +51,7 @@ const Classification = () => {
                 <Select mode="multiple" placeholder="Select skills..." className="w-full" showSearch filterOption={false} onSearch={handleSkillSearch} loading={skillsLoading || skillsFetching} options={skillOptions} />
             </Form.Item>
 
-            <Form.Item name="benefitIds" label="Benefits" className="mb-0">
-                <Select mode="multiple" placeholder="Select benefits..." className="w-full" options={benefitOptions} />
-            </Form.Item>
+            <BenefitsManager />
         </div>
     );
 };

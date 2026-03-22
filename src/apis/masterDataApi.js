@@ -34,10 +34,43 @@ export const masterDataApi = api.injectEndpoints({
           size,
         },
       }),
-      transformResponse: (response) => response?.data?.content ?? [],
+      transformResponse: (response) => {
+        if (Array.isArray(response?.data)) return response.data;
+        return response?.data?.content ?? [];
+      },
+      providesTags: ["Benefit"],
+    }),
+    createBenefit: builder.mutation({
+      query: (data) => ({
+        url: `${API_VERSION}/benefits`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Benefit"],
+    }),
+    updateBenefit: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `${API_VERSION}/benefits/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Benefit"],
+    }),
+    deleteBenefit: builder.mutation({
+      query: (id) => ({
+        url: `${API_VERSION}/benefits/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Benefit"],
     }),
   }),
 });
 
-export const { useGetExpertiseQuery, useGetDomainQuery, useGetBenefitQuery } =
-  masterDataApi;
+export const { 
+  useGetExpertiseQuery, 
+  useGetDomainQuery, 
+  useGetBenefitQuery,
+  useCreateBenefitMutation,
+  useUpdateBenefitMutation,
+  useDeleteBenefitMutation
+} = masterDataApi;
