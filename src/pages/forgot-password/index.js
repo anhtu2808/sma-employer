@@ -13,7 +13,7 @@ const ForgotPassword = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         try {
             await forgotPassword({ email }).unwrap();
             message.success("Password reset link sent to your email");
@@ -72,7 +72,7 @@ const ForgotPassword = () => {
                             className="mt-6 font-bold"
                             iconRight={<span className="material-icons-round ml-1" style={{ fontSize: '20px' }}>arrow_forward</span>}
                         >
-                            Send Reset Link
+                            Send OTP
                         </Button>
                     </form>
                 </div>
