@@ -10,10 +10,9 @@ import { useGetMyRecruiterInfoQuery } from '@/apis/recruiterApi';
 
 const generalItems = [
   { icon: 'business', label: 'Company', path: '/company' },
+  { icon: 'checklist', label: 'Scoring Criteria', path: '/scoring-criteria' },
   { icon: 'archive', label: 'Archived Jobs', path: '/jobs/archived' },
   { icon: 'settings', label: 'Settings', path: '/settings' },
-  { icon: 'help_outline', label: 'Help Center', path: '/help' },
-  { icon: 'insights', label: 'Reports', path: '/reports' },
 ];
 
 const billingMenuItems = [

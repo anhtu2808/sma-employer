@@ -46,11 +46,11 @@ const JobsList = ({ archivedOnly = false }) => {
     }, [searchTerm]);
 
     const [page, setPage] = useState(0);
-    const [pageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(5);
 
     useEffect(() => {
         setPage(0);
-    }, [debouncedSearchTerm, status, appliedFilters]);
+    }, [debouncedSearchTerm, status, appliedFilters, pageSize]);
 
     const queryParams = useMemo(
         () => ({
@@ -245,8 +245,8 @@ const JobsList = ({ archivedOnly = false }) => {
                                     ...(Array.isArray(job.skills) ? [...job.skills].sort((a, b) => a.name.localeCompare(b.name)).map((s) => s.name) : []),
                                 ].filter(Boolean)}
                                 stats={{
-                                    applicants: job.applicantsCount,
-                                    views: job.viewsCount,
+                                    applicants: job.totalApplications,
+                                    newApplicants: job.newApplications,
                                 }}
                                 onViewDetails={() => navigate(`/jobs/${job.id}`)}
                                 onArchive={job.status === 'CLOSED' ? () => {
@@ -306,6 +306,8 @@ const JobsList = ({ archivedOnly = false }) => {
                         currentPage={page}
                         totalPages={totalPages}
                         onPageChange={setPage}
+                        pageSize={pageSize}
+                        onPageSizeChange={setPageSize}
                     />
                 </>
             )}
