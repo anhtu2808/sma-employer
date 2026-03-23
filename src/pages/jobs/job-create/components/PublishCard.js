@@ -20,23 +20,23 @@ const PublishCard = ({ onCancel, isLoading, isDraftLoading, setAction, isEditMod
       </div>
 
       <div className="pt-2 pb-2 border-t border-b border-gray-100 dark:border-gray-700/50">
-        <Form.Item
-          name="highlightJob"
-          valuePropName="checked"
-          className="mb-0"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-semibold text-gray-900 dark:text-gray-100 cursor-pointer">
-                Highlight Job
-              </label>
-              <Tooltip title="Highlighting a job increases its visibility to candidates by displaying it at the top of search results with a special badge.">
-                <Info size={14} className="text-gray-400 cursor-help" />
-              </Tooltip>
-            </div>
-            <Switch />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-semibold text-gray-900 dark:text-gray-100 cursor-pointer">
+              Highlight Job
+            </label>
+            <Tooltip title="Highlighting a job increases its visibility to candidates by displaying it at the top of search results with a special badge.">
+              <Info size={14} className="text-gray-400 cursor-help" />
+            </Tooltip>
           </div>
-        </Form.Item>
+          <Form.Item
+            name="highlightJob"
+            valuePropName="checked"
+            className="mb-0"
+          >
+            <Switch />
+          </Form.Item>
+        </div>
       </div>
 
       <div className="flex flex-col gap-3 pt-2">

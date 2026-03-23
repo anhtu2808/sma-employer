@@ -40,12 +40,22 @@ const JobDescription = ({ job }) => {
             {/* Benefits */}
             {job.benefits && job.benefits.length > 0 && (
                 <section>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Benefits & Perks</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Benefits</h3>
                     <ul className="space-y-3">
                         {job.benefits.map((benefit) => (
                             <li key={benefit.id} className="flex gap-3 text-gray-600 dark:text-gray-300 items-start">
                                 <span className="material-icons-round text-orange-500 text-lg leading-7 shrink-0">check_circle</span>
-                                <span className="text-gray-600 dark:text-gray-300 leading-relaxed text-base whitespace-pre-wrap">{benefit.name}{benefit.description ? ` - ${benefit.description}` : ''}</span>
+                                <div>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        {benefit.type && (
+                                            <span className="text-[10px] font-semibold text-blue-500 bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded">
+                                                {benefit.type.replace('_', ' ')}
+                                            </span>
+                                        )}
+                                        <span className="text-gray-800 dark:text-gray-200 font-medium text-base">{benefit.name}</span>
+                                    </div>
+                                    {benefit.description && <p className="text-sm text-gray-500 dark:text-gray-400">{benefit.description}</p>}
+                                </div>
                             </li>
                         ))}
                     </ul>
@@ -55,7 +65,7 @@ const JobDescription = ({ job }) => {
             {/* Screening Questions */}
             {job.questions && job.questions.length > 0 && (
                 <section>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Screening Questions</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Questions</h3>
                     <ul className="space-y-3">
                         {job.questions.map((q) => (
                             <li key={q.id} className="flex gap-3 text-gray-600 dark:text-gray-300 items-start">
