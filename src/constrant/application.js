@@ -31,6 +31,7 @@ export const getApplicationStatusConfig = (statusEnum) => {
 };
 
 const ALLOWED_TRANSITIONS = {
+    APPLIED: ['VIEWED', 'SHORTLISTED', 'REJECTED', 'APPROVED'],
     VIEWED: ['SHORTLISTED', 'REJECTED', 'APPROVED'],
     SHORTLISTED: ['REJECTED', 'APPROVED'],
     REJECTED: [],

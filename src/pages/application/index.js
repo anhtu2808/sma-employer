@@ -13,6 +13,7 @@ import Loading from '@/components/Loading';
 import ApplicationHeader from './header';
 import { exportCandidates } from './export';
 import { Checkbox } from 'antd';
+import { useSearchParams } from 'react-router-dom';
 
 const STATUS_COLUMNS = [
     { id: 'APPLIED', title: 'Applied', color: '#01afffff' },
@@ -24,13 +25,34 @@ const STATUS_COLUMNS = [
 
 
 const ApplicationManagement = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
     const { data: jobsResponse, isLoading: isJobsLoading } = useGetJobsQuery({ page: 0, size: 100 });
     const [selectedJob, setSelectedJob] = useState(null);
     const [updateStatus] = useUpdateApplicationStatusMutation();
     const [searchTerm, setSearchTerm] = useState('');
     const [filter, setFilter] = useState({ page: 0, size: 50 });
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const [viewMode, setViewMode] = useState('kanban');
+    const viewMode = searchParams.get('tab') === 'list' ? 'list' : 'kanban';
+    const statusFilter = searchParams.get('status') || '';
+    const setViewMode = (mode) => {
+        setSearchParams(prev => {
+            const next = new URLSearchParams(prev);
+            next.set('tab', mode);
+            return next;
+        });
+    };
+    const handleStatusFilterChange = (key) => {
+        setSearchParams(prev => {
+            const next = new URLSearchParams(prev);
+            if (key) {
+                next.set('status', key);
+            } else {
+                next.delete('status');
+            }
+            return next;
+        });
+        setPage(0);
+    };
     const [page, setPage] = useState(0);
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
     const [rejectData, setRejectData] = useState({ id: null, status: null });
@@ -73,6 +95,14 @@ const ApplicationManagement = () => {
     useEffect(() => {
         setFilter(prev => ({ ...prev, page: page }));
     }, [page]);
+
+    useEffect(() => {
+        setFilter(prev => ({
+            ...prev,
+            status: statusFilter || undefined,
+            page: 0,
+        }));
+    }, [statusFilter]);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
@@ -175,6 +205,8 @@ const ApplicationManagement = () => {
                 setIsFilterOpen={setIsFilterOpen}
                 isExporting={isExporting}
                 onExport={handleExportExcel}
+                statusFilter={statusFilter}
+                onStatusFilterChange={handleStatusFilterChange}
                 onArchiveJob={(job) => {
                     AntModal.confirm({
                         title: 'Archive Job',
@@ -183,8 +215,22 @@ const ApplicationManagement = () => {
                         cancelText: 'Cancel',
                         onOk: async () => {
                             try {
+                                // Find the previous job before archiving
+                                const availableJobs = jobs.filter(j =>
+                                    (j.status === 'CLOSED' || j.status === 'PUBLISHED') && j.id !== job.id
+                                );
+                                const currentIndex = jobs
+                                    .filter(j => j.status === 'CLOSED' || j.status === 'PUBLISHED')
+                                    .findIndex(j => j.id === job.id);
+                                const previousJob = availableJobs[Math.max(0, currentIndex - 1)] || availableJobs[0] || null;
+
                                 await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
                                 message.success('Job archived successfully');
+
+                                // Auto-select previous job if the archived job was selected
+                                if (selectedJob?.id === job.id) {
+                                    handleSetSelectedJob(previousJob);
+                                }
                             } catch {
                                 message.error('Failed to archive job');
                             }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Input, Form, DatePicker, InputNumber } from 'antd';
+import dayjs from 'dayjs';
 
 const JobIdentity = () => {
     return (
@@ -25,8 +26,23 @@ const JobIdentity = () => {
                         name="expDate"
                         label={<span className="text-gray-500 uppercase text-xs font-bold tracking-wider">Application Deadline</span>}
                         className="mb-0"
+                        rules={[
+                            {
+                                validator: (_, value) => {
+                                    if (value && value.isBefore(dayjs(), 'day')) {
+                                        return Promise.reject(new Error('Deadline must be in the future'));
+                                    }
+                                    return Promise.resolve();
+                                },
+                            },
+                        ]}
                     >
-                        <DatePicker className="w-full rounded-lg py-2" format="MM/DD/YYYY" placeholder="mm/dd/yyyy" />
+                        <DatePicker
+                            className="w-full rounded-lg py-2"
+                            format="MM/DD/YYYY"
+                            placeholder="mm/dd/yyyy"
+                            disabledDate={(current) => current && current < dayjs().startOf('day')}
+                        />
                     </Form.Item>
 
                     <Form.Item

@@ -72,6 +72,7 @@ const Overview = ({ app, onSwitchToAiTab, onStatusChange, isUpdating, isRejected
                                 className="w-44 h-9"
                                 options={statusOptions}
                                 size="middle"
+                                value={app.status || null}
                             />
                         </ConfigProvider>
                     </div>

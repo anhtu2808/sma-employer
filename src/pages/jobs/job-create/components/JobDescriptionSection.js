@@ -17,7 +17,7 @@ const JobDescriptionSection = () => {
                 </Form.Item>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
                 <Form.Item name="responsibilities" label={<span className="text-base font-semibold">Responsibilities</span>} className="mb-0">
                     <SimpleTextEditor placeholder="List key duties..." showCount maxLength={5000} />
                 </Form.Item>

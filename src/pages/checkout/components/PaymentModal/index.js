@@ -149,24 +149,21 @@ const PaymentModal = ({ isOpen, onClose, plan, selectedDuration }) => {
                 </div>
 
                 {/* Main Content - 2 Columns */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 lg:p-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4 lg:p-6">
                     {/* Left Column - Plan Details */}
                     <div className="flex flex-col">
-                        <h2 className="text-[#3b4356] text-xl font-extrabold mb-6 tracking-tight">Order Summary</h2>
+                        <h2 className="text-[#3b4356] text-xl font-extrabold mb-4 tracking-tight">Order Summary</h2>
 
-                        {/* Plan Name - Green */}
                         <h3 className="text-primary font-bold text-xl mb-2">{planName}</h3>
 
-                        {/* Price */}
                         <div className="mb-2">
                             <span className="text-3xl font-extrabold text-[#111e3b]">{totalPrice}</span>
                         </div>
                         {durationLabel && (
-                            <p className="text-[#8492a6] text-sm mb-6">Duration: {durationLabel}</p>
+                            <p className="text-[#8492a6] text-sm mb-4">Duration: {durationLabel}</p>
                         )}
 
-                        {/* Terms */}
-                        <div className="mt-auto pt-6 space-y-3">
+                        <div className="pt-4 space-y-3">
                             <div className="flex items-center gap-2">
                                 <span className="material-icons-round text-primary text-sm">check_circle</span>
                                 <span className="text-primary font-medium text-sm">Cancel anytime</span>
@@ -176,17 +173,37 @@ const PaymentModal = ({ isOpen, onClose, plan, selectedDuration }) => {
                                 <span className="text-[#8492a6] text-sm">7-day money-back guarantee</span>
                             </div>
                         </div>
+
+                        {/* Payment Instructions */}
+                        <div className="w-full text-left bg-[#fff8f5] border border-[#ffeedd] rounded-2xl p-4 mt-4">
+                            <div className="flex items-center gap-2 mb-3">
+                                <span className="text-[#3b4356] font-bold text-sm">Payment Instructions</span>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="flex gap-3 items-start">
+                                    <div className="w-5 h-5 shrink-0 rounded-full bg-[#faebe6] text-[#fc9c82] flex items-center justify-center font-bold text-[11px] mt-0.5">1</div>
+                                    <p className="text-[#8492a6] text-xs">Open your banking app</p>
+                                </div>
+                                <div className="flex gap-3 items-start">
+                                    <div className="w-5 h-5 shrink-0 rounded-full bg-[#faebe6] text-[#fc9c82] flex items-center justify-center font-bold text-[11px] mt-0.5">2</div>
+                                    <p className="text-[#8492a6] text-xs">Scan the QR code</p>
+                                </div>
+                                <div className="flex gap-3 items-start">
+                                    <div className="w-5 h-5 shrink-0 rounded-full bg-[#faebe6] text-[#fc9c82] flex items-center justify-center font-bold text-[11px] mt-0.5">3</div>
+                                    <p className="text-[#8492a6] text-xs">Confirm the payment</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Right Column - QR Payment */}
                     <div className="flex flex-col items-center justify-center text-center">
                         <h2 className="text-[#111e3b] text-xl font-extrabold mb-2 tracking-tight">Scan to Pay</h2>
-                        <p className="text-[#8492a6] text-sm mb-6">
+                        <p className="text-[#8492a6] text-sm mb-4">
                             Open your banking or e-wallet app
                         </p>
 
-                        {/* QR Code Container */}
-                        <div className="bg-white p-3 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-50 mb-6 w-full max-w-[280px] aspect-square flex items-center justify-center">
+                        <div className="bg-white p-3 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-50 mb-4 w-full max-w-[280px] aspect-square flex items-center justify-center">
                             <div className="bg-[#fc9c82] w-full h-full rounded-2xl flex items-center justify-center p-6">
                                 {isApiLoading ? (
                                     <div className="text-white flex flex-col items-center justify-center gap-2">
@@ -208,44 +225,21 @@ const PaymentModal = ({ isOpen, onClose, plan, selectedDuration }) => {
                             </div>
                         </div>
 
-                        {/* Scan to Pay Target */}
-                        <div className="flex items-center gap-2 text-[#fc9c82] font-semibold bg-[#fff1ed] px-4 py-2 rounded-lg mb-6">
+                        <div className="flex items-center gap-2 text-[#fc9c82] font-semibold bg-[#fff1ed] px-4 py-2 rounded-lg mb-4">
                             <span className="material-icons-round text-xl">qr_code_scanner</span>
                             <span>Scan to pay {totalPrice}</span>
                         </div>
 
-                        {/* Cancel Button */}
                         <Button
                             onClick={handleBack}
                             mode="outline"
                             shape="round"
                             size="lg"
-                            className="text-[#8492a6] hover:text-[#3b4356] text-sm font-semibold flex items-center gap-1.5 mb-6"
+                            className="text-[#8492a6] hover:text-[#3b4356] text-sm font-semibold flex items-center gap-1.5"
                         >
                             <span className="material-icons-round text-[16px]">arrow_back</span>
                             Cancel & Go back
                         </Button>
-
-                        {/* Payment Instructions */}
-                        <div className="w-full text-left bg-[#fff8f5] border border-[#ffeedd] rounded-2xl p-4">
-                            <div className="flex items-center gap-2 mb-3">
-                                <span className="text-[#3b4356] font-bold text-sm">Payment Instructions</span>
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex gap-3 items-start">
-                                    <div className="w-5 h-5 shrink-0 rounded-full bg-[#faebe6] text-[#fc9c82] flex items-center justify-center font-bold text-[11px] mt-0.5">1</div>
-                                    <p className="text-[#8492a6] text-xs">Open your banking app</p>
-                                </div>
-                                <div className="flex gap-3 items-start">
-                                    <div className="w-5 h-5 shrink-0 rounded-full bg-[#faebe6] text-[#fc9c82] flex items-center justify-center font-bold text-[11px] mt-0.5">2</div>
-                                    <p className="text-[#8492a6] text-xs">Scan the QR code</p>
-                                </div>
-                                <div className="flex gap-3 items-start">
-                                    <div className="w-5 h-5 shrink-0 rounded-full bg-[#faebe6] text-[#fc9c82] flex items-center justify-center font-bold text-[11px] mt-0.5">3</div>
-                                    <p className="text-[#8492a6] text-xs">Confirm the payment</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

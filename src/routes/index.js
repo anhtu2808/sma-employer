@@ -19,7 +19,7 @@ import ApplicationDetail from "@/pages/application/detail";
 import Usage from "@/pages/usage";
 import NotificationList from "../pages/notification";
 import CompanyBlacklist from "@/pages/blacklist";
-import NotificationSettings from "@/pages/setting";
+import Settings from "@/pages/setting";
 import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
 import InvitationList from "@/pages/invitations";
@@ -45,7 +45,7 @@ export const routes = createBrowserRouter(
                 <Route path="applications" element={<ApplicationManagement />} />
                 <Route path="applications/:id" element={<ApplicationDetail />} />
                 <Route path="reports" element={<Dashboard />} />
-                <Route path="settings" element={<NotificationSettings />} />
+                <Route path="settings" element={<Settings />} />
                 <Route path="help" element={<Dashboard />} />
                 <Route path="billing-plans" element={<BillingPlans />} />
                 <Route path="usage" element={<Usage />} />

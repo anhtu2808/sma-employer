@@ -40,6 +40,23 @@ export const recruiterApi = api.injectEndpoints({
             }),
             invalidatesTags: ['Users'],
         }),
+        updateMyProfile: builder.mutation({
+            query: (data) => ({
+                url: `${API_VERSION}/recruiter/me`,
+                method: 'PUT',
+                body: data,
+            }),
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                try {
+                    const { data: result } = await queryFulfilled;
+                    dispatch(
+                        recruiterApi.util.updateQueryData('getMyRecruiterInfo', undefined, (draft) => {
+                            Object.assign(draft, result);
+                        })
+                    );
+                } catch {}
+            },
+        }),
         getFeatureUsage: builder.query({
             query: () => ({
                 url: `${API_VERSION}/feature-usage`,
@@ -53,6 +70,7 @@ export const recruiterApi = api.injectEndpoints({
 export const {
     useGetRecruiterMembersQuery,
     useGetMyRecruiterInfoQuery,
+    useUpdateMyProfileMutation,
     useCreateRecruiterMemberMutation,
     useUpdateRecruiterMemberMutation,
     useUpdateRecruiterMemberStatusMutation,

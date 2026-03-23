@@ -53,8 +53,8 @@ const RecentApplications = ({ isLoading, applications }) => {
                 <tr key={app.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer" onClick={() => navigate('/applications')}>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
-                        {(app.candidateName || app.candidate?.fullName || 'U').charAt(0).toUpperCase()}
+                      <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="material-icons-round text-lg text-gray-400">person</span>
                       </div>
                       <span className="font-medium text-gray-900 dark:text-white truncate max-w-[160px]">
                         {app.candidateName || app.candidate?.fullName || 'Unknown'}

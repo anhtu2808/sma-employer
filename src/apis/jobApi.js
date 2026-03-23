@@ -95,10 +95,10 @@ export const jobApi = api.injectEndpoints({
       providesTags: ["Criteria"],
     }),
     getCriteriaPaginated: builder.query({
-      query: ({ name, page = 0, size = 10 } = {}) => ({
+      query: ({ name, active, page = 0, size = 10 } = {}) => ({
         url: `${API_VERSION}/criteria`,
         method: "GET",
-        params: { name, page, size },
+        params: { name, active, page, size },
       }),
       providesTags: ["Criteria"],
     }),

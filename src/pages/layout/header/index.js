@@ -1,10 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Dropdown } from 'antd';
 import { PageHeaderContext } from '@/contexts/PageHeaderContext';
 import { useGetNotificationsQuery } from '@/apis/notificationApi';
 import { useGetMyRecruiterInfoQuery } from '@/apis/recruiterApi';
 import { useSelector, useDispatch } from 'react-redux';
 import { hidePreview } from '../../notification/components/notification-slice';
+import authService from '@/services/authService';
 import dayjs from 'dayjs';
 
 const Header = ({ onMobileMenuClick }) => {
@@ -118,23 +120,52 @@ const Header = ({ onMobileMenuClick }) => {
         )}
 
         {/* User Profile */}
-        <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 border-l border-gray-200 dark:border-gray-700">
-          <div className="text-right hidden md:block">
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">{user?.fullName || 'User'}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
-          </div>
-          {user?.avatar ? (
-            <img
-              src={user.avatar}
-              alt={user.fullName || 'User avatar'}
-              className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm"
-            />
-          ) : (
-            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 border-2 border-white dark:border-gray-700 shadow-sm flex items-center justify-center text-primary font-bold text-sm">
-              {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
+        <Dropdown
+          menu={{
+            items: [
+              {
+                key: 'settings',
+                label: 'Settings',
+                icon: <span className="material-icons-outlined text-base">settings</span>,
+                onClick: () => navigate('/settings'),
+              },
+              { type: 'divider' },
+              {
+                key: 'logout',
+                label: 'Logout',
+                icon: <span className="material-icons-outlined text-base">logout</span>,
+                danger: true,
+                onClick: async () => {
+                  try {
+                    await authService.logout();
+                  } catch (error) {
+                    console.error('Logout failed:', error);
+                  }
+                },
+              },
+            ],
+          }}
+          trigger={['click']}
+          placement="bottomRight"
+        >
+          <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 border-l border-gray-200 dark:border-gray-700 cursor-pointer">
+            <div className="text-right hidden md:block">
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">{user?.fullName || 'User'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
             </div>
-          )}
-        </div>
+            {user?.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user.fullName || 'User avatar'}
+                className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm"
+              />
+            ) : (
+              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 border-2 border-white dark:border-gray-700 shadow-sm flex items-center justify-center">
+                <span className="material-icons-round text-lg text-gray-400">person</span>
+              </div>
+            )}
+          </div>
+        </Dropdown>
       </div>
     </header>
   );

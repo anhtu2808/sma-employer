@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input as AntInput, InputNumber, message, ConfigProvider } from 'antd';
+import { Modal, Form, Input as AntInput, InputNumber, message, ConfigProvider, Tabs } from 'antd';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import Loading from '@/components/Loading';
@@ -11,11 +11,18 @@ import {
   useDeleteCriteriaMutation,
 } from '@/apis/jobApi';
 
+const STATUS_TABS = [
+  { key: 'all', label: 'All' },
+  { key: 'true', label: 'Active' },
+  { key: 'false', label: 'Inactive' },
+];
+
 const ScoringCriteria = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
+  const [statusFilter, setStatusFilter] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCriteria, setEditingCriteria] = useState(null);
   const [form] = Form.useForm();
@@ -29,10 +36,11 @@ const ScoringCriteria = () => {
 
   useEffect(() => {
     setPage(0);
-  }, [debouncedSearchTerm, pageSize]);
+  }, [debouncedSearchTerm, pageSize, statusFilter]);
 
   const queryParams = {
     ...(debouncedSearchTerm && { name: debouncedSearchTerm }),
+    active: statusFilter,
     page,
     size: pageSize,
   };
@@ -128,6 +136,33 @@ const ScoringCriteria = () => {
         </Button>
       </div>
 
+      {/* Status Filter Tabs */}
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: '#f97316',
+            colorBorderHover: '#f97316',
+          },
+          components: {
+            Tabs: {
+              inkBarColor: '#f97316',
+              itemSelectedColor: '#f97316',
+              itemHoverColor: '#f97316',
+            },
+          },
+        }}
+      >
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          <div className="px-4 pt-1">
+            <Tabs
+              activeKey={statusFilter}
+              onChange={(key) => setStatusFilter(key)}
+              items={STATUS_TABS}
+            />
+          </div>
+        </div>
+      </ConfigProvider>
+
       {/* Content */}
       {isLoading || isFetching ? (
         <div className="py-16">
@@ -167,6 +202,15 @@ const ScoringCriteria = () => {
                       {criteria.isDefault && (
                         <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
                           Default
+                        </span>
+                      )}
+                      {criteria.active === false ? (
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                          Inactive
+                        </span>
+                      ) : (
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                          Active
                         </span>
                       )}
                     </div>

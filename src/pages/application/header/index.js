@@ -1,9 +1,18 @@
 import React from 'react';
-import { Select } from 'antd';
+import { Select, Tabs, ConfigProvider } from 'antd';
 import { Search, Filter, Plus, LayoutGrid, List as ListIcon, Download, Archive } from 'lucide-react';
 import Button from '@/components/Button';
 import { getJobStatusConfig } from '@/constrant/application';
 import { Dropdown } from 'antd';
+
+const APPLICATION_STATUS_TABS = [
+    { key: '', label: 'All' },
+    { key: 'APPLIED', label: 'Applied' },
+    { key: 'VIEWED', label: 'Viewed' },
+    { key: 'SHORTLISTED', label: 'Shortlisted' },
+    { key: 'REJECTED', label: 'Rejected' },
+    { key: 'APPROVED', label: 'Approved' },
+];
 
 const ApplicationHeader = ({
     jobs,
@@ -18,6 +27,8 @@ const ApplicationHeader = ({
     isExporting,
     onExport,
     onArchiveJob,
+    statusFilter,
+    onStatusFilterChange,
 }) => {
 
     const exportMenuItems = [
@@ -186,6 +197,34 @@ const ApplicationHeader = ({
                         </Dropdown>
                     </div>
                 </div>
+
+                {viewMode === 'list' && (
+                    <ConfigProvider
+                        theme={{
+                            token: {
+                                colorPrimary: '#f97316',
+                                colorBorderHover: '#f97316',
+                            },
+                            components: {
+                                Tabs: {
+                                    inkBarColor: '#f97316',
+                                    itemSelectedColor: '#f97316',
+                                    itemHoverColor: '#f97316',
+                                },
+                            },
+                        }}
+                    >
+                        <Tabs
+                            activeKey={statusFilter}
+                            onChange={onStatusFilterChange}
+                            items={APPLICATION_STATUS_TABS.map(tab => ({
+                                key: tab.key,
+                                label: tab.label,
+                            }))}
+                            className="application-status-tabs -mb-3"
+                        />
+                    </ConfigProvider>
+                )}
             </div>
         </div>
     );

@@ -86,7 +86,11 @@ const Location = ({ form, isEditing }) => {
                                             <Input className="bg-gray-50 dark:bg-gray-800" />
                                         </Form.Item>
                                         <Form.Item {...restField} name={[name, 'googleMapLink']} label="Google Maps Link">
-                                            <Input placeholder="https://goo.gl/maps/..." className="bg-gray-50 dark:bg-gray-800" />
+                                            {isEditing ? (
+                                                <Input placeholder="https://goo.gl/maps/..." className="bg-gray-50 dark:bg-gray-800" />
+                                            ) : (
+                                                <GoogleMapLinkDisplay />
+                                            )}
                                         </Form.Item>
                                     </div>
                                 </div>
@@ -96,6 +100,23 @@ const Location = ({ form, isEditing }) => {
                 }}
             </Form.List>
         </div>
+    );
+};
+
+const GoogleMapLinkDisplay = ({ value }) => {
+    if (!value) {
+        return <span className="text-gray-400 text-sm">No link</span>;
+    }
+    return (
+        <a
+            href={value}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 text-sm font-medium"
+        >
+            <span className="material-icons-round text-sm">open_in_new</span>
+            Open in Google Maps
+        </a>
     );
 };
 

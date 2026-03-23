@@ -11,6 +11,7 @@ import {
   useGetJobDetailQuery,
   useGetCriteriaQuery,
 } from "@/apis/jobApi";
+import { useGetFeatureUsageQuery } from "@/apis/featureUsageApi";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 
@@ -20,6 +21,7 @@ import JobLocations from "./components/JobLocations";
 import WorkCompensation from "./components/WorkCompensation";
 import JobDescriptionSection from "./components/JobDescriptionSection";
 import PublishCard from "./components/PublishCard";
+import PublishConfirmModal from "./components/PublishConfirmModal";
 import ScoringWeights from "./components/ScoringWeights";
 import ProTips from "./components/ProTips";
 import Classification from "./components/Classification";
@@ -43,6 +45,9 @@ const JobCreate = () => {
   const [publishJob, { isLoading: isPublishing }] = usePublishJobMutation();
   const [saveJobDraft, { isLoading: isSaving }] = useSaveJobDraftMutation();
   const { data: criteriaList = [] } = useGetCriteriaQuery();
+  const { data: featureUsage = [] } = useGetFeatureUsageQuery();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingValues, setPendingValues] = useState(null);
 
   React.useEffect(() => {
     if (clonedJob) {
@@ -57,16 +62,21 @@ const JobCreate = () => {
         expertiseId: clonedJob.expertise?.id || clonedJob.expertiseId,
       };
 
+      // Set all criteria to disabled first, then enable ones from the job
+      criteriaList.forEach((c) => {
+        initialValues[`enable_${c.id}`] = false;
+      });
       if (clonedJob.scoringCriterias) {
         clonedJob.scoringCriterias.forEach((c) => {
           const criteriaId = c.criteria?.id || c.criteriaId;
           initialValues[`weight_${criteriaId}`] = c.weight;
-          initialValues[`enable_${criteriaId}`] = c.enable;
+          initialValues[`enable_${criteriaId}`] = true;
+          initialValues[`rule_${criteriaId}`] = c.rule || "";
         });
       }
       form.setFieldsValue(initialValues);
     }
-  }, [clonedJob, form]);
+  }, [clonedJob, criteriaList, form]);
 
   const onFinish = async (values) => {
     try {
@@ -81,6 +91,7 @@ const JobCreate = () => {
           values[`enable_${item.id}`] !== undefined
             ? values[`enable_${item.id}`]
             : true,
+        rule: values[`rule_${item.id}`] || null,
       }));
 
       const totalWeight = scoringCriterias.reduce(
@@ -120,6 +131,7 @@ const JobCreate = () => {
       criteriaList.forEach((item) => {
         delete submitData[`weight_${item.id}`];
         delete submitData[`enable_${item.id}`];
+        delete submitData[`rule_${item.id}`];
       });
       delete submitData.employmentType;
       
@@ -129,28 +141,22 @@ const JobCreate = () => {
         delete submitData.highlightJob;
       }
 
+      if (submitAction === "publish") {
+        setPendingValues({ submitData, formValues: values });
+        setShowConfirmModal(true);
+        return;
+      }
+
+      // Draft path — execute immediately
       if (isEditMode) {
-        if (submitAction === "publish") {
-          await publishJob({ id, body: submitData }).unwrap();
-          message.success("Job updated and published successfully!");
-        } else {
-          await saveJobDraft({ id, body: submitData }).unwrap();
-          message.success("Job updated successfully!");
-        }
+        await saveJobDraft({ id, body: submitData }).unwrap();
+        message.success("Job updated successfully!");
         navigate(`/jobs/${id}`);
       } else {
-        // Create mode
-        if (submitAction === "publish") {
-          const res = await createPublishJob(submitData).unwrap();
-          const jobId = res?.data?.id || res?.id;
-          message.success("Job published successfully!");
-          navigate(jobId ? `/jobs/${jobId}` : "/jobs");
-        } else {
-          const res = await createSaveJobDraft(submitData).unwrap();
-          const jobId = res?.data?.id || res?.id;
-          message.success("Job draft saved successfully!");
-          navigate(jobId ? `/jobs/${jobId}` : "/jobs");
-        }
+        const res = await createSaveJobDraft(submitData).unwrap();
+        const jobId = res?.data?.id || res?.id;
+        message.success("Job draft saved successfully!");
+        navigate(jobId ? `/jobs/${jobId}` : "/jobs");
       }
     } catch (error) {
       console.error("Failed to save job:", error);
@@ -161,6 +167,38 @@ const JobCreate = () => {
         message.error(error?.data?.message || "Failed to save job. Please try again.");
       }
     }
+  };
+
+  const handleConfirmPublish = async () => {
+    if (!pendingValues) return;
+    const { submitData } = pendingValues;
+    try {
+      if (isEditMode) {
+        await publishJob({ id, body: submitData }).unwrap();
+        message.success("Job updated and published successfully!");
+        navigate(`/jobs/${id}`);
+      } else {
+        const res = await createPublishJob(submitData).unwrap();
+        const jobId = res?.data?.id || res?.id;
+        message.success("Job published successfully!");
+        navigate(jobId ? `/jobs/${jobId}` : "/jobs");
+      }
+      setShowConfirmModal(false);
+      setPendingValues(null);
+    } catch (error) {
+      console.error("Failed to publish job:", error);
+      const validationErrors = error?.data?.data;
+      if (validationErrors && typeof validationErrors === "object") {
+        Object.values(validationErrors).forEach((msg) => message.error(msg));
+      } else {
+        message.error(error?.data?.message || "Failed to publish job. Please try again.");
+      }
+    }
+  };
+
+  const handleCancelPublish = () => {
+    setShowConfirmModal(false);
+    setPendingValues(null);
   };
 
   if (isEditMode && isJobLoading) {
@@ -208,6 +246,16 @@ const JobCreate = () => {
           </div>
         </div>
       </Form>
+
+      <PublishConfirmModal
+        open={showConfirmModal}
+        onConfirm={handleConfirmPublish}
+        onCancel={handleCancelPublish}
+        loading={isEditMode ? isPublishing : isPublishingNew}
+        values={pendingValues?.formValues}
+        featureUsage={featureUsage}
+        isEditMode={isEditMode}
+      />
     </div>
   );
 };

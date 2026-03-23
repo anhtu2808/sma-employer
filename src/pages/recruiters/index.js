@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { message, Select } from 'antd';
+import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import Button from '@/components/Button';
@@ -97,6 +98,8 @@ const RecruitersPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
 
+    const [errors, setErrors] = useState({});
+
     const [formState, setFormState] = useState({
         email: '',
         password: '',
@@ -145,11 +148,13 @@ const RecruitersPage = () => {
 
     const handleOpenCreate = () => {
         resetForm();
+        setErrors({});
         setIsCreateOpen(true);
     };
 
     const handleOpenEdit = (member) => {
         setEditingMember(member);
+        setErrors({});
         setFormState({
             email: member.email || '',
             password: '',
@@ -173,7 +178,12 @@ const RecruitersPage = () => {
             resetForm();
             refetch();
         } catch (err) {
-            message.error(err?.data?.message || 'Failed to create member');
+            const fieldErrors = err?.data?.data;
+            if (fieldErrors && typeof fieldErrors === 'object') {
+                setErrors(fieldErrors);
+            } else {
+                message.error(err?.data?.message || 'Failed to create member');
+            }
         }
     };
 
@@ -203,7 +213,12 @@ const RecruitersPage = () => {
             setEditingMember(null);
             refetch();
         } catch (err) {
-            message.error(err?.data?.message || 'Failed to update member');
+            const fieldErrors = err?.data?.data;
+            if (fieldErrors && typeof fieldErrors === 'object') {
+                setErrors(fieldErrors);
+            } else {
+                message.error(err?.data?.message || 'Failed to update member');
+            }
         }
     };
 
@@ -225,22 +240,30 @@ const RecruitersPage = () => {
                         mode="primary"
                         onClick={handleOpenCreate}
                         disabled={quotaExceeded}
-                        tooltip={quotaExceeded ? 'Team member limit reached' : null}
+                        tooltip={
+                            quotaMax != null
+                                ? quotaExceeded
+                                    ? `Team Members: limit reached (${quotaUsed}/${quotaMax} used)`
+                                    : `Team Members: ${quotaUsed}/${quotaMax} used`
+                                : null
+                        }
                     >
                         Add Member
                     </Button>
                 )}
             </div>
 
-            <div className="bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div className="flex items-center gap-3">
-                    <span className="material-icons-round text-gray-400 dark:text-gray-500 text-xl">groups</span>
+            <div className="bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-5">
+                <div className="flex items-center gap-3 mb-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${quotaExceeded ? 'bg-red-100 dark:bg-red-900/20' : 'bg-orange-100 dark:bg-orange-900/20'}`}>
+                        <span className={`material-icons-round text-xl ${quotaExceeded ? 'text-red-500' : 'text-orange-500'}`}>groups</span>
+                    </div>
                     <div>
                         <p className="text-xs uppercase tracking-widest text-gray-400 dark:text-gray-500 font-semibold">Team Member Limit</p>
                         {quotaMax == null ? (
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Feature not included in your plan.</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Feature not included in your plan.</p>
                         ) : (
-                            <p className="text-lg font-semibold text-gray-900 dark:text-white mt-1">
+                            <p className="text-lg font-semibold text-gray-900 dark:text-white mt-0.5">
                                 {quotaUsed} / {quotaMax} used
                                 {typeof quotaRemaining === 'number' && (
                                     <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">({quotaRemaining} remaining)</span>
@@ -249,9 +272,26 @@ const RecruitersPage = () => {
                         )}
                     </div>
                 </div>
+                {quotaMax != null && (
+                    <div className={`w-full h-2 rounded-full overflow-hidden ${quotaExceeded ? 'bg-red-50 dark:bg-red-900/20' : 'bg-orange-50 dark:bg-primary/10'}`}>
+                        <div
+                            className={`h-full rounded-full transition-all duration-500 ${quotaExceeded ? 'bg-red-500' : 'bg-primary'}`}
+                            style={{ width: `${quotaMax > 0 ? Math.min(Math.round((quotaUsed / quotaMax) * 100), 100) : 0}%` }}
+                        />
+                    </div>
+                )}
                 {quotaExceeded && (
-                    <div className="text-sm text-red-600 dark:text-red-400">
-                        You have reached the team member limit. Upgrade your plan to add more members.
+                    <div className="mt-3 flex items-center gap-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-3 py-2.5">
+                        <span className="material-icons-round text-red-500 text-lg">warning</span>
+                        <p className="text-sm text-red-700 dark:text-red-400 flex-1">
+                            You have reached the team member limit.
+                        </p>
+                        <Link
+                            to="/billing-plans"
+                            className="text-sm font-semibold text-primary hover:underline whitespace-nowrap"
+                        >
+                            Upgrade Plan
+                        </Link>
                     </div>
                 )}
             </div>
@@ -311,8 +351,8 @@ const RecruitersPage = () => {
                                                         className="w-10 h-10 rounded-full object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400 flex items-center justify-center font-semibold">
-                                                        {(member.fullName || member.email || 'R').charAt(0).toUpperCase()}
+                                                    <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
+                                                        <span className="material-icons-round text-xl text-gray-400">person</span>
                                                     </div>
                                                 )}
                                                 <div>
@@ -377,20 +417,43 @@ const RecruitersPage = () => {
                 submitDisabled={quotaExceeded}
             >
                 <div className="grid grid-cols-1 gap-4">
+                    {quotaExceeded && (
+                        <div className="flex items-center gap-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-3 py-2.5">
+                            <span className="material-icons-round text-red-500 text-lg">error</span>
+                            <p className="text-sm text-red-700 dark:text-red-400">
+                                Team member limit reached. <Link to="/billing-plans" className="font-semibold text-primary hover:underline" onClick={() => setIsCreateOpen(false)}>Upgrade your plan</Link> to add more members.
+                            </p>
+                        </div>
+                    )}
                     <Input
                         label="Email"
                         value={formState.email}
-                        onChange={(e) => setFormState((prev) => ({ ...prev, email: e.target.value }))}
+                        error={!!errors.email}
+                        helperText={errors.email}
+                        onChange={(e) => {
+                            setFormState((prev) => ({ ...prev, email: e.target.value }));
+                            setErrors((prev) => ({ ...prev, email: undefined }));
+                        }}
                     />
                     <Input.Password
                         label="Password"
                         value={formState.password}
-                        onChange={(e) => setFormState((prev) => ({ ...prev, password: e.target.value }))}
+                        error={!!errors.password}
+                        helperText={errors.password}
+                        onChange={(e) => {
+                            setFormState((prev) => ({ ...prev, password: e.target.value }));
+                            setErrors((prev) => ({ ...prev, password: undefined }));
+                        }}
                     />
                     <Input
                         label="Full Name"
                         value={formState.fullName}
-                        onChange={(e) => setFormState((prev) => ({ ...prev, fullName: e.target.value }))}
+                        error={!!errors.fullName}
+                        helperText={errors.fullName}
+                        onChange={(e) => {
+                            setFormState((prev) => ({ ...prev, fullName: e.target.value }));
+                            setErrors((prev) => ({ ...prev, fullName: undefined }));
+                        }}
                     />
                     <div>
                         <label className="input-label">Gender</label>
@@ -416,7 +479,12 @@ const RecruitersPage = () => {
                     <Input
                         label="Full Name"
                         value={formState.fullName}
-                        onChange={(e) => setFormState((prev) => ({ ...prev, fullName: e.target.value }))}
+                        error={!!errors.fullName}
+                        helperText={errors.fullName}
+                        onChange={(e) => {
+                            setFormState((prev) => ({ ...prev, fullName: e.target.value }));
+                            setErrors((prev) => ({ ...prev, fullName: undefined }));
+                        }}
                     />
                     <div>
                         <label className="input-label">Gender</label>

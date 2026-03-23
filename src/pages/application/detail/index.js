@@ -177,21 +177,10 @@ const ApplicationDetail = () => {
                 <span className="font-medium">Back to Pipeline</span>
             </button>
 
-            {/* Split Panel Layout */}
-            <div className="flex flex-col lg:flex-row gap-4" style={{ minHeight: 'calc(100vh - 140px)' }}>
-                {/* Left: PDF Viewer */}
-                {app.resumeUrl && (
-                    <div className="w-full lg:w-[70%] shrink-0 h-[50vh] lg:h-auto lg:sticky lg:top-4 lg:self-start" style={{ maxHeight: 'calc(100vh - 100px)' }}>
-                        <PdfViewer
-                            resumeUrl={app.resumeUrl}
-                            resumeName={app.resumeName}
-                            candidateName={app.candidateName}
-                        />
-                    </div>
-                )}
-
-                {/* Right: Info Panel */}
-                <div className={`flex-1 min-w-0 ${!app.resumeUrl ? 'max-w-3xl mx-auto w-full' : ''}`}>
+            {/* Vertical Layout: Info Bar on Top, PDF Below */}
+            <div className="flex flex-col gap-4" style={{ minHeight: 'calc(100vh - 140px)' }}>
+                {/* Top: Info Bar */}
+                <div className={`w-full ${!app.resumeUrl ? 'max-w-3xl mx-auto' : ''}`}>
                     <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-sm overflow-hidden">
                         {/* Candidate Header */}
                         <div className="px-5 pt-5 pb-0">
@@ -227,6 +216,17 @@ const ApplicationDetail = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Bottom: PDF Viewer (full width) */}
+                {app.resumeUrl && (
+                    <div className="w-full flex-1" style={{ minHeight: '70vh' }}>
+                        <PdfViewer
+                            resumeUrl={app.resumeUrl}
+                            resumeName={app.resumeName}
+                            candidateName={app.candidateName}
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Block Modal */}

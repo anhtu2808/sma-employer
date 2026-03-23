@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetJobDetailQuery } from '@/apis/apis';
-import { useUpdateJobStatusMutation, useUpdateExpiredDateMutation } from '@/apis/jobApi';
+import { useUpdateJobStatusMutation, useUpdateExpiredDateMutation, useGetProposedCvsQuery } from '@/apis/jobApi';
+import { useGetApplicationsQuery } from '@/apis/applicationApi';
 import Button from '@/components/Button';
 import Loading from '@/components/Loading';
 import { Skeleton, Tabs, ConfigProvider, Modal, DatePicker, message, Select } from 'antd';
@@ -11,6 +12,7 @@ import JobDescription from './components/JobDescription';
 import JobApplicants from './components/JobApplicants';
 import ProposedCVs from './components/ProposedCVs';
 import { PageHeaderContext } from '@/contexts/PageHeaderContext';
+import AiScoringCard from './components/AiScoringCard';
 
 const JobDetail = () => {
     const { id } = useParams();
@@ -19,6 +21,18 @@ const JobDetail = () => {
     const [activeTab, setActiveTab] = useState('details');
     const { data: jobData, isLoading, error } = useGetJobDetailQuery(id);
     const job = jobData?.data;
+
+    const { data: applicantsData } = useGetApplicationsQuery(
+        { jobId: id, page: 0, size: 1 },
+        { skip: !job?.id }
+    );
+    const applicantCount = applicantsData?.data?.totalElements || 0;
+
+    const { data: proposedCvsData } = useGetProposedCvsQuery(
+        { id, page: 0, size: 1 },
+        { skip: !job?.id }
+    );
+    const proposedCvCount = proposedCvsData?.data?.totalElements || 0;
 
     const [updateJobStatus, { isLoading: isClosingJob }] = useUpdateJobStatusMutation();
     const [updateExpiredDate, { isLoading: isUpdatingExpDate }] = useUpdateExpiredDateMutation();
@@ -139,6 +153,8 @@ const JobDetail = () => {
                                 </div>
                             </div>
                         </div>
+
+                        <AiScoringCard job={job} />
 
                         {/* Job Action Widget */}
                         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col gap-4">
@@ -315,12 +331,12 @@ const JobDetail = () => {
         },
         {
             key: '2',
-            label: 'Applicants',
+            label: `Applicants (${applicantCount})`,
             children: <JobApplicants jobId={job.id} />,
         },
         {
             key: '3',
-            label: 'Proposed CVs',
+            label: `Proposed CVs (${proposedCvCount})`,
             children: <ProposedCVs jobId={job.id} />,
         },
     ];
