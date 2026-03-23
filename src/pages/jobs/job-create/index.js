@@ -107,7 +107,6 @@ const JobCreate = () => {
         benefitIds: values.benefitIds || [],
         questionIds: values.questionIds || [],
         locationIds: values.locationIds || [],
-        highlightJob: values.highlightJob || false,
         salaryStart: values.salaryStart != null && values.salaryStart !== '' ? Number(values.salaryStart) : null,
         salaryEnd: values.salaryEnd != null && values.salaryEnd !== '' ? Number(values.salaryEnd) : null,
         experienceTime: values.experienceTime != null ? Number(values.experienceTime) : null,
@@ -123,6 +122,12 @@ const JobCreate = () => {
         delete submitData[`enable_${item.id}`];
       });
       delete submitData.employmentType;
+      
+      if (submitAction === "publish") {
+        submitData.highlightJob = values.highlightJob === true;
+      } else {
+        delete submitData.highlightJob;
+      }
 
       if (isEditMode) {
         if (submitAction === "publish") {
