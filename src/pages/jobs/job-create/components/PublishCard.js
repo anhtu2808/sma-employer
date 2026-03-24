@@ -47,7 +47,7 @@ const PublishCard = ({ onCancel, isLoading, isDraftLoading, setAction, isEditMod
           loading={isLoading}
           onClick={() => setAction("publish")}
         >
-          {isEditMode ? "Save & Publish" : "Publish Now"}
+          {isEditMode ? "Publish" : "Publish Now"}
         </Button>
         <Button
           mode="secondary"

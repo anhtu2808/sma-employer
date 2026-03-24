@@ -31,13 +31,13 @@ const Header = () => {
                     {!isAuthenticated && (
                         <>
                             <Link to="/login">
-                                <Button mode="primary" shape="rounded">
+                                <Button mode="secondary" shape="rounded">
                                     Sign In
                                 </Button>
                             </Link>
                             <span> </span>
                             <Link to="/register/recruiter">
-                                <Button mode="secondary" shape="rounded">
+                                <Button mode="primary" shape="rounded">
                                     Sign Up Company
                                 </Button>
                             </Link>

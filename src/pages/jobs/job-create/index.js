@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { message } from "antd";
+import { message, Switch, Tooltip } from "antd";
 import Form from "@/components/Form";
 import Button from "@/components/Button";
+import { Info } from "lucide-react";
 import Loading from "@/components/Loading";
 import {
   useCreatePublishJobMutation,
@@ -20,12 +21,12 @@ import JobIdentity from "./components/JobIdentity";
 import JobLocations from "./components/JobLocations";
 import WorkCompensation from "./components/WorkCompensation";
 import JobDescriptionSection from "./components/JobDescriptionSection";
-import PublishCard from "./components/PublishCard";
 import PublishConfirmModal from "./components/PublishConfirmModal";
 import ScoringWeights from "./components/ScoringWeights";
 import ProTips from "./components/ProTips";
 import Classification from "./components/Classification";
 import ScreeningQuestions from "./components/ScreeningQuestions";
+import Preloader from "@/components/Preloader";
 
 const JobCreate = () => {
   const { id } = useParams();
@@ -205,21 +206,61 @@ const JobCreate = () => {
     return <Loading className="py-16" />;
   }
 
-  return (
-    <div className="space-y-4">
-      <Button
-        mode="text"
-        className="self-start text-gray-500 hover:text-primary pl-0 -ml-6"
-        onClick={() => navigate(isEditMode ? `/jobs/${id}` : "/jobs")}
-        iconLeft={
-          <span className="material-icons-round text-lg">arrow_back</span>
-        }
-      >
-        {isEditMode ? "Back to Job Detail" : "Back to Jobs"}
-      </Button>
+  const isLoadingPublish = submitAction === "publish" && (isEditMode ? isPublishing : isPublishingNew);
+  const isLoadingDraft = submitAction === "draft" && (isEditMode ? isSaving : isSavingNew);
+  const isSubmitting = isLoadingPublish || isLoadingDraft;
 
+  return (
+    <>
+      <Preloader isLoading={isSubmitting} />
+    <div className="space-y-4">
       <Form form={form} onFinish={onFinish} layout="vertical" className="block">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Top Bar */}
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <Button
+            mode="text"
+            className="self-start text-gray-500 hover:text-primary pl-0 -ml-6"
+            onClick={() => navigate(isEditMode ? `/jobs/${id}` : "/jobs")}
+            iconLeft={
+              <span className="material-icons-round text-lg">arrow_back</span>
+            }
+          >
+            {isEditMode ? "Back to Job Detail" : "Back to Jobs"}
+          </Button>
+
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Highlight</span>
+                <Tooltip title="Highlighting a job increases its visibility to candidates by displaying it at the top of search results with a special badge.">
+                  <Info size={14} className="text-gray-400 cursor-help" />
+                </Tooltip>
+              </div>
+              <Form.Item name="highlightJob" valuePropName="checked" className="mb-0">
+                <Switch size="small" />
+              </Form.Item>
+            </div>
+
+            <Button
+              mode="secondary"
+              htmlType="submit"
+              loading={isLoadingDraft}
+              onClick={() => setSubmitAction("draft")}
+            >
+              Save as Draft
+            </Button>
+            <Button
+              mode="primary"
+              htmlType="submit"
+              loading={isLoadingPublish}
+              onClick={() => setSubmitAction("publish")}
+            >
+              {isEditMode ? "Publish" : "Publish Now"}
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
           {/* Main Content - Left Column */}
           <div className="lg:col-span-2 space-y-6">
             <JobIdentity />
@@ -233,13 +274,6 @@ const JobCreate = () => {
           {/* Sidebar - Right Column */}
           <div className="lg:col-span-1">
             <div className="space-y-4">
-              <PublishCard
-                onCancel={() => navigate(isEditMode ? `/jobs/${id}` : "/jobs")}
-                isLoading={submitAction === "publish" && (isEditMode ? isPublishing : isPublishingNew)}
-                isDraftLoading={submitAction === "draft" && (isEditMode ? isSaving : isSavingNew)}
-                setAction={setSubmitAction}
-                isEditMode={isEditMode}
-              />
               <ScoringWeights />
               <ProTips />
             </div>
@@ -257,6 +291,7 @@ const JobCreate = () => {
         isEditMode={isEditMode}
       />
     </div>
+    </>
   );
 };
 

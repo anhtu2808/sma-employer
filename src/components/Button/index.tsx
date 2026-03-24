@@ -60,7 +60,7 @@ const Button: ButtonComponentType = ({
       {!!tooltip && (
         <div
           className={clsx(
-            "absolute z-50 pointer-events-none transition-opacity duration-200 flex items-center",
+            "absolute z-50 pointer-events-none transition-opacity duration-200 flex flex-col items-center",
             "opacity-0 group-hover:opacity-100",
             tooltipPosition === 'top'
               ? "bottom-[100%] left-1/2 transform -translate-x-1/2 mb-2"
@@ -68,19 +68,15 @@ const Button: ButtonComponentType = ({
           )}
         >
           {tooltipPosition === 'bottom' && (
-            <div className="mx-auto">
-              <div className="size-3 bg-white rotate-45 translate-y-1/2 shadow-soft" />
-            </div>
+            <div className="size-2 bg-gray-800 rotate-45 -mb-1" />
           )}
 
-          <div className="px-3 py-2 bg-white rounded-xl font-medium text-neutral-600 text-sm whitespace-nowrap shadow-lg">
+          <div className="px-2.5 py-1.5 bg-gray-800 rounded-md font-medium text-white text-xs whitespace-nowrap shadow-lg">
             {tooltip}
           </div>
 
           {tooltipPosition === 'top' && (
-            <div className="mx-auto">
-              <div className="size-3 bg-white rotate-45 -translate-y-1/2 shadow-soft" />
-            </div>
+            <div className="size-2 bg-gray-800 rotate-45 -mt-1" />
           )}
         </div>
       )}

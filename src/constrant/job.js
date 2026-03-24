@@ -21,6 +21,12 @@ export const WORKING_MODEL_OPTIONS = [
     { value: 'HYBRID', label: 'Hybrid' },
 ];
 
+export const JOB_SORT_OPTIONS = [
+    { value: 'NEWEST', label: 'Newest' },
+    { value: 'MOST_APPLICATIONS', label: 'Most Applications' },
+    { value: 'LEAST_APPLICATIONS', label: 'Least Applications' },
+];
+
 export const JOB_LEVEL_OPTIONS = [
     { value: 'INTERN', label: 'Intern' },
     { value: 'FRESHER', label: 'Fresher' },

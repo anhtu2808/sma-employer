@@ -3,7 +3,8 @@ import Loading from '@/components/Loading';
 import smaLogo from '@/assets/svg/sma-logo.svg';
 import './Preloader.css';
 
-const Preloader = () => {
+const Preloader = ({ isLoading = true }) => {
+    if (!isLoading) return null;
     return (
         <div className="preloader">
             <div className="preloader__content">

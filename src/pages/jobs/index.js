@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ConfigProvider, Tabs } from 'antd';
+import { ConfigProvider, Select, Tabs } from 'antd';
 import Input from '@/components/Input';
 import { useGetJobsQuery, useGetMyJobStatusCountQuery } from '@/apis/apis';
 import { useUpdateJobStatusMutation, useDeleteJobMutation } from '@/apis/jobApi';
@@ -8,7 +8,7 @@ import Pagination from '@/components/Pagination';
 import Button from '@/components/Button';
 import Loading from '@/components/Loading';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { JOB_STATUS_TABS } from '@/constrant';
+import { JOB_STATUS_TABS, JOB_SORT_OPTIONS } from '@/constrant';
 import { Modal, message } from 'antd';
 import JobFilterDrawer from './filter-drawer';
 
@@ -31,6 +31,7 @@ const JobsList = ({ archivedOnly = false }) => {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const [searchTerm, setSearchTerm] = useState('');
+    const [sortBy, setSortBy] = useState('NEWEST');
     const status = archivedOnly ? 'ARCHIVED' : (searchParams.get('tab') || null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [appliedFilters, setAppliedFilters] = useState(() => createDefaultFilters());
@@ -50,7 +51,7 @@ const JobsList = ({ archivedOnly = false }) => {
 
     useEffect(() => {
         setPage(0);
-    }, [debouncedSearchTerm, status, appliedFilters, pageSize]);
+    }, [debouncedSearchTerm, status, appliedFilters, pageSize, sortBy]);
 
     const queryParams = useMemo(
         () => ({
@@ -66,10 +67,11 @@ const JobsList = ({ archivedOnly = false }) => {
             ...(isValidNumber(appliedFilters.salaryEnd) && { salaryEnd: appliedFilters.salaryEnd }),
             ...(isValidNumber(appliedFilters.minExperienceTime) && { minExperienceTime: appliedFilters.minExperienceTime }),
             ...(isValidNumber(appliedFilters.maxExperienceTime) && { maxExperienceTime: appliedFilters.maxExperienceTime }),
+            ...(sortBy && sortBy !== 'NEWEST' && { sortBy }),
             page,
             size: pageSize,
         }),
-        [appliedFilters, debouncedSearchTerm, page, pageSize, status, archivedOnly],
+        [appliedFilters, debouncedSearchTerm, page, pageSize, status, archivedOnly, sortBy],
     );
 
     const { data: jobsData, isLoading: isJobsLoading, isFetching: isJobsFetching } = useGetJobsQuery(queryParams);
@@ -197,6 +199,14 @@ const JobsList = ({ archivedOnly = false }) => {
                             allowClear
                         />
                     </div>
+
+                    <Select
+                        value={sortBy}
+                        onChange={setSortBy}
+                        options={JOB_SORT_OPTIONS}
+                        className="w-48 shrink-0"
+                        size="large"
+                    />
 
                     <Button
                         mode="secondary"

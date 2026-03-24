@@ -345,7 +345,7 @@ const ScoringWeights = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     allowClear
-                    size="small"
+                    size="middle"
                     className="!rounded-lg"
                   />
                 </div>

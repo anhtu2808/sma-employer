@@ -3,6 +3,10 @@ import { Tag, Dropdown, message } from 'antd';
 import JobSkills from './JobSkills';
 import Button from '@/components/Button';
 import { useUpdateJobStatusMutation } from '@/apis/jobApi';
+import { JOB_LEVEL_OPTIONS, WORKING_MODEL_OPTIONS } from '@/constrant/job';
+
+const getJobLevelLabel = (value) => JOB_LEVEL_OPTIONS.find(o => o.value === value)?.label || value;
+const getWorkingModelLabel = (value) => WORKING_MODEL_OPTIONS.find(o => o.value === value)?.label || value;
 
 const JobHeader = ({ job, formatDate, formatSalary, onCloneJob, onCloseJob, onEditExpDate, isClosingJob }) => {
     const getInitials = (name) => {
@@ -94,15 +98,15 @@ const JobHeader = ({ job, formatDate, formatSalary, onCloneJob, onCloseJob, onEd
                     )}
                     <div className="flex items-center gap-2">
                         <span className="material-icons-round text-gray-400 text-lg">work</span>
-                        <span className="capitalize">{job.quantity || 1} {job.jobLevel?.toLowerCase() || 'years experience'}</span>
+                        <span>{job.quantity || 1} positions</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="material-icons-round text-gray-400 text-lg">person</span>
-                        <span className="capitalize">{job.jobLevel?.toLowerCase() || 'Junior'}</span>
+                        <span>{getJobLevelLabel(job.jobLevel)}</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="material-icons-round text-gray-400 text-lg">apartment</span>
-                        <span className="uppercase">{job.workingModel || 'ONSITE'}</span>
+                        <span>{getWorkingModelLabel(job.workingModel)}</span>
                     </div>
                 </div>
 

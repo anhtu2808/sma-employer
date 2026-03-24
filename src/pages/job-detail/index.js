@@ -131,200 +131,7 @@ const JobDetail = () => {
                     </div>
 
                     <div className="space-y-6">
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 rounded-lg bg-gray-900 text-white flex items-center justify-center text-xl font-bold">
-                                    {job.company?.name ? job.company.name.slice(0, 1).toUpperCase() : 'C'}
-                                </div>
-                                <h3 className="font-semibold text-gray-900 dark:text-white">
-                                    {job.company?.name || 'Company Details'}
-                                </h3>
-                            </div>
-                            <div className="space-y-3 text-sm">
-                                {job.company?.country && (
-                                    <div className="flex justify-between items-center text-gray-600 dark:text-gray-400">
-                                        <span>Location</span>
-                                        <span className="font-medium text-gray-900 dark:text-white">{job.company.country}</span>
-                                    </div>
-                                )}
-                                <div className="flex justify-between items-center text-gray-600 dark:text-gray-400">
-                                    <span>Industry</span>
-                                    <span className="font-medium text-gray-900 dark:text-white uppercase">Information Technology</span>
-                                </div>
-                            </div>
-                        </div>
-
                         <AiScoringCard job={job} />
-
-                        {/* Job Action Widget */}
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col gap-4">
-                            <div>
-                                <h3 className="font-bold text-gray-900 dark:text-white mb-2 text-lg">Job Actions</h3>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 leading-relaxed">
-                                    Manage your job post visibility and details.
-                                </p>
-                            </div>
-
-                            {/* Current Status */}
-                            <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-900 rounded-xl px-4 py-3">
-                                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Current Status</span>
-                                <span className={`px-3 py-1 rounded-lg text-xs font-bold tracking-wide ${job.status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-600' :
-                                    job.status === 'DRAFT' ? 'bg-neutral-100 text-neutral-500' :
-                                        job.status === 'CLOSED' ? 'bg-red-50 text-red-500' :
-                                            job.status === 'PENDING_REVIEW' ? 'bg-yellow-50 text-yellow-600' :
-                                                job.status === 'SUSPENDED' ? 'bg-orange-50 text-orange-600' :
-                                                    'bg-gray-100 text-gray-500'
-                                    }`}>
-                                    {job.status === 'PENDING_REVIEW' ? 'Pending Review' : job.status?.charAt(0) + job.status?.slice(1).toLowerCase()}
-                                </span>
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div className="flex gap-2">
-                                {job.status === 'DRAFT' && (
-                                    <>
-                                        <Button
-                                            mode="secondary"
-                                            shape="round"
-                                            loading={isClosingJob}
-                                            iconLeft={<span className="material-icons-round text-sm">publish</span>}
-                                            onClick={async () => {
-                                                try {
-                                                    await updateJobStatus({ id: job.id, status: 'PUBLISHED' }).unwrap();
-                                                    message.success('Job published successfully');
-                                                } catch {
-                                                    message.error('Failed to publish job');
-                                                }
-                                            }}
-                                        >
-                                            Publish
-                                        </Button>
-                                        <Button
-                                            mode="secondary"
-                                            shape="round"
-                                            loading={isClosingJob}
-                                            iconLeft={<span className="material-icons-round text-sm">delete</span>}
-                                            onClick={() => {
-                                                Modal.confirm({
-                                                    title: 'Delete Job',
-                                                    content: 'Are you sure you want to delete this job?',
-                                                    okText: 'Yes, Delete',
-                                                    okButtonProps: { danger: true },
-                                                    cancelText: 'Cancel',
-                                                    onOk: async () => {
-                                                        try {
-                                                            await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
-                                                            message.success('Job deleted successfully');
-                                                        } catch {
-                                                            message.error('Failed to delete job');
-                                                        }
-                                                    }
-                                                });
-                                            }}
-                                        >
-                                            Delete
-                                        </Button>
-                                    </>
-                                )}
-                                {job.status === 'SUSPENDED' && (
-                                    <Button
-                                        mode="secondary"
-                                        shape="round"
-                                        className=""
-                                        loading={isClosingJob}
-                                        iconLeft={<span className="material-icons-round text-sm">delete</span>}
-                                        onClick={() => {
-                                            Modal.confirm({
-                                                title: 'Delete Job',
-                                                content: 'Are you sure you want to delete this job?',
-                                                okText: 'Yes, Delete',
-                                                okButtonProps: { danger: true },
-                                                cancelText: 'Cancel',
-                                                onOk: async () => {
-                                                    try {
-                                                        await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
-                                                        message.success('Job deleted successfully');
-                                                    } catch {
-                                                        message.error('Failed to delete job');
-                                                    }
-                                                }
-                                            });
-                                        }}
-                                    >
-                                        Delete
-                                    </Button>
-                                )}
-                                {job.status === 'PUBLISHED' && (
-                                    <Button
-                                        mode="secondary"
-                                        shape="round"
-                                        className=""
-                                        loading={isClosingJob}
-                                        iconLeft={<span className="material-icons-round text-sm">cancel</span>}
-                                        onClick={() => handleCloseJob()}
-                                    >
-                                        Close Job
-                                    </Button>
-                                )}
-                                {job.status === 'CLOSED' && (
-                                    <>
-                                        <Button
-                                            mode="secondary"
-                                            shape="round"
-                                            className=""
-                                            loading={isClosingJob}
-                                            iconLeft={<span className="material-icons-round text-sm">restart_alt</span>}
-                                            onClick={async () => {
-                                                try {
-                                                    await updateJobStatus({ id: job.id, status: 'PUBLISHED' }).unwrap();
-                                                    message.success('Job re-published successfully');
-                                                } catch {
-                                                    message.error('Failed to re-publish job');
-                                                }
-                                            }}
-                                        >
-                                            Re-post
-                                        </Button>
-                                        <Button
-                                            mode="secondary"
-                                            shape="round"
-                                            className=""
-                                            loading={isClosingJob}
-                                            iconLeft={<span className="material-icons-round text-sm">archive</span>}
-                                            onClick={() => {
-                                                Modal.confirm({
-                                                    title: 'Archive Job',
-                                                    content: 'Are you sure you want to archive this job? It will be moved to the Archived section.',
-                                                    okText: 'Yes, Archive',
-                                                    cancelText: 'Cancel',
-                                                    onOk: async () => {
-                                                        try {
-                                                            await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
-                                                            message.success('Job archived successfully');
-                                                        } catch {
-                                                            message.error('Failed to archive job');
-                                                        }
-                                                    }
-                                                });
-                                            }}
-                                        >
-                                            Archive
-                                        </Button>
-                                    </>
-                                )}
-                                {job.status === 'DRAFT' && (
-                                    <Button
-                                        mode="primary"
-                                        shape="round"
-                                        className=""
-                                        onClick={() => navigate(`/jobs/${job.id}/edit`)}
-                                        iconLeft={<span className="material-icons-round text-sm">edit</span>}
-                                    >
-                                        Edit
-                                    </Button>
-                                )}
-                            </div>
-                        </div>
                     </div>
                 </div>
             )
@@ -342,16 +149,155 @@ const JobDetail = () => {
     ];
 
     return (
-        <div className="space-y-4">
-            {/* Back button */}
-            <Button
-                mode="text"
-                className="text-gray-500 hover:text-primary pl-0 -ml-6"
-                onClick={() => navigate('/jobs')}
-                iconLeft={<span className="material-icons-round text-lg">arrow_back</span>}
-            >
-                Back to Jobs
-            </Button>
+        <div className="space-y-2">
+            {/* Top bar: Back button + Status & Actions */}
+            <div className="flex items-center justify-between flex-wrap gap-3">
+                <Button
+                    mode="text"
+                    className="text-gray-500 hover:text-primary pl-0 -ml-6"
+                    onClick={() => navigate('/jobs')}
+                    iconLeft={<span className="material-icons-round text-lg">arrow_back</span>}
+                >
+                    Back to Jobs
+                </Button>
+                <div className="flex items-center gap-3 flex-wrap">
+                    <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold border ${job.status === 'PUBLISHED' ? 'bg-emerald-100 text-emerald-700 border-emerald-300' :
+                        job.status === 'DRAFT' ? 'bg-slate-100 text-slate-600 border-slate-300' :
+                            job.status === 'CLOSED' ? 'bg-red-100 text-red-600 border-red-300' :
+                                job.status === 'PENDING_REVIEW' ? 'bg-amber-100 text-amber-700 border-amber-300' :
+                                    job.status === 'SUSPENDED' ? 'bg-orange-100 text-orange-700 border-orange-300' :
+                                        'bg-gray-100 text-gray-600 border-gray-300'
+                        }`}>
+                        <span className={`w-2 h-2 rounded-full ${job.status === 'PUBLISHED' ? 'bg-emerald-500' :
+                            job.status === 'DRAFT' ? 'bg-slate-400' :
+                                job.status === 'CLOSED' ? 'bg-red-500' :
+                                    job.status === 'PENDING_REVIEW' ? 'bg-amber-500' :
+                                        job.status === 'SUSPENDED' ? 'bg-orange-500' :
+                                            'bg-gray-400'
+                            }`} />
+                        {job.status === 'PENDING_REVIEW' ? 'Pending Review' : job.status?.charAt(0) + job.status?.slice(1).toLowerCase()}
+                    </span>
+                    {job.status === 'DRAFT' && (
+                        <>
+                            <Button
+                                mode="secondary"
+                                shape="round"
+                                loading={isClosingJob}
+                                iconLeft={<span className="material-icons-round text-sm">publish</span>}
+                                onClick={async () => {
+                                    try {
+                                        await updateJobStatus({ id: job.id, status: 'PUBLISHED' }).unwrap();
+                                        message.success('Job published successfully');
+                                    } catch {
+                                        message.error('Failed to publish job');
+                                    }
+                                }}
+                            >
+                                Publish
+                            </Button>
+                            <Button
+                                mode="secondary"
+                                shape="round"
+                                loading={isClosingJob}
+                                iconLeft={<span className="material-icons-round text-sm">delete</span>}
+                                onClick={() => {
+                                    Modal.confirm({
+                                        title: 'Delete Job',
+                                        content: 'Are you sure you want to delete this job?',
+                                        okText: 'Yes, Delete',
+                                        okButtonProps: { danger: true },
+                                        cancelText: 'Cancel',
+                                        onOk: async () => {
+                                            try {
+                                                await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
+                                                message.success('Job deleted successfully');
+                                            } catch {
+                                                message.error('Failed to delete job');
+                                            }
+                                        }
+                                    });
+                                }}
+                            >
+                                Delete
+                            </Button>
+                            <Button
+                                mode="primary"
+                                shape="round"
+                                onClick={() => navigate(`/jobs/${job.id}/edit`)}
+                                iconLeft={<span className="material-icons-round text-sm">edit</span>}
+                            >
+                                Edit
+                            </Button>
+                        </>
+                    )}
+                    {job.status === 'SUSPENDED' && (
+                        <Button
+                            mode="secondary"
+                            shape="round"
+                            loading={isClosingJob}
+                            iconLeft={<span className="material-icons-round text-sm">delete</span>}
+                            onClick={() => {
+                                Modal.confirm({
+                                    title: 'Delete Job',
+                                    content: 'Are you sure you want to delete this job?',
+                                    okText: 'Yes, Delete',
+                                    okButtonProps: { danger: true },
+                                    cancelText: 'Cancel',
+                                    onOk: async () => {
+                                        try {
+                                            await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
+                                            message.success('Job deleted successfully');
+                                        } catch {
+                                            message.error('Failed to delete job');
+                                        }
+                                    }
+                                });
+                            }}
+                        >
+                            Delete
+                        </Button>
+                    )}
+                    {job.status === 'PUBLISHED' && (
+                        <Button
+                            mode="secondary"
+                            shape="round"
+                            loading={isClosingJob}
+                            iconLeft={<span className="material-icons-round text-sm">cancel</span>}
+                            onClick={() => handleCloseJob()}
+                        >
+                            Close Job
+                        </Button>
+                    )}
+                    {job.status === 'CLOSED' && (
+                        <>
+                            <Button
+                                mode="secondary"
+                                shape="round"
+                                loading={isClosingJob}
+                                iconLeft={<span className="material-icons-round text-sm">archive</span>}
+                                onClick={() => {
+                                    Modal.confirm({
+                                        title: 'Archive Job',
+                                        content: 'Are you sure you want to archive this job? It will be moved to the Archived section.',
+                                        okText: 'Yes, Archive',
+                                        cancelText: 'Cancel',
+                                        onOk: async () => {
+                                            try {
+                                                await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
+                                                message.success('Job archived successfully');
+                                            } catch {
+                                                message.error('Failed to archive job');
+                                            }
+                                        }
+                                    });
+                                }}
+                            >
+                                Archive
+                            </Button>
+                        </>
+                    )}
+                </div>
+            </div>
 
             <ConfigProvider
                 theme={{
