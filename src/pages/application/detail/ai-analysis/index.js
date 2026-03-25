@@ -108,10 +108,16 @@ const AiAnalysis = ({ aiEvaluation }) => {
                     )}
                     {/* Meta badges */}
                     <div className="flex flex-wrap gap-2 mt-3">
-                        {isTrueLevel && (
-                            <span className="inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
-                                <span className="material-icons-round text-[13px]">verified</span>
-                                True Level
+                        {isTrueLevel != null && (
+                            <span className={`inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full ${
+                                isTrueLevel
+                                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                    : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                            }`}>
+                                <span className="material-icons-round text-[13px]">
+                                    {isTrueLevel ? 'verified' : 'cancel'}
+                                </span>
+                                {isTrueLevel ? 'Match' : 'Not Match'}
                             </span>
                         )}
                         {hasRelatedExperience && (
