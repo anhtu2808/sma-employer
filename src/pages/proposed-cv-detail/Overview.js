@@ -1,11 +1,13 @@
 import React from 'react';
 import Button from '@/components/Button';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useInviteCandidateMutation } from '@/apis/jobApi';
 import { message } from 'antd';
 
 const Overview = ({ cvData }) => {
     const { jobId, resumeId } = useParams();
+    const [searchParams] = useSearchParams();
+    const proposedResumeId = searchParams.get('proposedResumeId') || resumeId;
     const [inviteCandidate, { isLoading }] = useInviteCandidateMutation();
 
     const handleInvite = async () => {
@@ -13,7 +15,7 @@ const Overview = ({ cvData }) => {
             await inviteCandidate({
                 candidateId: cvData.candidateId,
                 jobId: Number(jobId),
-                proposedResumeId: Number(resumeId)
+                proposedResumeId: Number(proposedResumeId)
             }).unwrap();
             message.success('Candidate invited successfully!');
         } catch (error) {
