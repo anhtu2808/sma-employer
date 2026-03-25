@@ -88,7 +88,7 @@ const ProposedCVs = ({ jobId }) => {
                       <td className="px-6 py-4 text-center">
                         <div className="flex items-center justify-center gap-1">
                           <button
-                            onClick={() => navigate(`/jobs/${jobId}/proposed-cvs/${app.resumeId}`)}
+                            onClick={() => navigate(`/jobs/${jobId}/proposed-cvs/${app.resumeId}?proposedResumeId=${app.proposedResumeId}`)}
                             className="p-2.5 bg-gray-50 dark:bg-neutral-800 hover:bg-orange-500/10 text-gray-400 hover:text-orange-500 rounded-xl transition-all border border-transparent hover:border-orange-500/20"
                             title="View Profile"
                           >
