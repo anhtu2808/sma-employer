@@ -38,6 +38,14 @@ export const applicationApi = api.injectEndpoints({
             ],
         }),
 
+        getApplicationStatusSummary: builder.query({
+            query: () => ({
+                url: `${API_VERSION}/applications/status-summary`,
+                method: "GET",
+            }),
+            providesTags: [{ type: "Applications", id: "SUMMARY" }],
+        }),
+
         getShortlistedExport: builder.query({
             query: ({ jobId, type }) => ({
                 url: `/v1/applications/export-approved`,
@@ -51,6 +59,7 @@ export const applicationApi = api.injectEndpoints({
 export const {
     useGetApplicationsQuery,
     useGetApplicationDetailQuery,
+    useGetApplicationStatusSummaryQuery,
     useUpdateApplicationStatusMutation,
     useLazyGetShortlistedExportQuery
 } = applicationApi;
