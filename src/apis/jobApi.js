@@ -28,7 +28,7 @@ export const jobApi = api.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Jobs"],
+      invalidatesTags: ["Jobs", "FeatureUsage"],
     }),
     createSaveJobDraft: builder.mutation({
       query: (body) => ({
@@ -60,7 +60,7 @@ export const jobApi = api.injectEndpoints({
         method: "PUT",
         body,
       }),
-      invalidatesTags: ["Jobs"],
+      invalidatesTags: ["Jobs", "FeatureUsage"],
     }),
     updateExpiredDate: builder.mutation({
       query: ({ id, body }) => ({

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Modal } from 'antd';
 import './SimpleTextEditor.scss';
 
 const SimpleTextEditor = ({
@@ -25,6 +26,8 @@ const SimpleTextEditor = ({
         list: false,
     });
     const [count, setCount] = useState(0);
+    const [htmlModalOpen, setHtmlModalOpen] = useState(false);
+    const [htmlSource, setHtmlSource] = useState('');
 
     const isControlled = value !== undefined;
 
@@ -74,6 +77,22 @@ const SimpleTextEditor = ({
         updateCount();
         emitChange();
     }, [emitChange, updateCount]);
+
+    const openHtmlModal = useCallback(() => {
+        if (disabled) return;
+        setHtmlSource(editorRef.current?.innerHTML || '');
+        setHtmlModalOpen(true);
+    }, [disabled]);
+
+    const applyHtmlSource = useCallback(() => {
+        const root = editorRef.current;
+        if (root) {
+            root.innerHTML = htmlSource;
+            updateCount();
+            emitChange();
+        }
+        setHtmlModalOpen(false);
+    }, [htmlSource, updateCount, emitChange]);
 
     useEffect(() => {
         if (hasInitialized.current) return;
@@ -148,6 +167,15 @@ const SimpleTextEditor = ({
                 >
                     <span className="material-icons-round">format_list_bulleted</span>
                 </button>
+                <button
+                    type="button"
+                    className="ste-btn"
+                    onClick={openHtmlModal}
+                    aria-label="Source code"
+                    disabled={disabled}
+                >
+                    <span className="material-icons-round">code</span>
+                </button>
             </div>
             <div
                 ref={editorRef}
@@ -165,6 +193,29 @@ const SimpleTextEditor = ({
                 onInput={handleInput}
                 suppressContentEditableWarning
             />
+            <Modal
+                title="Edit HTML Source"
+                open={htmlModalOpen}
+                onOk={applyHtmlSource}
+                onCancel={() => setHtmlModalOpen(false)}
+                width={720}
+                okText="Apply"
+            >
+                <textarea
+                    value={htmlSource}
+                    onChange={(e) => setHtmlSource(e.target.value)}
+                    style={{
+                        width: '100%',
+                        height: 300,
+                        fontFamily: 'monospace',
+                        fontSize: 13,
+                        padding: 12,
+                        border: '1px solid #d9d9d9',
+                        borderRadius: 6,
+                        resize: 'vertical',
+                    }}
+                />
+            </Modal>
             {showCount && (
                 <div className={`simple-text-editor__count ${isOverLimit ? 'is-over' : ''}`}>
                     {typeof maxLength === 'number' ? `${count}/${maxLength} characters` : `${count} characters`}

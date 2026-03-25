@@ -46,7 +46,7 @@ const ScoreCard = ({ score = 0, size = 80, matchLevel }) => {
         </span>
       </div>
       {matchLevel && (
-        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+        <span className={`text-sm font-semibold px-2 py-0.5 rounded-full ${
           matchLevel === 'EXCELLENT' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
           matchLevel === 'GOOD' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
           matchLevel === 'FAIR' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :

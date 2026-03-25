@@ -23,16 +23,16 @@ const CriteriaItem = ({ criteria }) => {
             >
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1.5">
-                        <span className="text-sm font-semibold text-gray-800 dark:text-neutral-200 truncate">
+                        <span className="text-base font-semibold text-gray-800 dark:text-neutral-200 truncate">
                             {criteria.criteriaName || 'Criteria'}
                         </span>
                         <div className="flex items-center gap-2 shrink-0">
                             {criteria.scoringCriteriaWeight != null && (
-                                <span className="text-[10px] font-medium text-gray-400 dark:text-neutral-500">
+                                <span className="text-xs font-medium text-gray-400 dark:text-neutral-500">
                                     w:{criteria.scoringCriteriaWeight}
                                 </span>
                             )}
-                            <span className={`text-sm font-bold ${score >= 70 ? 'text-emerald-600' : score >= 40 ? 'text-amber-600' : 'text-red-600'}`}>
+                            <span className={`text-base font-bold ${score >= 70 ? 'text-emerald-600' : score >= 40 ? 'text-amber-600' : 'text-red-600'}`}>
                                 {score}
                             </span>
                         </div>
@@ -49,7 +49,7 @@ const CriteriaItem = ({ criteria }) => {
             {expanded && (
                 <div className="px-4 pb-4 pt-1 space-y-3 border-t border-gray-50 dark:border-neutral-800">
                     {criteria.aiExplanation && (
-                        <p className="text-sm text-gray-600 dark:text-neutral-400 leading-relaxed">
+                        <p className="text-base text-gray-600 dark:text-neutral-400 leading-relaxed">
                             {criteria.aiExplanation}
                         </p>
                     )}
@@ -58,7 +58,7 @@ const CriteriaItem = ({ criteria }) => {
                             {criteria.details.map((detail) => (
                                 <span
                                     key={detail.id}
-                                    className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg ${
+                                    className={`inline-flex items-center gap-1 text-sm font-medium px-2 py-1 rounded-lg ${
                                         detail.status === 'MATCHED'
                                             ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400'
                                             : detail.status === 'FIXED'
@@ -104,24 +104,24 @@ const AiAnalysis = ({ aiEvaluation }) => {
                 <ScoreCard score={aiOverallScore} size={88} matchLevel={matchLevel} />
                 <div className="flex-1 min-w-0 pt-1">
                     {summary && (
-                        <p className="text-sm text-gray-600 dark:text-neutral-400 leading-relaxed">{summary}</p>
+                        <p className="text-base text-gray-600 dark:text-neutral-400 leading-relaxed">{summary}</p>
                     )}
                     {/* Meta badges */}
                     <div className="flex flex-wrap gap-2 mt-3">
                         {isTrueLevel && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                            <span className="inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
                                 <span className="material-icons-round text-[13px]">verified</span>
                                 True Level
                             </span>
                         )}
                         {hasRelatedExperience && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                            <span className="inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                                 <span className="material-icons-round text-[13px]">work</span>
                                 Related Experience
                             </span>
                         )}
                         {transferConfig && (
-                            <span className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full ${transferConfig.cls}`}>
+                            <span className={`inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full ${transferConfig.cls}`}>
                                 <span className="material-icons-round text-[13px]">swap_horiz</span>
                                 {transferConfig.label}
                             </span>
@@ -137,18 +137,18 @@ const AiAnalysis = ({ aiEvaluation }) => {
                         <div className="p-4 rounded-xl bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30">
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="material-icons-round text-emerald-600 text-lg">thumb_up</span>
-                                <h4 className="text-sm font-bold text-emerald-800 dark:text-emerald-400">Strengths</h4>
+                                <h4 className="text-base font-bold text-emerald-800 dark:text-emerald-400">Strengths</h4>
                             </div>
-                            <p className="text-sm text-emerald-700 dark:text-emerald-300/80 leading-relaxed whitespace-pre-line">{strengths}</p>
+                            <p className="text-base text-emerald-700 dark:text-emerald-300/80 leading-relaxed whitespace-pre-line">{strengths}</p>
                         </div>
                     )}
                     {weakness && (
                         <div className="p-4 rounded-xl bg-red-50/50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30">
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="material-icons-round text-red-500 text-lg">thumb_down</span>
-                                <h4 className="text-sm font-bold text-red-800 dark:text-red-400">Weaknesses</h4>
+                                <h4 className="text-base font-bold text-red-800 dark:text-red-400">Weaknesses</h4>
                             </div>
-                            <p className="text-sm text-red-700 dark:text-red-300/80 leading-relaxed whitespace-pre-line">{weakness}</p>
+                            <p className="text-base text-red-700 dark:text-red-300/80 leading-relaxed whitespace-pre-line">{weakness}</p>
                         </div>
                     )}
                 </div>
@@ -157,7 +157,7 @@ const AiAnalysis = ({ aiEvaluation }) => {
             {/* Criteria Breakdown */}
             {criteriaScores.length > 0 && (
                 <div>
-                    <h4 className="text-sm font-bold text-gray-800 dark:text-neutral-200 mb-3">Criteria Breakdown</h4>
+                    <h4 className="text-base font-bold text-gray-800 dark:text-neutral-200 mb-3">Criteria Breakdown</h4>
                     <div className="space-y-2">
                         {criteriaScores.map((criteria) => (
                             <CriteriaItem key={criteria.id} criteria={criteria} />

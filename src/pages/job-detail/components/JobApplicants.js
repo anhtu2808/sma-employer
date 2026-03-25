@@ -370,7 +370,7 @@ const JobApplicants = ({ jobId }) => {
                 title={<span className="font-semibold">AI Evaluation — {evalModal.candidateName}</span>}
                 onCancel={() => setEvalModal({ open: false, evaluation: null, candidateName: '' })}
                 footer={null}
-                width={700}
+                width={900}
             >
                 {evalModal.evaluation && (
                     <div className="space-y-4 pt-2">
@@ -381,7 +381,7 @@ const JobApplicants = ({ jobId }) => {
                             {(evalModal.evaluation.criteriaScores || []).length > 0 && (
                                 <div className="flex flex-wrap gap-x-4 gap-y-1">
                                     {evalModal.evaluation.criteriaScores.map((cs, idx) => (
-                                        <span key={idx} className="text-xs text-gray-600 dark:text-gray-400">
+                                        <span key={idx} className="text-sm text-gray-700 dark:text-gray-400">
                                             <span className="text-gray-400 mr-0.5">&bull;</span>
                                             {cs.criteriaName}
                                             <span className={`ml-1 font-semibold ${getScoreColor(cs.aiScore)}`}>
@@ -393,22 +393,22 @@ const JobApplicants = ({ jobId }) => {
                             )}
                         </div>
                         {(evalModal.evaluation.strengths || evalModal.evaluation.weakness) && (
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-6">
                                 {evalModal.evaluation.strengths && (
-                                    <div className="space-y-1">
-                                        <p className="text-xs font-semibold text-emerald-600">Strengths</p>
+                                    <div className="space-y-2">
+                                        <p className="text-sm font-semibold text-emerald-600">Strengths</p>
                                         {parseBullets(evalModal.evaluation.strengths).map((item, i) => (
-                                            <p key={`s-${i}`} className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-1">
+                                            <p key={`s-${i}`} className="text-sm text-gray-700 dark:text-gray-400 flex items-start gap-1">
                                                 <span className="text-emerald-500 mt-px">+</span> {item}
                                             </p>
                                         ))}
                                     </div>
                                 )}
                                 {evalModal.evaluation.weakness && (
-                                    <div className="space-y-1">
-                                        <p className="text-xs font-semibold text-red-500">Weaknesses</p>
+                                    <div className="space-y-2">
+                                        <p className="text-sm font-semibold text-red-500">Weaknesses</p>
                                         {parseBullets(evalModal.evaluation.weakness).map((item, i) => (
-                                            <p key={`w-${i}`} className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-1">
+                                            <p key={`w-${i}`} className="text-sm text-gray-700 dark:text-gray-400 flex items-start gap-1">
                                                 <span className="text-red-500 mt-px">-</span> {item}
                                             </p>
                                         ))}
