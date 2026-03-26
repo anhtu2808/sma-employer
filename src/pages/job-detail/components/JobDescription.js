@@ -1,5 +1,22 @@
 import React from 'react';
 import { Tag } from 'antd';
+import {
+    DollarSign, ShieldCheck, CalendarOff, Clock, GraduationCap,
+    Coffee, Monitor, Building2, Trees, MoreHorizontal
+} from 'lucide-react';
+
+const BENEFIT_ICONS = {
+    FINANCIAL: DollarSign,
+    INSURANCE: ShieldCheck,
+    TIME_OFF: CalendarOff,
+    FLEXIBILITY: Clock,
+    DEVELOPMENT: GraduationCap,
+    LEISURE: Coffee,
+    EQUIPMENT: Monitor,
+    AMENITIES: Building2,
+    WORK_ENVIRONMENT: Trees,
+    OTHER: MoreHorizontal,
+};
 
 const JobDescription = ({ job }) => {
     return (
@@ -40,25 +57,25 @@ const JobDescription = ({ job }) => {
             {/* Benefits */}
             {job.benefits && job.benefits.length > 0 && (
                 <section>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Benefits</h3>
-                    <ul className="space-y-3">
-                        {job.benefits.map((benefit) => (
-                            <li key={benefit.id} className="flex gap-3 text-gray-600 dark:text-gray-300 items-start">
-                                <span className="material-icons-round text-orange-500 text-lg leading-7 shrink-0">check_circle</span>
-                                <div>
-                                    <div className="flex items-center gap-2 mb-1">
-                                        {benefit.type && (
-                                            <span className="text-[10px] font-semibold text-blue-500 bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded">
-                                                {benefit.type.replace('_', ' ')}
-                                            </span>
-                                        )}
-                                        <span className="text-gray-800 dark:text-gray-200 font-medium text-base">{benefit.name}</span>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">What We Can Offer</h3>
+                    <div className="space-y-3">
+                        {job.benefits.map((benefit) => {
+                            const Icon = BENEFIT_ICONS[benefit.type] || MoreHorizontal;
+                            return (
+                                <div key={benefit.id} className="flex items-start gap-3 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                                    <div className="shrink-0 w-9 h-9 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+                                        <Icon className="w-[18px] h-[18px] text-blue-500" />
                                     </div>
-                                    {benefit.description && <p className="text-sm text-gray-500 dark:text-gray-400">{benefit.description}</p>}
+                                    <div>
+                                        <p className="font-semibold text-gray-900 dark:text-gray-100">{benefit.name}</p>
+                                        {benefit.description && benefit.description !== benefit.name && (
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{benefit.description}</p>
+                                        )}
+                                    </div>
                                 </div>
-                            </li>
-                        ))}
-                    </ul>
+                            );
+                        })}
+                    </div>
                 </section>
             )}
 
