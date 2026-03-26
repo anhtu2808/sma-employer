@@ -57,7 +57,10 @@ const JobCreate = () => {
         expDate: clonedJob.expDate ? dayjs(clonedJob.expDate) : undefined,
         skillIds: clonedJob.skills?.map(s => s.id) || clonedJob.skillIds,
         domainIds: clonedJob.domains?.map(d => d.id) || clonedJob.domainIds,
-        benefitIds: clonedJob.benefits?.map(b => b.id) || clonedJob.benefitIds,
+        benefits: clonedJob.benefits?.map(b => ({
+          type: b.type || 'OTHER',
+          description: b.description || b.name || '',
+        })) || [],
         locationIds: clonedJob.locations?.map(l => l.id) || clonedJob.locationIds,
         questionIds: clonedJob.questions?.map(q => q.id) || clonedJob.questionIds,
         expertiseId: clonedJob.expertise?.id || clonedJob.expertiseId,
@@ -85,21 +88,17 @@ const JobCreate = () => {
       const scoringCriterias = criteriaList.map((item) => ({
         criteriaId: item.id,
         weight:
-          values[`weight_${item.id}`] !== undefined
-            ? values[`weight_${item.id}`]
-            : (item.weight || item.defaultWeight || 0),
-        enable:
-          values[`enable_${item.id}`] !== undefined
-            ? values[`enable_${item.id}`]
-            : true,
-        rule: values[`rule_${item.id}`] || null,
+          form.getFieldValue(`weight_${item.id}`) ??
+          (item.weight || item.defaultWeight || 0),
+        enable: form.getFieldValue(`enable_${item.id}`) !== false,
+        rule: form.getFieldValue(`rule_${item.id}`) || null,
       }));
 
       const totalWeight = scoringCriterias.reduce(
         (sum, item) => sum + (item.enable ? item.weight : 0),
         0,
       );
-      if (values.enableAiScoring && totalWeight !== 100) {
+      if (submitAction === "publish" && values.enableAiScoring && totalWeight !== 100) {
         message.error(
           `Total scoring weight of enabled criteria must be 100%. Current: ${totalWeight}%`,
         );
@@ -116,7 +115,11 @@ const JobCreate = () => {
         scoringCriterias,
         skillIds: values.skillIds || [],
         domainIds: values.domainIds || [],
-        benefitIds: values.benefitIds || [],
+        benefits: (values.benefits || []).map(b => ({
+          name: b.description?.trim() || '',
+          type: b.type || 'OTHER',
+          description: b.description?.trim() || '',
+        })),
         questionIds: values.questionIds || [],
         locationIds: values.locationIds || [],
         salaryStart: values.salaryStart != null && values.salaryStart !== '' ? Number(values.salaryStart) : null,
@@ -134,6 +137,11 @@ const JobCreate = () => {
         delete submitData[`enable_${item.id}`];
         delete submitData[`rule_${item.id}`];
       });
+      if (values.showSalary === false) {
+        submitData.salaryStart = null;
+        submitData.salaryEnd = null;
+      }
+      delete submitData.showSalary;
       delete submitData.employmentType;
       
       if (submitAction === "publish") {
