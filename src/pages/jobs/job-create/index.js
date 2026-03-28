@@ -24,7 +24,6 @@ import JobLocations from "./components/JobLocations";
 import WorkCompensation from "./components/WorkCompensation";
 import JobDescriptionSection from "./components/JobDescriptionSection";
 import PublishConfirmModal from "./components/PublishConfirmModal";
-import PostMethodModal from "./components/PostMethodModal";
 import ImportJDModal from "./components/ImportJDModal";
 import ScoringWeights from "./components/ScoringWeights";
 import ProTips from "./components/ProTips";
@@ -58,7 +57,6 @@ const JobCreate = () => {
   const { data: criteriaList = [] } = useGetCriteriaQuery();
   const { data: featureUsage = [] } = useGetFeatureUsageQuery();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showPostMethodModal, setShowPostMethodModal] = useState(!isEditMode && !clonedJobId);
   const [showImportModal, setShowImportModal] = useState(false);
   const [pendingValues, setPendingValues] = useState(null);
 
@@ -234,22 +232,6 @@ const JobCreate = () => {
     setPendingValues(null);
   };
 
-  // Post method modal handlers
-  const handlePostClick = () => {
-    setShowPostMethodModal(true);
-  };
-
-  const handleSelectManual = () => {
-    setShowPostMethodModal(false);
-    setSubmitAction("publish");
-    form.submit();
-  };
-
-  const handleSelectAI = () => {
-    setShowPostMethodModal(false);
-    setShowImportModal(true);
-  };
-
   const handleImported = (result) => {
     setShowImportModal(false);
 
@@ -300,7 +282,7 @@ const JobCreate = () => {
     <>
       <Preloader isLoading={isSubmitting} />
     <div className="space-y-4">
-      <Form form={form} onFinish={onFinish} layout="vertical" className="block">
+      <Form form={form} onFinish={onFinish} onFinishFailed={() => message.error("Please fill in all required fields before publishing.")} layout="vertical" className="block">
         {/* Top Bar */}
         <div className="flex items-center justify-between flex-wrap gap-3">
           <Button
@@ -345,24 +327,14 @@ const JobCreate = () => {
             >
               Save as Draft
             </Button>
-            {isEditMode ? (
-              <Button
-                mode="primary"
-                htmlType="submit"
-                loading={isLoadingPublish}
-                onClick={() => setSubmitAction("publish")}
-              >
-                Publish
-              </Button>
-            ) : (
-              <Button
-                mode="primary"
-                loading={isLoadingPublish}
-                onClick={handlePostClick}
-              >
-                Post
-              </Button>
-            )}
+            <Button
+              mode="primary"
+              htmlType="submit"
+              loading={isLoadingPublish}
+              onClick={() => setSubmitAction("publish")}
+            >
+              Publish
+            </Button>
           </div>
         </div>
 
@@ -395,13 +367,6 @@ const JobCreate = () => {
         values={pendingValues?.formValues}
         featureUsage={featureUsage}
         isEditMode={isEditMode}
-      />
-
-      <PostMethodModal
-        open={showPostMethodModal}
-        onCancel={() => setShowPostMethodModal(false)}
-        onSelectManual={handleSelectManual}
-        onSelectAI={handleSelectAI}
       />
 
       <ImportJDModal

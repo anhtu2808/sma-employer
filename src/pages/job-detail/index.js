@@ -1,11 +1,13 @@
 import React, { useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetJobDetailQuery } from '@/apis/apis';
-import { useUpdateJobStatusMutation, useUpdateExpiredDateMutation, useGetProposedCvsQuery } from '@/apis/jobApi';
+import { useUpdateJobStatusMutation, useUpdateExpiredDateMutation, useGetProposedCvsQuery, usePublishJobMutation } from '@/apis/jobApi';
+import { useGetFeatureUsageQuery } from '@/apis/featureUsageApi';
+import PublishConfirmModal from '../jobs/job-create/components/PublishConfirmModal';
 import { useGetApplicationsQuery } from '@/apis/applicationApi';
 import Button from '@/components/Button';
 import Loading from '@/components/Loading';
-import { Skeleton, Tabs, ConfigProvider, Modal, DatePicker, message, Select } from 'antd';
+import { Skeleton, Tabs, ConfigProvider, Modal, DatePicker, message, Select, Button as AntButton, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import JobHeader from './components/JobHeader';
 import JobDescription from './components/JobDescription';
@@ -36,7 +38,10 @@ const JobDetail = () => {
 
     const [updateJobStatus, { isLoading: isClosingJob }] = useUpdateJobStatusMutation();
     const [updateExpiredDate, { isLoading: isUpdatingExpDate }] = useUpdateExpiredDateMutation();
+    const [publishJob, { isLoading: isPublishing }] = usePublishJobMutation();
+    const { data: featureUsage = [] } = useGetFeatureUsageQuery();
 
+    const [showPublishModal, setShowPublishModal] = useState(false);
     const [isExpDateModalVisible, setIsExpDateModalVisible] = useState(false);
     const [newExpDate, setNewExpDate] = useState(null);
 
@@ -179,46 +184,39 @@ const JobDetail = () => {
                     </span>
                     {job.status === 'DRAFT' && (
                         <>
+                            <Tooltip title="Delete job">
+                                <AntButton
+                                    type="default"
+                                    danger
+                                    className="!rounded-xl !h-10 !w-10"
+                                    icon={<span className="material-icons-round text-base">delete</span>}
+                                    loading={isClosingJob}
+                                    onClick={() => {
+                                        Modal.confirm({
+                                            title: 'Delete Job',
+                                            content: 'Are you sure you want to delete this job?',
+                                            okText: 'Yes, Delete',
+                                            okButtonProps: { danger: true },
+                                            cancelText: 'Cancel',
+                                            onOk: async () => {
+                                                try {
+                                                    await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
+                                                    message.success('Job deleted successfully');
+                                                } catch {
+                                                    message.error('Failed to delete job');
+                                                }
+                                            }
+                                        });
+                                    }}
+                                />
+                            </Tooltip>
                             <Button
                                 mode="secondary"
                                 shape="round"
-                                loading={isClosingJob}
                                 iconLeft={<span className="material-icons-round text-sm">publish</span>}
-                                onClick={async () => {
-                                    try {
-                                        await updateJobStatus({ id: job.id, status: 'PUBLISHED' }).unwrap();
-                                        message.success('Job published successfully');
-                                    } catch {
-                                        message.error('Failed to publish job');
-                                    }
-                                }}
+                                onClick={() => setShowPublishModal(true)}
                             >
                                 Publish
-                            </Button>
-                            <Button
-                                mode="secondary"
-                                shape="round"
-                                loading={isClosingJob}
-                                iconLeft={<span className="material-icons-round text-sm">delete</span>}
-                                onClick={() => {
-                                    Modal.confirm({
-                                        title: 'Delete Job',
-                                        content: 'Are you sure you want to delete this job?',
-                                        okText: 'Yes, Delete',
-                                        okButtonProps: { danger: true },
-                                        cancelText: 'Cancel',
-                                        onOk: async () => {
-                                            try {
-                                                await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
-                                                message.success('Job deleted successfully');
-                                            } catch {
-                                                message.error('Failed to delete job');
-                                            }
-                                        }
-                                    });
-                                }}
-                            >
-                                Delete
                             </Button>
                             <Button
                                 mode="primary"
@@ -326,6 +324,29 @@ const JobDetail = () => {
                     />
                 </div>
             </Modal>
+
+            <PublishConfirmModal
+                open={showPublishModal}
+                onConfirm={async () => {
+                    try {
+                        await publishJob({ id: job.id, body: {} }).unwrap();
+                        message.success('Job published successfully!');
+                        setShowPublishModal(false);
+                    } catch (error) {
+                        const validationErrors = error?.data?.data;
+                        if (validationErrors && typeof validationErrors === 'object') {
+                            Object.values(validationErrors).forEach((msg) => message.error(msg));
+                        } else {
+                            message.error(error?.data?.message || 'Failed to publish job');
+                        }
+                    }
+                }}
+                onCancel={() => setShowPublishModal(false)}
+                loading={isPublishing}
+                values={job}
+                featureUsage={featureUsage}
+                isEditMode={true}
+            />
         </div>
     );
 };

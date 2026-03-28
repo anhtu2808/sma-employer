@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useGetApplicationsQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
+import { useGetJobDetailQuery } from '@/apis/apis';
 import { getApplicationStatusConfig, getAllowedNextStatuses, APPLICATION_STATUS } from '@/constrant/application';
 import FilterSidebar from '@/pages/application/filterSidebar';
 import Loading from '@/components/Loading';
@@ -15,6 +16,10 @@ import {
 
 const JobApplicants = ({ jobId }) => {
     const navigate = useNavigate();
+    const { data: jobData } = useGetJobDetailQuery(jobId, { skip: !jobId });
+    const jobStatus = jobData?.data?.status;
+    const isUnpublished = jobStatus === 'DRAFT' || jobStatus === 'PENDING_REVIEW';
+
     const [searchTerm, setSearchTerm] = useState('');
     const [filter, setFilter] = useState({ page: 0, size: 10 });
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -244,6 +249,14 @@ const JobApplicants = ({ jobId }) => {
         },
     ];
 
+    if (isUnpublished) {
+        return (
+            <PublishFirstPlaceholder
+                description="Applicants will appear here once your job is published and candidates start applying."
+            />
+        );
+    }
+
     return (
         <div className="flex flex-col gap-4 animate-fadeIn">
             {/* Header bar: search + filter */}
@@ -446,6 +459,16 @@ const JobApplicants = ({ jobId }) => {
         </div>
     );
 };
+
+const PublishFirstPlaceholder = ({ description }) => (
+    <div className="flex flex-col items-center justify-center py-24 gap-4 animate-fadeIn">
+        <div className="w-20 h-20 rounded-full bg-amber-50 flex items-center justify-center">
+            <span className="material-icons-round text-4xl text-amber-400">rocket_launch</span>
+        </div>
+        <h3 className="text-lg font-bold text-neutral-800 dark:text-white">Publish your job first</h3>
+        <p className="text-sm text-neutral-400 text-center max-w-sm">{description}</p>
+    </div>
+);
 
 // Helper Components
 const StatusTag = ({ status }) => {

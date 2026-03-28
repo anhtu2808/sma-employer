@@ -1,17 +1,31 @@
 import React, { useState } from 'react';
 import { useGetProposedCvsQuery } from '../../../apis/jobApi';
+import { useGetJobDetailQuery } from '@/apis/apis';
 import Loading from '@/components/Loading';
 import { ChevronLeft, ChevronRight, Eye, ExternalLink, MapPin, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const ProposedCVs = ({ jobId }) => {
   const navigate = useNavigate();
+  const { data: jobData } = useGetJobDetailQuery(jobId, { skip: !jobId });
+  const jobStatus = jobData?.data?.status;
+  const isUnpublished = jobStatus === 'DRAFT' || jobStatus === 'PENDING_REVIEW';
+
   const [params, setParams] = useState({ page: 0, size: 10 });
   const { data: response, isFetching } = useGetProposedCvsQuery({ id: jobId, ...params }, { skip: !jobId });
   const data = response?.data || { content: [], totalElements: 0, pageNumber: params.page, pageSize: params.size, totalPages: 0 };
   const applications = data.content;
   const totalElements = data.totalElements;
   const totalPages = data.totalPages;
+
+  if (isUnpublished) {
+    return (
+      <PublishFirstPlaceholder
+        description="AI-recommended candidates will appear here once your job is live."
+        className="mt-4"
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4 animate-fadeIn mt-4">
@@ -144,6 +158,16 @@ const ProposedCVs = ({ jobId }) => {
     </div>
   );
 };
+
+const PublishFirstPlaceholder = ({ description, className = '' }) => (
+  <div className={`flex flex-col items-center justify-center py-24 gap-4 animate-fadeIn ${className}`}>
+    <div className="w-20 h-20 rounded-full bg-amber-50 flex items-center justify-center">
+      <span className="material-icons-round text-4xl text-amber-400">rocket_launch</span>
+    </div>
+    <h3 className="text-lg font-bold text-neutral-800 dark:text-white">Publish your job first</h3>
+    <p className="text-sm text-neutral-400 text-center max-w-sm">{description}</p>
+  </div>
+);
 
 // Helper Components
 const getDisplayRate = (rate) => {
