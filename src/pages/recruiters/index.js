@@ -230,12 +230,8 @@ const RecruitersPage = () => {
 
     return (
         <div className="p-6 space-y-6">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Recruiter Team</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Manage members in your recruiting team</p>
-                </div>
-                {isRootRecruiter && (
+            {isRootRecruiter && (
+                <div className="flex justify-end">
                     <Button
                         mode="primary"
                         onClick={handleOpenCreate}
@@ -250,8 +246,8 @@ const RecruitersPage = () => {
                     >
                         Add Member
                     </Button>
-                )}
-            </div>
+                </div>
+            )}
 
             <div className="bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-5">
                 <div className="flex items-center gap-3 mb-3">

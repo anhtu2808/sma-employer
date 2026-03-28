@@ -5,10 +5,13 @@ import { useGetCompanyLocationQuery } from '@/apis/companyApi';
 const JobLocations = () => {
     const { data: locations = [], isLoading } = useGetCompanyLocationQuery();
 
-    const locationOptions = locations.map((location) => ({
-        value: location.id,
-        label: `${location.name} - ${location.address}, ${location.district}, ${location.city}, ${location.country}`,
-    }));
+    const locationOptions = locations.map((location) => {
+        const parts = [location.address, location.district, location.city, location.country].filter(Boolean);
+        const label = location.name
+            ? `${location.name} - ${parts.join(', ')}`
+            : parts.join(', ');
+        return { value: location.id, label: label || 'Unnamed location' };
+    });
 
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-4">

@@ -28,6 +28,7 @@ const normalizeApplicationDetail = (payload) => {
         jobTitle: info.jobTitle,
         coverLetter: info.coverLetter,
         appliedAt: info.appliedAt,
+        resumeId: resume.id,
         resumeUrl: resume.resumeUrl,
         resumeName: info.resumeName,
         location: resume.addressInResume,

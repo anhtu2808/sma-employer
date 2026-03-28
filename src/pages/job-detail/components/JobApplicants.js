@@ -229,9 +229,9 @@ const JobApplicants = ({ jobId }) => {
                         >
                             <Eye size={16} />
                         </button>
-                        {app.resumeUrl && (
+                        {app.resumeId && (
                             <button
-                                onClick={() => window.open(app.resumeUrl, '_blank')}
+                                onClick={() => navigate(`/cv-preview/${app.resumeId}`)}
                                 className="p-2.5 bg-gray-50 dark:bg-neutral-800 hover:bg-primary/10 text-gray-400 hover:text-primary rounded-xl transition-all border border-transparent hover:border-primary/20"
                                 title="View Resume"
                             >
