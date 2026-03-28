@@ -177,6 +177,13 @@ export const jobApi = api.injectEndpoints({
       }),
       invalidatesTags: ["JobQuestions"],
     }),
+    parseJobDescription: builder.mutation({
+      query: (body) => ({
+        url: `${API_VERSION}/jobs/parse-jd`,
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -203,4 +210,5 @@ export const {
   useCreateJobQuestionMutation,
   useUpdateJobQuestionMutation,
   useDeleteJobQuestionMutation,
+  useParseJobDescriptionMutation,
 } = jobApi;

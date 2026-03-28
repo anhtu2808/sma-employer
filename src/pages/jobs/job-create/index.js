@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { message, Switch, Tooltip } from "antd";
 import Form from "@/components/Form";
 import Button from "@/components/Button";
@@ -13,6 +13,8 @@ import {
   useGetCriteriaQuery,
 } from "@/apis/jobApi";
 import { useGetFeatureUsageQuery } from "@/apis/featureUsageApi";
+import { useGetSkillsQuery } from "@/apis/skillApi";
+import { useGetExpertiseQuery, useGetDomainQuery } from "@/apis/masterDataApi";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 
@@ -22,11 +24,19 @@ import JobLocations from "./components/JobLocations";
 import WorkCompensation from "./components/WorkCompensation";
 import JobDescriptionSection from "./components/JobDescriptionSection";
 import PublishConfirmModal from "./components/PublishConfirmModal";
+import PostMethodModal from "./components/PostMethodModal";
+import ImportJDModal from "./components/ImportJDModal";
 import ScoringWeights from "./components/ScoringWeights";
 import ProTips from "./components/ProTips";
 import Classification from "./components/Classification";
 import ScreeningQuestions from "./components/ScreeningQuestions";
 import Preloader from "@/components/Preloader";
+
+const BENEFIT_TYPES = [
+  "FINANCIAL", "INSURANCE", "TIME_OFF", "FLEXIBILITY",
+  "DEVELOPMENT", "LEISURE", "EQUIPMENT", "AMENITIES",
+  "WORK_ENVIRONMENT", "OTHER",
+];
 
 const JobCreate = () => {
   const { id } = useParams();
@@ -48,7 +58,21 @@ const JobCreate = () => {
   const { data: criteriaList = [] } = useGetCriteriaQuery();
   const { data: featureUsage = [] } = useGetFeatureUsageQuery();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showPostMethodModal, setShowPostMethodModal] = useState(!isEditMode && !clonedJobId);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [pendingValues, setPendingValues] = useState(null);
+
+  // Master data for AI JD import
+  const { data: skills = [] } = useGetSkillsQuery({ size: 200 });
+  const { data: expertises = [] } = useGetExpertiseQuery({ size: 200 });
+  const { data: domains = [] } = useGetDomainQuery({ size: 200 });
+
+  const masterData = useMemo(() => ({
+    skills: skills.map((s) => ({ id: s.id, name: s.name })),
+    expertises: expertises.map((e) => ({ id: e.id, name: e.name })),
+    domains: domains.map((d) => ({ id: d.id, name: d.name })),
+    benefitTypes: BENEFIT_TYPES,
+  }), [skills, expertises, domains]);
 
   React.useEffect(() => {
     if (clonedJob) {
@@ -210,6 +234,60 @@ const JobCreate = () => {
     setPendingValues(null);
   };
 
+  // Post method modal handlers
+  const handlePostClick = () => {
+    setShowPostMethodModal(true);
+  };
+
+  const handleSelectManual = () => {
+    setShowPostMethodModal(false);
+    setSubmitAction("publish");
+    form.submit();
+  };
+
+  const handleSelectAI = () => {
+    setShowPostMethodModal(false);
+    setShowImportModal(true);
+  };
+
+  const handleImported = (result) => {
+    setShowImportModal(false);
+
+    // Unwrap ApiResponse envelope
+    const parsedData = result?.data || result;
+
+    // Map parsed data to form fields
+    const formValues = {
+      name: parsedData.name,
+      about: parsedData.about,
+      responsibilities: parsedData.responsibilities,
+      requirement: parsedData.requirement,
+      jobLevel: parsedData.jobLevel,
+      experienceTime: parsedData.experienceTime,
+      salaryStart: parsedData.salaryStart,
+      salaryEnd: parsedData.salaryEnd,
+      workingModel: parsedData.workingModel,
+      quantity: parsedData.quantity,
+      expertiseId: parsedData.expertiseId,
+      domainIds: parsedData.domainIds || [],
+      skillIds: parsedData.skillIds || [],
+      benefits: (parsedData.benefits || []).map((b) => ({
+        type: b.type || "OTHER",
+        description: b.description || "",
+      })),
+    };
+
+    // Remove null/undefined values so form doesn't override with empty
+    Object.keys(formValues).forEach((key) => {
+      if (formValues[key] === null || formValues[key] === undefined) {
+        delete formValues[key];
+      }
+    });
+
+    form.setFieldsValue(formValues);
+
+  };
+
   if (isEditMode && isJobLoading) {
     return <Loading className="py-16" />;
   }
@@ -249,6 +327,16 @@ const JobCreate = () => {
               </Form.Item>
             </div>
 
+            {!isEditMode && (
+              <button
+                type="button"
+                onClick={() => setShowImportModal(true)}
+                className="h-9 px-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-orange-50 flex items-center gap-1.5 transition-colors text-sm text-primary"
+              >
+                <span className="material-icons-round text-base">auto_awesome</span>
+                AI Import
+              </button>
+            )}
             <Button
               mode="secondary"
               htmlType="submit"
@@ -257,14 +345,24 @@ const JobCreate = () => {
             >
               Save as Draft
             </Button>
-            <Button
-              mode="primary"
-              htmlType="submit"
-              loading={isLoadingPublish}
-              onClick={() => setSubmitAction("publish")}
-            >
-              {isEditMode ? "Publish" : "Publish Now"}
-            </Button>
+            {isEditMode ? (
+              <Button
+                mode="primary"
+                htmlType="submit"
+                loading={isLoadingPublish}
+                onClick={() => setSubmitAction("publish")}
+              >
+                Publish
+              </Button>
+            ) : (
+              <Button
+                mode="primary"
+                loading={isLoadingPublish}
+                onClick={handlePostClick}
+              >
+                Post
+              </Button>
+            )}
           </div>
         </div>
 
@@ -297,6 +395,20 @@ const JobCreate = () => {
         values={pendingValues?.formValues}
         featureUsage={featureUsage}
         isEditMode={isEditMode}
+      />
+
+      <PostMethodModal
+        open={showPostMethodModal}
+        onCancel={() => setShowPostMethodModal(false)}
+        onSelectManual={handleSelectManual}
+        onSelectAI={handleSelectAI}
+      />
+
+      <ImportJDModal
+        open={showImportModal}
+        onCancel={() => setShowImportModal(false)}
+        onImported={handleImported}
+        masterData={masterData}
       />
     </div>
     </>

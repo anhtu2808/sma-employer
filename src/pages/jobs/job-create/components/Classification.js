@@ -7,9 +7,9 @@ import BenefitsManager from './BenefitsManager';
 
 const Classification = () => {
     const [skillSearch, setSkillSearch] = useState('');
-    const { data: skills = [], isLoading: skillsLoading, isFetching: skillsFetching } = useGetSkillsQuery({ name: skillSearch || undefined });
-    const { data: expertise = [], isLoading: expertiseLoading } = useGetExpertiseQuery();
-    const { data: domain = [], isLoading: domainLoading } = useGetDomainQuery();
+    const { data: skills = [], isLoading: skillsLoading, isFetching: skillsFetching } = useGetSkillsQuery({ name: skillSearch || undefined, size: 200 });
+    const { data: expertise = [], isLoading: expertiseLoading } = useGetExpertiseQuery({ size: 200 });
+    const { data: domain = [], isLoading: domainLoading } = useGetDomainQuery({ size: 200 });
 
     const skillOptions = skills.map((skill) => ({
         value: skill.id,

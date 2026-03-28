@@ -10,7 +10,7 @@ const WorkCompensation = () => {
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Form.Item name="jobLevel" label="Job Position" className="mb-0">
+                <Form.Item name="jobLevel" label="Job Level" className="mb-0">
                     <Select placeholder="Select level" className="w-full" options={[
                         { value: 'INTERN', label: 'Intern' },
                         { value: 'FRESHER', label: 'Fresher' },
@@ -47,7 +47,7 @@ const WorkCompensation = () => {
                         <Form.Item name="showSalary" valuePropName="checked" initialValue={true} noStyle>
                             <Switch size="small" />
                         </Form.Item>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">Hiển thị mức lương cho ứng viên</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">Show salary to candidates</span>
                     </div>
                 </div>
 
