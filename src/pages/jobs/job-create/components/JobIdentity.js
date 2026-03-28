@@ -27,10 +27,14 @@ const JobIdentity = () => {
                         label={<span className="text-gray-500 uppercase text-xs font-bold tracking-wider">Application Deadline</span>}
                         className="mb-0"
                         rules={[
+                            { required: true, message: 'Please select a deadline' },
                             {
                                 validator: (_, value) => {
                                     if (value && value.isBefore(dayjs(), 'day')) {
                                         return Promise.reject(new Error('Deadline must be in the future'));
+                                    }
+                                    if (value && value.isAfter(dayjs().add(3, 'month'), 'day')) {
+                                        return Promise.reject(new Error('Deadline cannot be more than 3 months from now'));
                                     }
                                     return Promise.resolve();
                                 },
@@ -41,7 +45,7 @@ const JobIdentity = () => {
                             className="w-full rounded-lg py-2"
                             format="MM/DD/YYYY"
                             placeholder="mm/dd/yyyy"
-                            disabledDate={(current) => current && current < dayjs().startOf('day')}
+                            disabledDate={(current) => current && (current < dayjs().startOf('day') || current > dayjs().add(3, 'month').endOf('day'))}
                         />
                     </Form.Item>
 
@@ -49,6 +53,7 @@ const JobIdentity = () => {
                         name="quantity"
                         label={<span className="text-gray-500 uppercase text-xs font-bold tracking-wider">Number of Openings</span>}
                         className="mb-0"
+                        rules={[{ required: true, message: 'Please enter number of openings' }]}
                     >
                         <InputNumber className="w-full rounded-lg py-1.5" min={1} />
                     </Form.Item>

@@ -20,7 +20,8 @@ const JobLocations = () => {
                 Locations
             </h3>
 
-            <Form.Item name="locationIds" label="Locations" className="mb-0">
+            <Form.Item name="locationIds" label="Locations" className="mb-0"
+                rules={[{ required: true, message: 'At least one location is required' }]}>
                 <Select
                     mode="multiple"
                     placeholder="Select locations..."

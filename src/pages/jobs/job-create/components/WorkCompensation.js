@@ -2,6 +2,7 @@ import React from 'react';
 import { Form, Input, InputNumber, Select, Switch } from 'antd';
 
 const WorkCompensation = () => {
+    const showSalary = Form.useWatch('showSalary');
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -10,7 +11,7 @@ const WorkCompensation = () => {
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Form.Item name="jobLevel" label="Job Level" className="mb-0">
+                <Form.Item name="jobLevel" label="Job Level" className="mb-0" rules={[{ required: true, message: 'Please select a job level' }]}>
                     <Select placeholder="Select level" className="w-full" options={[
                         { value: 'INTERN', label: 'Intern' },
                         { value: 'FRESHER', label: 'Fresher' },
@@ -34,21 +35,23 @@ const WorkCompensation = () => {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Salary Range
                     </label>
-                    <div className="flex gap-2">
-                        <Form.Item name="salaryStart" noStyle>
-                            <Input prefix="₫" placeholder="Min" />
-                        </Form.Item>
-                        <span className="self-center text-gray-400">-</span>
-                        <Form.Item name="salaryEnd" noStyle>
-                            <Input prefix="₫" placeholder="Max" />
-                        </Form.Item>
-                    </div>
-                    <div className="flex items-center gap-2 mt-3">
+                    <div className="flex items-center gap-2">
                         <Form.Item name="showSalary" valuePropName="checked" initialValue={true} noStyle>
                             <Switch size="small" />
                         </Form.Item>
                         <span className="text-sm text-gray-500 dark:text-gray-400">Show salary to candidates</span>
                     </div>
+                    {showSalary !== false && (
+                        <div className="flex gap-2 mt-3">
+                            <Form.Item name="salaryStart" noStyle>
+                                <Input prefix="₫" placeholder="Min" />
+                            </Form.Item>
+                            <span className="self-center text-gray-400">-</span>
+                            <Form.Item name="salaryEnd" noStyle>
+                                <Input prefix="₫" placeholder="Max" />
+                            </Form.Item>
+                        </div>
+                    )}
                 </div>
 
                 <div>

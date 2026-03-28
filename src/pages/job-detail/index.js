@@ -6,7 +6,7 @@ import { useGetFeatureUsageQuery } from '@/apis/featureUsageApi';
 import PublishConfirmModal from '../jobs/job-create/components/PublishConfirmModal';
 import { useGetApplicationsQuery } from '@/apis/applicationApi';
 import Button from '@/components/Button';
-import Loading from '@/components/Loading';
+import LoadingOverlay from '@/components/Loading/LoadingOverlay';
 import { Skeleton, Tabs, ConfigProvider, Modal, DatePicker, message, Select, Button as AntButton, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import JobHeader from './components/JobHeader';
@@ -15,6 +15,39 @@ import JobApplicants from './components/JobApplicants';
 import ProposedCVs from './components/ProposedCVs';
 import { PageHeaderContext } from '@/contexts/PageHeaderContext';
 import AiScoringCard from './components/AiScoringCard';
+
+const buildPublishBody = (job) => ({
+    name: job.name,
+    about: job.about,
+    responsibilities: job.responsibilities,
+    requirement: job.requirement,
+    enableAiScoring: job.enableAiScoring ?? false,
+    expDate: job.expDate,
+    salaryStart: job.salaryStart ?? null,
+    salaryEnd: job.salaryEnd ?? null,
+    experienceTime: job.experienceTime ?? null,
+    jobLevel: job.jobLevel,
+    workingModel: job.workingModel,
+    quantity: job.quantity,
+    autoRejectThreshold: job.autoRejectThreshold ?? null,
+    expertiseId: job.expertise?.id || job.expertiseId,
+    skillIds: job.skills?.map(s => s.id) || [],
+    domainIds: job.domains?.map(d => d.id) || [],
+    benefits: (job.benefits || []).map(b => ({
+        name: b.description || b.name || '',
+        type: b.type || 'OTHER',
+        description: b.description || b.name || '',
+    })),
+    questionIds: job.questions?.map(q => q.id) || [],
+    locationIds: job.locations?.map(l => l.id) || [],
+    scoringCriterias: (job.scoringCriterias || []).map(c => ({
+        criteriaId: c.criteria?.id || c.criteriaId,
+        weight: c.weight,
+        enable: true,
+        rule: c.rule || null,
+    })),
+    highlightJob: job.highlightJob ?? false,
+});
 
 const JobDetail = () => {
     const { id } = useParams();
@@ -84,11 +117,7 @@ const JobDetail = () => {
         }
     };
 
-    if (isLoading) {
-        return <Loading className="py-16" />;
-    }
-
-    if (error || !job) {
+    if (!isLoading && (error || !job)) {
         return (
             <div className="p-8 text-center">
                 <h2 className="text-xl font-semibold mb-4">Job not found</h2>
@@ -110,7 +139,7 @@ const JobDetail = () => {
         return `${format(min)} - ${format(max)}`;
     };
 
-    const tabItems = [
+    const tabItems = job ? [
         {
             key: '1',
             label: 'Job Details',
@@ -151,10 +180,11 @@ const JobDetail = () => {
             label: `Proposed CVs (${proposedCvCount})`,
             children: <ProposedCVs jobId={job.id} />,
         },
-    ];
+    ] : [];
 
     return (
-        <div className="space-y-2">
+        <div className="relative space-y-2">
+            <LoadingOverlay isLoading={isLoading} />
             {/* Top bar: Back button + Status & Actions */}
             <div className="flex items-center justify-between flex-wrap gap-3">
                 <Button
@@ -165,7 +195,7 @@ const JobDetail = () => {
                 >
                     Back to Jobs
                 </Button>
-                <div className="flex items-center gap-3 flex-wrap">
+                {job && <div className="flex items-center gap-3 flex-wrap">
                     <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold border ${job.status === 'PUBLISHED' ? 'bg-emerald-100 text-emerald-700 border-emerald-300' :
                         job.status === 'DRAFT' ? 'bg-slate-100 text-slate-600 border-slate-300' :
                             job.status === 'CLOSED' ? 'bg-red-100 text-red-600 border-red-300' :
@@ -294,20 +324,27 @@ const JobDetail = () => {
                             </Button>
                         </>
                     )}
-                </div>
+                </div>}
             </div>
 
-            <ConfigProvider
-                theme={{
-                    token: {
-                        colorPrimary: '#f97316',
-                    },
-                }}
-            >
-                <Tabs defaultActiveKey="1" items={tabItems} className="custom-tabs" />
-            </ConfigProvider>
+            {job ? (
+                <ConfigProvider
+                    theme={{
+                        token: {
+                            colorPrimary: '#f97316',
+                        },
+                    }}
+                >
+                    <Tabs defaultActiveKey="1" items={tabItems} className="custom-tabs" />
+                </ConfigProvider>
+            ) : (
+                <div className="space-y-6 mt-4">
+                    <Skeleton active paragraph={{ rows: 8 }} />
+                    <Skeleton active paragraph={{ rows: 4 }} />
+                </div>
+            )}
 
-            <Modal
+            {job && <Modal
                 title="Update Expired Date"
                 open={isExpDateModalVisible}
                 onOk={handleUpdateExpDate}
@@ -323,13 +360,13 @@ const JobDetail = () => {
                         disabledDate={(current) => current && current < dayjs().endOf('day')}
                     />
                 </div>
-            </Modal>
+            </Modal>}
 
-            <PublishConfirmModal
+            {job && <PublishConfirmModal
                 open={showPublishModal}
                 onConfirm={async () => {
                     try {
-                        await publishJob({ id: job.id, body: {} }).unwrap();
+                        await publishJob({ id: job.id, body: buildPublishBody(job) }).unwrap();
                         message.success('Job published successfully!');
                         setShowPublishModal(false);
                     } catch (error) {
@@ -346,7 +383,7 @@ const JobDetail = () => {
                 values={job}
                 featureUsage={featureUsage}
                 isEditMode={true}
-            />
+            />}
         </div>
     );
 };

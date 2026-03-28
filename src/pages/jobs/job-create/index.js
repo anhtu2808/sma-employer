@@ -3,7 +3,6 @@ import { message, Switch, Tooltip } from "antd";
 import Form from "@/components/Form";
 import Button from "@/components/Button";
 import { Info } from "lucide-react";
-import Loading from "@/components/Loading";
 import {
   useCreatePublishJobMutation,
   useCreateSaveJobDraftMutation,
@@ -104,9 +103,10 @@ const JobCreate = () => {
     }
   }, [clonedJob, criteriaList, form]);
 
-  const onFinish = async (values) => {
+  const onFinish = async (values, action) => {
+    const effectiveAction = action || submitAction;
     try {
-      console.log("Submit action:", submitAction);
+      console.log("Submit action:", effectiveAction);
       const scoringCriterias = criteriaList.map((item) => ({
         criteriaId: item.id,
         weight:
@@ -120,7 +120,7 @@ const JobCreate = () => {
         (sum, item) => sum + (item.enable ? item.weight : 0),
         0,
       );
-      if (submitAction === "publish" && values.enableAiScoring && totalWeight !== 100) {
+      if (effectiveAction === "publish" && values.enableAiScoring && totalWeight !== 100) {
         message.error(
           `Total scoring weight of enabled criteria must be 100%. Current: ${totalWeight}%`,
         );
@@ -166,13 +166,13 @@ const JobCreate = () => {
       delete submitData.showSalary;
       delete submitData.employmentType;
       
-      if (submitAction === "publish") {
+      if (effectiveAction === "publish") {
         submitData.highlightJob = values.highlightJob === true;
       } else {
         delete submitData.highlightJob;
       }
 
-      if (submitAction === "publish") {
+      if (effectiveAction === "publish") {
         setPendingValues({ submitData, formValues: values });
         setShowConfirmModal(true);
         return;
@@ -270,17 +270,13 @@ const JobCreate = () => {
 
   };
 
-  if (isEditMode && isJobLoading) {
-    return <Loading className="py-16" />;
-  }
-
   const isLoadingPublish = submitAction === "publish" && (isEditMode ? isPublishing : isPublishingNew);
   const isLoadingDraft = submitAction === "draft" && (isEditMode ? isSaving : isSavingNew);
   const isSubmitting = isLoadingPublish || isLoadingDraft;
 
   return (
     <>
-      <Preloader isLoading={isSubmitting} />
+      <Preloader isLoading={isSubmitting || (isEditMode && isJobLoading)} />
     <div className="space-y-4">
       <Form form={form} onFinish={onFinish} onFinishFailed={() => message.error("Please fill in all required fields before publishing.")} layout="vertical" className="block">
         {/* Top Bar */}
@@ -321,16 +317,17 @@ const JobCreate = () => {
             )}
             <Button
               mode="secondary"
-              htmlType="submit"
-              loading={isLoadingDraft}
-              onClick={() => setSubmitAction("draft")}
+              type="button"
+              onClick={() => {
+                setSubmitAction("draft");
+                onFinish(form.getFieldsValue(), "draft");
+              }}
             >
               Save as Draft
             </Button>
             <Button
               mode="primary"
               htmlType="submit"
-              loading={isLoadingPublish}
               onClick={() => setSubmitAction("publish")}
             >
               Publish
