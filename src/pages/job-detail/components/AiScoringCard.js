@@ -3,6 +3,8 @@ import { Progress, Tooltip } from "antd";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { useGetCriteriaQuery } from "@/apis/jobApi";
 import { CRITERIA_COLORS } from "@/constants/scoringColors";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBrain, faChevronDown, faChevronUp } from '../../../utils/icons';
 
 const AiScoringCard = ({ job }) => {
   const { data: allCriteria = [] } = useGetCriteriaQuery();
@@ -33,7 +35,7 @@ const AiScoringCard = ({ job }) => {
     <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-          <span className="material-icons-round text-orange-500 text-xl">psychology</span>
+          <FontAwesomeIcon icon={faBrain} className="text-orange-500 text-xl" />
           AI Scoring
         </h3>
         <span
@@ -49,7 +51,7 @@ const AiScoringCard = ({ job }) => {
 
       {!isEnabled ? (
         <div className="text-center py-6 text-gray-400 dark:text-gray-500">
-          <span className="material-icons-round text-3xl mb-2 block">psychology</span>
+          <FontAwesomeIcon icon={faBrain} className="text-3xl mb-2 block" />
           <p className="text-sm">AI Scoring is not enabled for this job</p>
         </div>
       ) : (
@@ -111,9 +113,7 @@ const AiScoringCard = ({ job }) => {
                         onClick={() => setExpandedRuleId(expandedRuleId === sc.id ? null : sc.id)}
                         className="text-[11px] text-gray-400 hover:text-orange-500 flex items-center gap-0.5"
                       >
-                        <span className="material-icons-round text-[12px]">
-                          {expandedRuleId === sc.id ? "expand_less" : "expand_more"}
-                        </span>
+                        <FontAwesomeIcon icon={expandedRuleId === sc.id ? faChevronUp : faChevronDown} className="text-[12px]" />
                         Custom rule
                       </button>
                       {expandedRuleId === sc.id && (

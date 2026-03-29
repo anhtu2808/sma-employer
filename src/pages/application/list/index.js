@@ -5,6 +5,8 @@ import { Table, Select, ConfigProvider, Modal as AntModal } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { getApplicationStatusConfig, getAllowedNextStatuses, APPLICATION_STATUS } from '@/constrant/application';
 import Loading from '@/components/Loading';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '../../../utils/icons';
 
 const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPage, onPageChange, onStatusUpdate }) => {
     const navigate = useNavigate();
@@ -32,7 +34,7 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
             render: (_, app) => (
                 <div className="flex items-start gap-3 min-w-0">
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-700 flex items-center justify-center mt-0.5">
-                        <span className="material-icons-round text-lg text-gray-400">person</span>
+                        <FontAwesomeIcon icon={faUser} className="text-lg text-gray-400" />
                     </div>
                     <div className="min-w-0 flex-1">
                         <p className="text-base font-semibold text-gray-900 dark:text-white truncate cursor-pointer hover:text-primary hover:underline transition-colors"

@@ -2,12 +2,14 @@ import React from 'react';
 import { Form } from 'antd';
 import TiptapEditor from '@/components/TiptapEditor';
 import SimpleTextEditor from '@/components/SimpleTextEditor';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileLines } from '../../../../utils/icons';
 
 const JobDescriptionSection = () => {
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <span className="material-icons-round text-orange-500">description</span>
+                <FontAwesomeIcon icon={faFileLines} className="text-orange-500" />
                 About the Role
             </h3>
 

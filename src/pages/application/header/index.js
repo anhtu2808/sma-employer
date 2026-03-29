@@ -4,6 +4,8 @@ import { Search, Filter, Plus, LayoutGrid, List as ListIcon, Download, Archive }
 import Button from '@/components/Button';
 import { getJobStatusConfig } from '@/constrant/application';
 import { Dropdown } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileLines, faTableCells } from '../../../utils/icons';
 
 const APPLICATION_STATUS_TABS = [
     { key: '', label: 'All' },
@@ -35,13 +37,13 @@ const ApplicationHeader = ({
         {
             key: 'XLSX',
             label: 'Export as Excel (.xlsx)',
-            icon: <span className="material-symbols-outlined text-sm">table_view</span>,
+            icon: <FontAwesomeIcon icon={faTableCells} className="text-sm" />,
             onClick: () => onExport('XLSX')
         },
         {
             key: 'CSV',
             label: 'Export as CSV (.csv)',
-            icon: <span className="material-symbols-outlined text-sm">description</span>,
+            icon: <FontAwesomeIcon icon={faFileLines} className="text-sm" />,
             onClick: () => onExport('CSV')
         }
     ];

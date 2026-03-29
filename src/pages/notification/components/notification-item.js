@@ -1,4 +1,9 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faBell, faCircleCheck, faCircleExclamation,
+    faCreditCard, faFileLines, faBriefcase, faInbox,
+} from '@/utils/icons';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useMarkAsReadMutation } from '@/apis/notificationApi';
@@ -18,23 +23,23 @@ const NotificationItem = ({ noti }) => {
         switch (type) {
             case 'SYSTEM':
                 return {
-                    icon: 'error_outline',
+                    icon: faCircleExclamation,
                     color: 'text-red-500',
                     bg: 'bg-red-50 dark:bg-red-900/20'
                 };
             case 'PAYMENT_SUCCESS':
-                return { icon: 'check_circle', color: 'text-green-500' };
+                return { icon: faCircleCheck, color: 'text-green-500' };
             case 'PAYMENT_FAILURE':
-                return { icon: 'payments', color: 'text-red-500' };
+                return { icon: faCreditCard, color: 'text-red-500' };
             case 'APPLICATION_STATUS':
-                return { icon: 'contact_page', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' };
+                return { icon: faFileLines, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' };
             case 'FLAGGED_JOB':
-                return { icon: 'work_outline', color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' };
+                return { icon: faBriefcase, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' };
             case 'INVITATION':
-                return { icon: 'forward_to_inbox', color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' };
+                return { icon: faInbox, color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/20' };
             default:
                 return {
-                    icon: 'notifications',
+                    icon: faBell,
                     color: 'text-primary',
                     bg: 'bg-gray-100 dark:bg-gray-700'
                 };
@@ -54,7 +59,7 @@ const NotificationItem = ({ noti }) => {
             try {
                 await markAsRead(noti.id).unwrap();
             } catch (err) {
-                console.error("Lỗi:", err);
+                console.error("Loi:", err);
             }
         }
 
@@ -96,7 +101,7 @@ const NotificationItem = ({ noti }) => {
             try {
                 await markAsRead(noti.id).unwrap();
             } catch (err) {
-                console.error("Lỗi:", err);
+                console.error("Loi:", err);
             }
         }
     };
@@ -116,7 +121,7 @@ const NotificationItem = ({ noti }) => {
                 <div className="flex-shrink-0">
                     <div className={`h-10 w-10 rounded-full flex items-center justify-center shadow-sm ${!noti.isRead ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-800'
                         }`}>
-                        <span className={`material-symbols-outlined ${config.color}`}>{config.icon}</span>
+                        <FontAwesomeIcon icon={config.icon} className={config.color} />
                     </div>
                 </div>
 

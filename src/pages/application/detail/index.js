@@ -6,6 +6,11 @@ import { APPLICATION_STATUS } from '@/constrant/application';
 import Loading from '@/components/Loading';
 import Modal from '@/components/Modal';
 import { useBlockCandidateMutation } from '@/apis/companyApi';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faArrowLeft, faUser, faBrain, faCircleQuestion, faNewspaper,
+    faTriangleExclamation, faCircleCheck,
+} from '../../../utils/icons';
 import CandidateHeader from './candidate-header';
 import Overview from './overview';
 import AiAnalysis from './ai-analysis';
@@ -139,10 +144,10 @@ const ApplicationDetail = () => {
     const hasCover = !!app.coverLetter;
 
     const tabs = [
-        { key: TAB_KEYS.OVERVIEW, label: 'Overview', icon: 'person' },
-        ...(hasAi ? [{ key: TAB_KEYS.AI, label: 'AI Analysis', icon: 'psychology' }] : []),
-        ...(hasAnswers ? [{ key: TAB_KEYS.QA, label: 'Q&A', icon: 'quiz' }] : []),
-        ...(hasCover ? [{ key: TAB_KEYS.COVER, label: 'Cover Letter', icon: 'article' }] : []),
+        { key: TAB_KEYS.OVERVIEW, label: 'Overview', icon: faUser },
+        ...(hasAi ? [{ key: TAB_KEYS.AI, label: 'AI Analysis', icon: faBrain }] : []),
+        ...(hasAnswers ? [{ key: TAB_KEYS.QA, label: 'Q&A', icon: faCircleQuestion }] : []),
+        ...(hasCover ? [{ key: TAB_KEYS.COVER, label: 'Cover Letter', icon: faNewspaper }] : []),
     ];
 
     const renderTabContent = () => {
@@ -174,7 +179,7 @@ const ApplicationDetail = () => {
                 onClick={() => navigate(-1)}
                 className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors group"
             >
-                <span className="material-icons-round text-lg group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                <FontAwesomeIcon icon={faArrowLeft} className="text-lg group-hover:-translate-x-1 transition-transform" />
                 <span className="font-medium">Back to Pipeline</span>
             </button>
 
@@ -204,7 +209,7 @@ const ApplicationDetail = () => {
                                                 : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200'
                                         }`}
                                     >
-                                        <span className="material-icons-round text-base">{tab.icon}</span>
+                                        <FontAwesomeIcon icon={tab.icon} className="text-base" />
                                         <span className="hidden sm:inline">{tab.label}</span>
                                     </button>
                                 ))}
@@ -244,7 +249,7 @@ const ApplicationDetail = () => {
             >
                 <div className="space-y-4">
                     <div className="flex items-start gap-3 p-4 bg-red-50 rounded-xl border border-red-100">
-                        <span className="material-symbols-outlined text-red-600 text-[28px]">warning</span>
+                        <FontAwesomeIcon icon={faTriangleExclamation} className="text-red-600 text-[28px]" />
                         <div>
                             <p className="text-sm font-bold text-red-900">Important Warning</p>
                             <p className="text-xs text-red-700 leading-relaxed mt-1">
@@ -327,7 +332,7 @@ const ApplicationDetail = () => {
             >
                 <div className="text-left space-y-4">
                     <div className="flex items-start gap-3 p-4 bg-green-50 rounded-xl border border-green-100">
-                        <span className="material-symbols-outlined text-green-600 text-[28px]">check_circle</span>
+                        <FontAwesomeIcon icon={faCircleCheck} className="text-green-600 text-[28px]" />
                         <div>
                             <p className="text-sm font-bold text-green-900">Confirm Approval</p>
                             <p className="text-xs text-green-700 leading-relaxed mt-1">

@@ -8,6 +8,8 @@ import Input from '@/components/Input';
 import Modal from '@/components/Modal';
 import Loading from '@/components/Loading';
 import './index.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleExclamation, faMagnifyingGlass, faPeopleGroup, faTriangleExclamation, faUser, faUserSlash } from '@/utils/icons';
 import {
     useCreateRecruiterMemberMutation,
     useGetFeatureUsageQuery,
@@ -252,7 +254,7 @@ const RecruitersPage = () => {
             <div className="bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-5">
                 <div className="flex items-center gap-3 mb-3">
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${quotaExceeded ? 'bg-red-100 dark:bg-red-900/20' : 'bg-orange-100 dark:bg-orange-900/20'}`}>
-                        <span className={`material-icons-round text-xl ${quotaExceeded ? 'text-red-500' : 'text-orange-500'}`}>groups</span>
+                        <FontAwesomeIcon icon={faPeopleGroup} className={`text-xl ${quotaExceeded ? 'text-red-500' : 'text-orange-500'}`} />
                     </div>
                     <div>
                         <p className="text-xs uppercase tracking-widest text-gray-400 dark:text-gray-500 font-semibold">Team Member Limit</p>
@@ -278,7 +280,7 @@ const RecruitersPage = () => {
                 )}
                 {quotaExceeded && (
                     <div className="mt-3 flex items-center gap-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-3 py-2.5">
-                        <span className="material-icons-round text-red-500 text-lg">warning</span>
+                        <FontAwesomeIcon icon={faTriangleExclamation} className="text-red-500 text-lg" />
                         <p className="text-sm text-red-700 dark:text-red-400 flex-1">
                             You have reached the team member limit.
                         </p>
@@ -299,7 +301,7 @@ const RecruitersPage = () => {
                     </h2>
                     <div className="flex items-center gap-3">
                         <div className="relative">
-                            <span className="material-icons-round absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-[18px]">search</span>
+                            <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-[18px]" />
                             <input
                                 type="text"
                                 placeholder="Search by name or email..."
@@ -348,7 +350,7 @@ const RecruitersPage = () => {
                                                     />
                                                 ) : (
                                                     <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
-                                                        <span className="material-icons-round text-xl text-gray-400">person</span>
+                                                        <FontAwesomeIcon icon={faUser} className="text-xl text-gray-400" />
                                                     </div>
                                                 )}
                                                 <div>
@@ -388,7 +390,7 @@ const RecruitersPage = () => {
                                 <tr>
                                     <td className="px-6 py-12 text-center" colSpan={6}>
                                         <div className="flex flex-col items-center gap-2">
-                                            <span className="material-icons-round text-3xl text-gray-300 dark:text-gray-600">group_off</span>
+                                            <FontAwesomeIcon icon={faUserSlash} className="text-3xl text-gray-300 dark:text-gray-600" />
                                             <p className="text-gray-500 dark:text-gray-400">
                                                 {hasActiveSearch
                                                     ? 'No members match your search criteria.'
@@ -415,7 +417,7 @@ const RecruitersPage = () => {
                 <div className="grid grid-cols-1 gap-4">
                     {quotaExceeded && (
                         <div className="flex items-center gap-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-3 py-2.5">
-                            <span className="material-icons-round text-red-500 text-lg">error</span>
+                            <FontAwesomeIcon icon={faCircleExclamation} className="text-red-500 text-lg" />
                             <p className="text-sm text-red-700 dark:text-red-400">
                                 Team member limit reached. <Link to="/billing-plans" className="font-semibold text-primary hover:underline" onClick={() => setIsCreateOpen(false)}>Upgrade your plan</Link> to add more members.
                             </p>

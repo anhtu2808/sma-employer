@@ -8,6 +8,8 @@ import Button from '@/components/Button';
 import Modal from '@/components/Modal';
 import { Drawer, Table, Select, ConfigProvider, message, Modal as AntModal } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRocket, faUser } from '../../../utils/icons';
 import {
     Search, Filter, Plus,
     ExternalLink, Mail, Calendar, MapPin,
@@ -103,7 +105,7 @@ const JobApplicants = ({ jobId }) => {
             render: (_, app) => (
                 <div className="flex items-start gap-3 min-w-0">
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-700 flex items-center justify-center mt-0.5">
-                        <span className="material-icons-round text-lg text-gray-400">person</span>
+                        <FontAwesomeIcon icon={faUser} className="text-lg text-gray-400" />
                     </div>
                     <div className="min-w-0 flex-1">
                         <p className="text-sm font-semibold text-gray-900 dark:text-white truncate cursor-pointer hover:text-primary hover:underline transition-colors"
@@ -463,7 +465,7 @@ const JobApplicants = ({ jobId }) => {
 const PublishFirstPlaceholder = ({ description }) => (
     <div className="flex flex-col items-center justify-center py-24 gap-4 animate-fadeIn">
         <div className="w-20 h-20 rounded-full bg-amber-50 flex items-center justify-center">
-            <span className="material-icons-round text-4xl text-amber-400">rocket_launch</span>
+            <FontAwesomeIcon icon={faRocket} className="text-4xl text-amber-400" />
         </div>
         <h3 className="text-lg font-bold text-neutral-800 dark:text-white">Publish your job first</h3>
         <p className="text-sm text-neutral-400 text-center max-w-sm">{description}</p>

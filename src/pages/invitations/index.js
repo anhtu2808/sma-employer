@@ -7,6 +7,8 @@ import Loading from '@/components/Loading';
 import { Eye } from 'lucide-react';
 import Button from '@/components/Button';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowTrendUp, faBriefcase, faCreditCard, faLocationDot, faUser } from '../../utils/icons';
 
 const INVITATION_STATUS_TABS = [
     { key: '', label: 'All' },
@@ -120,7 +122,7 @@ const InvitationList = () => {
                                         {inv.candidate?.user?.avatar ? (
                                             <img src={inv.candidate.user.avatar} alt="" className="w-full h-full object-cover" />
                                         ) : (
-                                            <span className="material-icons-outlined text-primary text-xl">person</span>
+                                            <FontAwesomeIcon icon={faUser} className="text-primary text-xl" />
                                         )}
                                     </div>
 
@@ -137,23 +139,23 @@ const InvitationList = () => {
                                         {inv.job && (
                                             <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                                                 <span className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-md">
-                                                    <span className="material-icons-outlined text-sm">work_outline</span>
+                                                    <FontAwesomeIcon icon={faBriefcase} className="text-sm" />
                                                     {inv.job.name}
                                                 </span>
                                                 {inv.job.jobLevel && (
                                                     <span className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-md">
-                                                        <span className="material-icons-outlined text-sm">trending_up</span>
+                                                        <FontAwesomeIcon icon={faArrowTrendUp} className="text-sm" />
                                                         {inv.job.jobLevel}
                                                     </span>
                                                 )}
                                                 {inv.job.workingModel && (
                                                     <span className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-md">
-                                                        <span className="material-icons-outlined text-sm">location_on</span>
+                                                        <FontAwesomeIcon icon={faLocationDot} className="text-sm" />
                                                         {inv.job.workingModel}
                                                     </span>
                                                 )}
                                                 <span className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-md">
-                                                    <span className="material-icons-outlined text-sm">payments</span>
+                                                    <FontAwesomeIcon icon={faCreditCard} className="text-sm" />
                                                     {formatSalary(inv.job.salaryStart, inv.job.salaryEnd, inv.job.currency)}
                                                 </span>
                                             </div>

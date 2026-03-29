@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope, faEye, faClock } from '../../../utils/icons';
 
 const ChipSkeleton = () => (
   <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card-light dark:bg-card-dark border border-gray-100 dark:border-gray-800">
@@ -14,7 +16,7 @@ const Chip = ({ to, dotColor, count, label, icon }) => (
     className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card-light dark:bg-card-dark border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-sm font-medium text-gray-700 dark:text-gray-300"
   >
     <span className={`w-2 h-2 rounded-full ${dotColor}`} />
-    <span className="material-icons-outlined text-base">{icon}</span>
+    <FontAwesomeIcon icon={icon} className="text-base" />
     <span className="font-bold text-gray-900 dark:text-white">{count}</span>
     <span>{label}</span>
   </Link>
@@ -51,21 +53,21 @@ const ActionChips = ({ statusSummary, jobs, isLoading }) => {
       <Chip
         to="/applications?status=APPLIED"
         dotColor="bg-blue-500"
-        icon="mail"
+        icon={faEnvelope}
         count={counts.appliedCount}
         label="New Applications"
       />
       <Chip
         to="/applications?status=VIEWED"
         dotColor="bg-indigo-500"
-        icon="visibility"
+        icon={faEye}
         count={counts.viewedCount}
         label="Awaiting Review"
       />
       <Chip
         to="/jobs?expiring=true"
         dotColor="bg-amber-500"
-        icon="schedule"
+        icon={faClock}
         count={counts.expiringSoonCount}
         label="Expiring Soon"
       />

@@ -4,6 +4,8 @@ import JobSkills from './JobSkills';
 import Button from '@/components/Button';
 import { useUpdateJobStatusMutation } from '@/apis/jobApi';
 import { JOB_LEVEL_OPTIONS, WORKING_MODEL_OPTIONS } from '@/constrant/job';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBriefcase, faCalendar, faCity, faCopy, faCreditCard, faLocationDot, faUser } from '../../../utils/icons';
 
 const getJobLevelLabel = (value) => JOB_LEVEL_OPTIONS.find(o => o.value === value)?.label || value;
 const getWorkingModelLabel = (value) => WORKING_MODEL_OPTIONS.find(o => o.value === value)?.label || value;
@@ -71,7 +73,7 @@ const JobHeader = ({ job, formatDate, formatSalary, onCloneJob, onCloseJob, onEd
                     <Button
                         mode="secondary"
                         onClick={onCloneJob}
-                        iconLeft={<span className="material-icons-round text-sm">content_copy</span>}
+                        iconLeft={<FontAwesomeIcon icon={faCopy} className="text-sm" />}
                         className="shrink-0"
                     >
                         Clone Job
@@ -81,31 +83,31 @@ const JobHeader = ({ job, formatDate, formatSalary, onCloneJob, onCloseJob, onEd
                 {/* Meta Info Row */}
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-gray-600 dark:text-gray-400">
                     <div className="flex items-center gap-2">
-                        <span className="material-icons-round text-gray-400 text-lg">place</span>
+                        <FontAwesomeIcon icon={faLocationDot} className="text-gray-400 text-lg" />
                         <span>{job.company?.country || 'Vietnam'}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="material-icons-round text-gray-400 text-lg">payments</span>
+                        <FontAwesomeIcon icon={faCreditCard} className="text-gray-400 text-lg" />
                         <span className="font-semibold text-orange-500">
                             {formatSalary(job.salaryStart, job.salaryEnd)}
                         </span>
                     </div>
                     {job.expDate && (
                         <div className="flex items-center gap-2">
-                            <span className="material-icons-round text-gray-400 text-lg">event</span>
+                            <FontAwesomeIcon icon={faCalendar} className="text-gray-400 text-lg" />
                             <span>Deadline: {formatDate(job.expDate)}</span>
                         </div>
                     )}
                     <div className="flex items-center gap-2">
-                        <span className="material-icons-round text-gray-400 text-lg">work</span>
+                        <FontAwesomeIcon icon={faBriefcase} className="text-gray-400 text-lg" />
                         <span>{job.quantity || 1} positions</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="material-icons-round text-gray-400 text-lg">person</span>
+                        <FontAwesomeIcon icon={faUser} className="text-gray-400 text-lg" />
                         <span>{getJobLevelLabel(job.jobLevel)}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="material-icons-round text-gray-400 text-lg">apartment</span>
+                        <FontAwesomeIcon icon={faCity} className="text-gray-400 text-lg" />
                         <span>{getWorkingModelLabel(job.workingModel)}</span>
                     </div>
                 </div>

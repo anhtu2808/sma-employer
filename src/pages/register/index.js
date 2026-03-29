@@ -8,6 +8,8 @@ import Button from '@/components/Button';
 import Logo from '@/components/Logo';
 import { Listbox, Transition } from '@headlessui/react';
 import { ChevronDown, Check } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleExclamation, faFileArrowUp } from '../../utils/icons';
 
 const RecruiterRegister = () => {
     const navigate = useNavigate();
@@ -369,7 +371,7 @@ const RecruiterRegister = () => {
                                             />
                                             <div className="relative z-10">
                                                 <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                                                    <span className="material-icons-round text-primary text-3xl">file_upload</span>
+                                                    <FontAwesomeIcon icon={faFileArrowUp} className="text-primary text-3xl" />
                                                 </div>
                                                 <p className="text-sm font-bold text-neutral-900">
                                                     {ercFile ? ercFile.name : "Choose or drag file here"}
@@ -397,7 +399,7 @@ const RecruiterRegister = () => {
                         <div ref={generalErrorRef}>
                             {errors.general && (
                                 <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium flex items-center gap-2 animate-shake">
-                                    <span className="material-icons-round text-base">error_outline</span>
+                                    <FontAwesomeIcon icon={faCircleExclamation} className="text-base" />
                                     {errors.general}
                                 </div>
                             )}

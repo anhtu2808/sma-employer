@@ -1,5 +1,7 @@
 import React from 'react';
 import { Select } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faChevronRight } from '../../utils/icons';
 
 const Pagination = ({ currentPage, totalPages, onPageChange, pageSize, onPageSizeChange, pageSizeOptions = [5, 10, 20, 50], className = '' }) => {
     if (totalPages <= 1 && !onPageSizeChange) return null;
@@ -47,7 +49,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, pageSize, onPageSiz
                     className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     aria-label="Previous Page"
                 >
-                    <span className="material-icons-round text-base">chevron_left</span>
+                    <FontAwesomeIcon icon={faChevronLeft} className="text-base" />
                 </button>
 
                 {pages.map((page, index) => {
@@ -79,7 +81,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, pageSize, onPageSiz
                     className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     aria-label="Next Page"
                 >
-                    <span className="material-icons-round text-base">chevron_right</span>
+                    <FontAwesomeIcon icon={faChevronRight} className="text-base" />
                 </button>
             </div>
 

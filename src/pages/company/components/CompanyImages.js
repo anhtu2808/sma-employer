@@ -2,6 +2,8 @@ import React, { useRef } from 'react';
 import Form from '@/components/Form';
 import { message } from 'antd';
 import { useUploadFileMutation } from '@/apis/apis';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileImage, faImage, faImages, faXmark } from '../../../utils/icons';
 
 const CompanyImages = ({ form, isEditing }) => {
     const fileInputRef = useRef(null);
@@ -106,7 +108,7 @@ const CompanyImages = ({ form, isEditing }) => {
                                 className="w-full h-full items-center justify-center text-gray-400"
                                 style={{ display: 'none' }}
                             >
-                                <span className="material-icons-round text-4xl">broken_image</span>
+                                <FontAwesomeIcon icon={faImage} className="text-4xl" />
                             </div>
                         </div>
 
@@ -135,7 +137,7 @@ const CompanyImages = ({ form, isEditing }) => {
                                 className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-red-500/90 text-white opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-600 shadow-lg backdrop-blur-sm"
                                 title="Remove image"
                             >
-                                <span className="material-icons-round text-sm">close</span>
+                                <FontAwesomeIcon icon={faXmark} className="text-sm" />
                             </button>
                         )}
                     </div>
@@ -164,7 +166,7 @@ const CompanyImages = ({ form, isEditing }) => {
                         ) : (
                             <>
                                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                                    <span className="material-icons-round text-primary text-2xl">add_photo_alternate</span>
+                                    <FontAwesomeIcon icon={faFileImage} className="text-primary text-2xl" />
                                 </div>
                                 <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">Add Image</span>
                                 <span className="text-[10px] text-gray-400 mt-0.5">JPG, PNG</span>
@@ -177,7 +179,7 @@ const CompanyImages = ({ form, isEditing }) => {
             {/* Empty state when not editing and no images */}
             {!isEditing && images.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-10 text-gray-400">
-                    <span className="material-icons-round text-5xl mb-2">collections</span>
+                    <FontAwesomeIcon icon={faImages} className="text-5xl mb-2" />
                     <p className="text-sm font-medium">No company images yet</p>
                     <p className="text-xs mt-1">Click "Edit Information" to add images</p>
                 </div>

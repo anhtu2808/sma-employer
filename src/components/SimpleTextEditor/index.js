@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Modal } from 'antd';
 import './SimpleTextEditor.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCode, faList } from '../../utils/icons';
 
 const SimpleTextEditor = ({
     value,
@@ -165,7 +167,7 @@ const SimpleTextEditor = ({
                     aria-pressed={activeFormats.list}
                     disabled={disabled}
                 >
-                    <span className="material-icons-round">format_list_bulleted</span>
+                    <FontAwesomeIcon icon={faList} />
                 </button>
                 <button
                     type="button"
@@ -174,7 +176,7 @@ const SimpleTextEditor = ({
                     aria-label="Source code"
                     disabled={disabled}
                 >
-                    <span className="material-icons-round">code</span>
+                    <FontAwesomeIcon icon={faCode} />
                 </button>
             </div>
             <div

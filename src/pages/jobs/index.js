@@ -11,6 +11,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { JOB_STATUS_TABS, JOB_SORT_OPTIONS } from '@/constrant';
 import { Modal, message } from 'antd';
 import JobFilterDrawer from './filter-drawer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBriefcase, faFilter, faMagnifyingGlass, faPlus } from '../../utils/icons';
 
 const createDefaultFilters = () => ({
     workingModel: null,
@@ -180,7 +182,7 @@ const JobsList = ({ archivedOnly = false }) => {
                                 mode="primary"
                                 onClick={() => navigate('/jobs/create')}
                                 shape="round"
-                                iconLeft={<span className="material-icons-round">add</span>}
+                                iconLeft={<FontAwesomeIcon icon={faPlus} />}
                                 className="shrink-0 ml-4 self-center mb-2"
                             >
                                 Post a Job
@@ -193,7 +195,7 @@ const JobsList = ({ archivedOnly = false }) => {
                     <div className="w-full md:flex-1">
                         <Input
                             placeholder="Search by job title"
-                            prefix={<span className="material-icons-round text-gray-400 text-xl">search</span>}
+                            prefix={<FontAwesomeIcon icon={faMagnifyingGlass} className="text-gray-400 text-xl" />}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             allowClear
@@ -214,7 +216,7 @@ const JobsList = ({ archivedOnly = false }) => {
                         onClick={() => setIsFilterOpen(true)}
                         btnIcon
                     >
-                        <span className="material-icons-round text-lg">filter_list</span>
+                        <FontAwesomeIcon icon={faFilter} className="text-lg" />
                     </Button>
                 </div>
             </ConfigProvider>
@@ -226,7 +228,7 @@ const JobsList = ({ archivedOnly = false }) => {
             ) : jobs.length === 0 ? (
                 <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span className="material-icons-round text-gray-400 text-3xl">work_outline</span>
+                        <FontAwesomeIcon icon={faBriefcase} className="text-gray-400 text-3xl" />
                     </div>
                     <h3 className="text-lg font-medium text-gray-900">No jobs found</h3>
                     <p className="text-gray-500 mt-1 mb-6">Try adjusting your search or filters.</p>

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Form, Select, Input, Switch, Divider, message } from 'antd';
 import Button from '@/components/Button';
 import { useGetJobQuestionsQuery, useCreateJobQuestionMutation, useUpdateJobQuestionMutation, useDeleteJobQuestionMutation } from '@/apis/jobApi';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCirclePlus, faCircleQuestion, faPenToSquare, faTrash, faXmark } from '../../../../utils/icons';
 
 const ScreeningQuestions = () => {
     const { data: questionsData, isLoading: isQuestionsLoading, isError } = useGetJobQuestionsQuery();
@@ -98,7 +100,7 @@ const ScreeningQuestions = () => {
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-4">
             <div className="flex justify-between items-center">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <span className="material-icons-round text-orange-500">quiz</span>
+                    <FontAwesomeIcon icon={faCircleQuestion} className="text-orange-500" />
                     Screening Questions
                 </h3>
             </div>
@@ -147,7 +149,7 @@ const ScreeningQuestions = () => {
                                             <div className="flex items-center justify-between">
                                                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Edit Question</h4>
                                                 <button type="button" onClick={handleCancelEdit} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-                                                    <span className="material-icons-outlined text-lg">close</span>
+                                                    <FontAwesomeIcon icon={faXmark} className="text-lg" />
                                                 </button>
                                             </div>
                                             <div>
@@ -188,7 +190,7 @@ const ScreeningQuestions = () => {
                                                     className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-primary transition-all"
                                                     title="Edit question"
                                                 >
-                                                    <span className="material-icons-outlined text-base">edit</span>
+                                                    <FontAwesomeIcon icon={faPenToSquare} className="text-base" />
                                                 </button>
                                                 <button
                                                     type="button"
@@ -200,7 +202,7 @@ const ScreeningQuestions = () => {
                                                     className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
                                                     title="Delete question"
                                                 >
-                                                    <span className="material-icons-outlined text-base">delete</span>
+                                                    <FontAwesomeIcon icon={faTrash} className="text-base" />
                                                 </button>
                                             </div>
                                         </div>
@@ -223,7 +225,7 @@ const ScreeningQuestions = () => {
                     onClick={() => setShowCreateForm(true)}
                     className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary-hover transition-colors cursor-pointer"
                 >
-                    <span className="material-icons-outlined text-lg">add_circle_outline</span>
+                    <FontAwesomeIcon icon={faCirclePlus} className="text-lg" />
                     Create a new question
                 </button>
             ) : (
@@ -240,7 +242,7 @@ const ScreeningQuestions = () => {
                             }}
                             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                         >
-                            <span className="material-icons-outlined text-lg">close</span>
+                            <FontAwesomeIcon icon={faXmark} className="text-lg" />
                         </button>
                     </div>
 

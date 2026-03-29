@@ -4,6 +4,8 @@ import { message, Popconfirm } from 'antd';
 import dayjs from 'dayjs';
 import Loading from '@/components/Loading';
 import Pagination from '@/components/Pagination';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowsRotate, faBan, faMagnifyingGlass, faUserShield } from '../../utils/icons';
 
 const CompanyBlacklist = () => {
     const [keyword, setKeyword] = useState('');
@@ -37,7 +39,7 @@ const CompanyBlacklist = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-[20px] border border-gray-200 shadow-sm">
                     <div className="relative max-w-sm w-full">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span className="material-symbols-outlined text-gray-400 text-[20px]">search</span>
+                            <FontAwesomeIcon icon={faMagnifyingGlass} className="text-gray-400 text-[20px]" />
                         </div>
                         <input
                             className="block w-full h-11 pl-10 pr-3 py-2 border border-gray-200 rounded-xl leading-5 bg-gray-50/50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary sm:text-sm transition-all shadow-inner"
@@ -50,7 +52,7 @@ const CompanyBlacklist = () => {
 
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl border border-red-100">
-                            <span className="material-symbols-outlined text-[18px] fill-1">dangerous</span>
+                            <FontAwesomeIcon icon={faBan} className="text-[18px] fill-1" />
                             <span className="text-sm font-bold tracking-tight">
                                 {response?.data?.totalElements || 0} Blocked Candidates
                             </span>
@@ -105,7 +107,7 @@ const CompanyBlacklist = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold bg-gray-50 text-gray-600 border border-gray-100">
-                                                <span className="material-symbols-outlined text-[16px] text-gray-400">shield_person</span>
+                                                <FontAwesomeIcon icon={faUserShield} className="text-[16px] text-gray-400" />
                                                 {item.createdBy || "System"}
                                             </span>
                                         </td>
@@ -120,7 +122,7 @@ const CompanyBlacklist = () => {
                                                 cancelButtonProps={{ className: "rounded-lg" }}
                                             >
                                                 <button className="inline-flex items-center gap-1.5 text-primary hover:text-primary-dark font-bold text-xs bg-orange-50 hover:bg-orange-100 px-3 py-2 rounded-lg transition-all group ml-auto">
-                                                    <span className="material-symbols-outlined text-[16px] group-hover:rotate-180 transition-transform duration-500">sync</span>
+                                                    <FontAwesomeIcon icon={faArrowsRotate} className="text-[16px] group-hover:rotate-180 transition-transform duration-500" />
                                                     Unblock
                                                 </button>
                                             </Popconfirm>

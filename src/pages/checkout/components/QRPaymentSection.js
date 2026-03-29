@@ -1,5 +1,7 @@
 import React from "react";
 import Button from "@/components/Button";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faQrcode, faRotate } from '../../../utils/icons';
 
 const QRPaymentSection = ({
     totalPrice,
@@ -16,7 +18,7 @@ const QRPaymentSection = ({
                 <div className="bg-[#fc9c82] w-full h-full rounded-2xl flex items-center justify-center p-8">
                     {isLoading ? (
                         <div className="text-white flex flex-col items-center justify-center gap-2">
-                            <span className="material-icons-round animate-spin">refresh</span>
+                            <FontAwesomeIcon icon={faRotate} className="animate-spin" />
                             <span className="text-sm font-medium">Loading QR...</span>
                         </div>
                     ) : qrCodeUrl ? (
@@ -27,7 +29,7 @@ const QRPaymentSection = ({
                         />
                     ) : (
                         <div className="bg-white w-full h-full rounded-xl flex flex-col items-center justify-center text-gray-400 gap-2 p-4">
-                            <span className="material-icons-round text-3xl">qr_code_scanner</span>
+                            <FontAwesomeIcon icon={faQrcode} className="text-3xl" />
                             <span className="text-[13px] font-medium text-center">QR Code not available</span>
                         </div>
                     )}
@@ -37,7 +39,7 @@ const QRPaymentSection = ({
             <div className="mt-auto w-full flex flex-col items-center">
                 {/* Scan to Pay Target */}
                 <div className="flex items-center gap-2 text-[#fc9c82] font-semibold bg-[#fff1ed] px-4 py-2 rounded-lg mb-8">
-                    <span className="material-icons-round text-xl">qr_code_scanner</span>
+                    <FontAwesomeIcon icon={faQrcode} className="text-xl" />
                     <span>Scan to pay {totalPrice}</span>
                 </div>
 
@@ -48,7 +50,7 @@ const QRPaymentSection = ({
                     size="lg"
                     shape="rounded"
                     className="text-white text-[13.5px] font-semibold transition-colors mb-8 w-full max-w-[340px]"
-                    iconLeft={<span className="material-icons-round text-[16px]">arrow_back</span>}
+                    iconLeft={<FontAwesomeIcon icon={faArrowLeft} className="text-[16px]" />}
                 >
                     Cancel & Go back
                 </Button>

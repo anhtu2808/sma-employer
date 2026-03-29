@@ -1,12 +1,14 @@
 import React from 'react';
 import { Input, Form } from 'antd';
 import SimpleTextEditor from '@/components/SimpleTextEditor';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faNewspaper } from '../../../../utils/icons';
 
 const BasicInformation = () => {
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <span className="material-icons-round text-orange-500">article</span>
+                <FontAwesomeIcon icon={faNewspaper} className="text-orange-500" />
                 Basic Information
             </h3>
 

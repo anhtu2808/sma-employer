@@ -29,6 +29,8 @@ import ProTips from "./components/ProTips";
 import Classification from "./components/Classification";
 import ScreeningQuestions from "./components/ScreeningQuestions";
 import Preloader from "@/components/Preloader";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faWandMagicSparkles } from '../../../utils/icons';
 
 const BENEFIT_TYPES = [
   "FINANCIAL", "INSURANCE", "TIME_OFF", "FLEXIBILITY",
@@ -286,7 +288,7 @@ const JobCreate = () => {
             className="self-start text-gray-500 hover:text-primary pl-0 -ml-6"
             onClick={() => navigate(isEditMode ? `/jobs/${id}` : "/jobs")}
             iconLeft={
-              <span className="material-icons-round text-lg">arrow_back</span>
+              <FontAwesomeIcon icon={faArrowLeft} className="text-lg" />
             }
           >
             {isEditMode ? "Back to Job Detail" : "Back to Jobs"}
@@ -311,7 +313,7 @@ const JobCreate = () => {
                 onClick={() => setShowImportModal(true)}
                 className="h-9 px-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-orange-50 flex items-center gap-1.5 transition-colors text-sm text-primary"
               >
-                <span className="material-icons-round text-base">auto_awesome</span>
+                <FontAwesomeIcon icon={faWandMagicSparkles} className="text-base" />
                 AI Import
               </button>
             )}

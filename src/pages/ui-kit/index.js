@@ -7,6 +7,8 @@ import Input from '@/components/Input';
 import SearchInput from '@/components/SearchInput';
 import Checkbox from '@/components/Checkbox';
 import Switch from '@/components/Switch';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight, faBookmarkRegular, faCode, faEnvelopeRegular, faFilter, faPalette, faPenRuler, faPlus } from '../../utils/icons';
 
 const UiKit = () => {
     return (
@@ -208,7 +210,7 @@ const UiKit = () => {
                                 </Button>
                                 <Button 
                                     mode="primary" 
-                                    iconLeft={<span className="material-icons-round text-base">add</span>}
+                                    iconLeft={<FontAwesomeIcon icon={faPlus} className="text-base" />}
                                 >
                                     With Icon
                                 </Button>
@@ -226,7 +228,7 @@ const UiKit = () => {
                                 </Button>
                                 <Button 
                                     mode="secondary"
-                                    iconLeft={<span className="material-icons-round text-base">filter_list</span>}
+                                    iconLeft={<FontAwesomeIcon icon={faFilter} className="text-base" />}
                                 >
                                     Filter
                                 </Button>
@@ -252,7 +254,7 @@ const UiKit = () => {
                                 </div>
                                 <button className="text-primary font-semibold hover:underline inline-flex items-center gap-1 text-sm bg-transparent border-0 cursor-pointer p-0">
                                     Text Link 
-                                    <span className="material-icons-round text-sm">arrow_forward</span>
+                                    <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
                                 </button>
                             </div>
                         </Card>
@@ -275,7 +277,7 @@ const UiKit = () => {
                                     label="Input with Icon"
                                     type="email"
                                     placeholder="name@smartrecruit.com"
-                                    prefix={<span className="material-icons-round text-neutral-400 text-xl">mail_outline</span>}
+                                    prefix={<FontAwesomeIcon icon={faEnvelopeRegular} className="text-neutral-400 text-xl" />}
                                 />
                                 <Input
                                     label="Error State"
@@ -337,7 +339,7 @@ const UiKit = () => {
                             <div className="flex justify-between items-start mb-4">
                                 <div className="flex gap-4">
                                     <div className="w-12 h-12 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                                        <span className="material-icons-round text-2xl">code</span>
+                                        <FontAwesomeIcon icon={faCode} className="text-2xl" />
                                     </div>
                                     <div>
                                         <h3 className="font-bold text-neutral-900 dark:text-white text-lg group-hover:text-primary transition-colors font-heading">
@@ -347,7 +349,7 @@ const UiKit = () => {
                                     </div>
                                 </div>
                                 <button className="text-neutral-400 hover:text-primary transition-colors">
-                                    <span className="material-icons-round">bookmark_border</span>
+                                    <FontAwesomeIcon icon={faBookmarkRegular} />
                                 </button>
                             </div>
                             <div className="flex flex-wrap gap-2 mb-6">
@@ -372,7 +374,7 @@ const UiKit = () => {
                             <div className="flex justify-between items-start mb-4">
                                 <div className="flex gap-4">
                                     <div className="w-12 h-12 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400">
-                                        <span className="material-icons-round text-2xl">design_services</span>
+                                        <FontAwesomeIcon icon={faPenRuler} className="text-2xl" />
                                     </div>
                                     <div>
                                         <h3 className="font-bold text-neutral-900 dark:text-white text-lg group-hover:text-primary transition-colors font-heading">
@@ -382,7 +384,7 @@ const UiKit = () => {
                                     </div>
                                 </div>
                                 <button className="text-neutral-400 hover:text-primary transition-colors">
-                                    <span className="material-icons-round">bookmark_border</span>
+                                    <FontAwesomeIcon icon={faBookmarkRegular} />
                                 </button>
                             </div>
                             <div className="flex flex-wrap gap-2 mb-6">
@@ -427,7 +429,7 @@ const UiKit = () => {
                     <div>
                         <button className="flex items-center gap-2 group mb-2 bg-transparent border-0 cursor-pointer p-0">
                             <div className="w-6 h-6 bg-primary rounded flex items-center justify-center text-white">
-                                <span className="material-icons-round text-sm">palette</span>
+                                <FontAwesomeIcon icon={faPalette} className="text-sm" />
                             </div>
                             <span className="font-bold text-neutral-900 dark:text-white tracking-tight font-heading">
                                 Talentora Design System

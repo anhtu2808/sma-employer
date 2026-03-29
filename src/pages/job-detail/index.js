@@ -15,6 +15,8 @@ import JobApplicants from './components/JobApplicants';
 import ProposedCVs from './components/ProposedCVs';
 import { PageHeaderContext } from '@/contexts/PageHeaderContext';
 import AiScoringCard from './components/AiScoringCard';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faBoxArchive, faCircleXmark, faPenToSquare, faTrash, faUpload } from '../../utils/icons';
 
 const buildPublishBody = (job) => ({
     name: job.name,
@@ -191,7 +193,7 @@ const JobDetail = () => {
                     mode="text"
                     className="text-gray-500 hover:text-primary pl-0 -ml-6"
                     onClick={() => navigate('/jobs')}
-                    iconLeft={<span className="material-icons-round text-lg">arrow_back</span>}
+                    iconLeft={<FontAwesomeIcon icon={faArrowLeft} className="text-lg" />}
                 >
                     Back to Jobs
                 </Button>
@@ -219,7 +221,7 @@ const JobDetail = () => {
                                     type="default"
                                     danger
                                     className="!rounded-xl !h-10 !w-10"
-                                    icon={<span className="material-icons-round text-base">delete</span>}
+                                    icon={<FontAwesomeIcon icon={faTrash} className="text-base" />}
                                     loading={isClosingJob}
                                     onClick={() => {
                                         Modal.confirm({
@@ -243,7 +245,7 @@ const JobDetail = () => {
                             <Button
                                 mode="secondary"
                                 shape="round"
-                                iconLeft={<span className="material-icons-round text-sm">publish</span>}
+                                iconLeft={<FontAwesomeIcon icon={faUpload} className="text-sm" />}
                                 onClick={() => setShowPublishModal(true)}
                             >
                                 Publish
@@ -252,7 +254,7 @@ const JobDetail = () => {
                                 mode="primary"
                                 shape="round"
                                 onClick={() => navigate(`/jobs/${job.id}/edit`)}
-                                iconLeft={<span className="material-icons-round text-sm">edit</span>}
+                                iconLeft={<FontAwesomeIcon icon={faPenToSquare} className="text-sm" />}
                             >
                                 Edit
                             </Button>
@@ -263,7 +265,7 @@ const JobDetail = () => {
                             mode="secondary"
                             shape="round"
                             loading={isClosingJob}
-                            iconLeft={<span className="material-icons-round text-sm">delete</span>}
+                            iconLeft={<FontAwesomeIcon icon={faTrash} className="text-sm" />}
                             onClick={() => {
                                 Modal.confirm({
                                     title: 'Delete Job',
@@ -290,7 +292,7 @@ const JobDetail = () => {
                             mode="secondary"
                             shape="round"
                             loading={isClosingJob}
-                            iconLeft={<span className="material-icons-round text-sm">cancel</span>}
+                            iconLeft={<FontAwesomeIcon icon={faCircleXmark} className="text-sm" />}
                             onClick={() => handleCloseJob()}
                         >
                             Close Job
@@ -302,7 +304,7 @@ const JobDetail = () => {
                                 mode="secondary"
                                 shape="round"
                                 loading={isClosingJob}
-                                iconLeft={<span className="material-icons-round text-sm">archive</span>}
+                                iconLeft={<FontAwesomeIcon icon={faBoxArchive} className="text-sm" />}
                                 onClick={() => {
                                     Modal.confirm({
                                         title: 'Archive Job',

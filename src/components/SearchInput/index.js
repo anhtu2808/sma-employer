@@ -1,5 +1,7 @@
 import React from 'react';
 import './SearchInput.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMagnifyingGlass } from '../../utils/icons';
 
 const SearchInput = ({ 
     placeholder = 'Search...', 
@@ -23,7 +25,7 @@ const SearchInput = ({
     return (
         <div className={`search-input-wrapper search-input-${size} ${className}`}>
             <div className="search-input-container">
-                <span className="search-icon material-icons-round">search</span>
+                <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
                 <input
                     type="search"
                     className="search-input"
@@ -39,7 +41,7 @@ const SearchInput = ({
                     onClick={handleSearchClick}
                     aria-label="Search"
                 >
-                    <span className="material-icons-round">search</span>
+                    <FontAwesomeIcon icon={faMagnifyingGlass} />
                 </button>
             </div>
         </div>

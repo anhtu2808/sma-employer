@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faBell } from '../../utils/icons';
 import ProfileSettings from './ProfileSettings';
 import NotificationSettings from './NotificationSettings';
 
 const TABS = [
-    { key: 'profile', label: 'Profile', icon: 'person' },
-    { key: 'notifications', label: 'Notifications', icon: 'notifications' },
+    { key: 'profile', label: 'Profile', icon: faUser },
+    { key: 'notifications', label: 'Notifications', icon: faBell },
 ];
 
 const Settings = () => {
@@ -23,7 +25,7 @@ const Settings = () => {
                                 : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
                         }`}
                     >
-                        <span className="material-symbols-outlined text-lg">{tab.icon}</span>
+                        <FontAwesomeIcon icon={tab.icon} className="text-lg" />
                         {tab.label}
                     </button>
                 ))}

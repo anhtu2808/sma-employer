@@ -1,5 +1,12 @@
 import React from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faBuilding, faClipboardCheck, faBoxArchive, faGear,
+  faCreditCard, faClockRotateLeft, faTableCells, faUsers,
+  faBriefcase, faClipboard, faEnvelopeRegular, faBan,
+  faBell, faStar, faRightFromBracket, faChevronLeft, faChevronRight,
+} from '@/utils/icons';
 import Logo from '@/components/Logo';
 import Button from '@/components/Button';
 import authService from '@/services/authService';
@@ -9,15 +16,15 @@ import { useGetMyRecruiterInfoQuery } from '@/apis/recruiterApi';
 
 
 const generalItems = [
-  { icon: 'business', label: 'Company', path: '/company' },
-  { icon: 'checklist', label: 'Scoring Criteria', path: '/scoring-criteria' },
-  { icon: 'archive', label: 'Archived Jobs', path: '/jobs/archived' },
-  { icon: 'settings', label: 'Settings', path: '/settings' },
+  { icon: faBuilding, label: 'Company', path: '/company' },
+  { icon: faClipboardCheck, label: 'Scoring Criteria', path: '/scoring-criteria' },
+  { icon: faBoxArchive, label: 'Archived Jobs', path: '/jobs/archived' },
+  { icon: faGear, label: 'Settings', path: '/settings' },
 ];
 
 const billingMenuItems = [
-  { icon: 'credit_card', label: 'Billing & Plans', path: '/billing-plans' },
-  { icon: 'history', label: 'Usage', path: '/usage' },
+  { icon: faCreditCard, label: 'Billing & Plans', path: '/billing-plans' },
+  { icon: faClockRotateLeft, label: 'Usage', path: '/usage' },
 ];
 
 
@@ -43,8 +50,8 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
   const isRecruiter = Boolean(myInfoData?.data);
   const isRootRecruiter = myInfoData?.data?.isRootRecruiter === true;
 
-  const filteredBillingItems = isRootRecruiter 
-    ? billingMenuItems 
+  const filteredBillingItems = isRootRecruiter
+    ? billingMenuItems
     : billingMenuItems.filter(item => item.path !== '/billing-plans');
 
   const filteredGeneralItems = isRootRecruiter
@@ -52,16 +59,16 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
     : generalItems.filter(item => item.path !== '/company');
 
   const menuItems = [
-    { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
-    ...(isRootRecruiter ? [{ icon: 'people', label: 'Recruiters', path: '/recruiters' }] : []),
-    { icon: 'work_outline', label: 'Jobs', path: '/jobs' },
-    { icon: 'badge', label: 'Applications', path: '/applications' },
-    { icon: 'mail_outline', label: 'Invitations', path: '/invitations' },
-    { icon: 'block', label: 'Blacklist', path: '/blacklist' },
+    { icon: faTableCells, label: 'Dashboard', path: '/dashboard' },
+    ...(isRootRecruiter ? [{ icon: faUsers, label: 'Recruiters', path: '/recruiters' }] : []),
+    { icon: faBriefcase, label: 'Jobs', path: '/jobs' },
+    { icon: faClipboard, label: 'Applications', path: '/applications' },
+    { icon: faEnvelopeRegular, label: 'Invitations', path: '/invitations' },
+    { icon: faBan, label: 'Blacklist', path: '/blacklist' },
     // Only show Billing & Usage for recruiters (ROOT and RECRUITER)
     ...(isRecruiter ? filteredBillingItems : []),
     {
-      icon: 'notifications',
+      icon: faBell,
       label: 'Notifications',
       path: '/notifications',
       badge: unreadCount > 0 ? unreadCount : null
@@ -76,9 +83,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
           className="absolute -right-3 top-9 z-50 w-6 h-6 bg-white dark:bg-card-dark border border-gray-200 dark:border-gray-800 rounded-full shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          <span className="material-icons-outlined text-sm">
-            {collapsed ? 'chevron_right' : 'chevron_left'}
-          </span>
+          <FontAwesomeIcon icon={collapsed ? faChevronRight : faChevronLeft} className="text-sm" />
         </button>
       )}
 
@@ -110,9 +115,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
               >
                 <>
                   <div className="relative flex items-center justify-center">
-                    <span className="material-icons-outlined group-hover:text-primary transition-colors">
-                      {item.icon}
-                    </span>
+                    <FontAwesomeIcon icon={item.icon} className="group-hover:text-primary transition-colors" />
                     {collapsed && !isMobile && item.badge > 0 && (
                       <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white dark:border-card-dark rounded-full"></span>
                     )}
@@ -155,9 +158,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
                 title={collapsed && !isMobile ? item.label : ''}
               >
                 <>
-                  <span className="material-icons-outlined group-hover:text-primary transition-colors">
-                    {item.icon}
-                  </span>
+                  <FontAwesomeIcon icon={item.icon} className="group-hover:text-primary transition-colors" />
                   {(!collapsed || isMobile) && item.label}
                 </>
               </NavLink>
@@ -171,7 +172,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
         <div className="p-4">
           <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-3">
-              <span className="material-icons-outlined">stars</span>
+              <FontAwesomeIcon icon={faStar} />
             </div>
             <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Upgrade Plan</h4>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
@@ -202,14 +203,14 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
             title="Logout"
             onClick={handleLogout}
           >
-            <span className="material-icons-outlined">logout</span>
+            <FontAwesomeIcon icon={faRightFromBracket} />
           </Button>
         ) : (
           <Button
             fullWidth
             mode="ghost"
             shape="rounded"
-            iconLeft={<span className="material-icons-outlined">logout</span>}
+            iconLeft={<FontAwesomeIcon icon={faRightFromBracket} />}
             onClick={handleLogout}
           >
             Logout

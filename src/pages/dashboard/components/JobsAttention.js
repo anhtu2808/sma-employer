@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight, faBriefcase, faClock, faUsers } from '../../../utils/icons';
 
 const getDaysUntilExpiry = (expDate) => {
   const now = new Date();
@@ -17,7 +19,7 @@ const ExpiryBadge = ({ daysLeft }) => {
 
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${colorClass}`}>
-      <span className="material-icons-outlined text-xs">schedule</span>
+      <FontAwesomeIcon icon={faClock} className="text-xs" />
       {daysLeft === 0 ? 'Expires today' : `${daysLeft}d left`}
     </span>
   );
@@ -63,7 +65,7 @@ const JobsAttention = ({ jobs, isLoading }) => {
     return (
       <div className="text-center py-10">
         <div className="w-14 h-14 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
-          <span className="material-icons-outlined text-gray-400 text-2xl">work_outline</span>
+          <FontAwesomeIcon icon={faBriefcase} className="text-gray-400 text-2xl" />
         </div>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">No active jobs</p>
         <Link
@@ -71,7 +73,7 @@ const JobsAttention = ({ jobs, isLoading }) => {
           className="text-sm text-primary hover:text-primary-hover font-medium inline-flex items-center gap-1"
         >
           Post your first job
-          <span className="material-icons-outlined text-sm">arrow_forward</span>
+          <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
         </Link>
       </div>
     );
@@ -107,7 +109,7 @@ const JobsAttention = ({ jobs, isLoading }) => {
                   new
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="material-icons-outlined text-sm">people</span>
+                  <FontAwesomeIcon icon={faUsers} className="text-sm" />
                   {job.totalApplications || 0} total
                 </span>
               </div>

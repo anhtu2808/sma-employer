@@ -6,6 +6,8 @@ import { useUploadFileMutation } from '@/apis/apis';
 import Loading from '@/components/Loading';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCamera, faPenToSquare, faUser } from '../../utils/icons';
 
 const GENDER_OPTIONS = [
     { value: 'MALE', label: 'Male' },
@@ -129,7 +131,7 @@ const ProfileSettings = () => {
                                 />
                             ) : (
                                 <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center border-2 border-gray-200 dark:border-gray-700">
-                                    <span className="material-icons-round text-3xl text-gray-400">person</span>
+                                    <FontAwesomeIcon icon={faUser} className="text-3xl text-gray-400" />
                                 </div>
                             )}
                             {isEditing && (
@@ -138,9 +140,7 @@ const ProfileSettings = () => {
                                     disabled={isUploading}
                                     className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                                 >
-                                    <span className="material-symbols-outlined text-white text-xl">
-                                        {isUploading ? 'hourglass_empty' : 'photo_camera'}
-                                    </span>
+                                    <FontAwesomeIcon icon={faCamera} className="text-white text-xl" />
                                 </button>
                             )}
                         </div>
@@ -260,7 +260,7 @@ const ProfileSettings = () => {
                         <Button
                             mode="primary"
                             onClick={() => setIsEditing(true)}
-                            iconLeft={<span className="material-icons-round text-sm">edit</span>}
+                            iconLeft={<FontAwesomeIcon icon={faPenToSquare} className="text-sm" />}
                         >
                             Edit Profile
                         </Button>

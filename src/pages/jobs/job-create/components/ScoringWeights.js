@@ -4,6 +4,8 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { useGetCriteriaQuery, useCreateCriteriaMutation } from "@/apis/jobApi";
 import Loading from "@/components/Loading";
 import { CRITERIA_COLORS } from "@/constants/scoringColors";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleExclamation, faMagnifyingGlass, faPen, faPlus, faWandMagicSparkles, faXmark } from '../../../../utils/icons';
 
 const ActiveCriterionRow = ({ criteriaItem, index, isAiActive, getFieldValue, setFieldsValue, remainingWeight, onRemove, onEditRule }) => {
   const currentWeight = getFieldValue(`weight_${criteriaItem.id}`) || 0;
@@ -40,7 +42,7 @@ const ActiveCriterionRow = ({ criteriaItem, index, isAiActive, getFieldValue, se
             className="w-6 h-6 flex items-center justify-center rounded hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
             title="Remove criteria"
           >
-            <span className="material-icons-round text-[16px]">close</span>
+            <FontAwesomeIcon icon={faXmark} className="text-[16px]" />
           </button>
         </div>
       </div>
@@ -62,7 +64,7 @@ const ActiveCriterionRow = ({ criteriaItem, index, isAiActive, getFieldValue, se
         onClick={() => onEditRule(criteriaItem)}
         className="flex items-center gap-1 text-xs text-gray-500 font-medium hover:text-orange-500 transition-colors -mt-1 mb-1"
       >
-        <span className="material-icons-round text-[14px]">edit_note</span>
+        <FontAwesomeIcon icon={faPen} className="text-[14px]" />
         Customize rule
       </button>
     </div>
@@ -82,7 +84,7 @@ const AvailableCriterionRow = ({ criteriaItem, index, onAdd }) => {
         onClick={() => onAdd(criteriaItem)}
         className="px-2 py-0.5 text-xs font-medium rounded border border-orange-300 text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors flex items-center gap-0.5"
       >
-        <span className="material-icons-round text-[14px]">add</span>
+        <FontAwesomeIcon icon={faPlus} className="text-[14px]" />
         Add
       </button>
     </div>
@@ -256,7 +258,7 @@ const ScoringWeights = () => {
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                   <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-orange-400 to-amber-500 shadow-sm">
-                    <span className="material-icons-round text-white text-lg">auto_awesome</span>
+                    <FontAwesomeIcon icon={faWandMagicSparkles} className="text-white text-lg" />
                   </span>
                   AI Scoring Weights
                   <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-gradient-to-r from-orange-500 to-amber-500 text-white leading-none">Pro</span>
@@ -341,7 +343,7 @@ const ScoringWeights = () => {
                 <div>
                   <AntInput
                     placeholder="Search criteria..."
-                    prefix={<span className="material-icons-round text-gray-400 text-[18px]">search</span>}
+                    prefix={<FontAwesomeIcon icon={faMagnifyingGlass} className="text-gray-400 text-[18px]" />}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     allowClear
@@ -441,7 +443,7 @@ const ScoringWeights = () => {
                   }}
                   className="w-full py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-500 dark:text-gray-400 hover:border-orange-400 hover:text-orange-500 transition-colors flex items-center justify-center gap-1"
                 >
-                  <span className="material-icons-round text-base">add</span>
+                  <FontAwesomeIcon icon={faPlus} className="text-base" />
                   Add Custom Criteria
                 </button>
               )}
@@ -454,7 +456,7 @@ const ScoringWeights = () => {
                     {isAiActive ? (
                       <>
                         <Tooltip title="This is the percentage scale used to automatically reject CVs with matching scores lower than the set threshold.">
-                          <span className="material-icons-round text-[14px] cursor-help">error_outline</span>
+                          <FontAwesomeIcon icon={faCircleExclamation} className="text-[14px] cursor-help" />
                         </Tooltip>
                         <span>Below {getFieldValue("autoRejectThreshold") || 40}%</span>
                       </>

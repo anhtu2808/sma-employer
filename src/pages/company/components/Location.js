@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import Input from '@/components/Input';
 import Form from '@/components/Form';
 import { Select } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUpRightFromSquare, faPlus, faTrashCan } from '../../../utils/icons';
 
 const Location = ({ form, isEditing }) => {
     const [activeIndex, setActiveIndex] = useState(0);
@@ -41,7 +43,7 @@ const Location = ({ form, isEditing }) => {
                                             }}
                                             className="flex items-center justify-center py-1.5 px-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                                         >
-                                            <span className="material-icons-round mr-1 text-sm">add</span>
+                                            <FontAwesomeIcon icon={faPlus} className="mr-1 text-sm" />
                                             Add
                                         </button>
                                         {fields.length > 1 && (
@@ -54,7 +56,7 @@ const Location = ({ form, isEditing }) => {
                                                 className="flex items-center justify-center py-1.5 px-3 border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg text-sm font-medium transition-colors"
                                                 title="Remove location"
                                             >
-                                                <span className="material-icons-round mr-1 text-sm">delete_outline</span>
+                                                <FontAwesomeIcon icon={faTrashCan} className="mr-1 text-sm" />
                                                 Remove
                                             </button>
                                         )}
@@ -114,7 +116,7 @@ const GoogleMapLinkDisplay = ({ value }) => {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 text-sm font-medium"
         >
-            <span className="material-icons-round text-sm">open_in_new</span>
+            <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-sm" />
             Open in Google Maps
         </a>
     );

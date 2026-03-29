@@ -4,6 +4,8 @@ import { useGetResumeDetailQuery } from '@/apis/jobApi';
 import Loading from '@/components/Loading';
 import Overview from './Overview';
 import PdfViewer from '@/pages/application/detail/pdf-viewer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '../../utils/icons';
 
 const ProposedCVDetail = () => {
     const { jobId, resumeId } = useParams();
@@ -34,7 +36,7 @@ const ProposedCVDetail = () => {
                 onClick={() => navigate(`/jobs/${jobId}`)}
                 className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors group"
             >
-                <span className="material-icons-round text-lg group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                <FontAwesomeIcon icon={faArrowLeft} className="text-lg group-hover:-translate-x-1 transition-transform" />
                 <span className="font-medium">Back to Job pipeline</span>
             </button>
 

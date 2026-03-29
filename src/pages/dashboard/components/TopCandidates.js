@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SectionHeader from './SectionHeader';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStarRegular, faUser } from '../../../utils/icons';
 
 const getRelativeTime = (dateStr) => {
   if (!dateStr) return '';
@@ -68,7 +70,7 @@ const TopCandidates = ({ applications, isLoading }) => {
       ) : topCandidates.length === 0 ? (
         <div className="text-center py-8">
           <div className="w-14 h-14 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
-            <span className="material-icons-outlined text-gray-400 text-2xl">star_outline</span>
+            <FontAwesomeIcon icon={faStarRegular} className="text-gray-400 text-2xl" />
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">No evaluated candidates yet</p>
         </div>
@@ -87,7 +89,7 @@ const TopCandidates = ({ applications, isLoading }) => {
                 onClick={() => navigate(`/applications/${app.applicationId || app.id}`)}
               >
                 <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <span className="material-icons-round text-lg text-gray-400">person</span>
+                  <FontAwesomeIcon icon={faUser} className="text-lg text-gray-400" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate">

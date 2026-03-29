@@ -1,6 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Dropdown } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars, faBell, faGear, faPalette, faRightFromBracket, faUser } from '@/utils/icons';
 import { PageHeaderContext } from '@/contexts/PageHeaderContext';
 import { useGetNotificationsQuery } from '@/apis/notificationApi';
 import { useGetMyRecruiterInfoQuery } from '@/apis/recruiterApi';
@@ -8,9 +10,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { hidePreview } from '../../notification/components/notification-slice';
 import authService from '@/services/authService';
 import dayjs from 'dayjs';
+import NotificationDrawer from './NotificationDrawer';
 
 const Header = ({ onMobileMenuClick }) => {
   const [searchValue, setSearchValue] = useState('');
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const { headerConfig } = useContext(PageHeaderContext);
   const navigate = useNavigate();
   const { data } = useGetNotificationsQuery({
@@ -43,7 +47,7 @@ const Header = ({ onMobileMenuClick }) => {
           className="lg:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Open menu"
         >
-          <span className="material-icons-outlined">menu</span>
+          <FontAwesomeIcon icon={faBars} />
         </button>
         <div className="flex flex-col">
           <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
@@ -63,14 +67,14 @@ const Header = ({ onMobileMenuClick }) => {
           className="p-2 text-gray-400 hover:text-primary dark:text-gray-500 dark:hover:text-primary transition-colors"
           title="UI Kit"
         >
-          <span className="material-icons-outlined">palette</span>
+          <FontAwesomeIcon icon={faPalette} />
         </Link>
 
         <button
-          onClick={() => navigate('/notifications')}
+          onClick={() => setDrawerOpen(true)}
           className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
         >
-          <span className="material-icons-outlined">notifications</span>
+          <FontAwesomeIcon icon={faBell} />
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
               {unreadCount > 99 ? '99+' : unreadCount}
@@ -78,28 +82,26 @@ const Header = ({ onMobileMenuClick }) => {
           )}
         </button>
         {showPreview && preview && preview.id && (
-          <div className="fixed bottom-6 right-6 w-96 
-              bg-white dark:bg-gray-900 
-              shadow-[0_20px_50px_rgba(0,0,0,0.2)] rounded-2xl p-5 
-              border border-gray-200 dark:border-gray-700 
+          <div className="fixed bottom-6 right-6 w-96
+              bg-white dark:bg-gray-900
+              shadow-[0_20px_50px_rgba(0,0,0,0.2)] rounded-2xl p-5
+              border border-gray-200 dark:border-gray-700
               z-[9999] animate-slide-in-right text-left">
 
             <div className="flex gap-4 items-start text-left">
 
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl 
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl
                   bg-orange-100 dark:bg-orange-900/30
-                  text-orange-500 
+                  text-orange-500
                   flex items-center justify-center">
-                <span className="material-icons-outlined text-lg">
-                  notifications
-                </span>
+                <FontAwesomeIcon icon={faBell} className="text-lg" />
               </div>
 
               {/* Content Section */}
-              <div className="flex-1 flex flex-col items-start"> {/* Thêm flex-col và items-start */}
+              <div className="flex-1 flex flex-col items-start">
 
                 {/* Title + Time */}
-                <div className="flex justify-between items-start gap-3 w-full"> {/* Thêm w-full */}
+                <div className="flex justify-between items-start gap-3 w-full">
                   <h4 className="text-sm font-bold text-gray-900 dark:text-white leading-snug text-left">
                     {preview.title}
                   </h4>
@@ -126,14 +128,14 @@ const Header = ({ onMobileMenuClick }) => {
               {
                 key: 'settings',
                 label: 'Settings',
-                icon: <span className="material-icons-outlined text-base">settings</span>,
+                icon: <FontAwesomeIcon icon={faGear} className="text-base" />,
                 onClick: () => navigate('/settings'),
               },
               { type: 'divider' },
               {
                 key: 'logout',
                 label: 'Logout',
-                icon: <span className="material-icons-outlined text-base">logout</span>,
+                icon: <FontAwesomeIcon icon={faRightFromBracket} className="text-base" />,
                 danger: true,
                 onClick: async () => {
                   try {
@@ -161,12 +163,13 @@ const Header = ({ onMobileMenuClick }) => {
               />
             ) : (
               <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 border-2 border-white dark:border-gray-700 shadow-sm flex items-center justify-center">
-                <span className="material-icons-round text-lg text-gray-400">person</span>
+                <FontAwesomeIcon icon={faUser} className="text-lg text-gray-400" />
               </div>
             )}
           </div>
         </Dropdown>
       </div>
+      <NotificationDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </header>
   );
 };

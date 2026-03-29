@@ -4,6 +4,8 @@ import { useGetSkillsQuery } from '@/apis/skillApi';
 import { debounce } from 'lodash';
 import { useGetExpertiseQuery, useGetDomainQuery } from '@/apis/masterDataApi';
 import BenefitsManager from './BenefitsManager';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLayerGroup } from '../../../../utils/icons';
 
 const Classification = () => {
     const [skillSearch, setSkillSearch] = useState('');
@@ -34,7 +36,7 @@ const Classification = () => {
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <span className="material-icons-round text-orange-500">category</span>
+                <FontAwesomeIcon icon={faLayerGroup} className="text-orange-500" />
                 Classification & Skills
             </h3>
 

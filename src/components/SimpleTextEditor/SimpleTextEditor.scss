@@ -37,7 +37,7 @@
     min-width: 32px;
 }
 
-.ste-btn .material-icons-round {
+.ste-btn .svg-inline--fa {
     font-size: 18px;
 }
 
@@ -98,18 +98,17 @@
 }
 
 .simple-text-editor__content li::before {
-    content: "\e061";
-    font-family: "Material Icons Round";
-    color: #ef4444;
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
+    content: "";
+    background-color: #ef4444;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     position: absolute;
     left: -1.6rem;
-    top: calc((var(--ste-line-height, 1.6) * 1em - 14px) / 2);
+    top: calc((var(--ste-line-height, 1.6) * 1em - 6px) / 2);
 }
 
 .simple-text-editor__content strong {

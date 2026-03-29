@@ -3,6 +3,8 @@ import Button from '@/components/Button';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useInviteCandidateMutation } from '@/apis/jobApi';
 import { message } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope, faPhone, faWandMagicSparkles } from '../../utils/icons';
 
 const Overview = ({ cvData }) => {
     const { jobId, resumeId } = useParams();
@@ -28,7 +30,7 @@ const Overview = ({ cvData }) => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5">
                 <div>
                     <div className="flex items-center gap-2 mb-1">
-                        <span className="material-icons-outlined text-orange-500 text-lg">auto_awesome</span>
+                        <FontAwesomeIcon icon={faWandMagicSparkles} className="text-orange-500 text-lg" />
                         <span className="text-sm font-semibold text-orange-500 uppercase tracking-wider">
                             Proposed Candidate
                         </span>
@@ -40,11 +42,11 @@ const Overview = ({ cvData }) => {
 
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-sm text-gray-500 dark:text-gray-400">
                         <span className="flex items-center gap-1.5">
-                            <span className="material-icons-round text-sm">mail</span>
+                            <FontAwesomeIcon icon={faEnvelope} className="text-sm" />
                             {cvData.emailInResume}
                         </span>
                         <span className="flex items-center gap-1.5">
-                            <span className="material-icons-round text-sm">phone</span>
+                            <FontAwesomeIcon icon={faPhone} className="text-sm" />
                             {cvData.phoneInResume}
                         </span>
                     </div>

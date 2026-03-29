@@ -1,5 +1,10 @@
 import React from 'react';
 import { message, Select, ConfigProvider } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faEnvelope, faPhone, faLocationDot, faCopy, faArrowRight,
+    faCircleXmark, faCircleCheck,
+} from '../../../../utils/icons';
 import { APPLICATION_STATUS, getApplicationStatusConfig, getAllowedNextStatuses } from '@/constrant/application';
 
 const CopyableField = ({ icon, value, href }) => {
@@ -11,7 +16,7 @@ const CopyableField = ({ icon, value, href }) => {
 
     return (
         <div className="flex items-center gap-2.5 text-sm group">
-            <span className="material-icons-round text-base text-gray-400">{icon}</span>
+            <FontAwesomeIcon icon={icon} className="text-base text-gray-400" />
             {href ? (
                 <a href={href} className="text-gray-700 dark:text-neutral-300 hover:text-orange-500 transition-colors">
                     {value}
@@ -24,7 +29,7 @@ const CopyableField = ({ icon, value, href }) => {
                 className="p-0.5 rounded text-gray-300 hover:text-orange-500 opacity-0 group-hover:opacity-100 transition-all"
                 title="Copy"
             >
-                <span className="material-icons-round text-[14px]">content_copy</span>
+                <FontAwesomeIcon icon={faCopy} className="text-[14px]" />
             </button>
         </div>
     );
@@ -48,13 +53,13 @@ const Overview = ({ app, onSwitchToAiTab, onStatusChange, isUpdating, isRejected
                 <h4 className="text-xs font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-wider">Contact</h4>
                 <div className="flex flex-col gap-2">
                     {app.candidateEmail && (
-                        <CopyableField icon="email" value={app.candidateEmail} href={`mailto:${app.candidateEmail}`} />
+                        <CopyableField icon={faEnvelope} value={app.candidateEmail} href={`mailto:${app.candidateEmail}`} />
                     )}
                     {app.candidatePhone && (
-                        <CopyableField icon="phone" value={app.candidatePhone} href={`tel:${app.candidatePhone}`} />
+                        <CopyableField icon={faPhone} value={app.candidatePhone} href={`tel:${app.candidatePhone}`} />
                     )}
                     {app.location && (
-                        <CopyableField icon="location_on" value={app.location} />
+                        <CopyableField icon={faLocationDot} value={app.location} />
                     )}
                 </div>
             </div>
@@ -104,7 +109,7 @@ const Overview = ({ app, onSwitchToAiTab, onStatusChange, isUpdating, isRejected
                             <span className="text-xs text-orange-400">AI Score</span>
                             <span className="text-sm font-bold text-orange-500 group-hover:text-orange-600">
                                 {app.aiScore}%
-                                <span className="material-icons-round text-[13px] ml-1 opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+                                <FontAwesomeIcon icon={faArrowRight} className="text-[13px] ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                             </span>
                         </button>
                     )}
@@ -116,9 +121,7 @@ const Overview = ({ app, onSwitchToAiTab, onStatusChange, isUpdating, isRejected
                 <div className="space-y-3">
                     <h4 className="text-xs font-bold text-gray-400 dark:text-neutral-500 uppercase tracking-wider">
                         <span className="flex items-center gap-1.5">
-                            <span className={`material-icons-round text-sm ${app.status === 'REJECTED' ? 'text-red-500' : 'text-green-500'}`}>
-                                {app.status === 'REJECTED' ? 'cancel' : 'check_circle'}
-                            </span>
+                            <FontAwesomeIcon icon={app.status === 'REJECTED' ? faCircleXmark : faCircleCheck} className={`text-sm ${app.status === 'REJECTED' ? 'text-red-500' : 'text-green-500'}`} />
                             Decision History
                         </span>
                     </h4>

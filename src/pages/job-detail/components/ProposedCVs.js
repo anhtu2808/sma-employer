@@ -4,6 +4,8 @@ import { useGetJobDetailQuery } from '@/apis/apis';
 import Loading from '@/components/Loading';
 import { ChevronLeft, ChevronRight, Eye, ExternalLink, MapPin, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRocket, faWandMagicSparkles } from '../../../utils/icons';
 
 const ProposedCVs = ({ jobId }) => {
   const navigate = useNavigate();
@@ -33,7 +35,7 @@ const ProposedCVs = ({ jobId }) => {
       <div className="bg-white dark:bg-surface-dark shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-2xl p-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div className="flex items-center gap-2 text-sm text-neutral-500">
-            <span className="material-icons-outlined text-primary text-base">auto_awesome</span>
+            <FontAwesomeIcon icon={faWandMagicSparkles} className="text-primary text-base" />
             <span className="font-semibold text-neutral-800 dark:text-white">{totalElements}</span> proposed CVs found
           </div>
         </div>
@@ -162,7 +164,7 @@ const ProposedCVs = ({ jobId }) => {
 const PublishFirstPlaceholder = ({ description, className = '' }) => (
   <div className={`flex flex-col items-center justify-center py-24 gap-4 animate-fadeIn ${className}`}>
     <div className="w-20 h-20 rounded-full bg-amber-50 flex items-center justify-center">
-      <span className="material-icons-round text-4xl text-amber-400">rocket_launch</span>
+      <FontAwesomeIcon icon={faRocket} className="text-4xl text-amber-400" />
     </div>
     <h3 className="text-lg font-bold text-neutral-800 dark:text-white">Publish your job first</h3>
     <p className="text-sm text-neutral-400 text-center max-w-sm">{description}</p>

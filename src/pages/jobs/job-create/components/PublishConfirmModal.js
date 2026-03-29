@@ -1,6 +1,8 @@
 import React from "react";
 import { Modal, Tag } from "antd";
 import dayjs from "dayjs";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBolt, faCalendarDay, faChartSimple, faTriangleExclamation, faWandMagicSparkles } from '../../../../utils/icons';
 
 const PublishConfirmModal = ({
   open,
@@ -26,7 +28,7 @@ const PublishConfirmModal = ({
     <Modal
       title={
         <span className="flex items-center gap-2 text-lg font-semibold">
-          <span className="material-icons-round text-primary text-xl">bolt</span>
+          <FontAwesomeIcon icon={faBolt} className="text-primary text-xl" />
           Confirm Publish
         </span>
       }
@@ -56,7 +58,7 @@ const PublishConfirmModal = ({
         {/* Application Deadline */}
         <div>
           <div className="text-xs font-medium text-gray-700 uppercase tracking-wide mb-1 flex items-center gap-1">
-            <span className="material-icons-round text-sm">calendar_today</span>
+            <FontAwesomeIcon icon={faCalendarDay} className="text-sm" />
             Application Deadline
           </div>
           <div className="text-sm text-gray-700 dark:text-gray-300">
@@ -69,7 +71,7 @@ const PublishConfirmModal = ({
         {/* Premium Features */}
         <div>
           <div className="text-xs font-medium text-gray-700 uppercase tracking-wide mb-1 flex items-center gap-1">
-            <span className="material-icons-round text-sm text-yellow-500">auto_awesome</span>
+            <FontAwesomeIcon icon={faWandMagicSparkles} className="text-sm text-yellow-500" />
             Premium Features
           </div>
           <div className="flex flex-col gap-1.5 text-sm">
@@ -92,7 +94,7 @@ const PublishConfirmModal = ({
         {jobPostQuota && (
           <div>
             <div className="text-xs font-medium text-gray-700 uppercase tracking-wide mb-1 flex items-center gap-1">
-              <span className="material-icons-round text-sm">bar_chart</span>
+              <FontAwesomeIcon icon={faChartSimple} className="text-sm" />
               Quota Usage
             </div>
             <div className="text-sm text-gray-700 dark:text-gray-300">
@@ -108,7 +110,7 @@ const PublishConfirmModal = ({
             </div>
             {isNearLimit && (
               <div className="mt-2 flex items-start gap-1.5 text-amber-600 bg-amber-50 dark:bg-amber-900/20 rounded-md px-3 py-2 text-xs">
-                <span className="material-icons-round text-sm mt-px">warning</span>
+                <FontAwesomeIcon icon={faTriangleExclamation} className="text-sm mt-px" />
                 <span>
                   You are approaching your job post quota limit. Consider upgrading your plan for more posts.
                 </span>

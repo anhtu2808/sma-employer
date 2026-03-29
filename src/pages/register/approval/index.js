@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClockRotateLeft, faEnvelope } from '../../../utils/icons';
 
 const PendingApproval = () => {
     const navigate = useNavigate();
@@ -17,7 +19,7 @@ const PendingApproval = () => {
                     <div className="relative w-24 h-24 mx-auto mb-8">
                         <div className="absolute inset-0 bg-primary/15 rounded-full animate-ping" />
                         <div className="relative flex items-center justify-center w-full h-full bg-gradient-to-br from-primary to-[#FF9E7D] rounded-full shadow-[0_8px_20px_rgba(255,107,53,0.3)]">
-                            <span className="material-icons-round text-white text-5xl">pending_actions</span>
+                            <FontAwesomeIcon icon={faClockRotateLeft} className="text-white text-5xl" />
                         </div>
                     </div>
 
@@ -46,7 +48,7 @@ const PendingApproval = () => {
                         </Button>
 
                         <div className="flex items-center justify-center gap-2 text-xs text-neutral-400">
-                            <span className="material-icons-round text-sm">mail</span>
+                            <FontAwesomeIcon icon={faEnvelope} className="text-sm" />
                             <span>We'll notify you via email once your account is activated.</span>
                         </div>
                     </div>

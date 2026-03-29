@@ -1,5 +1,7 @@
 import React from 'react';
 import { Tag } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleQuestion } from '../../../utils/icons';
 import {
     DollarSign, ShieldCheck, CalendarOff, Clock, GraduationCap,
     Coffee, Monitor, Building2, Trees, MoreHorizontal
@@ -86,7 +88,7 @@ const JobDescription = ({ job }) => {
                     <ul className="space-y-3">
                         {job.questions.map((q) => (
                             <li key={q.id} className="flex gap-3 text-gray-600 dark:text-gray-300 items-start">
-                                <span className="material-icons-round text-orange-500 text-lg leading-7 shrink-0">help_outline</span>
+                                <FontAwesomeIcon icon={faCircleQuestion} className="text-orange-500 text-lg leading-7 shrink-0" />
                                 <div>
                                     <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-base whitespace-pre-wrap">{q.question}</p>
                                     {q.description && <p className="text-sm text-gray-500 mt-1">{q.description}</p>}

@@ -4,6 +4,8 @@ import Input from '@/components/Input';
 import Button from '@/components/Button';
 import Loading from '@/components/Loading';
 import Pagination from '@/components/Pagination';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBrain, faFileLines, faMagnifyingGlass, faPenToSquare, faPlus, faSliders, faTrash } from '../../utils/icons';
 import {
   useGetCriteriaPaginatedQuery,
   useCreateCriteriaMutation,
@@ -119,7 +121,7 @@ const ScoringCriteria = () => {
         <div className="w-full md:flex-1">
           <Input
             placeholder="Search by criteria name"
-            prefix={<span className="material-icons-round text-gray-400 text-xl">search</span>}
+            prefix={<FontAwesomeIcon icon={faMagnifyingGlass} className="text-gray-400 text-xl" />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             allowClear
@@ -129,7 +131,7 @@ const ScoringCriteria = () => {
           mode="primary"
           shape="round"
           onClick={handleOpenCreate}
-          iconLeft={<span className="material-icons-round">add</span>}
+          iconLeft={<FontAwesomeIcon icon={faPlus} />}
           className="shrink-0"
         >
           Add New Rule
@@ -171,7 +173,7 @@ const ScoringCriteria = () => {
       ) : criteriaList.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
           <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="material-icons-round text-gray-400 text-3xl">psychology</span>
+            <FontAwesomeIcon icon={faBrain} className="text-gray-400 text-3xl" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">No scoring criteria found</h3>
           <p className="text-gray-500 dark:text-gray-400 mt-1 mb-6">
@@ -215,12 +217,12 @@ const ScoringCriteria = () => {
                       )}
                     </div>
                     <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 mb-1">
-                      <span className="material-icons-outlined text-base">tune</span>
+                      <FontAwesomeIcon icon={faSliders} className="text-base" />
                       <span>Default Weight: {criteria.weight != null ? `${Math.round(criteria.weight)}%` : 'N/A'}</span>
                     </div>
                     {criteria.rule && (
                       <div className="flex items-start gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-                        <span className="material-icons-outlined text-base mt-0.5">description</span>
+                        <FontAwesomeIcon icon={faFileLines} className="text-base mt-0.5" />
                         <span className="line-clamp-2">{criteria.rule}</span>
                       </div>
                     )}
@@ -234,7 +236,7 @@ const ScoringCriteria = () => {
                       onClick={() => handleOpenEdit(criteria)}
                       tooltip="Edit"
                     >
-                      <span className="material-icons-outlined text-lg">edit</span>
+                      <FontAwesomeIcon icon={faPenToSquare} className="text-lg" />
                     </Button>
                     {!criteria.isDefault && (
                       <Button
@@ -244,7 +246,7 @@ const ScoringCriteria = () => {
                         onClick={() => handleDelete(criteria)}
                         tooltip="Delete"
                       >
-                        <span className="material-icons-outlined text-lg text-red-500">delete</span>
+                        <FontAwesomeIcon icon={faTrash} className="text-lg text-red-500" />
                       </Button>
                     )}
                   </div>

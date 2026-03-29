@@ -1,8 +1,12 @@
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Outlined');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* FA icons fill more of their bounding box than Material Icons,
+   so scale down ~83% to match the previous visual weight */
+.svg-inline--fa {
+  font-size: 0.9em;
+}
 
 body {
   margin: 0;

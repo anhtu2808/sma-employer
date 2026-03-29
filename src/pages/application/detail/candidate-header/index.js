@@ -1,5 +1,7 @@
 import React from 'react';
 import { Tooltip } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBan } from '../../../../utils/icons';
 
 const CandidateHeader = ({ app, onOpenBlock }) => {
     return (
@@ -16,7 +18,7 @@ const CandidateHeader = ({ app, onOpenBlock }) => {
                     onClick={onOpenBlock}
                     className="flex items-center justify-center w-9 h-9 rounded-full border border-red-100 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 dark:border-red-900/50 dark:bg-red-900/20"
                 >
-                    <span className="material-symbols-outlined text-[18px]">block</span>
+                    <FontAwesomeIcon icon={faBan} className="text-[18px]" />
                 </button>
             </Tooltip>
         </div>

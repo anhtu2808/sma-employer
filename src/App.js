@@ -2,21 +2,19 @@ import { RouterProvider } from 'react-router-dom';
 import { routes } from '@/routes';
 import './App.css';
 import { PageHeaderProvider } from '@/contexts/PageHeaderContext';
-import { Toaster } from "react-hot-toast";
+import { ToastContainer, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useNotificationSocket } from '@/hooks/useNotificationSocket';
 
 function App() {
   useNotificationSocket();
   return (
     <>
-      <Toaster
+      <ToastContainer
         position="bottom-right"
-        toastOptions={{
-          style: {
-            background: "transparent",
-            boxShadow: "none"
-          }
-        }}
+        autoClose={2000}
+        theme="light"
+        transition={Bounce}
       />
       <PageHeaderProvider>
         <RouterProvider router={routes} />

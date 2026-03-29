@@ -1,12 +1,14 @@
 import React from "react";
 import { Modal } from "antd";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileCirclePlus, faPen, faWandMagicSparkles } from '../../../../utils/icons';
 
 const PostMethodModal = ({ open, onCancel, onSelectManual, onSelectAI }) => {
   return (
     <Modal
       title={
         <span className="flex items-center gap-2 text-lg font-semibold">
-          <span className="material-icons-round text-primary text-xl">post_add</span>
+          <FontAwesomeIcon icon={faFileCirclePlus} className="text-primary text-xl" />
           Choose Post Method
         </span>
       }
@@ -29,9 +31,7 @@ const PostMethodModal = ({ open, onCancel, onSelectManual, onSelectAI }) => {
           className="w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-primary hover:bg-orange-50 dark:hover:bg-orange-900/10 transition-all duration-200 cursor-pointer group"
         >
           <div className="flex items-start gap-3">
-            <span className="material-icons-round text-2xl text-primary mt-0.5">
-              auto_awesome
-            </span>
+            <FontAwesomeIcon icon={faWandMagicSparkles} className="text-2xl text-primary mt-0.5" />
             <div>
               <div className="font-semibold text-gray-900 dark:text-white group-hover:text-primary transition-colors">
                 Import with AI
@@ -50,9 +50,7 @@ const PostMethodModal = ({ open, onCancel, onSelectManual, onSelectAI }) => {
           className="w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-primary hover:bg-orange-50 dark:hover:bg-orange-900/10 transition-all duration-200 cursor-pointer group"
         >
           <div className="flex items-start gap-3">
-            <span className="material-icons-round text-2xl text-gray-600 group-hover:text-primary mt-0.5">
-              edit_note
-            </span>
+            <FontAwesomeIcon icon={faPen} className="text-2xl text-gray-600 group-hover:text-primary mt-0.5" />
             <div>
               <div className="font-semibold text-gray-900 dark:text-white group-hover:text-primary transition-colors">
                 Manual Compose

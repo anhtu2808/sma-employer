@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '../../../utils/icons';
 
 const SectionHeader = ({ title, linkTo, linkLabel = 'View All' }) => (
   <div className="flex items-center justify-between mb-4">
@@ -7,7 +9,7 @@ const SectionHeader = ({ title, linkTo, linkLabel = 'View All' }) => (
     {linkTo && (
       <Link to={linkTo} className="text-sm text-primary hover:text-primary-hover font-medium flex items-center gap-1">
         {linkLabel}
-        <span className="material-icons-outlined text-sm">arrow_forward</span>
+        <FontAwesomeIcon icon={faArrowRight} className="text-sm" />
       </Link>
     )}
   </div>

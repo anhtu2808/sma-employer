@@ -4,8 +4,12 @@ import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { api } from '@/apis/baseApi';
 import { setRealtimePreview } from '../pages/notification/components/notification-slice';
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 import NotificationToast from '@/components/NotificationToast';
+import {
+    faBell, faCircleCheck, faCircleExclamation,
+    faCreditCard, faFileLines, faBriefcase, faInbox,
+} from '@/utils/icons';
 
 export const useNotificationSocket = () => {
     const dispatch = useDispatch();
@@ -13,19 +17,19 @@ export const useNotificationSocket = () => {
     const getIconConfig = (type) => {
         switch (type) {
             case 'SYSTEM':
-                return { icon: 'error_outline', color: 'text-red-500', bg: 'bg-red-100' };
+                return { icon: faCircleExclamation, color: 'text-red-500', bg: 'bg-red-100' };
             case 'PAYMENT_SUCCESS':
-                return { icon: 'check_circle', color: 'text-green-500', bg: 'bg-green-100' };
+                return { icon: faCircleCheck, color: 'text-green-500', bg: 'bg-green-100' };
             case 'PAYMENT_FAILURE':
-                return { icon: 'payments', color: 'text-red-500', bg: 'bg-red-100' };
+                return { icon: faCreditCard, color: 'text-red-500', bg: 'bg-red-100' };
             case 'APPLICATION_STATUS':
-                return { icon: 'contact_page', color: 'text-blue-500', bg: 'bg-blue-100' };
+                return { icon: faFileLines, color: 'text-blue-500', bg: 'bg-blue-100' };
             case 'FLAGGED_JOB':
-                return { icon: 'work_outline', color: 'text-orange-500', bg: 'bg-orange-100' };
+                return { icon: faBriefcase, color: 'text-orange-500', bg: 'bg-orange-100' };
             case 'INVITATION':
-                return { icon: 'forward_to_inbox', color: 'text-indigo-500', bg: 'bg-indigo-100' };
+                return { icon: faInbox, color: 'text-indigo-500', bg: 'bg-indigo-100' };
             default:
-                return { icon: 'notifications', color: 'text-orange-500', bg: 'bg-orange-100' };
+                return { icon: faBell, color: 'text-orange-500', bg: 'bg-orange-100' };
         }
     };
     const getUserIdFromToken = (token) => {
@@ -74,16 +78,16 @@ export const useNotificationSocket = () => {
                     }
                     const iconConfig = getIconConfig(newNoti.notificationType);
 
-                    toast.custom((t) => (
+                    toast(
                         <NotificationToast
-                            t={t}
                             icon={iconConfig.icon}
                             iconColor={iconConfig.color}
                             iconBg={iconConfig.bg}
                             title={newNoti.title}
                             message={newNoti.message}
-                        />
-                    ), { duration: 5000 });
+                        />,
+                        { icon: false, autoClose: 5000, hideProgressBar: true }
+                    );
 
                     dispatch(api.util.invalidateTags(['Notifications']));
                 });

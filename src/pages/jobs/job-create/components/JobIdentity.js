@@ -1,12 +1,14 @@
 import React from 'react';
 import { Input, Form, DatePicker, InputNumber } from 'antd';
 import dayjs from 'dayjs';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBuilding } from '../../../../utils/icons';
 
 const JobIdentity = () => {
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-start gap-4">
             <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center shrink-0">
-                <span className="material-icons-round text-gray-400 text-4xl">business</span>
+                <FontAwesomeIcon icon={faBuilding} className="text-gray-400 text-4xl" />
             </div>
             <div className="flex-1">
                 <Form.Item

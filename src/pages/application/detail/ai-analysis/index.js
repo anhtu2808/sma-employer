@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import ScoreCard from '../score-card';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBriefcase, faCertificate, faChevronDown, faCircleCheck, faCircleXmark, faGear, faRightLeft, faThumbsDown, faThumbsUp } from '../../../../utils/icons';
 
 const getTransferabilityConfig = (level) => {
     switch (level) {
@@ -41,9 +43,7 @@ const CriteriaItem = ({ criteria }) => {
                         <div className={`h-full rounded-full transition-all duration-700 ${barColor}`} style={{ width: `${score}%` }} />
                     </div>
                 </div>
-                <span className={`material-icons-round text-lg text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''}`}>
-                    expand_more
-                </span>
+                <FontAwesomeIcon icon={faChevronDown} className={`text-lg text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''}`} />
             </button>
 
             {expanded && (
@@ -66,9 +66,7 @@ const CriteriaItem = ({ criteria }) => {
                                             : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'
                                     }`}
                                 >
-                                    <span className="material-icons-round text-[13px]">
-                                        {detail.status === 'MATCHED' ? 'check_circle' : detail.status === 'FIXED' ? 'build_circle' : 'cancel'}
-                                    </span>
+                                    <FontAwesomeIcon icon={detail.status === 'MATCHED' ? faCircleCheck : detail.status === 'FIXED' ? faGear : faCircleXmark} className="text-[13px]" />
                                     {detail.label}
                                 </span>
                             ))}
@@ -114,21 +112,19 @@ const AiAnalysis = ({ aiEvaluation }) => {
                                     ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
                                     : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                             }`}>
-                                <span className="material-icons-round text-[13px]">
-                                    {isTrueLevel ? 'verified' : 'cancel'}
-                                </span>
+                                <FontAwesomeIcon icon={isTrueLevel ? faCertificate : faCircleXmark} className="text-[13px]" />
                                 {isTrueLevel ? 'Match' : 'Not Match'}
                             </span>
                         )}
                         {hasRelatedExperience && (
                             <span className="inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                                <span className="material-icons-round text-[13px]">work</span>
+                                <FontAwesomeIcon icon={faBriefcase} className="text-[13px]" />
                                 Related Experience
                             </span>
                         )}
                         {transferConfig && (
                             <span className={`inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full ${transferConfig.cls}`}>
-                                <span className="material-icons-round text-[13px]">swap_horiz</span>
+                                <FontAwesomeIcon icon={faRightLeft} className="text-[13px]" />
                                 {transferConfig.label}
                             </span>
                         )}
@@ -142,7 +138,7 @@ const AiAnalysis = ({ aiEvaluation }) => {
                     {strengths && (
                         <div className="p-4 rounded-xl bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30">
                             <div className="flex items-center gap-2 mb-2">
-                                <span className="material-icons-round text-emerald-600 text-lg">thumb_up</span>
+                                <FontAwesomeIcon icon={faThumbsUp} className="text-emerald-600 text-lg" />
                                 <h4 className="text-base font-bold text-emerald-800 dark:text-emerald-400">Strengths</h4>
                             </div>
                             <p className="text-base text-emerald-700 dark:text-emerald-300/80 leading-relaxed whitespace-pre-line">{strengths}</p>
@@ -151,7 +147,7 @@ const AiAnalysis = ({ aiEvaluation }) => {
                     {weakness && (
                         <div className="p-4 rounded-xl bg-red-50/50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30">
                             <div className="flex items-center gap-2 mb-2">
-                                <span className="material-icons-round text-red-500 text-lg">thumb_down</span>
+                                <FontAwesomeIcon icon={faThumbsDown} className="text-red-500 text-lg" />
                                 <h4 className="text-base font-bold text-red-800 dark:text-red-400">Weaknesses</h4>
                             </div>
                             <p className="text-base text-red-700 dark:text-red-300/80 leading-relaxed whitespace-pre-line">{weakness}</p>

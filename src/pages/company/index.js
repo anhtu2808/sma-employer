@@ -11,6 +11,8 @@ import ContactInfo from './components/ContactInfo';
 import Location from './components/Location';
 import LegalInfo from './components/LegalInfo';
 import CompanyImages from './components/CompanyImages';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare } from '../../utils/icons';
 
 const CompanyProfile = () => {
     const { data: companyData, isLoading, refetch } = useGetCompanyProfileQuery();
@@ -114,7 +116,7 @@ const CompanyProfile = () => {
                             <Button
                                 mode="primary"
                                 onClick={(e) => { e.preventDefault(); setIsEditing(true); }}
-                                iconLeft={<span className="material-icons-round text-sm">edit</span>}
+                                iconLeft={<FontAwesomeIcon icon={faPenToSquare} className="text-sm" />}
                             >
                                 Edit Information
                             </Button>

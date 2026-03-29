@@ -5,6 +5,8 @@ import {
   Coffee, Monitor, Building2, Trees, Gift,
 } from 'lucide-react';
 import { useGetBenefitQuery } from '@/apis/masterDataApi';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faTrash } from '../../../../utils/icons';
 
 const BENEFIT_TYPE_ICONS = {
   FINANCIAL: DollarSign,
@@ -108,7 +110,7 @@ const BenefitRow = ({ name, restField, allBenefits, onRemove }) => {
         danger
         onClick={onRemove}
         className="mt-0.5 flex-shrink-0"
-        icon={<span className="material-icons-outlined text-lg">delete</span>}
+        icon={<FontAwesomeIcon icon={faTrash} className="text-lg" />}
       />
     </div>
   );
@@ -138,7 +140,7 @@ const BenefitsManager = () => {
               type="dashed"
               onClick={() => add({ type: 'OTHER', description: '' })}
               block
-              icon={<span className="material-icons-outlined text-sm">add</span>}
+              icon={<FontAwesomeIcon icon={faPlus} className="text-sm" />}
             >
               Add benefit
             </Button>

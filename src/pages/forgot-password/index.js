@@ -5,6 +5,8 @@ import Input from "@/components/Input";
 import Button from "@/components/Button";
 import SideDecorator from "./side-decorator";
 import { useForgotPasswordMutation } from "@/apis/apis";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope, faArrowRight } from '@/utils/icons';
 
 const ForgotPassword = () => {
     const navigate = useNavigate();
@@ -58,7 +60,7 @@ const ForgotPassword = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                prefix={<span className="material-icons-round text-gray-400" style={{ fontSize: '20px' }}>mail</span>}
+                                prefix={<FontAwesomeIcon icon={faEnvelope} className="text-gray-400" style={{ fontSize: '20px' }} />}
                             />
                         </div>
 
@@ -70,7 +72,7 @@ const ForgotPassword = () => {
                             disabled={loading}
                             loading={loading}
                             className="mt-6 font-bold"
-                            iconRight={<span className="material-icons-round ml-1" style={{ fontSize: '20px' }}>arrow_forward</span>}
+                            iconRight={<FontAwesomeIcon icon={faArrowRight} className="ml-1" style={{ fontSize: '20px' }} />}
                         >
                             Send OTP
                         </Button>

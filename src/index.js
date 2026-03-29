@@ -3,10 +3,14 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import '@fortawesome/fontawesome-svg-core/styles.css';
+import { config } from '@fortawesome/fontawesome-svg-core';
 import store, { persistor } from "./store";
 import "./index.css";
 import App from "./App";
 import Preloader from "./components/Preloader";
+
+config.autoAddCss = false;
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 

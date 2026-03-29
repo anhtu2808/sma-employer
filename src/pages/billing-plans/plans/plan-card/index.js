@@ -1,4 +1,6 @@
 import Button from "@/components/Button";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '../../../../utils/icons';
 
 const getSaveBadgeStyle = (savePercent) => {
   if (savePercent >= 40) {
@@ -104,7 +106,7 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
               }}
               btnIcon
             >
-              <span className="material-icons-round text-[20px]">close</span>
+              <FontAwesomeIcon icon={faXmark} className="text-[20px]" />
             </Button>
           </div>
 

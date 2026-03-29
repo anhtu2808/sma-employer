@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { Eye, Archive, ArchiveRestore, Trash2 } from 'lucide-react';
 import { getJobStatusConfig } from '@/constrant';
 import Button from '@/components/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarXmark, faClock, faCreditCard, faLocationDot, faUserGroup } from '../../utils/icons';
 
 const JobListItem = ({
     id,
@@ -39,25 +41,25 @@ const JobListItem = ({
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
                     {postedTime && (
                         <div className="flex items-center gap-1">
-                            <span className="material-icons-round text-base">schedule</span>
+                            <FontAwesomeIcon icon={faClock} className="text-base" />
                             <span>Posted {postedTime}</span>
                         </div>
                     )}
                     {location && (
                         <div className="flex items-center gap-1">
-                            <span className="material-icons-round text-base">place</span>
+                            <FontAwesomeIcon icon={faLocationDot} className="text-base" />
                             <span>{location}</span>
                         </div>
                     )}
                     {salary && (
                         <div className="flex items-center gap-1">
-                            <span className="material-icons-round text-base">payments</span>
+                            <FontAwesomeIcon icon={faCreditCard} className="text-base" />
                             <span>{salary}</span>
                         </div>
                     )}
                     {expiry && (
                         <div className="flex items-center gap-1">
-                            <span className="material-icons-round text-base">event_busy</span>
+                            <FontAwesomeIcon icon={faCalendarXmark} className="text-base" />
                             <span className="text-orange-600 dark:text-orange-400">{expiry}</span>
                         </div>
                     )}
@@ -79,7 +81,7 @@ const JobListItem = ({
                 <div className="flex items-center gap-6 pt-1">
                     {stats.applicants != null && (
                         <div className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">
-                            <span className="material-icons-round text-green-600 text-lg">people_alt</span>
+                            <FontAwesomeIcon icon={faUserGroup} className="text-green-600 text-lg" />
                             <span>{stats.applicants} applicants</span>
                             {stats.newApplicants > 0 && (
                                 <span className="ml-1 px-1.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">

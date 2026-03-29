@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import SectionHeader from './SectionHeader';
 
 const getDaysUntilExpiry = (expDate) => {
@@ -47,9 +49,7 @@ const SortableHeader = ({ label, sortKey, currentSort, onSort }) => {
       <span className="inline-flex items-center gap-1">
         {label}
         {isActive && (
-          <span className="material-icons-outlined text-xs">
-            {currentSort.asc ? 'arrow_upward' : 'arrow_downward'}
-          </span>
+          <FontAwesomeIcon icon={currentSort.asc ? faArrowUp : faArrowDown} className="text-xs" />
         )}
       </span>
     </th>
