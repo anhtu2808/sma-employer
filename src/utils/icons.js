@@ -133,6 +133,7 @@ import {
 
 import { faCircleQuestion as faCircleQuestionFallback } from '@fortawesome/free-solid-svg-icons';
 
+
 /**
  * Complete mapping from Material Icon names to Font Awesome icon definitions.
  * Used for dynamic icon resolution where icon names come from data/props.
