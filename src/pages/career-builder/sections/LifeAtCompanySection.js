@@ -30,32 +30,47 @@ const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
         display: 'grid', gridTemplateColumns: `repeat(${Math.min(defaultNews.length, 3)}, 1fr)`,
         gap: '20px', maxWidth: '750px', margin: '0 auto',
       }}>
-        {defaultNews.filter(item => item.isVisible !== false).map((item, i) => (
-          <div key={i} style={{
-            background: backgroundColor,
-            borderRadius: `${borderRadius}px`,
-            overflow: 'hidden',
-            boxShadow: shadowMap[shadow],
-            border: '1px solid rgba(0,0,0,0.06)',
-            textAlign: 'left',
-          }}>
+        {defaultNews.filter(item => item.isVisible !== false).map((item, i) => {
+          const cardContent = (
             <div style={{
-              height: '140px',
-              background: item.thumbnailUrl ? `url(${item.thumbnailUrl}) center/cover no-repeat` : `linear-gradient(135deg, ${primaryColor}20, ${primaryColor}08)`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '36px',
+              background: backgroundColor,
+              borderRadius: `${borderRadius}px`,
+              overflow: 'hidden',
+              boxShadow: shadowMap[shadow],
+              border: '1px solid rgba(0,0,0,0.06)',
+              textAlign: 'left',
+              height: '100%',
+              transition: 'transform 0.2s',
+              cursor: item.url ? 'pointer' : 'default',
             }}>
-            </div>
-            <div style={{ padding: '16px 18px' }}>
-              <div style={{ fontSize: '14px', fontWeight: 700, color: textColor, marginBottom: '6px' }}>
-                {item.title}
+              <div style={{
+                height: '140px',
+                background: item.thumbnailUrl ? `url(${item.thumbnailUrl}) center/cover no-repeat` : `linear-gradient(135deg, ${primaryColor}20, ${primaryColor}08)`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '36px',
+              }}>
               </div>
-              <div style={{ fontSize: '12px', color: textColor, opacity: 0.45 }}>
-                {item.date}
+              <div style={{ padding: '16px 18px' }}>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: textColor, marginBottom: '6px' }}>
+                  {item.title}
+                </div>
+                <div style={{ fontSize: '12px', color: textColor, opacity: 0.45 }}>
+                  {item.date}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+
+          return item.url ? (
+            <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
+              {cardContent}
+            </a>
+          ) : (
+            <div key={i} style={{ height: '100%' }}>
+              {cardContent}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -400,7 +400,7 @@ const SectionEditor = ({ section, onUpdate }) => {
           <ArrayEditor 
             items={props.news || []} 
             onChange={(v) => updateProp('news', v)}
-            schema={{ title: '', date: '', thumbnailUrl: '' }}
+            schema={{ title: '', date: '', thumbnailUrl: '', url: '' }}
             renderItemSummary={(item) => item.title || 'New Article'}
           />
         </div>

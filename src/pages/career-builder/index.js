@@ -1,10 +1,11 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { message } from 'antd';
-import { useCreateCareerPageMutation } from '@/apis/careerPageApi';
+import { useCreateCareerPageMutation, useGetCareerPageManageQuery } from '@/apis/careerPageApi';
 import CareerBuilderToolbar from './CareerBuilderToolbar';
 import ThemeConfigPanel from './ThemeConfigPanel';
 import SectionsPanel from './SectionsPanel';
 import CanvasPreview from './CanvasPreview';
+import Loading from '@/components/Loading';
 import './CareerBuilder.css';
 
 // ── Sample data matching BE schema ──────────────────────────────────────────
@@ -154,14 +155,14 @@ const SAMPLE_DATA = {
 
 /** Flatten themeConfig from BE structure into a single flat object for easy binding */
 const flattenTheme = (tc) => ({
-  primaryColor: tc.colors.primary,
-  secondaryColor: tc.colors.secondary,
-  backgroundColor: tc.colors.background,
-  textColor: tc.colors.text,
-  fontFamily: tc.typography.fontFamily,
-  baseFontSize: tc.typography.baseFontSize,
-  borderRadius: tc.styling.borderRadius,
-  buttonStyle: tc.styling.buttonStyle,
+  primaryColor: tc?.colors?.primary || '#FF6B35',
+  secondaryColor: tc?.colors?.secondary || '#E6F0FF',
+  backgroundColor: tc?.colors?.background || '#FFFFFF',
+  textColor: tc?.colors?.text || '#1D1D1F',
+  fontFamily: tc?.typography?.fontFamily || 'Inter',
+  baseFontSize: tc?.typography?.baseFontSize || 16,
+  borderRadius: tc?.styling?.borderRadius || 12,
+  buttonStyle: tc?.styling?.buttonStyle || 'shadow',
   shadow: 'subtle',
   spacing: 'normal',
 });
@@ -187,15 +188,36 @@ const unflattenTheme = (flat) => ({
 // ── Component ────────────────────────────────────────────────────────────────
 
 const CareerPageBuilder = () => {
+  const { data: careerPageResponse, isLoading: isLoadingPage } = useGetCareerPageManageQuery();
+
   const [slug, setSlug] = useState(SAMPLE_DATA.slug || '');
   const [theme, setTheme] = useState(() => flattenTheme(SAMPLE_DATA.themeConfig));
   const [headerConfig, setHeaderConfig] = useState(SAMPLE_DATA.headerConfig);
   const [footerConfig, setFooterConfig] = useState(SAMPLE_DATA.footerConfig);
   const [layoutConfig, setLayoutConfig] = useState(SAMPLE_DATA.layoutConfig);
+  const [metaConfig, setMetaConfig] = useState(SAMPLE_DATA.metaConfig);
   const [activeSection, setActiveSection] = useState(null);
   const [status, setStatus] = useState(SAMPLE_DATA.status.toLowerCase());
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   const [createCareerPage, { isLoading: isSaving }] = useCreateCareerPageMutation();
+
+  // Populate state from API response when data arrives
+  useEffect(() => {
+    const pageData = careerPageResponse?.data;
+    if (pageData && !dataLoaded) {
+      if (pageData.slug) setSlug(pageData.slug);
+      if (pageData.status) setStatus(pageData.status.toLowerCase());
+      if (pageData.metaConfig) setMetaConfig(pageData.metaConfig);
+      if (pageData.headerConfig) setHeaderConfig(pageData.headerConfig);
+      if (pageData.footerConfig) setFooterConfig(pageData.footerConfig);
+      if (pageData.themeConfig) setTheme(flattenTheme(pageData.themeConfig));
+      if (pageData.layoutConfig && Array.isArray(pageData.layoutConfig) && pageData.layoutConfig.length > 0) {
+        setLayoutConfig(pageData.layoutConfig);
+      }
+      setDataLoaded(true);
+    }
+  }, [careerPageResponse, dataLoaded]);
 
   const handleSelectSection = useCallback((id) => {
     setActiveSection((prev) => (prev === id ? null : id));
@@ -255,7 +277,7 @@ const CareerPageBuilder = () => {
     return {
       slug: slug,
       status: targetStatus,
-      metaConfig: SAMPLE_DATA.metaConfig,
+      metaConfig: metaConfig,
       headerConfig: cleanHeader,
       themeConfig: unflattenTheme(theme),
       layoutConfig: layoutConfig.map((section) => ({
@@ -268,7 +290,7 @@ const CareerPageBuilder = () => {
       })),
       footerConfig: cleanFooter,
     };
-  }, [headerConfig, footerConfig, theme, layoutConfig]);
+  }, [slug, metaConfig, headerConfig, footerConfig, theme, layoutConfig]);
 
   /** Save as Draft */
   const handleSaveDraft = useCallback(async () => {
@@ -308,6 +330,14 @@ const CareerPageBuilder = () => {
       message.error(err?.message || 'Failed to archive. Please try again.');
     }
   }, [buildPayload, createCareerPage]);
+
+  if (isLoadingPage && !dataLoaded) {
+    return (
+      <div className="cb-root" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <Loading className="py-20" />
+      </div>
+    );
+  }
 
   return (
     <div className="cb-root">
