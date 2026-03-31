@@ -6,6 +6,7 @@ import {
   faCreditCard, faClockRotateLeft, faTableCells, faUsers,
   faBriefcase, faClipboard, faEnvelopeRegular, faBan,
   faBell, faStar, faRightFromBracket, faChevronLeft, faChevronRight,
+  faPaintbrush,
 } from '@/utils/icons';
 import Logo from '@/components/Logo';
 import Button from '@/components/Button';
@@ -17,6 +18,7 @@ import { useGetMyRecruiterInfoQuery } from '@/apis/recruiterApi';
 
 const generalItems = [
   { icon: faBuilding, label: 'Company', path: '/company' },
+  { icon: faPaintbrush, label: 'Career Page', path: '/career-builder' },
   { icon: faClipboardCheck, label: 'Scoring Criteria', path: '/scoring-criteria' },
   { icon: faBoxArchive, label: 'Archived Jobs', path: '/jobs/archived' },
   { icon: faGear, label: 'Settings', path: '/settings' },
