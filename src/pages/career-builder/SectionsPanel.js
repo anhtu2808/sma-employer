@@ -41,20 +41,20 @@ const ImageField = ({ label, value, onChange }) => {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-        message.error('Please upload an image file');
-        return;
+      message.error('Please upload an image file');
+      return;
     }
 
     try {
-        const formDataUpload = new FormData();
-        formDataUpload.append('files', file);
-        const response = await uploadFile(formDataUpload).unwrap();
-        const downloadUrl = response[0]?.downloadUrl || response?.downloadUrl;
-        if (downloadUrl) {
-            onChange(downloadUrl);
-        }
+      const formDataUpload = new FormData();
+      formDataUpload.append('files', file);
+      const response = await uploadFile(formDataUpload).unwrap();
+      const downloadUrl = response[0]?.downloadUrl || response?.downloadUrl;
+      if (downloadUrl) {
+        onChange(downloadUrl);
+      }
     } catch {
-        message.error('Failed to upload image');
+      message.error('Failed to upload image');
     }
   };
 
@@ -77,8 +77,8 @@ const ImageField = ({ label, value, onChange }) => {
           style={{ display: 'none' }}
           onChange={handleUpload}
         />
-        <button 
-          className="cb-btn-secondary" 
+        <button
+          className="cb-btn-secondary"
           onClick={() => fileInputRef.current?.click()}
           disabled={isLoading}
           style={{ padding: '6px 10px', fontSize: '11px', flexShrink: 0, whiteSpace: 'nowrap' }}
@@ -135,7 +135,7 @@ const VisibilityToggle = ({ label, isVisible, onChange }) => {
   );
 };
 
-const ArrayEditor = ({ items = [], onChange, schema, renderItemSummary }) => {
+const ArrayEditor = ({ items = [], onChange, schema, renderItemSummary, optionsMap }) => {
   const handleAdd = () => {
     const newItem = { ...schema };
     onChange([...items, newItem]);
@@ -181,6 +181,23 @@ const ArrayEditor = ({ items = [], onChange, schema, renderItemSummary }) => {
           </div>
           <div className="cb-array-item-body">
             {Object.keys(schema).map((key) => {
+              if (optionsMap && optionsMap[key]) {
+                return (
+                  <div key={key} className="cb-field">
+                    <label className="cb-field-label">{key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1').trim()}</label>
+                    <select
+                      className="cb-input cb-select"
+                      value={item[key] || ''}
+                      onChange={(e) => handleUpdate(idx, key, e.target.value)}
+                    >
+                      <option value="">Select...</option>
+                      {optionsMap[key].map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              }
               if (key === 'isVisible') {
                 return (
                   <VisibilityToggle
@@ -225,7 +242,7 @@ const ArrayEditor = ({ items = [], onChange, schema, renderItemSummary }) => {
               }
               const isImage = key === 'imageUrl' || key === 'imgUrl' || key === 'thumbnailUrl';
               if (isImage) {
-                 return <ImageField key={key} label={key.charAt(0).toUpperCase() + key.slice(1)} value={item[key]} onChange={(v) => handleUpdate(idx, key, v)} />;
+                return <ImageField key={key} label={key.charAt(0).toUpperCase() + key.slice(1)} value={item[key]} onChange={(v) => handleUpdate(idx, key, v)} />;
               }
               const isMultiline = key === 'desc' || key === 'description' || key === 'answer';
               return (
@@ -250,10 +267,10 @@ const ArrayEditor = ({ items = [], onChange, schema, renderItemSummary }) => {
 
 // --- Main Editor Component for a Section ---
 
-const SectionEditor = ({ section, onUpdate }) => {
+const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
   const props = section.props || {};
   const config = section.config || {};
-  
+
   const updateProp = (key, val) => {
     onUpdate('props', { ...props, [key]: val });
   };
@@ -282,11 +299,17 @@ const SectionEditor = ({ section, onUpdate }) => {
             </select>
           </div>
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>Navigation Links</div>
-          <ArrayEditor 
-            items={config.navLinks || []} 
+          <ArrayEditor
+            items={config.navLinks || []}
             onChange={(v) => updateConfig('navLinks', v)}
             schema={{ label: '', targetSectionId: '', isExternal: false }}
             renderItemSummary={(item) => item.label || 'New Link'}
+            optionsMap={{
+              targetSectionId: allSections.map(s => ({
+                value: s.id,
+                label: SECTION_META[s.type]?.label || s.id
+              }))
+            }}
           />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>CTA Button</div>
           {config.ctaButton && (
@@ -303,8 +326,8 @@ const SectionEditor = ({ section, onUpdate }) => {
         <div className="cb-section-children">
           <StringField label="Company Name" value={config.companyName} onChange={(v) => updateConfig('companyName', v)} />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>Addresses</div>
-          <ArrayEditor 
-            items={(config.contact?.addresses || []).map(a => ({ address: a }))} 
+          <ArrayEditor
+            items={(config.contact?.addresses || []).map(a => ({ address: a }))}
             onChange={(arr) => updateConfig('contact', { ...config.contact, addresses: arr.map(a => a.address) })}
             schema={{ address: '' }}
             renderItemSummary={(item, i) => item.address || `Address ${i + 1}`}
@@ -313,8 +336,8 @@ const SectionEditor = ({ section, onUpdate }) => {
           <StringField label="Phone" value={config.contact?.phone} onChange={(v) => updateConfig('contact', { ...config.contact, phone: v })} />
           <StringField label="Copyright Text" value={config.copyrightText} onChange={(v) => updateConfig('copyrightText', v)} />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>Social Links</div>
-          <ArrayEditor 
-            items={config.socialLinks || []} 
+          <ArrayEditor
+            items={config.socialLinks || []}
             onChange={(v) => updateConfig('socialLinks', v)}
             schema={{ platform: 'Facebook', url: '' }}
             renderItemSummary={(item) => item.platform}
@@ -345,8 +368,8 @@ const SectionEditor = ({ section, onUpdate }) => {
         <div className="cb-section-children">
           <StringField label="Headline" value={props.headline} onChange={(v) => updateProp('headline', v)} />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>EVP Items</div>
-          <ArrayEditor 
-            items={props.items || []} 
+          <ArrayEditor
+            items={props.items || []}
             onChange={(v) => updateProp('items', v)}
             schema={{ title: '', desc: '', icon: 'star' }}
             renderItemSummary={(item) => item.title || 'New Item'}
@@ -358,8 +381,8 @@ const SectionEditor = ({ section, onUpdate }) => {
         <div className="cb-section-children">
           <StringField label="Headline" value={props.headline} onChange={(v) => updateProp('headline', v)} />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>Awards</div>
-          <ArrayEditor 
-            items={props.items || []} 
+          <ArrayEditor
+            items={props.items || []}
             onChange={(v) => updateProp('items', v)}
             schema={{ name: '', year: '', imgUrl: '' }}
             renderItemSummary={(item) => item.name || 'New Award'}
@@ -371,8 +394,8 @@ const SectionEditor = ({ section, onUpdate }) => {
         <div className="cb-section-children">
           <StringField label="Headline" value={props.headline} onChange={(v) => updateProp('headline', v)} />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>Steps</div>
-          <ArrayEditor 
-            items={props.steps || []} 
+          <ArrayEditor
+            items={props.steps || []}
             onChange={(v) => updateProp('steps', v)}
             schema={{ title: '', desc: '' }}
             renderItemSummary={(item, i) => `${i + 1}. ${item.title || 'Step'}`}
@@ -384,8 +407,8 @@ const SectionEditor = ({ section, onUpdate }) => {
         <div className="cb-section-children">
           <StringField label="Headline" value={props.headline} onChange={(v) => updateProp('headline', v)} />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>Questions</div>
-          <ArrayEditor 
-            items={props.items || []} 
+          <ArrayEditor
+            items={props.items || []}
             onChange={(v) => updateProp('items', v)}
             schema={{ question: '', answer: '' }}
             renderItemSummary={(item) => item.question || 'New Question'}
@@ -397,8 +420,8 @@ const SectionEditor = ({ section, onUpdate }) => {
         <div className="cb-section-children">
           <StringField label="Headline" value={props.headline} onChange={(v) => updateProp('headline', v)} />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>News & Events</div>
-          <ArrayEditor 
-            items={props.news || []} 
+          <ArrayEditor
+            items={props.news || []}
             onChange={(v) => updateProp('news', v)}
             schema={{ title: '', date: '', thumbnailUrl: '', url: '' }}
             renderItemSummary={(item) => item.title || 'New Article'}
@@ -410,8 +433,8 @@ const SectionEditor = ({ section, onUpdate }) => {
         <div className="cb-section-children">
           <StringField label="Headline" value={props.headline} onChange={(v) => updateProp('headline', v)} />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>Images</div>
-          <ArrayEditor 
-            items={(props.images || []).map(url => ({ imageUrl: url }))} 
+          <ArrayEditor
+            items={(props.images || []).map(url => ({ imageUrl: url }))}
             onChange={(arr) => updateProp('images', arr.map(a => a.imageUrl))}
             schema={{ imageUrl: '' }}
             renderItemSummary={(item, i) => item.imageUrl ? `Image ${i + 1}` : 'New Image'}
@@ -492,7 +515,7 @@ const SectionsPanel = ({ sections, onSectionsChange, onUpdateSection, activeSect
 
     // We only swap layout sections, not header/footer
     const layoutSections = sections.filter(s => s.id !== 'header' && s.id !== 'footer');
-    
+
     // Convert visible indices pointing to the full list, but dragging only works properly 
     // if we abstract just the layout entries.
     // Simplifying: we'll just reorder the whole array then filter in index.js handles it.
@@ -543,14 +566,14 @@ const SectionsPanel = ({ sections, onSectionsChange, onUpdateSection, activeSect
                     ) : (
                       <span style={{ width: 14, display: 'inline-block' }} />
                     )}
-                    
-                    <button 
-                      className="cb-expand-btn" 
+
+                    <button
+                      className="cb-expand-btn"
                       onClick={(e) => toggleExpand(section.id, e)}
                     >
                       <FontAwesomeIcon icon={isExpanded ? faChevronDown : faChevronRight} />
                     </button>
-                    
+
                     <span className="cb-section-name">{meta.label || section.type}</span>
                     {meta.system && <span className="cb-system-badge">System</span>}
                   </div>
@@ -566,9 +589,10 @@ const SectionsPanel = ({ sections, onSectionsChange, onUpdateSection, activeSect
                 </div>
 
                 {isExpanded && (
-                  <SectionEditor 
-                    section={section} 
-                    onUpdate={(key, val) => onUpdateSection(section.id, key, val)} 
+                  <SectionEditor
+                    section={section}
+                    onUpdate={(key, val) => onUpdateSection(section.id, key, val)}
+                    allSections={sections}
                   />
                 )}
               </div>
