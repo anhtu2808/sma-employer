@@ -1,0 +1,339 @@
+import React, { useState, useMemo } from 'react';
+
+import { useGetJobsQuery } from '@/apis/jobApi';
+
+const ITEMS_PER_PAGE = 5;
+
+const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
+  const { primaryColor, backgroundColor, textColor, borderRadius, buttonStyle, shadow } = theme;
+  const { headline = 'Các vị trí đang tuyển dụng' } = sectionProps;
+
+  // Filter state
+  const [searchName, setSearchName] = useState('');
+  const [searchLocation, setSearchLocation] = useState('');
+  const [selectedLevel, setSelectedLevel] = useState('');
+  const [selectedModel, setSelectedModel] = useState('');
+  const [selectedSkill, setSelectedSkill] = useState('');
+  const [salaryRange, setSalaryRange] = useState([0, 100]);
+  const [expRange, setExpRange] = useState([0, 10]);
+  const [selectedExpertise, setSelectedExpertise] = useState('');
+  const [selectedDomain, setSelectedDomain] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const { data: jobsData, isLoading } = useGetJobsQuery({ page: 0, size: 100, status: 'PUBLISHED' });
+  const fetchedJobs = jobsData?.data?.content || [];
+
+  // Filter logic
+  const filteredJobs = useMemo(() => {
+    let jobs = fetchedJobs.map(j => ({
+      id: j.id,
+      title: j.name || 'Untitled Job',
+      dept: j.expertise?.name || j.domains?.[0]?.name || 'Khác',
+      location: j.locations?.map(l => l.city).join(', ') || j.company?.country || 'Remote',
+      type: j.jobType || 'Full-time',
+      level: j.jobLevel || 'Mid',
+      model: j.workingModel || 'On-site',
+      tags: Array.isArray(j.skills) ? j.skills.map(s => s.name) : []
+    }));
+
+    if (searchName) jobs = jobs.filter(j => j.title.toLowerCase().includes(searchName.toLowerCase()));
+    if (searchLocation) jobs = jobs.filter(j => j.location.toLowerCase().includes(searchLocation.toLowerCase()));
+    if (selectedLevel) jobs = jobs.filter(j => j.level === selectedLevel);
+    if (selectedModel) jobs = jobs.filter(j => j.model === selectedModel);
+    if (selectedSkill) jobs = jobs.filter(j => j.tags.some(t => t.toLowerCase().includes(selectedSkill.toLowerCase())));
+    return jobs;
+  }, [fetchedJobs, searchName, searchLocation, selectedLevel, selectedModel, selectedSkill]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredJobs.length / ITEMS_PER_PAGE));
+  const paginatedJobs = filteredJobs.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  const handleReset = () => {
+    setSearchName(''); setSearchLocation('');
+    setSelectedLevel(''); setSelectedModel('');
+    setSelectedSkill(''); setSalaryRange([0, 100]);
+    setExpRange([0, 10]); setSelectedExpertise('');
+    setSelectedDomain(''); setCurrentPage(1);
+  };
+
+  const shadowMap = {
+    none: 'none',
+    subtle: '0 2px 8px rgba(0,0,0,0.06)',
+    medium: '0 4px 20px rgba(0,0,0,0.1)',
+  };
+
+  const btnBase = {
+    padding: '10px 24px', borderRadius: `${borderRadius}px`,
+    fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+  };
+  const btnStyles = {
+    flat: { ...btnBase, background: primaryColor, color: '#fff', border: 'none' },
+    outline: { ...btnBase, background: 'transparent', color: primaryColor, border: `2px solid ${primaryColor}` },
+    shadow: { ...btnBase, background: primaryColor, color: '#fff', border: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' },
+    ghost: { ...btnBase, background: `${primaryColor}10`, color: primaryColor, border: 'none' },
+  };
+
+  const inputStyle = {
+    width: '100%', padding: '10px 14px', borderRadius: `${borderRadius}px`,
+    border: '1px solid #e5e7eb', fontSize: '13px', outline: 'none',
+    color: textColor, background: '#fff', boxSizing: 'border-box',
+  };
+  const selectStyle = {
+    ...inputStyle, appearance: 'none', WebkitAppearance: 'none',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239CA3AF' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
+    backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center',
+  };
+  const labelStyle = { fontSize: '13px', fontWeight: 700, color: textColor, marginBottom: '6px', display: 'block' };
+  const fieldGap = { marginBottom: '18px' };
+
+  const rangeTrackStyle = (value, max) => ({
+    width: '100%', height: '4px', appearance: 'none', WebkitAppearance: 'none',
+    background: `linear-gradient(to right, ${primaryColor} ${(value / max) * 100}%, #e5e7eb ${(value / max) * 100}%)`,
+    borderRadius: '4px', outline: 'none', cursor: 'pointer',
+  });
+
+  return (
+    <div style={{
+      background: settings.backgroundColorOverride || backgroundColor,
+      padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
+    }}>
+      <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+        <h2 style={{ fontSize: '32px', fontWeight: 700, color: textColor, marginBottom: '8px' }}>{headline}</h2>
+      </div>
+
+      <div style={{ display: 'flex', gap: '28px', maxWidth: '960px', margin: '0 auto', alignItems: 'flex-start' }}>
+        {/* ─── Filter Sidebar ──────────────────────────────────────── */}
+        <div style={{
+          width: '280px', flexShrink: 0,
+          background: '#fff', borderRadius: `${borderRadius}px`,
+          border: '1px solid #f0f0f0', boxShadow: shadowMap[shadow],
+          padding: '24px 20px',
+        }}>
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '18px', fontWeight: 800, color: textColor }}>Filters</span>
+            </div>
+            <button onClick={handleReset} style={{
+              background: 'none', border: 'none', color: primaryColor,
+              fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+            }}>Reset</button>
+          </div>
+
+          {/* Location */}
+          <div style={fieldGap}>
+            <label style={labelStyle}>Location</label>
+            <input style={inputStyle} placeholder="Enter Location" value={searchLocation}
+              onChange={(e) => { setSearchLocation(e.target.value); setCurrentPage(1); }} />
+          </div>
+
+          {/* Job Level */}
+          <div style={fieldGap}>
+            <label style={labelStyle}>Job Level</label>
+            <select style={selectStyle} value={selectedLevel}
+              onChange={(e) => { setSelectedLevel(e.target.value); setCurrentPage(1); }}>
+              <option value="">Select Job Level</option>
+              <option value="Junior">Junior</option>
+              <option value="Mid">Mid</option>
+              <option value="Senior">Senior</option>
+              <option value="Lead">Lead</option>
+            </select>
+          </div>
+
+          {/* Working Model */}
+          <div style={fieldGap}>
+            <label style={labelStyle}>Working Model</label>
+            <select style={selectStyle} value={selectedModel}
+              onChange={(e) => { setSelectedModel(e.target.value); setCurrentPage(1); }}>
+              <option value="">Select Working Model</option>
+              <option value="Remote">Remote</option>
+              <option value="On-site">On-site</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
+          </div>
+
+          {/* Skills */}
+          <div style={fieldGap}>
+            <label style={labelStyle}>Skills</label>
+            <select style={selectStyle} value={selectedSkill}
+              onChange={(e) => { setSelectedSkill(e.target.value); setCurrentPage(1); }}>
+              <option value="">Select skills...</option>
+              {['React', 'TypeScript', 'Python', 'Node.js', 'AWS', 'Figma', 'Docker'].map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Salary Range */}
+          <div style={fieldGap}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <label style={labelStyle}>Salary Range (VND)</label>
+              <span style={{ fontSize: '11px', color: textColor, opacity: 0.5 }}>{salaryRange[0]} - {salaryRange[1]}M+</span>
+            </div>
+            <input type="range" min="0" max="100" value={salaryRange[1]}
+              onChange={(e) => setSalaryRange([salaryRange[0], Number(e.target.value)])}
+              style={rangeTrackStyle(salaryRange[1], 100)}
+              className="cb-range" />
+          </div>
+
+          {/* Experience */}
+          <div style={fieldGap}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <label style={labelStyle}>Experience (Years)</label>
+              <span style={{ fontSize: '11px', color: textColor, opacity: 0.5 }}>{expRange[0]} - {expRange[1]}+ years</span>
+            </div>
+            <input type="range" min="0" max="10" value={expRange[1]}
+              onChange={(e) => setExpRange([expRange[0], Number(e.target.value)])}
+              style={rangeTrackStyle(expRange[1], 10)}
+              className="cb-range" />
+          </div>
+
+          {/* Expertise */}
+          <div style={fieldGap}>
+            <label style={labelStyle}>Expertise</label>
+            <select style={selectStyle} value={selectedExpertise}
+              onChange={(e) => setSelectedExpertise(e.target.value)}>
+              <option value="">Select expertises...</option>
+              <option value="Frontend">Frontend</option>
+              <option value="Backend">Backend</option>
+              <option value="Full-stack">Full-stack</option>
+              <option value="DevOps">DevOps</option>
+              <option value="Design">Design</option>
+            </select>
+          </div>
+
+          {/* Domain */}
+          <div style={{ marginBottom: 0 }}>
+            <label style={labelStyle}>Domain</label>
+            <select style={selectStyle} value={selectedDomain}
+              onChange={(e) => setSelectedDomain(e.target.value)}>
+              <option value="">Select domains...</option>
+              <option value="Fintech">Fintech</option>
+              <option value="E-commerce">E-commerce</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Education">Education</option>
+            </select>
+          </div>
+        </div>
+
+        {/* ─── Job Listings ────────────────────────────────────────── */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Search bar */}
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+            <input
+              style={{ ...inputStyle, flex: 1, border: '1px solid #e5e7eb' }}
+              placeholder="Tìm kiếm theo tên công việc..."
+              value={searchName}
+              onChange={(e) => { setSearchName(e.target.value); setCurrentPage(1); }}
+            />
+          </div>
+
+          {/* Results count */}
+          <div style={{ fontSize: '13px', color: textColor, opacity: 0.5, marginBottom: '14px' }}>
+            Hiển thị {paginatedJobs.length} / {filteredJobs.length} vị trí
+          </div>
+
+          {/* Job cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {isLoading ? (
+              <div style={{ textAlign: 'center', padding: '48px 20px', color: textColor, opacity: 0.4, fontSize: '14px' }}>
+                Đang tải danh sách công việc...
+              </div>
+            ) : paginatedJobs.length > 0 ? paginatedJobs.map((job, i) => (
+              <div key={job.id || i} style={{
+                background: '#fff', borderRadius: `${borderRadius}px`,
+                padding: '20px 24px', display: 'flex', alignItems: 'center',
+                justifyContent: 'space-between', boxShadow: shadowMap[shadow],
+                border: '1px solid rgba(0,0,0,0.06)', textAlign: 'left',
+                transition: 'box-shadow 0.2s',
+              }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '15px', fontWeight: 700, color: textColor, marginBottom: '4px' }}>
+                    {job.title}
+                  </div>
+                  <div style={{ fontSize: '13px', color: textColor, opacity: 0.5, marginBottom: '8px' }}>
+                    {job.dept} · {job.location} · {job.type}
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {job.tags.map(tag => (
+                      <span key={tag} style={{
+                        padding: '2px 10px', borderRadius: '20px', fontSize: '11px',
+                        fontWeight: 600, background: `${primaryColor}10`, color: primaryColor,
+                      }}>{tag}</span>
+                    ))}
+                    {job.model && (
+                      <span style={{
+                        padding: '2px 10px', borderRadius: '20px', fontSize: '11px',
+                        fontWeight: 600, background: '#f0f0f0', color: textColor, opacity: 0.6,
+                      }}>{job.model}</span>
+                    )}
+                    {job.level && (
+                      <span style={{
+                        padding: '2px 10px', borderRadius: '20px', fontSize: '11px',
+                        fontWeight: 600, background: '#f0f0f0', color: textColor, opacity: 0.6,
+                      }}>{job.level}</span>
+                    )}
+                  </div>
+                </div>
+                <button style={btnStyles[buttonStyle] || btnStyles.flat}>Ứng tuyển</button>
+              </div>
+            )) : (
+              <div style={{
+                textAlign: 'center', padding: '48px 20px',
+                color: textColor, opacity: 0.4, fontSize: '14px',
+              }}>
+                Không tìm thấy vị trí phù hợp.
+              </div>
+            )}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div style={{
+              display: 'flex', justifyContent: 'center', alignItems: 'center',
+              gap: '6px', marginTop: '24px',
+            }}>
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                style={{
+                  width: 32, height: 32, borderRadius: `${borderRadius}px`,
+                  border: '1px solid #e5e7eb', background: '#fff',
+                  cursor: currentPage === 1 ? 'default' : 'pointer',
+                  opacity: currentPage === 1 ? 0.3 : 1,
+                  fontSize: '14px', color: textColor, display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                }}
+              >‹</button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button key={page} onClick={() => setCurrentPage(page)} style={{
+                  width: 32, height: 32, borderRadius: `${borderRadius}px`,
+                  border: page === currentPage ? 'none' : '1px solid #e5e7eb',
+                  background: page === currentPage ? primaryColor : '#fff',
+                  color: page === currentPage ? '#fff' : textColor,
+                  fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>{page}</button>
+              ))}
+
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                style={{
+                  width: 32, height: 32, borderRadius: `${borderRadius}px`,
+                  border: '1px solid #e5e7eb', background: '#fff',
+                  cursor: currentPage === totalPages ? 'default' : 'pointer',
+                  opacity: currentPage === totalPages ? 0.3 : 1,
+                  fontSize: '14px', color: textColor, display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                }}
+              >›</button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FeaturedJobsSection;

@@ -26,6 +26,7 @@ import InvitationList from "@/pages/invitations";
 import InvitationDetail from "@/pages/invitations/detail";
 import ScoringCriteria from "@/pages/scoring-criteria";
 import CvPreview from "@/pages/cv-preview";
+import CareerPageBuilder from "@/pages/career-builder";
 
 
 export const routes = createBrowserRouter(
@@ -56,6 +57,7 @@ export const routes = createBrowserRouter(
                 <Route path="scoring-criteria" element={<ScoringCriteria />} />
             </Route>
             <Route path="cv-preview/:id" element={<CvPreview />} />
+            <Route path="career-builder" element={<CareerPageBuilder />} />
             <Route path="checkout" element={<Checkout />} />
             <Route path="/" element={<Home />} />
             <Route path="ui-kit" element={<UiKit />} />
