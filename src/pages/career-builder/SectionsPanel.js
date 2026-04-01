@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronDown,
@@ -93,6 +93,16 @@ const ImageField = ({ label, value, onChange }) => {
 
 const StringField = ({ label, value, onChange, placeholder, multiline = false }) => {
   const [val, setVal] = useState(value || '');
+
+  useEffect(() => {
+    setVal(value || '');
+  }, [value]);
+
+  const handleChange = (e) => {
+    setVal(e.target.value);
+    onChange(e.target.value);
+  };
+
   return (
     <div className="cb-field">
       <label className="cb-field-label">{label}</label>
@@ -100,8 +110,7 @@ const StringField = ({ label, value, onChange, placeholder, multiline = false })
         <textarea
           className="cb-input"
           value={val}
-          onChange={(e) => setVal(e.target.value)}
-          onBlur={() => onChange(val)}
+          onChange={handleChange}
           placeholder={placeholder}
           rows={3}
         />
@@ -110,8 +119,7 @@ const StringField = ({ label, value, onChange, placeholder, multiline = false })
           type="text"
           className="cb-input"
           value={val}
-          onChange={(e) => setVal(e.target.value)}
-          onBlur={() => onChange(val)}
+          onChange={handleChange}
           placeholder={placeholder}
         />
       )}
