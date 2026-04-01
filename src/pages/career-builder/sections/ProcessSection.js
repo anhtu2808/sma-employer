@@ -2,12 +2,12 @@ import React from 'react';
 
 const ProcessSection = ({ theme, sectionProps = {}, settings = {} }) => {
   const { primaryColor, secondaryColor, backgroundColor, textColor, borderRadius, spacing } = theme;
-  const { headline = 'Quy trình ứng tuyển', steps = [] } = sectionProps;
+  const { headline = 'Hiring Process', steps = [] } = sectionProps;
 
   const defaultSteps = steps.length > 0 ? steps : [
-    { title: 'Nộp đơn', desc: 'Gửi CV qua nút ứng tuyển trên trang.' },
-    { title: 'Phỏng vấn', desc: 'Trò chuyện cùng HR và Team kỹ thuật.' },
-    { title: 'Nhận Offer', desc: 'Chào mừng bạn về với đội của chúng tôi!' },
+    { title: 'Apply', desc: 'Submit your CV via the apply button on the page.' },
+    { title: 'Interview', desc: 'Chat with our HR team and technical leads.' },
+    { title: 'Get Offer', desc: 'Welcome aboard \u2014 join our team!' },
   ];
 
   const sectionBg = settings.backgroundColorOverride || (backgroundColor === '#FFFFFF' ? `${primaryColor}05` : backgroundColor);

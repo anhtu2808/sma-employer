@@ -6,7 +6,7 @@ const ITEMS_PER_PAGE = 5;
 
 const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
   const { primaryColor, secondaryColor, backgroundColor, textColor, borderRadius, buttonStyle, shadow } = theme;
-  const { headline = 'Các vị trí đang tuyển dụng' } = sectionProps;
+  const { headline = 'Open Positions' } = sectionProps;
 
   // Filter state
   const [searchName, setSearchName] = useState('');
@@ -28,7 +28,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
     let jobs = fetchedJobs.map(j => ({
       id: j.id,
       title: j.name || 'Untitled Job',
-      dept: j.expertise?.name || j.domains?.[0]?.name || 'Khác',
+      dept: j.expertise?.name || j.domains?.[0]?.name || 'Other',
       location: j.locations?.map(l => l.city).join(', ') || j.company?.country || 'Remote',
       type: j.jobType || 'Full-time',
       level: j.jobLevel || 'Mid',
@@ -224,7 +224,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
             <input
               style={{ ...inputStyle, flex: 1, border: '1px solid #e5e7eb' }}
-              placeholder="Tìm kiếm theo tên công việc..."
+              placeholder="Search by job title..."
               value={searchName}
               onChange={(e) => { setSearchName(e.target.value); setCurrentPage(1); }}
             />
@@ -232,14 +232,14 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
           {/* Results count */}
           <div style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.5, marginBottom: '14px' }}>
-            Hiển thị {paginatedJobs.length} / {filteredJobs.length} vị trí
+            Showing {paginatedJobs.length} / {filteredJobs.length} positions
           </div>
 
           {/* Job cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {isLoading ? (
               <div style={{ textAlign: 'center', padding: '48px 20px', color: textColor, opacity: 0.4, fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px` }}>
-                Đang tải danh sách công việc...
+                Loading job listings...
               </div>
             ) : paginatedJobs.length > 0 ? paginatedJobs.map((job, i) => (
               <div key={job.id || i} style={{
@@ -278,14 +278,14 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
                     )}
                   </div>
                 </div>
-                <button style={btnStyles[buttonStyle] || btnStyles.flat}>Ứng tuyển</button>
+                <button style={btnStyles[buttonStyle] || btnStyles.flat}>Apply</button>
               </div>
             )) : (
               <div style={{
                 textAlign: 'center', padding: '48px 20px',
                 color: textColor, opacity: 0.4, fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`,
               }}>
-                Không tìm thấy vị trí phù hợp.
+                No matching positions found.
               </div>
             )}
           </div>

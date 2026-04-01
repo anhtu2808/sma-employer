@@ -1,7 +1,7 @@
 import React from 'react';
 
 const HeaderSection = ({ theme, headerConfig = {} }) => {
-  const { primaryColor, backgroundColor, textColor, borderRadius, buttonStyle } = theme;
+  const { primaryColor, textColor, borderRadius, buttonStyle } = theme;
   const {
     logoUrl,
     logoHeight = 40,
@@ -11,9 +11,9 @@ const HeaderSection = ({ theme, headerConfig = {} }) => {
   } = headerConfig;
 
   const defaultNavLinks = navLinks.length > 0 ? navLinks : [
-    { label: 'Về chúng tôi' },
-    { label: 'Công việc' },
-    { label: 'Phúc lợi' },
+    { label: 'About Us' },
+    { label: 'Careers' },
+    { label: 'Benefits' },
     { label: 'Blog' },
   ];
 
@@ -38,7 +38,7 @@ const HeaderSection = ({ theme, headerConfig = {} }) => {
 
   return (
     <div style={{
-      background: backgroundColor,
+      background: headerConfig.backgroundColorOverride || '#FFFFFF',
       padding: '16px 40px',
       display: 'flex',
       alignItems: 'center',

@@ -5,7 +5,7 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
   const {
     headline = 'Build the Future With Us',
     subline = 'Join a team of passionate innovators shaping the next generation of technology.',
-    ctaText = 'Khám phá ngay',
+    ctaText = 'Explore Now',
     ctaLink = '#',
     backgroundUrl,
   } = sectionProps;

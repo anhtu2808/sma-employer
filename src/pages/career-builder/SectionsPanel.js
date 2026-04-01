@@ -270,7 +270,7 @@ const ArrayEditor = ({ items = [], onChange, schema, renderItemSummary, optionsM
                       value={item[key] || ''}
                       onChange={(e) => handleUpdate(idx, key, e.target.value)}
                     >
-                      <option value="">Chọn icon...</option>
+                      <option value="">Select icon...</option>
                       {ICON_KEYS.map(ik => (
                         <option key={ik} value={ik}>{ik}</option>
                       ))}
@@ -387,6 +387,12 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
               <StringField label="Button Link" value={config.ctaButton.link} onChange={(v) => updateConfig('ctaButton', { ...config.ctaButton, link: v })} />
             </>
           )}
+          <div className="cb-config-section-title" style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>Section Settings</div>
+          <ColorField
+            label="Background Override"
+            value={config.backgroundColorOverride || ''}
+            onChange={(v) => updateConfig('backgroundColorOverride', v)}
+          />
         </div>
       );
     case 'footer':
@@ -415,6 +421,12 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
             optionsMap={{
               icon: SOCIAL_ICON_OPTIONS
             }}
+          />
+          <div className="cb-config-section-title" style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>Section Settings</div>
+          <ColorField
+            label="Background Override"
+            value={config.backgroundColorOverride || ''}
+            onChange={(v) => updateConfig('backgroundColorOverride', v)}
           />
         </div>
       );
@@ -505,6 +517,22 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
             onChange={(v) => updateProp('news', v)}
             schema={{ title: '', date: '', thumbnailUrl: '', url: '' }}
             renderItemSummary={(item) => item.title || 'New Article'}
+          />
+          <div className="cb-config-section-title" style={{ marginTop: 16 }}>Nav Link</div>
+          <VisibilityToggle
+            label="Show Button"
+            isVisible={props.navLink?.isVisible !== false}
+            onChange={(v) => updateProp('navLink', { ...(props.navLink || {}), isVisible: v })}
+          />
+          <StringField
+            label="Button Text"
+            value={props.navLink?.text || ''}
+            onChange={(v) => updateProp('navLink', { ...(props.navLink || {}), text: v })}
+          />
+          <StringField
+            label="Button Link"
+            value={props.navLink?.url || ''}
+            onChange={(v) => updateProp('navLink', { ...(props.navLink || {}), url: v })}
           />
           {commonSettings}
         </div>

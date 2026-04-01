@@ -2,7 +2,7 @@ import React from 'react';
 
 const GallerySection = ({ theme, sectionProps = {}, settings = {} }) => {
   const { primaryColor, secondaryColor, backgroundColor, textColor, borderRadius } = theme;
-  const { headline = 'Hình ảnh văn phòng', images = [] } = sectionProps;
+  const { headline = 'Office Gallery', images = [] } = sectionProps;
 
   const placeholders = images.length > 0 ? images : [1, 2, 3, 4, 5, 6];
 

@@ -3,7 +3,7 @@ import React from 'react';
 const AboutSection = ({ theme, sectionProps = {}, settings = {} }) => {
   const { primaryColor, backgroundColor, textColor, borderRadius, shadow } = theme;
   const {
-    headline = 'Chúng tôi là ai?',
+    headline = 'Who We Are',
     description = 'We\'re a global technology company dedicated to solving complex problems with elegant solutions.',
     imageUrl,
   } = sectionProps;

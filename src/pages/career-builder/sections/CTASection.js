@@ -3,8 +3,8 @@ import React from 'react';
 const CTAFooterSection = ({ theme, sectionProps = {}, settings = {} }) => {
   const { primaryColor, secondaryColor, borderRadius, backgroundColor } = theme;
   const {
-    headline = 'Sẵn sàng bứt phá sự nghiệp?',
-    ctaText = 'Ứng tuyển ngay',
+    headline = 'Ready to Accelerate Your Career?',
+    ctaText = 'Apply Now',
     ctaLink = '#',
   } = sectionProps;
 

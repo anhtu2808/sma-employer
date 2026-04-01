@@ -2,7 +2,7 @@ import React from 'react';
 
 const AwardsSection = ({ theme, sectionProps = {}, settings = {} }) => {
   const { primaryColor, secondaryColor, backgroundColor, textColor, borderRadius, shadow } = theme;
-  const { headline = 'Giải thưởng danh giá', items = [] } = sectionProps;
+  const { headline = 'Prestigious Awards', items = [] } = sectionProps;
 
   const shadowMap = {
     none: 'none',

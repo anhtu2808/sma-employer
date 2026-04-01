@@ -6,7 +6,7 @@ const ICON_KEYS = Object.keys(materialToFA).sort();
 
 const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
   const { primaryColor, secondaryColor, backgroundColor, textColor, borderRadius, shadow } = theme;
-  const { headline = 'Tại sao bạn nên gia nhập?' } = sectionProps;
+  const { headline = 'Why Join Us?' } = sectionProps;
 
   const [items, setItems] = useState([]);
 
@@ -16,10 +16,10 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
       setItems(sectionProps.items);
     } else {
       setItems([
-        { title: 'Lương thưởng cạnh tranh', desc: 'Lương tháng 13 + thưởng hiệu quả dự án định kỳ.', icon: 'payments' },
-        { title: 'Môi trường Hybrid', desc: 'Làm việc linh hoạt 2 ngày tại nhà mỗi tuần.', icon: 'apartment' },
-        { title: 'Lộ trình thăng tiến', desc: 'Review lương 2 lần/năm với lộ trình rõ ràng.', icon: 'trending_up' },
-        { title: 'Sức khỏe toàn diện', desc: 'Bảo hiểm sức khỏe cao cấp cho cả gia đình.', icon: 'security' },
+        { title: 'Competitive Compensation', desc: '13th-month salary plus periodic project performance bonuses.', icon: 'payments' },
+        { title: 'Hybrid Work Environment', desc: 'Flexible work-from-home 2 days per week.', icon: 'apartment' },
+        { title: 'Career Growth Path', desc: 'Salary reviews twice a year with a clear progression roadmap.', icon: 'trending_up' },
+        { title: 'Comprehensive Health', desc: 'Premium health insurance for you and your family.', icon: 'security' },
       ]);
     }
   }, [sectionProps.items]);
