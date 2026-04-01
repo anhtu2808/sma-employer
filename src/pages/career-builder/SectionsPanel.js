@@ -11,7 +11,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { materialToFA } from '@/utils/icons';
 import { useUploadFileMutation } from '@/apis/apis';
-import { message } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 
 const ICON_KEYS = Object.keys(materialToFA).sort();
 
@@ -56,7 +56,7 @@ const ImageField = ({ label, value, onChange }) => {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      message.error('Please upload an image file');
+      toastMessage.error('Please upload an image file');
       return;
     }
 
@@ -69,7 +69,7 @@ const ImageField = ({ label, value, onChange }) => {
         onChange(downloadUrl);
       }
     } catch {
-      message.error('Failed to upload image');
+      toastMessage.error('Failed to upload image');
     }
   };
 

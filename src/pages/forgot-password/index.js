@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { message } from "antd";
 import { useNavigate } from "react-router-dom";
+import toastMessage from "@/utils/toastMessage";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
 import SideDecorator from "./side-decorator";
@@ -18,11 +18,11 @@ const ForgotPassword = () => {
 
         try {
             await forgotPassword({ email }).unwrap();
-            message.success("Password reset link sent to your email");
+            toastMessage.success("Password reset link sent to your email");
             navigate("/reset-password", { state: { email } });
         } catch (error) {
             console.error("Failed to send reset link:", error);
-            message.error(error.data?.message || "Failed to send reset link");
+            toastMessage.error(error.data?.message || "Failed to send reset link");
         }
     };
 

@@ -62,7 +62,8 @@ const Classification = () => {
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Form.Item name="expertiseGroupId" label="Expertise Group" className="mb-0">
+                <Form.Item name="expertiseGroupId" label="Expertise Group" className="mb-0"
+                    rules={[{ required: true, message: 'Please select an expertise group' }]}>
                     <Select
                         placeholder="Select a group..."
                         className="w-full h-10"
@@ -73,7 +74,8 @@ const Classification = () => {
                         options={expertiseGroupOptions}
                     />
                 </Form.Item>
-                <Form.Item name="expertiseId" label="Primary Expertise" className="mb-0">
+                <Form.Item name="expertiseId" label="Primary Expertise" className="mb-0"
+                    rules={[{ required: true, message: 'Please select a primary expertise' }]}>
                     <Select
                         placeholder={selectedGroupId ? 'Select expertise...' : 'Select a group first'}
                         className="w-full h-10"

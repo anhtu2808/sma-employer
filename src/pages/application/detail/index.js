@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { message, Input, Checkbox } from 'antd';
+import { Input, Checkbox } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import { useGetApplicationDetailQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
 import { APPLICATION_STATUS } from '@/constrant/application';
 import Loading from '@/components/Loading';
@@ -112,30 +113,30 @@ const ApplicationDetail = () => {
                 id, status, rejectReason: reason,
                 showToCandidate: showReason
             }).unwrap();
-            message.success(`Status updated to ${APPLICATION_STATUS[status]?.label || status}`);
+            toastMessage.success(`Status updated to ${APPLICATION_STATUS[status]?.label || status}`);
             setIsRejectModalOpen(false);
             setIsApproveModalOpen(false);
             setRejectReason('');
             setShowToCandidate(false);
         } catch (error) {
-            message.error(error?.data?.message || 'Failed to update status');
+            toastMessage.error(error?.data?.message || 'Failed to update status');
         }
     };
 
     const handleBlock = async () => {
         if (!blockReason.trim()) {
-            return message.warning('Please provide a reason for blocking');
+            return toastMessage.warning('Please provide a reason for blocking');
         }
         try {
             await blockCandidate({
                 candidateId: candidateId,
                 reason: blockReason
             }).unwrap();
-            message.success('Candidate has been blacklisted successfully');
+            toastMessage.success('Candidate has been blacklisted successfully');
             setIsBlockModalOpen(false);
             navigate(-1);
         } catch (error) {
-            message.error(error?.data?.message || 'Failed to block candidate');
+            toastMessage.error(error?.data?.message || 'Failed to block candidate');
         }
     };
 

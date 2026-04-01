@@ -2,11 +2,11 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { useGetApplicationsQuery, useUpdateApplicationStatusMutation, useLazyGetShortlistedExportQuery } from '@/apis/applicationApi';
 import { useGetJobsQuery, useUpdateJobStatusMutation } from '@/apis/jobApi';
 
-import { Drawer } from 'antd';
+import { Drawer, Modal as AntModal } from 'antd';
 import FilterSidebar from './filterSidebar';
 import ApplicationList from './list';
 import KanbanBoard from './kanban';
-import { message, Modal as AntModal } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import Modal from '@/components/Modal';
 import Loading from '@/components/Loading';
@@ -151,7 +151,7 @@ const ApplicationManagement = () => {
                 showToCandidate: showReason
             }).unwrap();
 
-            message.success(`Application moved to ${status} successfully`);
+            toastMessage.success(`Application moved to ${status} successfully`);
 
             // Reset states
             setIsRejectModalOpen(false);
@@ -160,7 +160,7 @@ const ApplicationManagement = () => {
             setShowToCandidate(false);
         } catch (error) {
             const errorMessage = error?.data?.message || "An unexpected error occurred while updating status";
-            message.error(errorMessage);
+            toastMessage.error(errorMessage);
             if (error?.data?.code === 400 || error?.data?.status === "BAD_REQUEST") {
                 setIsRejectModalOpen(false);
             }
@@ -170,7 +170,7 @@ const ApplicationManagement = () => {
     };
 
     const handleExportExcel = async (type = 'XLSX') => {
-        if (!selectedJob) return message.warning("Please select a job first");
+        if (!selectedJob) return toastMessage.warning("Please select a job first");
 
         try {
             const result = await triggerExport({
@@ -180,13 +180,13 @@ const ApplicationManagement = () => {
 
             if (result?.data && result.data.length > 0) {
                 exportCandidates(result.data, selectedJob.name, type);
-                message.success(`Exported ${result.data.length} candidates successfully`);
+                toastMessage.success(`Exported ${result.data.length} candidates successfully`);
             } else {
-                message.warning("No approved candidates found to export");
+                toastMessage.warning("No approved candidates found to export");
             }
         } catch (error) {
             console.error("Export error:", error);
-            message.error(error?.data?.message || "Failed to export candidates");
+            toastMessage.error(error?.data?.message || "Failed to export candidates");
         }
     };
 
@@ -225,14 +225,14 @@ const ApplicationManagement = () => {
                                 const previousJob = availableJobs[Math.max(0, currentIndex - 1)] || availableJobs[0] || null;
 
                                 await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
-                                message.success('Job archived successfully');
+                                toastMessage.success('Job archived successfully');
 
                                 // Auto-select previous job if the archived job was selected
                                 if (selectedJob?.id === job.id) {
                                     handleSetSelectedJob(previousJob);
                                 }
                             } catch {
-                                message.error('Failed to archive job');
+                                toastMessage.error('Failed to archive job');
                             }
                         }
                     });

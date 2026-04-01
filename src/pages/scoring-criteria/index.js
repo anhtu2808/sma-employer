@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input as AntInput, InputNumber, message, ConfigProvider, Tabs } from 'antd';
+import { Modal, Form, Input as AntInput, InputNumber, ConfigProvider, Tabs } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import Loading from '@/components/Loading';
@@ -81,9 +82,9 @@ const ScoringCriteria = () => {
       onOk: async () => {
         try {
           await deleteCriteria(criteria.id).unwrap();
-          message.success('Criteria deleted successfully');
+          toastMessage.success('Criteria deleted successfully');
         } catch {
-          message.error('Failed to delete criteria');
+          toastMessage.error('Failed to delete criteria');
         }
       },
     });
@@ -100,17 +101,17 @@ const ScoringCriteria = () => {
 
       if (editingCriteria) {
         await updateCriteria({ id: editingCriteria.id, body }).unwrap();
-        message.success('Criteria updated successfully');
+        toastMessage.success('Criteria updated successfully');
       } else {
         await createCriteria(body).unwrap();
-        message.success('Criteria created successfully');
+        toastMessage.success('Criteria created successfully');
       }
       setIsModalOpen(false);
       form.resetFields();
       setEditingCriteria(null);
     } catch (error) {
       if (error?.errorFields) return;
-      message.error('Failed to save criteria');
+      toastMessage.error('Failed to save criteria');
     }
   };
 

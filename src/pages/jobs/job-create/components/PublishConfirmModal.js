@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Tag } from "antd";
+import { Modal, Switch } from "antd";
 import dayjs from "dayjs";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBolt, faCalendarDay, faChartSimple, faTriangleExclamation, faWandMagicSparkles } from '../../../../utils/icons';
@@ -12,6 +12,7 @@ const PublishConfirmModal = ({
   values,
   featureUsage = [],
   isEditMode,
+  onValuesChange,
 }) => {
   const jobPostQuota = featureUsage.find(
     (f) => f.featureKey === "JOB_POSTING"
@@ -74,18 +75,24 @@ const PublishConfirmModal = ({
             <FontAwesomeIcon icon={faWandMagicSparkles} className="text-sm text-yellow-500" />
             Premium Features
           </div>
-          <div className="flex flex-col gap-1.5 text-sm">
+          <div className="flex flex-col gap-2.5 text-sm">
             <div className="flex items-center justify-between">
               <span className="text-gray-600 dark:text-gray-400">Highlight Job</span>
-              <Tag color={values?.highlightJob ? "blue" : "default"} className="m-0">
-                {values?.highlightJob ? "ON" : "OFF"}
-              </Tag>
+              <Switch
+                size="small"
+                checked={values?.highlightJob === true}
+                className={values?.highlightJob ? "bg-orange-500" : "bg-gray-400"}
+                onChange={(checked) => onValuesChange?.({ highlightJob: checked })}
+              />
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-600 dark:text-gray-400">AI Scoring</span>
-              <Tag color={values?.enableAiScoring ? "blue" : "default"} className="m-0">
-                {values?.enableAiScoring ? "ON" : "OFF"}
-              </Tag>
+              <Switch
+                size="small"
+                checked={values?.enableAiScoring === true}
+                className={values?.enableAiScoring ? "bg-orange-500" : "bg-gray-400"}
+                onChange={(checked) => onValuesChange?.({ enableAiScoring: checked })}
+              />
             </div>
           </div>
         </div>
