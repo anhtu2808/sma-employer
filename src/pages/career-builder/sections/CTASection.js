@@ -1,16 +1,18 @@
 import React from 'react';
 
 const CTAFooterSection = ({ theme, sectionProps = {}, settings = {} }) => {
-  const { primaryColor, borderRadius } = theme;
+  const { primaryColor, secondaryColor, borderRadius, backgroundColor } = theme;
   const {
-    headline = 'Sẵn sàng bứt phá sự nghiệp?',
-    ctaText = 'Ứng tuyển ngay',
+    headline = 'Ready to Accelerate Your Career?',
+    ctaText = 'Apply Now',
     ctaLink = '#',
   } = sectionProps;
 
+  const sectionBg = settings.backgroundColorOverride || backgroundColor;
+
   return (
     <div style={{
-      background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}CC 100%)`,
+      background: settings.backgroundColorOverride ? settings.backgroundColorOverride : `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}CC 100%)`,
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
       textAlign: 'center',
       position: 'relative',
@@ -33,7 +35,7 @@ const CTAFooterSection = ({ theme, sectionProps = {}, settings = {} }) => {
           <button style={{
             padding: '14px 36px',
             borderRadius: `${borderRadius}px`,
-            background: '#fff',
+            background: secondaryColor || '#fff', // Use secondaryColor for CTA button background
             color: primaryColor,
             border: 'none',
             fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`,

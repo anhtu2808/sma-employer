@@ -1,11 +1,11 @@
 import React from 'react';
 
 const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
-  const { primaryColor, borderRadius, buttonStyle } = theme;
+  const { primaryColor, secondaryColor, borderRadius, buttonStyle, backgroundColor } = theme;
   const {
     headline = 'Build the Future With Us',
     subline = 'Join a team of passionate innovators shaping the next generation of technology.',
-    ctaText = 'Khám phá ngay',
+    ctaText = 'Explore Now',
     ctaLink = '#',
     backgroundUrl,
   } = sectionProps;
@@ -21,13 +21,20 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
     transition: 'all 0.2s',
   };
 
+  const sectionBg = settings.backgroundColorOverride || backgroundColor;
+
   const bgStyle = backgroundUrl
     ? { backgroundImage: `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(${backgroundUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : { background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}DD 50%, ${primaryColor}99 100%)` };
 
+  // If we have an override and no image, use the override instead of the gradient
+  const finalBgStyle = (settings.backgroundColorOverride && !backgroundUrl) 
+    ? { background: settings.backgroundColorOverride }
+    : bgStyle;
+
   return (
     <div style={{
-      ...bgStyle,
+      ...finalBgStyle,
       padding: pad,
       textAlign: settings.textAlign || 'center',
       position: 'relative',
@@ -40,15 +47,16 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         <h1 style={{
-          fontSize: `${42 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: '#fff',
+          fontSize: `${42 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: (settings.backgroundColorOverride === '#FFFFFF' || backgroundColor === '#FFFFFF') && !backgroundUrl ? theme.textColor : '#fff',
           lineHeight: 1.2, marginBottom: '16px', letterSpacing: '-0.5px',
         }}>
           {headline}
         </h1>
 
         <p style={{
-          fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`, color: 'rgba(255,255,255,0.85)',
+          fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`, color: (settings.backgroundColorOverride === '#FFFFFF' || backgroundColor === '#FFFFFF') && !backgroundUrl ? theme.textColor : 'rgba(255,255,255,0.85)',
           maxWidth: '500px', margin: '0 auto 32px', lineHeight: 1.6,
+          opacity: 0.8,
         }}>
           {subline}
         </p>
@@ -58,7 +66,7 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
             ...btnBase,
             background: buttonStyle === 'ghost' ? 'transparent' : '#fff',
             color: primaryColor,
-            border: buttonStyle === 'outline' ? '2px solid #fff' : 'none',
+            border: buttonStyle === 'outline' ? `2px solid ${secondaryColor || '#fff'}` : 'none',
             boxShadow: buttonStyle === 'shadow' ? '0 8px 24px rgba(0,0,0,0.25)' : 'none',
           }}>
             {ctaText}

@@ -11,12 +11,12 @@ import './CareerBuilder.css';
 // ── Sample data matching BE schema ──────────────────────────────────────────
 
 const SAMPLE_DATA = {
-  slug: 'huhtech-career',
+  slug: 'smartrecruit-career',
   status: 'DRAFT',
 
   metaConfig: {
-    seoTitle: 'HUHTECH Solutions - Kiến tạo tương lai công nghệ',
-    seoDescription: 'Khám phá cơ hội nghề nghiệp và môi trường làm việc sáng tạo tại HUHTECH Solutions.',
+    seoTitle: 'SmartRecruit Solutions - Building the Future of Technology',
+    seoDescription: 'Discover career opportunities and a creative work environment at SmartRecruit Solutions.',
     ogImage: '',
     faviconUrl: '',
   },
@@ -26,13 +26,13 @@ const SAMPLE_DATA = {
     logoHeight: 40,
     sticky: true,
     navLinks: [
-      { label: 'Về chúng tôi', targetSectionId: 'about-section', isExternal: false },
-      { label: 'Phúc lợi', targetSectionId: 'evp-section', isExternal: false },
-      { label: 'Công việc', targetSectionId: 'jobs-section', isExternal: false },
+      { label: 'About Us', targetSectionId: 'about-section', isExternal: false },
+      { label: 'Benefits', targetSectionId: 'evp-section', isExternal: false },
+      { label: 'Careers', targetSectionId: 'jobs-section', isExternal: false },
       { label: 'Blog', targetSectionId: 'life-section', isExternal: false },
     ],
     ctaButton: {
-      text: 'Xem vị trí trống',
+      text: 'View Open Positions',
       link: '#jobs-section',
       isVisible: true,
     },
@@ -48,11 +48,11 @@ const SAMPLE_DATA = {
     {
       id: 'hero-001', type: 'HERO', order: 1, isVisible: true,
       props: {
-        headline: 'Xây dựng sự nghiệp rực rỡ tại HUHTECH',
-        subline: 'Nơi những ý tưởng điên rồ trở thành giải pháp toàn cầu.',
+        headline: 'Build a Brilliant Career at SmartRecruit',
+        subline: 'Where bold ideas become global solutions.',
         backgroundUrl: '',
         mediaType: 'IMAGE',
-        ctaText: 'Khám phá ngay',
+        ctaText: 'Explore Now',
         ctaLink: '#jobs-section',
       },
       settings: { paddingTop: 80, paddingBottom: 80, textAlign: 'center' },
@@ -60,8 +60,8 @@ const SAMPLE_DATA = {
     {
       id: 'about-section', type: 'ABOUT', order: 2, isVisible: true,
       props: {
-        headline: 'Chúng tôi là ai?',
-        description: '<p>HUHTECH là tập đoàn công nghệ dẫn đầu trong lĩnh vực AI và Cloud Computing. Với hơn 10 năm hình thành và phát triển...</p>',
+        headline: 'Who We Are',
+        description: 'SmartRecruit is a leading technology company specializing in AI and Cloud Computing. With over 10 years of growth and innovation...',
         imageUrl: '',
       },
       settings: { backgroundColorOverride: '#F8F9FA' },
@@ -69,18 +69,18 @@ const SAMPLE_DATA = {
     {
       id: 'evp-section', type: 'EVP', order: 3, isVisible: true,
       props: {
-        headline: 'Tại sao bạn nên gia nhập HUHTECH?',
+        headline: 'Why Join SmartRecruit?',
         items: [
-          { title: 'Lương thưởng cạnh tranh', desc: 'Lương tháng 13 + thưởng hiệu quả dự án định kỳ.', icon: 'dollar-sign' },
-          { title: 'Môi trường Hybrid', desc: 'Làm việc linh hoạt 2 ngày tại nhà mỗi tuần.', icon: 'home' },
-          { title: 'Lộ trình thăng tiến', desc: 'Review lương 2 lần/năm với lộ trình rõ ràng.', icon: 'trending-up' },
+          { title: 'Competitive Compensation', desc: '13th-month salary plus periodic project performance bonuses.', icon: 'dollar-sign' },
+          { title: 'Hybrid Work Environment', desc: 'Flexible work-from-home 2 days per week.', icon: 'home' },
+          { title: 'Career Growth Path', desc: 'Salary reviews twice a year with a clear progression roadmap.', icon: 'trending-up' },
         ],
       },
     },
     {
       id: 'awards-004', type: 'AWARDS', order: 4, isVisible: true,
       props: {
-        headline: 'Giải thưởng danh giá',
+        headline: 'Prestigious Awards',
         items: [
           { name: 'Best IT Company 2025', imgUrl: '', year: '2025' },
           { name: 'Top 10 AI Startups', imgUrl: '', year: '2024' },
@@ -89,65 +89,66 @@ const SAMPLE_DATA = {
     },
     {
       id: 'jobs-section', type: 'JOBS', order: 5, isVisible: true,
-      props: { headline: 'Các vị trí đang tuyển dụng', limit: 6, showFilter: true },
+      props: { headline: 'Open Positions', limit: 6, showFilter: true },
     },
     {
       id: 'life-section', type: 'LIFE_AT_CO', order: 6, isVisible: true,
       props: {
-        headline: 'Đời sống tại HUHTECH',
+        headline: 'Life at SmartRecruit',
         news: [
-          { title: 'Team Building 2025 tại Phú Quốc', thumbnailUrl: '', date: '15/03/2026' },
-          { title: 'Workshop: Tương lai của Generative AI', thumbnailUrl: '', date: '10/03/2026' },
+          { title: 'Team Building 2025 in Phu Quoc', thumbnailUrl: '', date: '03/15/2026' },
+          { title: 'Workshop: The Future of Generative AI', thumbnailUrl: '', date: '03/10/2026' },
         ],
+        navLink: { text: 'Explore more', url: '#', isVisible: true },
       },
     },
     {
       id: 'gallery-007', type: 'GALLERY', order: 7, isVisible: true,
       props: {
-        headline: 'Hình ảnh văn phòng',
+        headline: 'Office Gallery',
         images: [],
       },
     },
     {
       id: 'process-008', type: 'PROCESS', order: 8, isVisible: true,
       props: {
-        headline: 'Quy trình ứng tuyển',
+        headline: 'Hiring Process',
         steps: [
-          { title: 'Nộp đơn', desc: 'Gửi CV qua nút ứng tuyển trên trang.' },
-          { title: 'Phỏng vấn', desc: 'Trò chuyện cùng HR và Team kỹ thuật.' },
-          { title: 'Nhận Offer', desc: 'Chào mừng bạn về với đội của chúng tôi!' },
+          { title: 'Apply', desc: 'Submit your CV via the apply button on the page.' },
+          { title: 'Interview', desc: 'Chat with our HR team and technical leads.' },
+          { title: 'Get Offer', desc: 'Welcome aboard — join our team!' },
         ],
       },
     },
     {
       id: 'faq-009', type: 'FAQ', order: 9, isVisible: true,
       props: {
-        headline: 'Câu hỏi thường gặp',
+        headline: 'Frequently Asked Questions',
         items: [
-          { question: 'Công ty có hỗ trợ thực tập sinh không?', answer: 'Có, chúng tôi luôn chào đón các bạn sinh viên tài năng.' },
-          { question: 'Thời gian làm việc như thế nào?', answer: 'Từ thứ 2 đến thứ 6, 8:30 - 17:30.' },
+          { question: 'Do you offer internship programs?', answer: 'Yes, we always welcome talented students to join our team.' },
+          { question: 'What are the working hours?', answer: 'Monday to Friday, 8:30 AM - 5:30 PM.' },
         ],
       },
     },
     {
       id: 'cta-footer-010', type: 'CTA_FOOTER', order: 10, isVisible: true,
       props: {
-        headline: 'Sẵn sàng bứt phá sự nghiệp?',
-        ctaText: 'Ứng tuyển ngay',
+        headline: 'Ready to Accelerate Your Career?',
+        ctaText: 'Apply Now',
         ctaLink: '#jobs-section',
       },
     },
   ],
 
   footerConfig: {
-    companyName: 'Công ty Cổ phần Công nghệ HUHTECH Solutions',
-    address: 'Tòa nhà HUHTECH, 123 Đường Số 1, Quận 1, TP. HCM',
-    contact: { email: 'careers@huhtech.com', phone: '028 1234 5678', addresses: [] },
+    companyName: 'SmartRecruit Solutions Inc.',
+    address: 'SmartRecruit Tower, 123 Main Street, District 1, HCMC',
+    contact: { email: 'careers@smartrecruit.com', phone: '028 1234 5678', addresses: [] },
     socialLinks: [
       { icon: 'linkedin', url: '#' },
       { icon: 'facebook', url: '#' },
     ],
-    copyrightText: '© 2026 HUHTECH Solutions. All rights reserved.',
+    copyrightText: '© 2026 SmartRecruit Solutions. All rights reserved.',
   },
 };
 

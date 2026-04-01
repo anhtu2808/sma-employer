@@ -1,18 +1,20 @@
 import React from 'react';
 
 const ProcessSection = ({ theme, sectionProps = {}, settings = {} }) => {
-  const { primaryColor, backgroundColor, textColor, borderRadius, spacing } = theme;
-  const { headline = 'Quy trình ứng tuyển', steps = [] } = sectionProps;
+  const { primaryColor, secondaryColor, backgroundColor, textColor, borderRadius, spacing } = theme;
+  const { headline = 'Hiring Process', steps = [] } = sectionProps;
 
   const defaultSteps = steps.length > 0 ? steps : [
-    { title: 'Nộp đơn', desc: 'Gửi CV qua nút ứng tuyển trên trang.' },
-    { title: 'Phỏng vấn', desc: 'Trò chuyện cùng HR và Team kỹ thuật.' },
-    { title: 'Nhận Offer', desc: 'Chào mừng bạn về với đội của chúng tôi!' },
+    { title: 'Apply', desc: 'Submit your CV via the apply button on the page.' },
+    { title: 'Interview', desc: 'Chat with our HR team and technical leads.' },
+    { title: 'Get Offer', desc: 'Welcome aboard \u2014 join our team!' },
   ];
+
+  const sectionBg = settings.backgroundColorOverride || (backgroundColor === '#FFFFFF' ? `${primaryColor}05` : backgroundColor);
 
   return (
     <div style={{
-      background: settings.backgroundColorOverride || `${primaryColor}05`,
+      background: sectionBg,
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
       textAlign: settings.textAlign || 'center',
     }}>
@@ -37,7 +39,7 @@ const ProcessSection = ({ theme, sectionProps = {}, settings = {} }) => {
             {i < defaultSteps.length - 1 && (
               <div style={{
                 position: 'absolute', top: 24, left: '60%', width: '80%',
-                height: '2px', background: `${primaryColor}30`,
+                height: '2px', background: secondaryColor || `${primaryColor}30`, // Use secondaryColor for lines
               }} />
             )}
             <div style={{ fontSize: `${15 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '6px' }}>

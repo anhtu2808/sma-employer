@@ -1,14 +1,16 @@
 import React from 'react';
 
 const GallerySection = ({ theme, sectionProps = {}, settings = {} }) => {
-  const { primaryColor, backgroundColor, textColor, borderRadius } = theme;
-  const { headline = 'Hình ảnh văn phòng', images = [] } = sectionProps;
+  const { primaryColor, secondaryColor, backgroundColor, textColor, borderRadius } = theme;
+  const { headline = 'Office Gallery', images = [] } = sectionProps;
 
   const placeholders = images.length > 0 ? images : [1, 2, 3, 4, 5, 6];
 
+  const sectionBg = settings.backgroundColorOverride || backgroundColor;
+
   return (
     <div style={{
-      background: settings.backgroundColorOverride || backgroundColor,
+      background: sectionBg,
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
       textAlign: 'center',
     }}>
@@ -25,6 +27,8 @@ const GallerySection = ({ theme, sectionProps = {}, settings = {} }) => {
       }}>
         {placeholders.map((item, i) => {
           const isUrl = typeof item === 'string' && item.startsWith('http');
+          const placeholderBg = secondaryColor || `linear-gradient(${135 + i * 20}deg, ${primaryColor}15, ${primaryColor}08)`;
+          
           return (
             <div
               key={i}
@@ -35,7 +39,7 @@ const GallerySection = ({ theme, sectionProps = {}, settings = {} }) => {
                 gridColumn: i === 0 ? 'span 2' : 'span 1',
                 background: isUrl
                   ? `url(${item}) center/cover no-repeat`
-                  : `linear-gradient(${135 + i * 20}deg, ${primaryColor}15, ${primaryColor}08)`,
+                  : placeholderBg, // Use secondaryColor for placeholders
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

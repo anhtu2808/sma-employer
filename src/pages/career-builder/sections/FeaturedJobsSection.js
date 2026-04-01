@@ -5,8 +5,8 @@ import { useGetJobsQuery } from '@/apis/jobApi';
 const ITEMS_PER_PAGE = 5;
 
 const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
-  const { primaryColor, backgroundColor, textColor, borderRadius, buttonStyle, shadow } = theme;
-  const { headline = 'Các vị trí đang tuyển dụng' } = sectionProps;
+  const { primaryColor, secondaryColor, backgroundColor, textColor, borderRadius, buttonStyle, shadow } = theme;
+  const { headline = 'Open Positions' } = sectionProps;
 
   // Filter state
   const [searchName, setSearchName] = useState('');
@@ -28,7 +28,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
     let jobs = fetchedJobs.map(j => ({
       id: j.id,
       title: j.name || 'Untitled Job',
-      dept: j.expertise?.name || j.domains?.[0]?.name || 'Khác',
+      dept: j.expertise?.name || j.domains?.[0]?.name || 'Other',
       location: j.locations?.map(l => l.city).join(', ') || j.company?.country || 'Remote',
       type: j.jobType || 'Full-time',
       level: j.jobLevel || 'Mid',
@@ -69,7 +69,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
     flat: { ...btnBase, background: primaryColor, color: '#fff', border: 'none' },
     outline: { ...btnBase, background: 'transparent', color: primaryColor, border: `2px solid ${primaryColor}` },
     shadow: { ...btnBase, background: primaryColor, color: '#fff', border: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' },
-    ghost: { ...btnBase, background: `${primaryColor}10`, color: primaryColor, border: 'none' },
+    ghost: { ...btnBase, background: secondaryColor, color: primaryColor, border: 'none' },
   };
 
   const inputStyle = {
@@ -91,9 +91,11 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
     borderRadius: '4px', outline: 'none', cursor: 'pointer',
   });
 
+  const sectionBg = settings.backgroundColorOverride || backgroundColor;
+
   return (
     <div style={{
-      background: settings.backgroundColorOverride || backgroundColor,
+      background: sectionBg,
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
     }}>
       <div style={{ textAlign: 'center', marginBottom: '36px' }}>
@@ -104,7 +106,8 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
         {/* ─── Filter Sidebar ──────────────────────────────────────── */}
         <div style={{
           width: '280px', flexShrink: 0,
-          background: '#fff', borderRadius: `${borderRadius}px`,
+          background: '#FFFFFF', // Fix sidebar background to white
+          borderRadius: `${borderRadius}px`,
           border: '1px solid #f0f0f0', boxShadow: shadowMap[shadow],
           padding: '24px 20px',
         }}>
@@ -221,7 +224,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
             <input
               style={{ ...inputStyle, flex: 1, border: '1px solid #e5e7eb' }}
-              placeholder="Tìm kiếm theo tên công việc..."
+              placeholder="Search by job title..."
               value={searchName}
               onChange={(e) => { setSearchName(e.target.value); setCurrentPage(1); }}
             />
@@ -229,18 +232,19 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
           {/* Results count */}
           <div style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.5, marginBottom: '14px' }}>
-            Hiển thị {paginatedJobs.length} / {filteredJobs.length} vị trí
+            Showing {paginatedJobs.length} / {filteredJobs.length} positions
           </div>
 
           {/* Job cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {isLoading ? (
               <div style={{ textAlign: 'center', padding: '48px 20px', color: textColor, opacity: 0.4, fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px` }}>
-                Đang tải danh sách công việc...
+                Loading job listings...
               </div>
             ) : paginatedJobs.length > 0 ? paginatedJobs.map((job, i) => (
               <div key={job.id || i} style={{
-                background: '#fff', borderRadius: `${borderRadius}px`,
+                background: '#FFFFFF', // Fix card background to white
+                borderRadius: `${borderRadius}px`,
                 padding: '20px 24px', display: 'flex', alignItems: 'center',
                 justifyContent: 'space-between', boxShadow: shadowMap[shadow],
                 border: '1px solid rgba(0,0,0,0.06)', textAlign: 'left',
@@ -257,7 +261,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
                     {job.tags.map(tag => (
                       <span key={tag} style={{
                         padding: '2px 10px', borderRadius: '20px', fontSize: `${11 * ((theme.baseFontSize || 16) / 16)}px`,
-                        fontWeight: 600, background: `${primaryColor}10`, color: primaryColor,
+                        fontWeight: 600, background: secondaryColor, color: primaryColor, // Use secondaryColor for tags
                       }}>{tag}</span>
                     ))}
                     {job.model && (
@@ -274,14 +278,14 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
                     )}
                   </div>
                 </div>
-                <button style={btnStyles[buttonStyle] || btnStyles.flat}>Ứng tuyển</button>
+                <button style={btnStyles[buttonStyle] || btnStyles.flat}>Apply</button>
               </div>
             )) : (
               <div style={{
                 textAlign: 'center', padding: '48px 20px',
                 color: textColor, opacity: 0.4, fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`,
               }}>
-                Không tìm thấy vị trí phù hợp.
+                No matching positions found.
               </div>
             )}
           </div>
