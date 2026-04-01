@@ -87,6 +87,7 @@ const JobCreate = () => {
         locationIds: clonedJob.locations?.map(l => l.id) || clonedJob.locationIds,
         questionIds: clonedJob.questions?.map(q => q.id) || clonedJob.questionIds,
         expertiseId: clonedJob.expertise?.id || clonedJob.expertiseId,
+        expertiseGroupId: clonedJob.expertise?.expertiseGroupId || null,
       };
 
       // Set all criteria to disabled first, then enable ones from the job
@@ -167,6 +168,7 @@ const JobCreate = () => {
       }
       delete submitData.showSalary;
       delete submitData.employmentType;
+      delete submitData.expertiseGroupId;
       
       if (effectiveAction === "publish") {
         submitData.highlightJob = values.highlightJob === true;
@@ -253,6 +255,7 @@ const JobCreate = () => {
       workingModel: parsedData.workingModel,
       quantity: parsedData.quantity,
       expertiseId: parsedData.expertiseId,
+      expertiseGroupId: expertises.find(e => e.id === parsedData.expertiseId)?.expertiseGroup?.id || null,
       domainIds: parsedData.domainIds || [],
       skillIds: parsedData.skillIds || [],
       benefits: (parsedData.benefits || []).map((b) => ({
