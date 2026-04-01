@@ -20,7 +20,7 @@ const HeaderSection = ({ theme, headerConfig = {} }) => {
   const btnBase = {
     padding: '8px 20px',
     borderRadius: `${borderRadius}px`,
-    fontSize: '14px',
+    fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`,
     fontWeight: 600,
     cursor: 'pointer',
     transition: 'all 0.2s',
@@ -53,17 +53,17 @@ const HeaderSection = ({ theme, headerConfig = {} }) => {
             width: 36, height: 36, borderRadius: '50%',
             background: primaryColor, display: 'flex',
             alignItems: 'center', justifyContent: 'center',
-            color: '#fff', fontWeight: 700, fontSize: '14px',
+            color: '#fff', fontWeight: 700, fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`,
           }}>
             {initials}
           </div>
         )}
-        <span style={{ fontWeight: 700, fontSize: '16px', color: textColor }}>{companyName}</span>
+        <span style={{ fontWeight: 700, fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor }}>{companyName}</span>
       </div>
 
       <nav style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
         {defaultNavLinks.filter(link => link.isVisible !== false).map((link, i) => (
-          <span key={i} style={{ fontSize: '14px', color: textColor, opacity: 0.7, cursor: 'pointer' }}>
+          <span key={i} style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.7, cursor: 'pointer' }}>
             {link.label}
           </span>
         ))}

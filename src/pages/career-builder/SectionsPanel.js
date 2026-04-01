@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronDown,
@@ -14,6 +14,21 @@ import { useUploadFileMutation } from '@/apis/apis';
 import { message } from 'antd';
 
 const ICON_KEYS = Object.keys(materialToFA).sort();
+
+const SOCIAL_ICON_OPTIONS = [
+  { value: 'facebook', label: 'Facebook' },
+  { value: 'twitter', label: 'Twitter / X' },
+  { value: 'linkedin', label: 'LinkedIn' },
+  { value: 'instagram', label: 'Instagram' },
+  { value: 'youtube', label: 'YouTube' },
+  { value: 'github', label: 'GitHub' },
+  { value: 'tiktok', label: 'TikTok' },
+  { value: 'pinterest', label: 'Pinterest' },
+  { value: 'discord', label: 'Discord' },
+  { value: 'telegram', label: 'Telegram' },
+  { value: 'whatsapp', label: 'WhatsApp' },
+  { value: 'threads', label: 'Threads' },
+];
 
 const SECTION_META = {
   header: { icon: '🏠', label: 'Header' },
@@ -93,6 +108,16 @@ const ImageField = ({ label, value, onChange }) => {
 
 const StringField = ({ label, value, onChange, placeholder, multiline = false }) => {
   const [val, setVal] = useState(value || '');
+
+  useEffect(() => {
+    setVal(value || '');
+  }, [value]);
+
+  const handleChange = (e) => {
+    setVal(e.target.value);
+    onChange(e.target.value);
+  };
+
   return (
     <div className="cb-field">
       <label className="cb-field-label">{label}</label>
@@ -100,8 +125,7 @@ const StringField = ({ label, value, onChange, placeholder, multiline = false })
         <textarea
           className="cb-input"
           value={val}
-          onChange={(e) => setVal(e.target.value)}
-          onBlur={() => onChange(val)}
+          onChange={handleChange}
           placeholder={placeholder}
           rows={3}
         />
@@ -110,8 +134,7 @@ const StringField = ({ label, value, onChange, placeholder, multiline = false })
           type="text"
           className="cb-input"
           value={val}
-          onChange={(e) => setVal(e.target.value)}
-          onBlur={() => onChange(val)}
+          onChange={handleChange}
           placeholder={placeholder}
         />
       )}
@@ -339,8 +362,14 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
           <ArrayEditor
             items={config.socialLinks || []}
             onChange={(v) => updateConfig('socialLinks', v)}
-            schema={{ platform: 'Facebook', url: '' }}
-            renderItemSummary={(item) => item.platform}
+            schema={{ icon: 'facebook', url: '' }}
+            renderItemSummary={(item) => {
+              const found = SOCIAL_ICON_OPTIONS.find(o => o.value === item.icon);
+              return found ? found.label : (item.icon || 'New Link');
+            }}
+            optionsMap={{
+              icon: SOCIAL_ICON_OPTIONS
+            }}
           />
         </div>
       );

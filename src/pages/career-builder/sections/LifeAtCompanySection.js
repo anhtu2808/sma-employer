@@ -22,7 +22,7 @@ const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
       textAlign: 'center',
     }}>
-      <h2 style={{ fontSize: '32px', fontWeight: 700, color: textColor, marginBottom: '40px' }}>
+      <h2 style={{ fontSize: `${32 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '40px' }}>
         {headline}
       </h2>
 
@@ -47,14 +47,14 @@ const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
                 height: '140px',
                 background: item.thumbnailUrl ? `url(${item.thumbnailUrl}) center/cover no-repeat` : `linear-gradient(135deg, ${primaryColor}20, ${primaryColor}08)`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '36px',
+                fontSize: `${36 * ((theme.baseFontSize || 16) / 16)}px`,
               }}>
               </div>
               <div style={{ padding: '16px 18px' }}>
-                <div style={{ fontSize: '14px', fontWeight: 700, color: textColor, marginBottom: '6px' }}>
+                <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '6px' }}>
                   {item.title}
                 </div>
-                <div style={{ fontSize: '12px', color: textColor, opacity: 0.45 }}>
+                <div style={{ fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.45 }}>
                   {item.date}
                 </div>
               </div>
