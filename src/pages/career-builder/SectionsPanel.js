@@ -15,6 +15,21 @@ import { message } from 'antd';
 
 const ICON_KEYS = Object.keys(materialToFA).sort();
 
+const SOCIAL_ICON_OPTIONS = [
+  { value: 'facebook', label: 'Facebook' },
+  { value: 'twitter', label: 'Twitter / X' },
+  { value: 'linkedin', label: 'LinkedIn' },
+  { value: 'instagram', label: 'Instagram' },
+  { value: 'youtube', label: 'YouTube' },
+  { value: 'github', label: 'GitHub' },
+  { value: 'tiktok', label: 'TikTok' },
+  { value: 'pinterest', label: 'Pinterest' },
+  { value: 'discord', label: 'Discord' },
+  { value: 'telegram', label: 'Telegram' },
+  { value: 'whatsapp', label: 'WhatsApp' },
+  { value: 'threads', label: 'Threads' },
+];
+
 const SECTION_META = {
   header: { icon: '🏠', label: 'Header' },
   HERO: { icon: '✦', label: 'Hero Banner' },
@@ -347,8 +362,14 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
           <ArrayEditor
             items={config.socialLinks || []}
             onChange={(v) => updateConfig('socialLinks', v)}
-            schema={{ platform: 'Facebook', url: '' }}
-            renderItemSummary={(item) => item.platform}
+            schema={{ icon: 'facebook', url: '' }}
+            renderItemSummary={(item) => {
+              const found = SOCIAL_ICON_OPTIONS.find(o => o.value === item.icon);
+              return found ? found.label : (item.icon || 'New Link');
+            }}
+            optionsMap={{
+              icon: SOCIAL_ICON_OPTIONS
+            }}
           />
         </div>
       );

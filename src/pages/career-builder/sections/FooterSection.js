@@ -1,4 +1,35 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faFacebookF,
+  faTwitter,
+  faLinkedinIn,
+  faInstagram,
+  faYoutube,
+  faGithub,
+  faTiktok,
+  faPinterestP,
+  faDiscord,
+  faTelegram,
+  faWhatsapp,
+  faThreads,
+} from '@fortawesome/free-brands-svg-icons';
+import { faGlobe } from '@fortawesome/free-solid-svg-icons';
+
+const SOCIAL_ICON_MAP = {
+  facebook: { icon: faFacebookF, color: '#1877F2' },
+  twitter: { icon: faTwitter, color: '#1DA1F2' },
+  linkedin: { icon: faLinkedinIn, color: '#0A66C2' },
+  instagram: { icon: faInstagram, color: '#E4405F' },
+  youtube: { icon: faYoutube, color: '#FF0000' },
+  github: { icon: faGithub, color: '#fff' },
+  tiktok: { icon: faTiktok, color: '#fff' },
+  pinterest: { icon: faPinterestP, color: '#E60023' },
+  discord: { icon: faDiscord, color: '#5865F2' },
+  telegram: { icon: faTelegram, color: '#26A5E4' },
+  whatsapp: { icon: faWhatsapp, color: '#25D366' },
+  threads: { icon: faThreads, color: '#fff' },
+};
 
 const FooterSection = ({ theme, footerConfig = {} }) => {
   const { primaryColor } = theme;
@@ -11,12 +42,10 @@ const FooterSection = ({ theme, footerConfig = {} }) => {
   } = footerConfig;
 
   const defaultSocials = socialLinks.length > 0 ? socialLinks : [
-    { platform: 'LinkedIn', url: '#' },
-    { platform: 'Facebook', url: '#' },
-    { platform: 'GitHub', url: '#' },
+    { icon: 'linkedin', url: '#' },
+    { icon: 'facebook', url: '#' },
+    { icon: 'github', url: '#' },
   ];
-
-  const linkStyle = { fontSize: '13px', color: '#fff', opacity: 0.5, cursor: 'pointer', lineHeight: 2 };
 
   return (
     <div style={{ background: '#1a1a2e', padding: '48px 40px', color: '#fff' }}>
@@ -43,14 +72,43 @@ const FooterSection = ({ theme, footerConfig = {} }) => {
               ☎ {contact.phone}
             </p>
           )}
-          <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-            {defaultSocials.map((s) => (
-              <span key={s.platform} style={{
-                fontSize: '11px', color: 'rgba(255,255,255,0.4)', cursor: 'pointer',
-                background: 'rgba(255,255,255,0.06)', padding: '4px 10px',
-                borderRadius: '4px',
-              }}>{s.platform}</span>
-            ))}
+          <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+            {defaultSocials.map((s, i) => {
+              const socialDef = SOCIAL_ICON_MAP[s.icon];
+              const faIcon = socialDef?.icon || faGlobe;
+              const iconColor = socialDef?.color || 'rgba(255,255,255,0.5)';
+              return (
+                <a
+                  key={s.icon || i}
+                  href={s.url || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.08)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: iconColor,
+                    fontSize: '15px',
+                    transition: 'background 0.2s, transform 0.2s',
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.18)';
+                    e.currentTarget.style.transform = 'scale(1.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                >
+                  <FontAwesomeIcon icon={faIcon} />
+                </a>
+              );
+            })}
           </div>
         </div>
 

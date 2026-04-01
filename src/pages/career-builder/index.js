@@ -144,8 +144,8 @@ const SAMPLE_DATA = {
     address: 'Tòa nhà HUHTECH, 123 Đường Số 1, Quận 1, TP. HCM',
     contact: { email: 'careers@huhtech.com', phone: '028 1234 5678', addresses: [] },
     socialLinks: [
-      { platform: 'LinkedIn', url: '#' },
-      { platform: 'Facebook', url: '#' },
+      { icon: 'linkedin', url: '#' },
+      { icon: 'facebook', url: '#' },
     ],
     copyrightText: '© 2026 HUHTECH Solutions. All rights reserved.',
   },
