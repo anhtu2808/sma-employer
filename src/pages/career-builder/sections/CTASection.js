@@ -26,7 +26,7 @@ const CTAFooterSection = ({ theme, sectionProps = {}, settings = {} }) => {
       }} />
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#fff', marginBottom: '12px' }}>
+        <h2 style={{ fontSize: `${32 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: '#fff', marginBottom: '12px' }}>
           {headline}
         </h2>
         {ctaText && (
@@ -36,7 +36,7 @@ const CTAFooterSection = ({ theme, sectionProps = {}, settings = {} }) => {
             background: '#fff',
             color: primaryColor,
             border: 'none',
-            fontSize: '16px',
+            fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`,
             fontWeight: 700,
             cursor: 'pointer',
             boxShadow: theme.buttonStyle === 'shadow' ? '0 8px 24px rgba(0,0,0,0.25)' : 'none',

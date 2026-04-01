@@ -42,7 +42,7 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
       textAlign: 'center',
     }}>
-      <h2 style={{ fontSize: '32px', fontWeight: 700, color: textColor, marginBottom: '40px' }}>
+      <h2 style={{ fontSize: `${32 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '40px' }}>
         {headline}
       </h2>
 
@@ -62,7 +62,7 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
               <div style={{ 
-                fontSize: '28px', 
+                fontSize: `${28 * ((theme.baseFontSize || 16) / 16)}px`, 
                 color: primaryColor,
                 width: '40px', height: '40px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -74,10 +74,10 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
             </div>
             
-            <div style={{ fontSize: '16px', fontWeight: 700, color: textColor, marginBottom: '6px' }}>
+            <div style={{ fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '6px' }}>
               {b.title}
             </div>
-            <div style={{ fontSize: '13px', color: textColor, opacity: 0.6, lineHeight: 1.6 }}>
+            <div style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.6, lineHeight: 1.6 }}>
               {b.desc}
             </div>
           </div>

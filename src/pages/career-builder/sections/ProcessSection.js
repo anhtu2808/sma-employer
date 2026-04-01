@@ -16,7 +16,7 @@ const ProcessSection = ({ theme, sectionProps = {}, settings = {} }) => {
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
       textAlign: settings.textAlign || 'center',
     }}>
-      <h2 style={{ fontSize: '32px', fontWeight: 700, color: textColor, marginBottom: '48px' }}>
+      <h2 style={{ fontSize: `${32 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '48px' }}>
         {headline}
       </h2>
 
@@ -30,7 +30,7 @@ const ProcessSection = ({ theme, sectionProps = {}, settings = {} }) => {
               width: 48, height: 48, borderRadius: '50%',
               background: primaryColor, color: '#fff',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontWeight: 800, fontSize: '16px', margin: '0 auto 16px',
+              fontWeight: 800, fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`, margin: '0 auto 16px',
             }}>
               {String(i + 1).padStart(2, '0')}
             </div>
@@ -40,10 +40,10 @@ const ProcessSection = ({ theme, sectionProps = {}, settings = {} }) => {
                 height: '2px', background: `${primaryColor}30`,
               }} />
             )}
-            <div style={{ fontSize: '15px', fontWeight: 700, color: textColor, marginBottom: '6px' }}>
+            <div style={{ fontSize: `${15 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '6px' }}>
               {step.title}
             </div>
-            <div style={{ fontSize: '12px', color: textColor, opacity: 0.55, lineHeight: 1.5 }}>
+            <div style={{ fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.55, lineHeight: 1.5 }}>
               {step.desc}
             </div>
           </div>

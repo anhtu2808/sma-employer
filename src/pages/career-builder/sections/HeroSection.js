@@ -15,7 +15,7 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
   const btnBase = {
     padding: '14px 32px',
     borderRadius: `${borderRadius}px`,
-    fontSize: '16px',
+    fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`,
     fontWeight: 600,
     cursor: 'pointer',
     transition: 'all 0.2s',
@@ -40,14 +40,14 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         <h1 style={{
-          fontSize: '42px', fontWeight: 800, color: '#fff',
+          fontSize: `${42 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: '#fff',
           lineHeight: 1.2, marginBottom: '16px', letterSpacing: '-0.5px',
         }}>
           {headline}
         </h1>
 
         <p style={{
-          fontSize: '16px', color: 'rgba(255,255,255,0.85)',
+          fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`, color: 'rgba(255,255,255,0.85)',
           maxWidth: '500px', margin: '0 auto 32px', lineHeight: 1.6,
         }}>
           {subline}

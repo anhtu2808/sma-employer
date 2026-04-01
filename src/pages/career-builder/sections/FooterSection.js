@@ -58,17 +58,17 @@ const FooterSection = ({ theme, footerConfig = {} }) => {
             <div style={{
               width: 32, height: 32, borderRadius: '50%',
               background: primaryColor, display: 'flex', alignItems: 'center',
-              justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '12px',
+              justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`,
             }}>AC</div>
-            <span style={{ fontWeight: 700, fontSize: '15px' }}>{companyName}</span>
+            <span style={{ fontWeight: 700, fontSize: `${15 * ((theme.baseFontSize || 16) / 16)}px` }}>{companyName}</span>
           </div>
           {contact?.email && (
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginBottom: '8px' }}>
+            <p style={{ fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, color: 'rgba(255,255,255,0.45)', marginBottom: '8px' }}>
               ✉ {contact.email}
             </p>
           )}
           {contact?.phone && (
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginBottom: '8px' }}>
+            <p style={{ fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, color: 'rgba(255,255,255,0.45)', marginBottom: '8px' }}>
               ☎ {contact.phone}
             </p>
           )}
@@ -92,7 +92,7 @@ const FooterSection = ({ theme, footerConfig = {} }) => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: iconColor,
-                    fontSize: '15px',
+                    fontSize: `${15 * ((theme.baseFontSize || 16) / 16)}px`,
                     transition: 'background 0.2s, transform 0.2s',
                     textDecoration: 'none',
                   }}
@@ -113,9 +113,9 @@ const FooterSection = ({ theme, footerConfig = {} }) => {
         </div>
 
         <div style={{ flex: 1, maxWidth: '400px', textAlign: 'right' }}>
-          <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px' }}>Hệ thống cơ sở</div>
+          <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, marginBottom: '16px' }}>Hệ thống cơ sở</div>
           {contact?.addresses && contact.addresses.map((addr, i) => (
-            <p key={`addr-${i}`} style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: '10px' }}>
+            <p key={`addr-${i}`} style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: '10px' }}>
               {addr}
             </p>
           ))}
@@ -125,7 +125,7 @@ const FooterSection = ({ theme, footerConfig = {} }) => {
       <div style={{
         borderTop: '1px solid rgba(255,255,255,0.1)',
         marginTop: '36px', paddingTop: '20px',
-        textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.3)',
+        textAlign: 'center', fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, color: 'rgba(255,255,255,0.3)',
       }}>
         {copyrightText}
       </div>

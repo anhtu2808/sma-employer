@@ -63,7 +63,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
   const btnBase = {
     padding: '10px 24px', borderRadius: `${borderRadius}px`,
-    fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+    fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
   };
   const btnStyles = {
     flat: { ...btnBase, background: primaryColor, color: '#fff', border: 'none' },
@@ -74,7 +74,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
   const inputStyle = {
     width: '100%', padding: '10px 14px', borderRadius: `${borderRadius}px`,
-    border: '1px solid #e5e7eb', fontSize: '13px', outline: 'none',
+    border: '1px solid #e5e7eb', fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, outline: 'none',
     color: textColor, background: '#fff', boxSizing: 'border-box',
   };
   const selectStyle = {
@@ -82,7 +82,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
     backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239CA3AF' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
     backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center',
   };
-  const labelStyle = { fontSize: '13px', fontWeight: 700, color: textColor, marginBottom: '6px', display: 'block' };
+  const labelStyle = { fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '6px', display: 'block' };
   const fieldGap = { marginBottom: '18px' };
 
   const rangeTrackStyle = (value, max) => ({
@@ -97,7 +97,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
     }}>
       <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-        <h2 style={{ fontSize: '32px', fontWeight: 700, color: textColor, marginBottom: '8px' }}>{headline}</h2>
+        <h2 style={{ fontSize: `${32 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '8px' }}>{headline}</h2>
       </div>
 
       <div style={{ display: 'flex', gap: '28px', maxWidth: '960px', margin: '0 auto', alignItems: 'flex-start' }}>
@@ -111,11 +111,11 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '18px', fontWeight: 800, color: textColor }}>Filters</span>
+              <span style={{ fontSize: `${18 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: textColor }}>Filters</span>
             </div>
             <button onClick={handleReset} style={{
               background: 'none', border: 'none', color: primaryColor,
-              fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+              fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 600, cursor: 'pointer',
             }}>Reset</button>
           </div>
 
@@ -167,7 +167,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           <div style={fieldGap}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
               <label style={labelStyle}>Salary Range (VND)</label>
-              <span style={{ fontSize: '11px', color: textColor, opacity: 0.5 }}>{salaryRange[0]} - {salaryRange[1]}M+</span>
+              <span style={{ fontSize: `${11 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.5 }}>{salaryRange[0]} - {salaryRange[1]}M+</span>
             </div>
             <input type="range" min="0" max="100" value={salaryRange[1]}
               onChange={(e) => setSalaryRange([salaryRange[0], Number(e.target.value)])}
@@ -179,7 +179,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           <div style={fieldGap}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
               <label style={labelStyle}>Experience (Years)</label>
-              <span style={{ fontSize: '11px', color: textColor, opacity: 0.5 }}>{expRange[0]} - {expRange[1]}+ years</span>
+              <span style={{ fontSize: `${11 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.5 }}>{expRange[0]} - {expRange[1]}+ years</span>
             </div>
             <input type="range" min="0" max="10" value={expRange[1]}
               onChange={(e) => setExpRange([expRange[0], Number(e.target.value)])}
@@ -228,14 +228,14 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           </div>
 
           {/* Results count */}
-          <div style={{ fontSize: '13px', color: textColor, opacity: 0.5, marginBottom: '14px' }}>
+          <div style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.5, marginBottom: '14px' }}>
             Hiển thị {paginatedJobs.length} / {filteredJobs.length} vị trí
           </div>
 
           {/* Job cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {isLoading ? (
-              <div style={{ textAlign: 'center', padding: '48px 20px', color: textColor, opacity: 0.4, fontSize: '14px' }}>
+              <div style={{ textAlign: 'center', padding: '48px 20px', color: textColor, opacity: 0.4, fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px` }}>
                 Đang tải danh sách công việc...
               </div>
             ) : paginatedJobs.length > 0 ? paginatedJobs.map((job, i) => (
@@ -247,28 +247,28 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
                 transition: 'box-shadow 0.2s',
               }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '15px', fontWeight: 700, color: textColor, marginBottom: '4px' }}>
+                  <div style={{ fontSize: `${15 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '4px' }}>
                     {job.title}
                   </div>
-                  <div style={{ fontSize: '13px', color: textColor, opacity: 0.5, marginBottom: '8px' }}>
+                  <div style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.5, marginBottom: '8px' }}>
                     {job.dept} · {job.location} · {job.type}
                   </div>
                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                     {job.tags.map(tag => (
                       <span key={tag} style={{
-                        padding: '2px 10px', borderRadius: '20px', fontSize: '11px',
+                        padding: '2px 10px', borderRadius: '20px', fontSize: `${11 * ((theme.baseFontSize || 16) / 16)}px`,
                         fontWeight: 600, background: `${primaryColor}10`, color: primaryColor,
                       }}>{tag}</span>
                     ))}
                     {job.model && (
                       <span style={{
-                        padding: '2px 10px', borderRadius: '20px', fontSize: '11px',
+                        padding: '2px 10px', borderRadius: '20px', fontSize: `${11 * ((theme.baseFontSize || 16) / 16)}px`,
                         fontWeight: 600, background: '#f0f0f0', color: textColor, opacity: 0.6,
                       }}>{job.model}</span>
                     )}
                     {job.level && (
                       <span style={{
-                        padding: '2px 10px', borderRadius: '20px', fontSize: '11px',
+                        padding: '2px 10px', borderRadius: '20px', fontSize: `${11 * ((theme.baseFontSize || 16) / 16)}px`,
                         fontWeight: 600, background: '#f0f0f0', color: textColor, opacity: 0.6,
                       }}>{job.level}</span>
                     )}
@@ -279,7 +279,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
             )) : (
               <div style={{
                 textAlign: 'center', padding: '48px 20px',
-                color: textColor, opacity: 0.4, fontSize: '14px',
+                color: textColor, opacity: 0.4, fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`,
               }}>
                 Không tìm thấy vị trí phù hợp.
               </div>
@@ -300,7 +300,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
                   border: '1px solid #e5e7eb', background: '#fff',
                   cursor: currentPage === 1 ? 'default' : 'pointer',
                   opacity: currentPage === 1 ? 0.3 : 1,
-                  fontSize: '14px', color: textColor, display: 'flex',
+                  fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, display: 'flex',
                   alignItems: 'center', justifyContent: 'center',
                 }}
               >‹</button>
@@ -311,7 +311,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
                   border: page === currentPage ? 'none' : '1px solid #e5e7eb',
                   background: page === currentPage ? primaryColor : '#fff',
                   color: page === currentPage ? '#fff' : textColor,
-                  fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                  fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 600, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>{page}</button>
               ))}
@@ -324,7 +324,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
                   border: '1px solid #e5e7eb', background: '#fff',
                   cursor: currentPage === totalPages ? 'default' : 'pointer',
                   opacity: currentPage === totalPages ? 0.3 : 1,
-                  fontSize: '14px', color: textColor, display: 'flex',
+                  fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, display: 'flex',
                   alignItems: 'center', justifyContent: 'center',
                 }}
               >›</button>

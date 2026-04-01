@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@/utils/icons';
+import { faArrowLeft, faEye, faEyeSlash } from '@/utils/icons';
 
 const CareerBuilderToolbar = ({
   slug,
@@ -9,8 +9,9 @@ const CareerBuilderToolbar = ({
   status,
   onSaveDraft,
   onPublish,
-  onArchive,
   isSaving,
+  isPreviewMode,
+  onPreviewToggle,
 }) => {
   const navigate = useNavigate();
 
@@ -64,7 +65,17 @@ const CareerBuilderToolbar = ({
       </div>
 
       {/* Center spacer */}
-      <div className="cb-toolbar-center" />
+      <div className="cb-toolbar-center">
+        <div className="cb-preview-toggle">
+          <button
+            className={`cb-preview-btn ${isPreviewMode ? 'active' : ''}`}
+            onClick={onPreviewToggle}
+            title={isPreviewMode ? 'Exit Preview' : 'Enter Preview'}
+          >
+            <FontAwesomeIcon icon={isPreviewMode ? faEyeSlash : faEye} />
+          </button>
+        </div>
+      </div>
 
       {/* Right – Actions */}
       <div className="cb-toolbar-right">
@@ -72,16 +83,6 @@ const CareerBuilderToolbar = ({
           <span className="cb-autosave-dot"></span>
           Auto-saved
         </div>
-
-        {status === 'published' && (
-          <button
-            className="cb-btn-danger"
-            onClick={onArchive}
-            disabled={isSaving}
-          >
-            {isSaving ? 'Archiving...' : 'Archive'}
-          </button>
-        )}
 
         <button
           className="cb-btn-secondary"

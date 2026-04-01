@@ -199,6 +199,7 @@ const CareerPageBuilder = () => {
   const [activeSection, setActiveSection] = useState(null);
   const [status, setStatus] = useState(SAMPLE_DATA.status.toLowerCase());
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
 
   const [createCareerPage, { isLoading: isSaving }] = useCreateCareerPageMutation();
 
@@ -318,19 +319,6 @@ const CareerPageBuilder = () => {
     }
   }, [buildPayload, createCareerPage]);
 
-  /** Archive */
-  const handleArchive = useCallback(async () => {
-    try {
-      const payload = buildPayload('ARCHIVED');
-      await createCareerPage(payload).unwrap();
-      setStatus('archived');
-      message.success('Career page archived.');
-    } catch (err) {
-      console.error('Archive failed:', err);
-      message.error(err?.message || 'Failed to archive. Please try again.');
-    }
-  }, [buildPayload, createCareerPage]);
-
   if (isLoadingPage && !dataLoaded) {
     return (
       <div className="cb-root" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
@@ -347,15 +335,18 @@ const CareerPageBuilder = () => {
         status={status}
         onSaveDraft={handleSaveDraft}
         onPublish={handlePublish}
-        onArchive={handleArchive}
         isSaving={isSaving}
+        isPreviewMode={isPreviewMode}
+        onPreviewToggle={() => setIsPreviewMode(!isPreviewMode)}
       />
 
       <div className="cb-body">
-        <ThemeConfigPanel
-          theme={theme}
-          onThemeChange={setTheme}
-        />
+        {!isPreviewMode && (
+          <ThemeConfigPanel
+            theme={theme}
+            onThemeChange={setTheme}
+          />
+        )}
 
         <CanvasPreview
           theme={theme}
@@ -366,13 +357,15 @@ const CareerPageBuilder = () => {
           onSelectSection={handleSelectSection}
         />
 
-        <SectionsPanel
-          sections={allSections}
-          onSectionsChange={handleSectionsChange}
-          onUpdateSection={handleUpdateSection}
-          activeSection={activeSection}
-          onSelectSection={handleSelectSection}
-        />
+        {!isPreviewMode && (
+          <SectionsPanel
+            sections={allSections}
+            onSectionsChange={handleSectionsChange}
+            onUpdateSection={handleUpdateSection}
+            activeSection={activeSection}
+            onSelectSection={handleSelectSection}
+          />
+        )}
       </div>
     </div>
   );
