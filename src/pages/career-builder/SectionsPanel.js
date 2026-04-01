@@ -106,6 +106,36 @@ const ImageField = ({ label, value, onChange }) => {
   );
 };
 
+const ColorField = ({ label, value, onChange }) => {
+  return (
+    <div className="cb-field">
+      <label className="cb-field-label">{label}</label>
+      <div className="cb-color-row" style={{ background: 'rgba(255,255,255,0.05)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <span className="cb-color-label" style={{ color: '#e2e4e9', fontSize: '12px' }}>Pick Color</span>
+        <div className="cb-color-picker-wrap">
+          <input
+            type="color"
+            value={value || '#ffffff'}
+            onChange={(e) => onChange(e.target.value)}
+            className="cb-color-input"
+          />
+          <span className="cb-color-hex">{value || '#ffffff'}</span>
+          {value && (
+            <button
+              className="cb-mini-btn danger"
+              onClick={() => onChange('')}
+              style={{ padding: '2px 6px', marginLeft: '4px' }}
+              title="Reset to default"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const StringField = ({ label, value, onChange, placeholder, multiline = false }) => {
   const [val, setVal] = useState(value || '');
 
@@ -303,6 +333,21 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
     onUpdate(key, val);
   };
 
+  const updateSetting = (key, val) => {
+    onUpdate('settings', { ...(section.settings || {}), [key]: val });
+  };
+
+  const commonSettings = (
+    <>
+      <div className="cb-config-section-title" style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>Section Settings</div>
+      <ColorField
+        label="Background Override"
+        value={section.settings?.backgroundColorOverride || ''}
+        onChange={(v) => updateSetting('backgroundColorOverride', v)}
+      />
+    </>
+  );
+
   switch (section.type) {
     case 'header':
       return (
@@ -382,6 +427,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>CTA Button</div>
           <StringField label="Button Text" value={props.ctaText} onChange={(v) => updateProp('ctaText', v)} />
           <StringField label="Button Link" value={props.ctaLink} onChange={(v) => updateProp('ctaLink', v)} />
+          {commonSettings}
         </div>
       );
     case 'ABOUT':
@@ -390,6 +436,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
           <StringField label="Headline" value={props.headline} onChange={(v) => updateProp('headline', v)} />
           <StringField label="Description (HTML)" value={props.description} onChange={(v) => updateProp('description', v)} multiline />
           <ImageField label="Image" value={props.imageUrl} onChange={(v) => updateProp('imageUrl', v)} />
+          {commonSettings}
         </div>
       );
     case 'EVP':
@@ -403,6 +450,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
             schema={{ title: '', desc: '', icon: 'star' }}
             renderItemSummary={(item) => item.title || 'New Item'}
           />
+          {commonSettings}
         </div>
       );
     case 'AWARDS':
@@ -416,6 +464,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
             schema={{ name: '', year: '', imgUrl: '' }}
             renderItemSummary={(item) => item.name || 'New Award'}
           />
+          {commonSettings}
         </div>
       );
     case 'PROCESS':
@@ -429,6 +478,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
             schema={{ title: '', desc: '' }}
             renderItemSummary={(item, i) => `${i + 1}. ${item.title || 'Step'}`}
           />
+          {commonSettings}
         </div>
       );
     case 'FAQ':
@@ -442,6 +492,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
             schema={{ question: '', answer: '' }}
             renderItemSummary={(item) => item.question || 'New Question'}
           />
+          {commonSettings}
         </div>
       );
     case 'LIFE_AT_CO':
@@ -455,6 +506,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
             schema={{ title: '', date: '', thumbnailUrl: '', url: '' }}
             renderItemSummary={(item) => item.title || 'New Article'}
           />
+          {commonSettings}
         </div>
       );
     case 'GALLERY':
@@ -468,6 +520,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
             schema={{ imageUrl: '' }}
             renderItemSummary={(item, i) => item.imageUrl ? `Image ${i + 1}` : 'New Image'}
           />
+          {commonSettings}
         </div>
       );
     case 'CTA_FOOTER':
@@ -476,6 +529,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
           <StringField label="Headline" value={props.headline} onChange={(v) => updateProp('headline', v)} />
           <StringField label="CTA Text" value={props.ctaText} onChange={(v) => updateProp('ctaText', v)} />
           <StringField label="CTA Link" value={props.ctaLink} onChange={(v) => updateProp('ctaLink', v)} />
+          {commonSettings}
         </div>
       );
     case 'JOBS':
@@ -483,6 +537,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
         <div className="cb-section-children">
           <StringField label="Headline" value={props.headline} onChange={(v) => updateProp('headline', v)} />
           <VisibilityToggle label="Show Filters" isVisible={props.showFilter} onChange={(v) => updateProp('showFilter', v)} />
+          {commonSettings}
         </div>
       );
     default:

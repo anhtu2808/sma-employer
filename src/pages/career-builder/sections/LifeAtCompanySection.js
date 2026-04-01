@@ -1,7 +1,7 @@
 import React from 'react';
 
 const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
-  const { primaryColor, backgroundColor, textColor, borderRadius, shadow } = theme;
+  const { primaryColor, secondaryColor, backgroundColor, textColor, borderRadius, shadow } = theme;
   const { headline = 'Đời sống tại công ty', news = [] } = sectionProps;
 
   const shadowMap = {
@@ -16,9 +16,11 @@ const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
     { title: 'Hackathon nội bộ Q1/2026', thumbnailUrl: '', date: '01/02/2026' },
   ];
 
+  const sectionBg = settings.backgroundColorOverride || (backgroundColor === '#FFFFFF' ? `${primaryColor}05` : backgroundColor);
+
   return (
     <div style={{
-      background: settings.backgroundColorOverride || `${primaryColor}05`,
+      background: sectionBg,
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
       textAlign: 'center',
     }}>
@@ -33,7 +35,7 @@ const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
         {defaultNews.filter(item => item.isVisible !== false).map((item, i) => {
           const cardContent = (
             <div style={{
-              background: backgroundColor,
+              background: '#FFFFFF', // Fix card background to white
               borderRadius: `${borderRadius}px`,
               overflow: 'hidden',
               boxShadow: shadowMap[shadow],
@@ -45,7 +47,7 @@ const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
             }}>
               <div style={{
                 height: '140px',
-                background: item.thumbnailUrl ? `url(${item.thumbnailUrl}) center/cover no-repeat` : `linear-gradient(135deg, ${primaryColor}20, ${primaryColor}08)`,
+                background: item.thumbnailUrl ? `url(${item.thumbnailUrl}) center/cover no-repeat` : secondaryColor || `linear-gradient(135deg, ${primaryColor}20, ${primaryColor}08)`, // Use secondaryColor for placeholders
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: `${36 * ((theme.baseFontSize || 16) / 16)}px`,
               }}>

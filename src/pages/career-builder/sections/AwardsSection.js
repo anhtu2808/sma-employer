@@ -1,7 +1,7 @@
 import React from 'react';
 
 const AwardsSection = ({ theme, sectionProps = {}, settings = {} }) => {
-  const { primaryColor, backgroundColor, textColor, borderRadius, shadow } = theme;
+  const { primaryColor, secondaryColor, backgroundColor, textColor, borderRadius, shadow } = theme;
   const { headline = 'Giải thưởng danh giá', items = [] } = sectionProps;
 
   const shadowMap = {
@@ -16,9 +16,11 @@ const AwardsSection = ({ theme, sectionProps = {}, settings = {} }) => {
     { name: 'Great Place to Work', imgUrl: '', year: '2024' },
   ];
 
+  const sectionBg = settings.backgroundColorOverride || backgroundColor;
+
   return (
     <div style={{
-      background: settings.backgroundColorOverride || backgroundColor,
+      background: sectionBg,
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
       textAlign: settings.textAlign || 'center',
     }}>
@@ -32,7 +34,7 @@ const AwardsSection = ({ theme, sectionProps = {}, settings = {} }) => {
       }}>
         {defaultItems.filter(item => item.isVisible !== false).map((item, i) => (
           <div key={i} style={{
-            background: backgroundColor,
+            background: '#FFFFFF', // Fix card background to white
             borderRadius: `${borderRadius}px`,
             padding: '28px 24px',
             boxShadow: shadowMap[shadow],
@@ -45,7 +47,7 @@ const AwardsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           }}>
             <div style={{
               width: 64, height: 64, borderRadius: `${borderRadius}px`,
-              background: item.imgUrl ? `url(${item.imgUrl}) center/contain no-repeat` : `${primaryColor}10`,
+              background: item.imgUrl ? `url(${item.imgUrl}) center/contain no-repeat` : secondaryColor, // Use secondaryColor for icon bg
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: `${28 * ((theme.baseFontSize || 16) / 16)}px`,
             }}>
@@ -55,7 +57,7 @@ const AwardsSection = ({ theme, sectionProps = {}, settings = {} }) => {
             </div>
             <div style={{
               fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 600, color: primaryColor,
-              background: `${primaryColor}10`, padding: '3px 10px',
+              background: secondaryColor, padding: '3px 10px', // Use secondaryColor for year badge
               borderRadius: '20px',
             }}>
               {item.year}

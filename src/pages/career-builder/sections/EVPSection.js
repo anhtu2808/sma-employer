@@ -5,7 +5,7 @@ import { materialToFA, resolveIcon } from '@/utils/icons';
 const ICON_KEYS = Object.keys(materialToFA).sort();
 
 const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
-  const { primaryColor, backgroundColor, textColor, borderRadius, shadow } = theme;
+  const { primaryColor, secondaryColor, backgroundColor, textColor, borderRadius, shadow } = theme;
   const { headline = 'Tại sao bạn nên gia nhập?' } = sectionProps;
 
   const [items, setItems] = useState([]);
@@ -36,9 +36,11 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
     medium: '0 4px 20px rgba(0,0,0,0.1)',
   };
 
+  const sectionBg = settings.backgroundColorOverride || (backgroundColor === '#FFFFFF' ? `${primaryColor}06` : backgroundColor);
+
   return (
     <div style={{
-      background: settings.backgroundColorOverride || `${primaryColor}06`,
+      background: sectionBg,
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
       textAlign: 'center',
     }}>
@@ -52,7 +54,7 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
       }}>
         {items.filter(b => b.isVisible !== false).map((b, i) => (
           <div key={i} style={{
-            background: backgroundColor,
+            background: '#FFFFFF', // Fix card background to white
             borderRadius: `${borderRadius}px`,
             padding: '28px 24px',
             textAlign: 'left',
@@ -66,7 +68,7 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
                 color: primaryColor,
                 width: '40px', height: '40px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: `${primaryColor}15`,
+                background: secondaryColor, // Use secondaryColor for icon background
                 borderRadius: '8px'
               }}>
                 <FontAwesomeIcon icon={resolveIcon(b.icon)} />
