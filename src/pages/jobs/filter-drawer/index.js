@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Drawer, InputNumber, Select, message } from 'antd';
+import { Drawer, InputNumber, Select } from 'antd';
 import Button from '@/components/Button';
+import toastMessage from '@/utils/toastMessage';
 import { WORKING_MODEL_OPTIONS, JOB_LEVEL_OPTIONS } from '@/constrant';
 import { useGetCompanyLocationQuery } from '@/apis/companyApi';
 import { useGetDomainQuery, useGetExpertiseQuery } from '@/apis/masterDataApi';
@@ -106,7 +107,7 @@ const JobFilterDrawer = ({ open, onClose, initialFilters, onApply, onReset }) =>
             && isValidNumber(draftFilters.salaryEnd)
             && draftFilters.salaryStart > draftFilters.salaryEnd
         ) {
-            message.error('Salary start must be less than or equal to salary end.');
+            toastMessage.error('Salary start must be less than or equal to salary end.');
             return;
         }
 
@@ -115,7 +116,7 @@ const JobFilterDrawer = ({ open, onClose, initialFilters, onApply, onReset }) =>
             && isValidNumber(draftFilters.maxExperienceTime)
             && draftFilters.minExperienceTime > draftFilters.maxExperienceTime
         ) {
-            message.error('Min experience must be less than or equal to max experience.');
+            toastMessage.error('Min experience must be less than or equal to max experience.');
             return;
         }
 

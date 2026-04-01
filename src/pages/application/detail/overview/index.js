@@ -1,5 +1,6 @@
 import React from 'react';
-import { message, Select, ConfigProvider } from 'antd';
+import { Select, ConfigProvider } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faEnvelope, faPhone, faLocationDot, faCopy, faArrowRight,
@@ -10,7 +11,7 @@ import { APPLICATION_STATUS, getApplicationStatusConfig, getAllowedNextStatuses 
 const CopyableField = ({ icon, value, href }) => {
     const handleCopy = () => {
         navigator.clipboard.writeText(value).then(() => {
-            message.success('Copied!');
+            toastMessage.success('Copied!');
         });
     };
 

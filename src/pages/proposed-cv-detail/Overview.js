@@ -2,7 +2,7 @@ import React from 'react';
 import Button from '@/components/Button';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useInviteCandidateMutation } from '@/apis/jobApi';
-import { message } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faPhone, faWandMagicSparkles } from '../../utils/icons';
 
@@ -19,9 +19,9 @@ const Overview = ({ cvData }) => {
                 jobId: Number(jobId),
                 proposedResumeId: Number(proposedResumeId)
             }).unwrap();
-            message.success('Candidate invited successfully!');
+            toastMessage.success('Candidate invited successfully!');
         } catch (error) {
-            message.error(error?.data?.message || 'Failed to invite candidate');
+            toastMessage.error(error?.data?.message || 'Failed to invite candidate');
         }
     };
 

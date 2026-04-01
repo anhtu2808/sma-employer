@@ -6,7 +6,8 @@ import FilterSidebar from '@/pages/application/filterSidebar';
 import Loading from '@/components/Loading';
 import Button from '@/components/Button';
 import Modal from '@/components/Modal';
-import { Drawer, Table, Select, ConfigProvider, message, Modal as AntModal } from 'antd';
+import { Drawer, Table, Select, ConfigProvider, Modal as AntModal } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRocket, faUser } from '../../../utils/icons';
@@ -64,7 +65,7 @@ const JobApplicants = ({ jobId }) => {
     const handleUpdateStatus = async (id, status, reason = null) => {
         try {
             await updateStatus({ id, status, rejectReason: reason }).unwrap();
-            message.success(`Application moved to ${status} successfully`);
+            toastMessage.success(`Application moved to ${status} successfully`);
             setIsRejectModalOpen(false);
             setRejectReason('');
             setRejectData({ id: null, status: null });
@@ -72,7 +73,7 @@ const JobApplicants = ({ jobId }) => {
             setApproveData({ id: null });
         } catch (error) {
             const errorMessage = error?.data?.message || 'An unexpected error occurred while updating status';
-            message.error(errorMessage);
+            toastMessage.error(errorMessage);
             if (error?.data?.code === 400 || error?.data?.status === 'BAD_REQUEST') {
                 setIsRejectModalOpen(false);
                 setIsApproveModalOpen(false);

@@ -3,6 +3,14 @@ import { API_VERSION } from "./baseApi";
 
 export const masterDataApi = api.injectEndpoints({
   endpoints: (builder) => ({
+    getExpertiseGroup: builder.query({
+      query: ({ page = 0, size = 200 } = {}) => ({
+        url: `${API_VERSION}/expertise-groups`,
+        method: "GET",
+        params: { page, size },
+      }),
+      transformResponse: (response) => response?.data?.content ?? [],
+    }),
     getExpertise: builder.query({
       query: ({ page = 0, size = 30 } = {}) => ({
         url: `${API_VERSION}/expertises`,
@@ -66,9 +74,10 @@ export const masterDataApi = api.injectEndpoints({
   }),
 });
 
-export const { 
-  useGetExpertiseQuery, 
-  useGetDomainQuery, 
+export const {
+  useGetExpertiseGroupQuery,
+  useGetExpertiseQuery,
+  useGetDomainQuery,
   useGetBenefitQuery,
   useCreateBenefitMutation,
   useUpdateBenefitMutation,

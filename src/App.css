@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+
+/* Fix multiselect tag padding in Ant Design Select */
+.ant-select-multiple .ant-select-selection-overflow {
+  padding: 0 4px;
+}
+.ant-select-multiple .ant-select-selection-overflow-item {
+  padding: 2px 0;
+}

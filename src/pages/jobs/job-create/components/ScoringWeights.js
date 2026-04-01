@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Slider, Form, Switch, Tooltip, InputNumber, Modal, Input as AntInput, ConfigProvider, message } from "antd";
+import { Slider, Form, Switch, Tooltip, InputNumber, Modal, Input as AntInput, ConfigProvider } from "antd";
+import toastMessage from "@/utils/toastMessage";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { useGetCriteriaQuery, useCreateCriteriaMutation } from "@/apis/jobApi";
 import Loading from "@/components/Loading";
@@ -109,12 +110,12 @@ const ScoringWeights = () => {
         rule: values.rule || "",
         weight: values.weight,
       }).unwrap();
-      message.success("Criteria created successfully");
+      toastMessage.success("Criteria created successfully");
       setIsModalOpen(false);
       modalForm.resetFields();
     } catch (error) {
       if (error?.errorFields) return;
-      message.error("Failed to create criteria");
+      toastMessage.error("Failed to create criteria");
     }
   };
 
@@ -128,6 +129,7 @@ const ScoringWeights = () => {
           if (prevValues[`weight_${criteriaItem.id}`] !== currentValues[`weight_${criteriaItem.id}`]) return true;
         }
         if (prevValues.autoRejectThreshold !== currentValues.autoRejectThreshold) return true;
+        if (prevValues.enableAutoReject !== currentValues.enableAutoReject) return true;
         return false;
       }}
     >
@@ -449,51 +451,69 @@ const ScoringWeights = () => {
               )}
 
               {/* Auto-Reject Threshold */}
-              <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
-                <div className="flex justify-between mb-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Auto-Reject Threshold</label>
-                  <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded flex items-center gap-1">
-                    {isAiActive ? (
-                      <>
+              {(() => {
+                const autoRejectEnabled = getFieldValue("enableAutoReject") !== false && isAiActive;
+                return (
+                  <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Auto-Reject Threshold</label>
                         <Tooltip title="This is the percentage scale used to automatically reject CVs with matching scores lower than the set threshold.">
-                          <FontAwesomeIcon icon={faCircleExclamation} className="text-[14px] cursor-help" />
+                          <FontAwesomeIcon icon={faCircleExclamation} className="text-[14px] text-gray-400 cursor-help" />
                         </Tooltip>
-                        <span>Below {getFieldValue("autoRejectThreshold") || 40}%</span>
-                      </>
-                    ) : (
-                      "Disabled"
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {autoRejectEnabled && (
+                          <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">
+                            Below {getFieldValue("autoRejectThreshold") || 40}%
+                          </span>
+                        )}
+                        <Form.Item name="enableAutoReject" valuePropName="checked" initialValue={true} noStyle>
+                          <Switch
+                            size="small"
+                            disabled={!isAiActive}
+                            className={autoRejectEnabled ? "bg-orange-500" : "bg-gray-400"}
+                            onChange={(checked) => {
+                              if (!checked) {
+                                setFieldsValue({ autoRejectThreshold: 0 });
+                              } else {
+                                setFieldsValue({ autoRejectThreshold: 40 });
+                              }
+                            }}
+                          />
+                        </Form.Item>
+                      </div>
+                    </div>
+                    {autoRejectEnabled && (
+                      <Form.Item name="autoRejectThreshold" noStyle initialValue={40}>
+                        <Slider
+                          trackStyle={{ backgroundColor: "#F97316" }}
+                          handleStyle={{ borderColor: "#F97316", backgroundColor: "#F97316" }}
+                        />
+                      </Form.Item>
                     )}
-                  </span>
-                </div>
-                <Form.Item name="autoRejectThreshold" noStyle initialValue={40}>
-                  <Slider
-                    trackStyle={{ backgroundColor: "#F97316" }}
-                    handleStyle={{ borderColor: "#F97316", backgroundColor: "#F97316" }}
-                    disabled={!isAiActive}
-                  />
-                </Form.Item>
-                <p className="text-xs text-gray-500 mt-1">
-                  {isAiActive
-                    ? "Candidates scoring below this will be automatically moved to 'Rejected'."
-                    : "AI Scoring is disabled. Candidates will not be auto-rejected."}
-                </p>
-              </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {autoRejectEnabled
+                        ? "Candidates scoring below this will be automatically moved to 'Rejected'."
+                        : isAiActive
+                        ? "Auto-reject is disabled. Candidates will not be automatically rejected."
+                        : "AI Scoring is disabled. Candidates will not be auto-rejected."}
+                    </p>
+                  </div>
+                );
+              })()}
 
-              {/* Threshold sync */}
+              {/* Sync: when AI is turned off, disable auto-reject and reset threshold */}
               <Form.Item
                 noStyle
                 shouldUpdate={(prevValues, currentValues) =>
-                  prevValues.enableAiScoring !== currentValues.enableAiScoring ||
-                  prevValues.autoRejectThreshold !== currentValues.autoRejectThreshold
+                  prevValues.enableAiScoring !== currentValues.enableAiScoring
                 }
               >
                 {({ getFieldValue: gfv, setFieldsValue: sfv }) => {
                   const aiActive = gfv("enableAiScoring") !== false;
-                  const threshold = gfv("autoRejectThreshold");
-                  if (!aiActive && threshold !== 0) {
-                    setTimeout(() => sfv({ autoRejectThreshold: 0 }), 0);
-                  } else if (aiActive && threshold === 0) {
-                    setTimeout(() => sfv({ autoRejectThreshold: 40 }), 0);
+                  if (!aiActive && gfv("enableAutoReject") !== false) {
+                    setTimeout(() => sfv({ enableAutoReject: false, autoRejectThreshold: 0 }), 0);
                   }
                   return null;
                 }}

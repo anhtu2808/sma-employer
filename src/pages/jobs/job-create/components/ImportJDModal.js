@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Modal, Input, message, Spin } from "antd";
+import { Modal, Input, Spin } from "antd";
+import toastMessage from "@/utils/toastMessage";
 import { useParseJobDescriptionMutation } from "@/apis/jobApi";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWandMagicSparkles } from '../../../../utils/icons';
@@ -22,18 +23,18 @@ const ImportJDModal = ({ open, onCancel, onImported, masterData }) => {
         masterData,
       }).unwrap();
 
-      message.success(
+      toastMessage.success(
         "JD imported successfully! Please review and complete missing fields."
       );
       onImported(result);
       setRawText("");
     } catch (error) {
       if (error?.status === 403) {
-        message.error("JD Import quota exceeded. Upgrade your plan.");
+        toastMessage.error("JD Import quota exceeded. Upgrade your plan.");
       } else if (error?.status === 504) {
-        message.error("Request timed out. Please try again.");
+        toastMessage.error("Request timed out. Please try again.");
       } else {
-        message.error("Failed to parse job description. Please try again.");
+        toastMessage.error("Failed to parse job description. Please try again.");
       }
       // Modal stays open on error for retry
     }

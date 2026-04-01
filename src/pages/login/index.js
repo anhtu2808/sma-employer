@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { message } from "antd";
+import toastMessage from "@/utils/toastMessage";
 import Logo from "@/components/Logo";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
@@ -31,16 +31,16 @@ const Login = () => {
             if (response.data.code === 200) {
                 // Verify the user has RECRUITER role
                 await authService.verifyRecruiterRole();
-                message.success(response.data.message || "Login successfully");
+                toastMessage.success(response.data.message || "Login successfully");
                 navigate("/dashboard");
             } else {
-                message.error(response.data.message || "Login failed");
+                toastMessage.error(response.data.message || "Login failed");
             }
         } catch (error) {
             if (error.message === "ACCESS_DENIED") {
-                message.error("Access denied. Only Recruiter accounts can access this system.");
+                toastMessage.error("Access denied. Only Recruiter accounts can access this system.");
             } else {
-                message.error(
+                toastMessage.error(
                     error.response?.data?.message || "An error occurred during login",
                 );
             }
@@ -60,16 +60,16 @@ const Login = () => {
             if (res.data.code === 200) {
                 // Verify the user has RECRUITER role
                 await authService.verifyRecruiterRole();
-                message.success(res.data.message || "Login successfully");
+                toastMessage.success(res.data.message || "Login successfully");
                 navigate("/dashboard");
             } else {
-                message.error(res.data.message || "Login failed");
+                toastMessage.error(res.data.message || "Login failed");
             }
         } catch (error) {
             if (error.message === "ACCESS_DENIED") {
-                message.error("Access denied. Only Recruiter accounts can access this system.");
+                toastMessage.error("Access denied. Only Recruiter accounts can access this system.");
             } else {
-                message.error(error.response?.data?.message || "Google login failed");
+                toastMessage.error(error.response?.data?.message || "Google login failed");
             }
         } finally {
             setLoading(false);
@@ -110,7 +110,7 @@ const Login = () => {
                                 <GoogleLogin
                                     onSuccess={handleGoogleSuccess}
                                     onError={() => {
-                                        message.error("Google login failed");
+                                        toastMessage.error("Google login failed");
                                     }}
                                     useOneTap={false}
                                     width="100%"

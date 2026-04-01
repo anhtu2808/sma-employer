@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ConfigProvider, Select, Tabs } from 'antd';
+import { ConfigProvider, Select, Tabs, Modal } from 'antd';
 import Input from '@/components/Input';
 import { useGetJobsQuery, useGetMyJobStatusCountQuery } from '@/apis/apis';
 import { useUpdateJobStatusMutation, useDeleteJobMutation } from '@/apis/jobApi';
@@ -9,7 +9,7 @@ import Button from '@/components/Button';
 import Loading from '@/components/Loading';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { JOB_STATUS_TABS, JOB_SORT_OPTIONS } from '@/constrant';
-import { Modal, message } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import JobFilterDrawer from './filter-drawer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faFilter, faMagnifyingGlass, faPlus } from '../../utils/icons';
@@ -270,9 +270,9 @@ const JobsList = ({ archivedOnly = false }) => {
                                         onOk: async () => {
                                             try {
                                                 await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
-                                                message.success('Job archived successfully');
+                                                toastMessage.success('Job archived successfully');
                                             } catch {
-                                                message.error('Failed to archive job');
+                                                toastMessage.error('Failed to archive job');
                                             }
                                         }
                                     });
@@ -286,9 +286,9 @@ const JobsList = ({ archivedOnly = false }) => {
                                         onOk: async () => {
                                             try {
                                                 await updateJobStatus({ id: job.id, status: 'DRAFT' }).unwrap();
-                                                message.success('Job unarchived successfully');
+                                                toastMessage.success('Job unarchived successfully');
                                             } catch {
-                                                message.error('Failed to unarchive job');
+                                                toastMessage.error('Failed to unarchive job');
                                             }
                                         }
                                     });
@@ -303,9 +303,9 @@ const JobsList = ({ archivedOnly = false }) => {
                                         onOk: async () => {
                                             try {
                                                 await deleteJob(job.id).unwrap();
-                                                message.success('Job deleted successfully');
+                                                toastMessage.success('Job deleted successfully');
                                             } catch {
-                                                message.error('Failed to delete job');
+                                                toastMessage.error('Failed to delete job');
                                             }
                                         }
                                     });

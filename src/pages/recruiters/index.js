@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { message, Select } from 'antd';
+import { Select } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -175,7 +176,7 @@ const RecruitersPage = () => {
                 fullName: formState.fullName,
                 gender: formState.gender,
             }).unwrap();
-            message.success('Member created successfully');
+            toastMessage.success('Member created successfully');
             setIsCreateOpen(false);
             resetForm();
             refetch();
@@ -184,7 +185,7 @@ const RecruitersPage = () => {
             if (fieldErrors && typeof fieldErrors === 'object') {
                 setErrors(fieldErrors);
             } else {
-                message.error(err?.data?.message || 'Failed to create member');
+                toastMessage.error(err?.data?.message || 'Failed to create member');
             }
         }
     };
@@ -210,7 +211,7 @@ const RecruitersPage = () => {
                     status: formState.status,
                 }).unwrap();
             }
-            message.success('Member updated successfully');
+            toastMessage.success('Member updated successfully');
             setIsEditOpen(false);
             setEditingMember(null);
             refetch();
@@ -219,7 +220,7 @@ const RecruitersPage = () => {
             if (fieldErrors && typeof fieldErrors === 'object') {
                 setErrors(fieldErrors);
             } else {
-                message.error(err?.data?.message || 'Failed to update member');
+                toastMessage.error(err?.data?.message || 'Failed to update member');
             }
         }
     };

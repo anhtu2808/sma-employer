@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { message } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
+import toastMessage from "@/utils/toastMessage";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
 import SideDecorator from "@/pages/forgot-password/side-decorator";
@@ -21,7 +21,7 @@ const ResetPassword = () => {
 
     useEffect(() => {
         if (!location.state?.email) {
-            message.error("Please enter your email first");
+            toastMessage.error("Please enter your email first");
             navigate("/forgot-password");
         } else {
             setEmail(location.state.email);
@@ -32,7 +32,7 @@ const ResetPassword = () => {
         e.preventDefault();
 
         if (newPassword !== confirmPassword) {
-            message.error("Passwords do not match");
+            toastMessage.error("Passwords do not match");
             return;
         }
 
@@ -46,15 +46,15 @@ const ResetPassword = () => {
 
             if (response.data.code === 200) {
                 await authService.verifyRecruiterRole();
-                message.success("Password reset and logged in successfully");
+                toastMessage.success("Password reset and logged in successfully");
                 navigate("/dashboard");
             } else {
-                message.error(response.data.message || "Reset successful but login failed");
+                toastMessage.error(response.data.message || "Reset successful but login failed");
                 navigate("/login");
             }
         } catch (error) {
             console.error("Failed to reset password:", error);
-            message.error(error.data?.message || error.response?.data?.message || error.message || "Failed to reset password");
+            toastMessage.error(error.data?.message || error.response?.data?.message || error.message || "Failed to reset password");
         } finally {
             setIsLoggingIn(false);
         }

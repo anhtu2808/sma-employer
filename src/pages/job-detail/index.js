@@ -7,7 +7,8 @@ import PublishConfirmModal from '../jobs/job-create/components/PublishConfirmMod
 import { useGetApplicationsQuery } from '@/apis/applicationApi';
 import Button from '@/components/Button';
 import LoadingOverlay from '@/components/Loading/LoadingOverlay';
-import { Skeleton, Tabs, ConfigProvider, Modal, DatePicker, message, Select, Button as AntButton, Tooltip } from 'antd';
+import { Skeleton, Tabs, ConfigProvider, Modal, DatePicker, Select, Button as AntButton, Tooltip } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import dayjs from 'dayjs';
 import JobHeader from './components/JobHeader';
 import JobDescription from './components/JobDescription';
@@ -90,9 +91,9 @@ const JobDetail = () => {
             onOk: async () => {
                 try {
                     await updateJobStatus({ id: job.id, status: 'CLOSED' }).unwrap();
-                    message.success('Job closed successfully');
+                    toastMessage.success('Job closed successfully');
                 } catch (err) {
-                    message.error('Failed to close job');
+                    toastMessage.error('Failed to close job');
                 }
             }
         });
@@ -104,7 +105,7 @@ const JobDetail = () => {
 
     const handleUpdateExpDate = async () => {
         if (!newExpDate) {
-            message.warning('Please select a new expiration date');
+            toastMessage.warning('Please select a new expiration date');
             return;
         }
         try {
@@ -112,10 +113,10 @@ const JobDetail = () => {
                 id: job.id,
                 body: { expDate: newExpDate.toISOString() }
             }).unwrap();
-            message.success('Expiration date updated successfully');
+            toastMessage.success('Expiration date updated successfully');
             setIsExpDateModalVisible(false);
         } catch (err) {
-            message.error('Failed to update expiration date');
+            toastMessage.error('Failed to update expiration date');
         }
     };
 
@@ -233,9 +234,9 @@ const JobDetail = () => {
                                             onOk: async () => {
                                                 try {
                                                     await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
-                                                    message.success('Job deleted successfully');
+                                                    toastMessage.success('Job deleted successfully');
                                                 } catch {
-                                                    message.error('Failed to delete job');
+                                                    toastMessage.error('Failed to delete job');
                                                 }
                                             }
                                         });
@@ -276,9 +277,9 @@ const JobDetail = () => {
                                     onOk: async () => {
                                         try {
                                             await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
-                                            message.success('Job deleted successfully');
+                                            toastMessage.success('Job deleted successfully');
                                         } catch {
-                                            message.error('Failed to delete job');
+                                            toastMessage.error('Failed to delete job');
                                         }
                                     }
                                 });
@@ -314,9 +315,9 @@ const JobDetail = () => {
                                         onOk: async () => {
                                             try {
                                                 await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
-                                                message.success('Job archived successfully');
+                                                toastMessage.success('Job archived successfully');
                                             } catch {
-                                                message.error('Failed to archive job');
+                                                toastMessage.error('Failed to archive job');
                                             }
                                         }
                                     });
@@ -369,14 +370,14 @@ const JobDetail = () => {
                 onConfirm={async () => {
                     try {
                         await publishJob({ id: job.id, body: buildPublishBody(job) }).unwrap();
-                        message.success('Job published successfully!');
+                        toastMessage.success('Job published successfully!');
                         setShowPublishModal(false);
                     } catch (error) {
                         const validationErrors = error?.data?.data;
                         if (validationErrors && typeof validationErrors === 'object') {
-                            Object.values(validationErrors).forEach((msg) => message.error(msg));
+                            Object.values(validationErrors).forEach((msg) => toastMessage.error(msg));
                         } else {
-                            message.error(error?.data?.message || 'Failed to publish job');
+                            toastMessage.error(error?.data?.message || 'Failed to publish job');
                         }
                     }
                 }}

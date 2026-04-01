@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useGetCompanyProfileQuery, useUpdateCompanyProfileMutation, useUploadFileMutation } from '@/apis/apis';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
-import { message } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import Form from '@/components/Form';
 import Loading from '@/components/Loading';
 import GeneralInfo from './components/GeneralInfo';
@@ -64,11 +64,11 @@ const CompanyProfile = () => {
                 }),
             };
             await updateCompany({ id: companyData.data.id, data: updateData }).unwrap();
-            message.success('Company profile updated successfully');
+            toastMessage.success('Company profile updated successfully');
             setIsEditing(false);
             refetch();
         } catch (error) {
-            message.error('Failed to update company profile');
+            toastMessage.error('Failed to update company profile');
             console.error('Update failed:', error);
         }
     };

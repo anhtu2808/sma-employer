@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { message, Switch, Tooltip } from "antd";
+import { Switch, Tooltip } from "antd";
+import toastMessage from "@/utils/toastMessage";
 import Form from "@/components/Form";
 import Button from "@/components/Button";
 import { Info } from "lucide-react";
@@ -60,6 +61,7 @@ const JobCreate = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [pendingValues, setPendingValues] = useState(null);
+  const formInitialized = React.useRef(false);
 
   // Master data for AI JD import
   const { data: skills = [] } = useGetSkillsQuery({ size: 200 });
@@ -74,7 +76,8 @@ const JobCreate = () => {
   }), [skills, expertises, domains]);
 
   React.useEffect(() => {
-    if (clonedJob) {
+    if (clonedJob && criteriaList.length > 0 && !formInitialized.current) {
+      formInitialized.current = true;
       const initialValues = {
         ...clonedJob,
         expDate: clonedJob.expDate ? dayjs(clonedJob.expDate) : undefined,
@@ -87,6 +90,8 @@ const JobCreate = () => {
         locationIds: clonedJob.locations?.map(l => l.id) || clonedJob.locationIds,
         questionIds: clonedJob.questions?.map(q => q.id) || clonedJob.questionIds,
         expertiseId: clonedJob.expertise?.id || clonedJob.expertiseId,
+        expertiseGroupId: clonedJob.expertise?.expertiseGroupId || null,
+        enableAutoReject: (clonedJob.autoRejectThreshold ?? 0) > 0,
       };
 
       // Set all criteria to disabled first, then enable ones from the job
@@ -109,21 +114,23 @@ const JobCreate = () => {
     const effectiveAction = action || submitAction;
     try {
       console.log("Submit action:", effectiveAction);
-      const scoringCriterias = criteriaList.map((item) => ({
-        criteriaId: item.id,
-        weight:
-          form.getFieldValue(`weight_${item.id}`) ??
-          (item.weight || item.defaultWeight || 0),
-        enable: form.getFieldValue(`enable_${item.id}`) !== false,
-        rule: form.getFieldValue(`rule_${item.id}`) || null,
-      }));
+      const scoringCriterias = criteriaList
+        .filter((item) => form.getFieldValue(`enable_${item.id}`) !== false)
+        .map((item) => ({
+          criteriaId: item.id,
+          weight:
+            form.getFieldValue(`weight_${item.id}`) ??
+            (item.weight || item.defaultWeight || 0),
+          enable: true,
+          rule: form.getFieldValue(`rule_${item.id}`) || null,
+        }));
 
       const totalWeight = scoringCriterias.reduce(
         (sum, item) => sum + (item.enable ? item.weight : 0),
         0,
       );
       if (effectiveAction === "publish" && values.enableAiScoring && totalWeight !== 100) {
-        message.error(
+        toastMessage.error(
           `Total scoring weight of enabled criteria must be 100%. Current: ${totalWeight}%`,
         );
         return;
@@ -167,6 +174,8 @@ const JobCreate = () => {
       }
       delete submitData.showSalary;
       delete submitData.employmentType;
+      delete submitData.expertiseGroupId;
+      delete submitData.enableAutoReject;
       
       if (effectiveAction === "publish") {
         submitData.highlightJob = values.highlightJob === true;
@@ -183,21 +192,21 @@ const JobCreate = () => {
       // Draft path — execute immediately
       if (isEditMode) {
         await saveJobDraft({ id, body: submitData }).unwrap();
-        message.success("Job updated successfully!");
+        toastMessage.success("Job updated successfully!");
         navigate(`/jobs/${id}`);
       } else {
         const res = await createSaveJobDraft(submitData).unwrap();
         const jobId = res?.data?.id || res?.id;
-        message.success("Job draft saved successfully!");
+        toastMessage.success("Job draft saved successfully!");
         navigate(jobId ? `/jobs/${jobId}` : "/jobs");
       }
     } catch (error) {
       console.error("Failed to save job:", error);
       const validationErrors = error?.data?.data;
       if (validationErrors && typeof validationErrors === "object") {
-        Object.values(validationErrors).forEach((msg) => message.error(msg));
+        Object.values(validationErrors).forEach((msg) => toastMessage.error(msg));
       } else {
-        message.error(error?.data?.message || "Failed to save job. Please try again.");
+        toastMessage.error(error?.data?.message || "Failed to save job. Please try again.");
       }
     }
   };
@@ -208,12 +217,12 @@ const JobCreate = () => {
     try {
       if (isEditMode) {
         await publishJob({ id, body: submitData }).unwrap();
-        message.success("Job updated and published successfully!");
+        toastMessage.success("Job updated and published successfully!");
         navigate(`/jobs/${id}`);
       } else {
         const res = await createPublishJob(submitData).unwrap();
         const jobId = res?.data?.id || res?.id;
-        message.success("Job published successfully!");
+        toastMessage.success("Job published successfully!");
         navigate(jobId ? `/jobs/${jobId}` : "/jobs");
       }
       setShowConfirmModal(false);
@@ -222,9 +231,9 @@ const JobCreate = () => {
       console.error("Failed to publish job:", error);
       const validationErrors = error?.data?.data;
       if (validationErrors && typeof validationErrors === "object") {
-        Object.values(validationErrors).forEach((msg) => message.error(msg));
+        Object.values(validationErrors).forEach((msg) => toastMessage.error(msg));
       } else {
-        message.error(error?.data?.message || "Failed to publish job. Please try again.");
+        toastMessage.error(error?.data?.message || "Failed to publish job. Please try again.");
       }
     }
   };
@@ -232,6 +241,17 @@ const JobCreate = () => {
   const handleCancelPublish = () => {
     setShowConfirmModal(false);
     setPendingValues(null);
+  };
+
+  const handleModalValuesChange = (changed) => {
+    setPendingValues((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        formValues: { ...prev.formValues, ...changed },
+        submitData: { ...prev.submitData, ...changed },
+      };
+    });
   };
 
   const handleImported = (result) => {
@@ -253,6 +273,7 @@ const JobCreate = () => {
       workingModel: parsedData.workingModel,
       quantity: parsedData.quantity,
       expertiseId: parsedData.expertiseId,
+      expertiseGroupId: expertises.find(e => e.id === parsedData.expertiseId)?.expertiseGroup?.id || null,
       domainIds: parsedData.domainIds || [],
       skillIds: parsedData.skillIds || [],
       benefits: (parsedData.benefits || []).map((b) => ({
@@ -280,11 +301,12 @@ const JobCreate = () => {
     <>
       <Preloader isLoading={isSubmitting || (isEditMode && isJobLoading)} />
     <div className="space-y-4">
-      <Form form={form} onFinish={onFinish} onFinishFailed={() => message.error("Please fill in all required fields before publishing.")} layout="vertical" className="block">
+      <Form form={form} onFinish={onFinish} onFinishFailed={() => toastMessage.error("Please fill in all required fields before publishing.")} layout="vertical" className="block">
         {/* Top Bar */}
         <div className="flex items-center justify-between flex-wrap gap-3">
           <Button
             mode="text"
+            type="button"
             className="self-start text-gray-500 hover:text-primary pl-0 -ml-6"
             onClick={() => navigate(isEditMode ? `/jobs/${id}` : "/jobs")}
             iconLeft={
@@ -366,6 +388,7 @@ const JobCreate = () => {
         values={pendingValues?.formValues}
         featureUsage={featureUsage}
         isEditMode={isEditMode}
+        onValuesChange={handleModalValuesChange}
       />
 
       <ImportJDModal

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { message, Select, DatePicker } from 'antd';
+import { Select, DatePicker } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import dayjs from 'dayjs';
 import { useGetMyRecruiterInfoQuery, useUpdateMyProfileMutation } from '@/apis/recruiterApi';
 import { useUploadFileMutation } from '@/apis/apis';
@@ -53,11 +54,11 @@ const ProfileSettings = () => {
 
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
-            message.error('Please upload an image file');
+            toastMessage.error('Please upload an image file');
             return;
         }
         if (file.size > 5 * 1024 * 1024) {
-            message.error('Image must be smaller than 5MB');
+            toastMessage.error('Image must be smaller than 5MB');
             return;
         }
 
@@ -70,13 +71,13 @@ const ProfileSettings = () => {
                 handleChange('avatar', downloadUrl);
             }
         } catch {
-            message.error('Failed to upload image');
+            toastMessage.error('Failed to upload image');
         }
     };
 
     const handleSave = async () => {
         if (!formData.fullName.trim()) {
-            message.error('Full name is required');
+            toastMessage.error('Full name is required');
             return;
         }
 
@@ -88,10 +89,10 @@ const ProfileSettings = () => {
                 avatar: formData.avatar || null,
             };
             await updateMyProfile(payload).unwrap();
-            message.success('Profile updated successfully');
+            toastMessage.success('Profile updated successfully');
             setIsEditing(false);
         } catch {
-            message.error('Failed to update profile');
+            toastMessage.error('Failed to update profile');
         }
     };
 

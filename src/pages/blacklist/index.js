@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useGetBlacklistQuery, useUnblockCandidateMutation } from '@/apis/companyApi';
-import { message, Popconfirm } from 'antd';
+import { Popconfirm } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import dayjs from 'dayjs';
 import Loading from '@/components/Loading';
 import Pagination from '@/components/Pagination';
@@ -24,9 +25,9 @@ const CompanyBlacklist = () => {
     const handleUnblock = async (candidateId) => {
         try {
             await unblockCandidate(candidateId).unwrap();
-            message.success('Candidate has been removed from blacklist');
+            toastMessage.success('Candidate has been removed from blacklist');
         } catch (error) {
-            message.error(error?.data?.message || 'Failed to unblock candidate');
+            toastMessage.error(error?.data?.message || 'Failed to unblock candidate');
         }
     };
 

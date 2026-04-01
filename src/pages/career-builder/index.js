@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { message } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import { useCreateCareerPageMutation, useGetCareerPageManageQuery } from '@/apis/careerPageApi';
 import CareerBuilderToolbar from './CareerBuilderToolbar';
 import ThemeConfigPanel from './ThemeConfigPanel';
@@ -300,10 +300,10 @@ const CareerPageBuilder = () => {
       const payload = buildPayload('DRAFT');
       await createCareerPage(payload).unwrap();
       setStatus('draft');
-      message.success('Career page saved as draft!');
+      toastMessage.success('Career page saved as draft!');
     } catch (err) {
       console.error('Save draft failed:', err);
-      message.error(err?.message || 'Failed to save draft. Please try again.');
+      toastMessage.error(err?.message || 'Failed to save draft. Please try again.');
     }
   }, [buildPayload, createCareerPage]);
 
@@ -313,10 +313,10 @@ const CareerPageBuilder = () => {
       const payload = buildPayload('PUBLISHED');
       await createCareerPage(payload).unwrap();
       setStatus('published');
-      message.success('Career page published successfully!');
+      toastMessage.success('Career page published successfully!');
     } catch (err) {
       console.error('Publish failed:', err);
-      message.error(err?.message || 'Failed to publish. Please try again.');
+      toastMessage.error(err?.message || 'Failed to publish. Please try again.');
     }
   }, [buildPayload, createCareerPage]);
 

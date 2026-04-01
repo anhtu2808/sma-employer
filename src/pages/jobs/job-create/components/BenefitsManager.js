@@ -96,7 +96,7 @@ const BenefitRow = ({ name, restField, allBenefits, onRemove }) => {
         >
           <Input.TextArea
             placeholder="Describe the benefit..."
-            maxLength={250}
+            maxLength={400}
             showCount={{
               formatter: ({ count, maxLength }) => `${count}/${maxLength} chars`,
             }}

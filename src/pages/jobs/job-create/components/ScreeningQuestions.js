@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Form, Select, Input, Switch, Divider, message } from 'antd';
+import { Form, Select, Input, Switch, Divider } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import Button from '@/components/Button';
 import { useGetJobQuestionsQuery, useCreateJobQuestionMutation, useUpdateJobQuestionMutation, useDeleteJobQuestionMutation } from '@/apis/jobApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -33,7 +34,7 @@ const ScreeningQuestions = () => {
 
     const handleCreateQuestion = async () => {
         if (!newQuestion.trim()) {
-            message.warning('Please enter a question');
+            toastMessage.warning('Please enter a question');
             return;
         }
         try {
@@ -42,13 +43,13 @@ const ScreeningQuestions = () => {
                 isRequired: newIsRequired,
                 description: newDescription.trim() || undefined,
             }).unwrap();
-            message.success('Question created successfully!');
+            toastMessage.success('Question created successfully!');
             setNewQuestion('');
             setNewDescription('');
             setNewIsRequired(false);
             setShowCreateForm(false);
         } catch (error) {
-            message.error(error?.data?.message || 'Failed to create question');
+            toastMessage.error(error?.data?.message || 'Failed to create question');
         }
     };
 
@@ -68,7 +69,7 @@ const ScreeningQuestions = () => {
 
     const handleUpdateQuestion = async () => {
         if (!editQuestion.trim()) {
-            message.warning('Please enter a question');
+            toastMessage.warning('Please enter a question');
             return;
         }
         try {
@@ -80,19 +81,19 @@ const ScreeningQuestions = () => {
                     description: editDescription.trim() || undefined,
                 },
             }).unwrap();
-            message.success('Question updated successfully!');
+            toastMessage.success('Question updated successfully!');
             handleCancelEdit();
         } catch (error) {
-            message.error(error?.data?.message || 'Failed to update question');
+            toastMessage.error(error?.data?.message || 'Failed to update question');
         }
     };
 
     const handleDeleteQuestion = async (id) => {
         try {
             await deleteJobQuestion(id).unwrap();
-            message.success('Question deleted successfully!');
+            toastMessage.success('Question deleted successfully!');
         } catch (error) {
-            message.error(error?.data?.message || 'Failed to delete question');
+            toastMessage.error(error?.data?.message || 'Failed to delete question');
         }
     };
 

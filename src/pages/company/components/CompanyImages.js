@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import Form from '@/components/Form';
-import { message } from 'antd';
+import toastMessage from '@/utils/toastMessage';
 import { useUploadFileMutation } from '@/apis/apis';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImage, faImage, faImages, faXmark } from '../../../utils/icons';
@@ -24,19 +24,19 @@ const CompanyImages = ({ form, isEditing }) => {
         }
 
         try {
-            message.loading({ content: `Starting upload...`, key: 'uploading' });
+            toastMessage.loading(`Starting upload...`);
             for (const file of files) {
                 console.log(`[CompanyImages] Validating file: ${file.name}, type: ${file.type}`);
                 const isImageMime = file.type && file.type.startsWith('image/');
                 const isImageExt = !!file.name.match(/\.(jpg|jpeg|png|gif|webp)$/i);
-                
+
                 if (!isImageMime && !isImageExt) {
                     console.error(`[CompanyImages] Validation failed for: ${file.name}`);
-                    message.error(`"${file.name}" is not a valid image file`);
+                    toastMessage.error(`"${file.name}" is not a valid image file`);
                     continue;
                 }
 
-                message.loading({ content: `Uploading ${file.name}...`, key: 'uploading' });
+                toastMessage.loading(`Uploading ${file.name}...`);
 
                 const formData = new FormData();
                 formData.append('files', file);
@@ -44,20 +44,20 @@ const CompanyImages = ({ form, isEditing }) => {
                 console.log(`[CompanyImages] Sending POST request for: ${file.name}`);
                 const response = await uploadFile(formData).unwrap();
                 console.log(`[CompanyImages] Upload response:`, response);
-                
+
                 const downloadUrl = response[0]?.downloadUrl || response?.downloadUrl;
 
                 if (downloadUrl) {
                     const currentImages = form.getFieldValue('images') || [];
                     setImages([...currentImages, { url: downloadUrl, description: '' }]);
-                    message.success({ content: `Uploaded "${file.name}"`, key: 'uploading' });
+                    toastMessage.success(`Uploaded "${file.name}"`);
                 } else {
-                    message.error({ content: `Failed to get URL for "${file.name}"`, key: 'uploading' });
+                    toastMessage.error(`Failed to get URL for "${file.name}"`);
                 }
             }
         } catch (err) {
             console.error('[CompanyImages] Upload error:', err);
-            message.error({ content: 'Failed to upload image. Please try again.', key: 'uploading' });
+            toastMessage.error('Failed to upload image. Please try again.');
         } finally {
             if (fileInputRef.current) fileInputRef.current.value = '';
         }

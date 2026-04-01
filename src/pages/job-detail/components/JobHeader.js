@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tag, Dropdown, message } from 'antd';
+import { Tag, Dropdown } from 'antd';
 import JobSkills from './JobSkills';
 import Button from '@/components/Button';
 import { useUpdateJobStatusMutation } from '@/apis/jobApi';
