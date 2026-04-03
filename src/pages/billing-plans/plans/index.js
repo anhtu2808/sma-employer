@@ -1,14 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import PlanCard from "./plan-card";
-
-const formatCurrency = (amount) => {
-  if (amount == null || Number.isNaN(Number(amount))) return "-";
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    maximumFractionDigits: 2,
-  }).format(Number(amount));
-};
+import formatCurrency from "@/utils/formatCurrency";
 
 
 const isLifetimeUnit = (unit) => String(unit || "").toUpperCase() === "LIFETIME";
