@@ -42,7 +42,7 @@ const CareerBuilderToolbar = ({
              <input
                type="text"
                value={slug || ''}
-               onChange={(e) => onSlugChange && onSlugChange(e.target.value)}
+               onChange={(e) => onSlugChange && onSlugChange(e.target.value.toLowerCase())}
                placeholder="page-slug"
                style={{
                  background: 'transparent',
