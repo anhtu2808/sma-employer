@@ -24,18 +24,18 @@ const AboutSection = ({ theme, sectionProps = {}, settings = {} }) => {
     }}>
       <div style={{
         display: 'flex', gap: '40px', alignItems: 'center',
-        maxWidth: '700px', margin: '0 auto',
+        maxWidth: '1100px', margin: '0 auto',
         flexDirection: imageUrl ? 'row' : 'column',
       }}>
         {imageUrl && (
           <div style={{
-            width: '280px', flexShrink: 0,
+            width: '400px', flexShrink: 0,
             borderRadius: `${borderRadius}px`,
             overflow: 'hidden',
             boxShadow: shadowMap[shadow],
           }}>
             <div style={{
-              height: '200px',
+              height: '280px',
               background: `url(${imageUrl}) center/cover no-repeat`,
             }} />
           </div>

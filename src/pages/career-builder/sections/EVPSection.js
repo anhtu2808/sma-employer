@@ -49,14 +49,14 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
       </h2>
 
       <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px',
-        maxWidth: '700px', margin: '0 auto',
+        display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px',
+        maxWidth: '1100px', margin: '0 auto',
       }}>
         {items.filter(b => b.isVisible !== false).map((b, i) => (
           <div key={i} style={{
             background: '#FFFFFF', // Fix card background to white
             borderRadius: `${borderRadius}px`,
-            padding: '28px 24px',
+            padding: '36px 32px',
             textAlign: 'left',
             boxShadow: shadowMap[shadow],
             border: '1px solid rgba(0,0,0,0.06)',
@@ -66,7 +66,7 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
               <div style={{ 
                 fontSize: `${28 * ((theme.baseFontSize || 16) / 16)}px`, 
                 color: primaryColor,
-                width: '40px', height: '40px',
+                width: '52px', height: '52px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: secondaryColor, // Use secondaryColor for icon background
                 borderRadius: '8px'
@@ -76,10 +76,10 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
             </div>
             
-            <div style={{ fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '6px' }}>
+            <div style={{ fontSize: `${18 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '8px' }}>
               {b.title}
             </div>
-            <div style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.6, lineHeight: 1.6 }}>
+            <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.6, lineHeight: 1.7 }}>
               {b.desc}
             </div>
           </div>

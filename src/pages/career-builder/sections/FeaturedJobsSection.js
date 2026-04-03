@@ -102,7 +102,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
         <h2 style={{ fontSize: `${32 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '8px' }}>{headline}</h2>
       </div>
 
-      <div style={{ display: 'flex', gap: '28px', maxWidth: '960px', margin: '0 auto', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', gap: '28px', maxWidth: '1100px', margin: '0 auto', alignItems: 'flex-start' }}>
         {/* ─── Filter Sidebar ──────────────────────────────────────── */}
         <div style={{
           width: '280px', flexShrink: 0,
@@ -245,16 +245,16 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
               <div key={job.id || i} style={{
                 background: '#FFFFFF', // Fix card background to white
                 borderRadius: `${borderRadius}px`,
-                padding: '20px 24px', display: 'flex', alignItems: 'center',
+                padding: '24px 28px', display: 'flex', alignItems: 'center',
                 justifyContent: 'space-between', boxShadow: shadowMap[shadow],
                 border: '1px solid rgba(0,0,0,0.06)', textAlign: 'left',
                 transition: 'box-shadow 0.2s',
               }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: `${15 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '4px' }}>
+                  <div style={{ fontSize: `${17 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '6px' }}>
                     {job.title}
                   </div>
-                  <div style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.5, marginBottom: '8px' }}>
+                  <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.5, marginBottom: '10px' }}>
                     {job.dept} · {job.location} · {job.type}
                   </div>
                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>

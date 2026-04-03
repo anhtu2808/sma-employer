@@ -24,28 +24,28 @@ const ProcessSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
       <div style={{
         display: 'grid', gridTemplateColumns: `repeat(${Math.min(defaultSteps.length, 4)}, 1fr)`,
-        gap: '24px', maxWidth: '750px', margin: '0 auto', position: 'relative',
+        gap: '32px', maxWidth: '1100px', margin: '0 auto', position: 'relative',
       }}>
         {defaultSteps.filter(s => s.isVisible !== false).map((step, i) => (
           <div key={i} style={{ textAlign: 'center', position: 'relative' }}>
             <div style={{
-              width: 48, height: 48, borderRadius: '50%',
+              width: 60, height: 60, borderRadius: '50%',
               background: primaryColor, color: '#fff',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontWeight: 800, fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`, margin: '0 auto 16px',
+              fontWeight: 800, fontSize: `${18 * ((theme.baseFontSize || 16) / 16)}px`, margin: '0 auto 20px',
             }}>
               {String(i + 1).padStart(2, '0')}
             </div>
             {i < defaultSteps.length - 1 && (
               <div style={{
-                position: 'absolute', top: 24, left: '60%', width: '80%',
+                position: 'absolute', top: 30, left: '60%', width: '80%',
                 height: '2px', background: secondaryColor || `${primaryColor}30`, // Use secondaryColor for lines
               }} />
             )}
-            <div style={{ fontSize: `${15 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '6px' }}>
+            <div style={{ fontSize: `${17 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '8px' }}>
               {step.title}
             </div>
-            <div style={{ fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.55, lineHeight: 1.5 }}>
+            <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.55, lineHeight: 1.6 }}>
               {step.desc}
             </div>
           </div>
