@@ -10,8 +10,10 @@ const CareerBuilderToolbar = ({
   onSaveDraft,
   onPublish,
   isSaving,
+  isArchiving,
   isPreviewMode,
   onPreviewToggle,
+  onArchive,
 }) => {
   const navigate = useNavigate();
 
@@ -86,18 +88,33 @@ const CareerBuilderToolbar = ({
 
         <button
           className="cb-btn-secondary"
-          onClick={onSaveDraft}
-          disabled={isSaving}
+          onClick={onArchive}
+          disabled={isSaving || isArchiving || status === 'archived'}
+          style={{ 
+            color: status === 'archived' ? undefined : '#dc3545',
+            borderColor: status === 'archived' ? undefined : '#dc3545',
+            opacity: status === 'archived' ? 0.5 : 1
+          }}
         >
-          {isSaving ? 'Saving...' : 'Save Draft'}
+          {isArchiving ? 'Archiving...' : 'Archive'}
+        </button>
+
+        <button
+          className="cb-btn-secondary"
+          onClick={onSaveDraft}
+          disabled={isSaving || isArchiving || status === 'archived'}
+        >
+          {isSaving && status === 'draft' ? 'Saving...' : 'Save Draft'}
         </button>
 
         <button
           className="cb-btn-primary"
           onClick={onPublish}
-          disabled={isSaving}
+          disabled={isSaving || isArchiving}
         >
-          {isSaving ? 'Publishing...' : 'Publish'}
+          {status === 'archived' 
+            ? (isSaving ? 'Unarchiving...' : 'Unarchive')
+            : (isSaving && status === 'published' ? 'Publishing...' : 'Publish')}
         </button>
       </div>
     </div>

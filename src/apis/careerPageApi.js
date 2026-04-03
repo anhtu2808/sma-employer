@@ -24,6 +24,13 @@ export const careerPageApi = api.injectEndpoints({
       }),
       providesTags: (result, error, slug) => [{ type: "CareerPages", id: slug }],
     }),
+    archiveCareerPage: builder.mutation({
+      query: () => ({
+        url: `${API_VERSION}/career-pages/manage/archive`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["CareerPages"],
+    }),
   }),
 });
 
@@ -31,4 +38,5 @@ export const {
   useCreateCareerPageMutation,
   useGetCareerPageManageQuery,
   useGetCareerPageQuery,
+  useArchiveCareerPageMutation,
 } = careerPageApi;
