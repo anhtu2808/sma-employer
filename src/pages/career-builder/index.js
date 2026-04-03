@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import toastMessage from '@/utils/toastMessage';
-import { useCreateCareerPageMutation, useGetCareerPageManageQuery } from '@/apis/careerPageApi';
+import { useCreateCareerPageMutation, useGetCareerPageManageQuery, useArchiveCareerPageMutation } from '@/apis/careerPageApi';
 import CareerBuilderToolbar from './CareerBuilderToolbar';
 import ThemeConfigPanel from './ThemeConfigPanel';
 import SectionsPanel from './SectionsPanel';
@@ -203,6 +203,7 @@ const CareerPageBuilder = () => {
   const [isPreviewMode, setIsPreviewMode] = useState(false);
 
   const [createCareerPage, { isLoading: isSaving }] = useCreateCareerPageMutation();
+  const [archiveCareerPageApi, { isLoading: isArchiving }] = useArchiveCareerPageMutation();
 
   // Populate state from API response when data arrives
   useEffect(() => {
@@ -313,12 +314,31 @@ const CareerPageBuilder = () => {
       const payload = buildPayload('PUBLISHED');
       await createCareerPage(payload).unwrap();
       setStatus('published');
-      toastMessage.success('Career page published successfully!');
+      toastMessage.success(status === 'archived' ? 'Career page unarchived successfully!' : 'Career page published successfully!');
     } catch (err) {
-      console.error('Publish failed:', err);
-      toastMessage.error(err?.message || 'Failed to publish. Please try again.');
+      console.error('Publish (Unarchive) failed:', err);
+      toastMessage.error(err?.message || 'Failed to publish/unarchive. Please try again.');
     }
-  }, [buildPayload, createCareerPage]);
+  }, [buildPayload, createCareerPage, status]);
+
+  /** Archive */
+  const handleArchive = useCallback(async () => {
+    // Only confirm if not already archived
+    if (status === 'archived') return;
+    
+    if (!window.confirm('Are you sure you want to archive this career page? It will no longer be visible to candidates.')) {
+      return;
+    }
+    
+    try {
+      await archiveCareerPageApi().unwrap();
+      setStatus('archived');
+      toastMessage.success('Career page archived successfully!');
+    } catch (err) {
+      console.error('Archive failed:', err);
+      toastMessage.error(err?.message || 'Failed to archive. Please try again.');
+    }
+  }, [archiveCareerPageApi, status]);
 
   if (isLoadingPage && !dataLoaded) {
     return (
@@ -337,8 +357,10 @@ const CareerPageBuilder = () => {
         onSaveDraft={handleSaveDraft}
         onPublish={handlePublish}
         isSaving={isSaving}
+        isArchiving={isArchiving}
         isPreviewMode={isPreviewMode}
         onPreviewToggle={() => setIsPreviewMode(!isPreviewMode)}
+        onArchive={handleArchive}
       />
 
       <div className="cb-body">
