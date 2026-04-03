@@ -17,7 +17,7 @@ import { faPenToSquare } from '../../utils/icons';
 const CompanyProfile = () => {
     const { data: companyData, isLoading, refetch } = useGetCompanyProfileQuery();
     const [updateCompany, { isLoading: isUpdating }] = useUpdateCompanyProfileMutation();
-    const [uploadFile, { isLoading: isUploading }] = useUploadFileMutation();
+    const [uploadFile] = useUploadFileMutation();
     const [form] = Form.useForm();
     const [isEditing, setIsEditing] = useState(false);
 
@@ -27,15 +27,42 @@ const CompanyProfile = () => {
             form.setFieldsValue({
                 ...data,
                 companyIndustry: data.companyIndustry || data.companyindustry,
+                logo: data.logo || "",
             });
         }
     }, [companyData, form]);
 
     const onFinish = async (values) => {
         try {
-            const { taxIdentificationNumber, erc, email, link, images, companyIndustry, locations, ...rest } = values;
+            const {
+                taxIdentificationNumber,
+                erc,
+                email,
+                link,
+                images,
+                companyIndustry,
+                locations,
+                logo,
+                ...rest
+            } = values;
+
+            let finalLogoUrl = "";
+            if (Array.isArray(logo) && logo.length > 0) {
+                finalLogoUrl = logo[0].url || logo[0].thumbUrl || "";
+            } else if (typeof logo === 'string') {
+                finalLogoUrl = logo;
+            }
+
+            const finalImages = (images || []).map((img) => ({
+                ...(img.id ? { id: img.id } : {}),
+                url: img.url || "",
+                description: img.description || ""
+            }));
+
             const updateData = {
                 ...rest,
+                name: values.name,
+                logo: finalLogoUrl,
                 minSize: rest.minSize ? Number(rest.minSize) : 0,
                 maxSize: rest.maxSize ? Number(rest.maxSize) : 0,
                 companyindustry: companyIndustry,
@@ -45,31 +72,24 @@ const CompanyProfile = () => {
                 companyLink: link,
                 locations: (locations || []).map((loc, index) => {
                     const originalLoc = (companyData.data?.locations || [])[index] || {};
-                    const result = {
-                        ...originalLoc,
-                        ...loc,
-                    };
+                    const result = { ...originalLoc, ...loc };
                     const finalId = loc.id || originalLoc.id;
                     if (finalId) result.id = finalId;
                     else delete result.id;
                     return result;
                 }),
-                images: (images || []).map((img) => {
-                    const result = {
-                        url: img.url,
-                        description: img.description || '',
-                    };
-                    if (img.id) result.id = img.id;
-                    return result;
-                }),
+                images: finalImages,
             };
+
+
             await updateCompany({ id: companyData.data.id, data: updateData }).unwrap();
+
             toastMessage.success('Company profile updated successfully');
             setIsEditing(false);
             refetch();
         } catch (error) {
-            toastMessage.error('Failed to update company profile');
-            console.error('Update failed:', error);
+            console.error('Update failed logic:', error);
+            toastMessage.error(error?.data?.message || 'Failed to update company profile');
         }
     };
 
@@ -84,10 +104,9 @@ const CompanyProfile = () => {
 
     return (
         <div className="space-y-4">
-
             <Card className="p-6">
                 <Form form={form} onFinish={onFinish} className="space-y-6" disabled={!isEditing}>
-                    <GeneralInfo />
+                    <GeneralInfo form={form} isEditing={isEditing} />
                     <Classification />
                     <ContactInfo />
                     <Location form={form} isEditing={isEditing} />
