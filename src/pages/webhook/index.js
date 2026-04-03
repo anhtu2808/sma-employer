@@ -18,9 +18,7 @@ import toastMessage from '@/utils/toastMessage';
 const { TabPane } = Tabs;
 
 const EVENT_OPTIONS = [
-    // { label: 'Application Created', value: 'application.created' },
     { label: 'Application Approved', value: 'application.approved' },
-    // { label: 'Candidate Scored', value: 'candidate.scored' },
 ];
 
 const WebhookPage = () => {
@@ -34,6 +32,8 @@ const WebhookPage = () => {
     const [formState, setFormState] = useState({ name: '', url: '', events: [] });
 
     const [logWebhookId, setLogWebhookId] = useState(null);
+
+    const selectedWebhook = webhooks?.data?.find(w => w.id === logWebhookId) || webhooks?.data?.[0];
 
     React.useEffect(() => {
         if (webhooks?.data?.length > 0 && !logWebhookId) {
@@ -50,12 +50,23 @@ const WebhookPage = () => {
         try {
             await createWebhook({ ...formState, events: formState.events }).unwrap();
             toastMessage.success('Webhook created successfully');
+            setActiveTab('overview');
             setIsCreateOpen(false);
             setFormState({ name: '', url: '', events: [] });
         } catch (err) {
             toastMessage.error(err?.data?.message || 'Failed to create webhook');
         }
     };
+
+    const handleRegenerate = async (id) => {
+        try {
+            await regenerateSecret(id).unwrap();
+            toastMessage.success('Secret key regenerated');
+        } catch (err) {
+            toastMessage.error('Failed to regenerate secret');
+        }
+    };
+
     const handleDelete = (id) => {
         AntModal.confirm({
             title: 'Delete Webhook',
@@ -74,6 +85,7 @@ const WebhookPage = () => {
             },
         });
     };
+
     return (
         <div className="">
             <div className="flex justify-between items-center">
@@ -95,7 +107,7 @@ const WebhookPage = () => {
                 </div>
             </div>
 
-            <div className="bg-white  rounded-xl overflow-hidden">
+            <div className="bg-white rounded-xl overflow-hidden">
                 <div className="border-b border-gray-200 dark:border-gray-700 w-full bg-white dark:bg-neutral-900">
                     <nav className="-mb-px flex space-x-8">
                         {[
@@ -116,95 +128,112 @@ const WebhookPage = () => {
                     </nav>
                 </div>
 
-                {/* Tab Content */}
                 <div className="pt-6" >
-                    {activeTab === 'overview' ? (
-                        <div className="space-y-6">
-                            <div className="overflow-x-auto border border-gray-100 dark:border-gray-800 rounded-xl">
-                                <table className="min-w-full text-sm">
-                                    <thead className="bg-gray-50 dark:bg-neutral-900 text-gray-500 dark:text-gray-400 text-[11px] tracking-wider  font-bold">
-                                        <tr>
-                                            <th className="px-6 py-4 text-left">Name</th>
-                                            <th className="px-6 py-4 text-left">Target URL</th>
-                                            <th className="px-6 py-4 text-left">Events</th>
-                                            <th className="px-6 py-4 text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                        {webhooks?.data?.map((webhook) => (
-                                            <tr key={webhook.id} className="hover:bg-gray-50/50 dark:hover:bg-neutral-800/50 transition-colors">
-                                                <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">
-                                                    {webhook.name}
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <code className="text-[11px] text-primary bg-orange-50 dark:bg-primary/10 px-2 py-1 rounded-md font-mono border border-orange-100 dark:border-primary/20">
-                                                        {webhook.url}
-                                                    </code>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <Space size={[0, 4]} wrap>
-                                                        {(typeof webhook.events === 'string'
-                                                            ? webhook.events.split(',')
-                                                            : (webhook.events || [])
-                                                        ).map(ev => (
-                                                            <span key={ev} className="px-2.5 py-1 rounded-lg text-[10px] font-black bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 border border-blue-100 dark:border-blue-800">
-                                                                {ev}
-                                                            </span>
-                                                        ))}
-                                                    </Space>
-                                                </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <button
-                                                        className="text-gray-400 hover:text-red-500 transition-all p-2 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg"
-                                                        onClick={() => handleDelete(webhook.id)}
-                                                    >
-                                                        <FontAwesomeIcon icon={faTrash} size="sm" />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                    {!isLoading && (!webhooks?.data || webhooks.data.length === 0) ? (
+                        <div className="flex flex-col items-center justify-center py-20">
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">No webhooks yet</h3>
+                            <p className="text-sm text-gray-500 max-w-xs text-center">
+                                Automate your workflow with the power of webhooks.
+                            </p>
                         </div>
                     ) : (
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3 bg-gray-50 dark:bg-neutral-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
-                                <span className="text-xs font-bold text-gray-900 dark:text-white tracking-wider ">
-                                    Filter by Webhook:
-                                </span>
-                                <ConfigProvider theme={{ token: { colorPrimary: '#f97316' } }}>
-                                    <Select
-                                        className="min-w-[220px]"
-                                        value={logWebhookId}
-                                        onChange={(id) => setLogWebhookId(id)}
-                                        placeholder="Select Webhook Name"
-                                        options={webhooks?.data?.map(wh => ({
-                                            label: wh.name,
-                                            value: wh.id
-                                        }))}
-                                    />
-                                </ConfigProvider>
-                            </div>
-
-                            {logWebhookId ? (
-                                <WebhookLogsTable webhookId={logWebhookId} />
+                        <>
+                            {activeTab === 'overview' ? (
+                                <div className="space-y-6">
+                                    <div className="overflow-x-auto border border-gray-100 dark:border-gray-800 rounded-xl">
+                                        <table className="min-w-full text-sm">
+                                            <thead className="bg-gray-50 dark:bg-neutral-900 text-gray-500 dark:text-gray-400 text-[11px] tracking-wider font-bold">
+                                                <tr>
+                                                    <th className="px-6 py-4 text-left">Name</th>
+                                                    <th className="px-6 py-4 text-left">Target URL</th>
+                                                    <th className="px-6 py-4 text-left">Events</th>
+                                                    <th className="px-6 py-4 text-right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                                {webhooks?.data?.map((webhook) => (
+                                                    <tr
+                                                        key={webhook.id}
+                                                        onClick={() => setLogWebhookId(webhook.id)}
+                                                        className={`cursor-pointer transition-colors ${logWebhookId === webhook.id ? 'bg-orange-50/50 dark:bg-primary/5' : 'hover:bg-gray-50/50 dark:hover:bg-neutral-800/50'}`}
+                                                    >
+                                                        <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">
+                                                            {webhook.name}
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <code className="text-[11px] text-primary bg-orange-50 dark:bg-primary/10 px-2 py-1 rounded-md font-mono border border-orange-100 dark:border-primary/20">
+                                                                {webhook.url}
+                                                            </code>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <Space size={[0, 4]} wrap>
+                                                                {(typeof webhook.events === 'string'
+                                                                    ? webhook.events.split(',')
+                                                                    : (webhook.events || [])
+                                                                ).map(ev => (
+                                                                    <span key={ev} className="px-2.5 py-1 rounded-lg text-[10px] font-black bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 border border-blue-100 dark:border-blue-800">
+                                                                        {ev}
+                                                                    </span>
+                                                                ))}
+                                                            </Space>
+                                                        </td>
+                                                        <td className="px-6 py-4 text-right">
+                                                            <button
+                                                                className="text-gray-400 hover:text-red-500 transition-all p-2 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleDelete(webhook.id);
+                                                                }}
+                                                            >
+                                                                <FontAwesomeIcon icon={faTrash} size="sm" />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             ) : (
-                                <div className="text-center py-10 text-gray-400">
-                                    Please select a webhook to view logs.
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3 bg-gray-50 dark:bg-neutral-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
+                                        <span className="text-xs font-bold text-gray-900 dark:text-white tracking-wider ">
+                                            Filter by Webhook:
+                                        </span>
+                                        <ConfigProvider theme={{ token: { colorPrimary: '#f97316' } }}>
+                                            <Select
+                                                className="min-w-[220px]"
+                                                value={logWebhookId}
+                                                onChange={(id) => setLogWebhookId(id)}
+                                                placeholder="Select Webhook Name"
+                                                options={webhooks?.data?.map(wh => ({
+                                                    label: wh.name,
+                                                    value: wh.id
+                                                }))}
+                                            />
+                                        </ConfigProvider>
+                                    </div>
+
+                                    {logWebhookId ? (
+                                        <WebhookLogsTable webhookId={logWebhookId} />
+                                    ) : (
+                                        <div className="text-center py-10 text-gray-400">
+                                            Please select a webhook to view logs.
+                                        </div>
+                                    )}
                                 </div>
                             )}
-                        </div>
+                        </>
                     )}
                 </div>
             </div>
 
-            {/* Secret Section */}
-            {webhooks?.data?.length > 0 && (
+            {/* Secret Section - Chỉ hiện khi có webhook */}
+            {webhooks?.data?.length > 0 && selectedWebhook && (
                 <div className="mt-6 border-t border-gray-100 dark:border-gray-800 pt-6 pb-2">
                     <div className="mb-4">
                         <h3 className="text-xs font-bold text-gray-900 dark:text-white tracking-wider mb-1">
-                            Webhook Secret
+                            Webhook Secret: <span className="text-primary normal-case">{selectedWebhook.name}</span>
                         </h3>
                         <h5 className="text-xs text-gray-500 dark:text-gray-400">
                             Use this secret to verify your webhook's encrypted signature.
@@ -212,18 +241,18 @@ const WebhookPage = () => {
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-neutral-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                         <div className="flex-1 font-mono text-sm text-gray-600 dark:text-gray-400 truncate">
-                            {showSecret ? webhooks.data[0].secretKey : '••••••••••••••••••••••••••••••••'}
+                            {showSecret ? selectedWebhook.secretKey : '••••••••••••••••••••••••••••••••'}
                         </div>
                         <div className="flex items-center gap-2">
                             <Button mode="secondary" size="sm" onClick={() => setShowSecret(!showSecret)}>
                                 <FontAwesomeIcon icon={showSecret ? faEyeSlash : faEye} className="mr-2" />
                                 {showSecret ? 'Hide' : 'Show'}
                             </Button>
-                            <Button mode="secondary" size="sm" onClick={() => handleCopy(webhooks.data[0].secretKey)}>
+                            <Button mode="secondary" size="sm" onClick={() => handleCopy(selectedWebhook.secretKey)}>
                                 <FontAwesomeIcon icon={faCopy} className="mr-2" />
                                 Copy
                             </Button>
-                            <Button mode="secondary" size="sm" onClick={() => regenerateSecret(webhooks.data[0].id)}>
+                            <Button mode="secondary" size="sm" onClick={() => handleRegenerate(selectedWebhook.id)}>
                                 <FontAwesomeIcon icon={faRotate} className="mr-2" />
                                 Regenerate
                             </Button>
