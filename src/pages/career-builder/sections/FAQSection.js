@@ -23,7 +23,7 @@ const FAQSection = ({ theme, sectionProps = {}, settings = {} }) => {
         {headline}
       </h2>
 
-      <div style={{ maxWidth: '620px', margin: '0 auto', textAlign: 'left' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'left' }}>
         {defaultItems.filter(item => item.isVisible !== false).map((item, i) => {
           const isOpen = openIndex === i;
           return (

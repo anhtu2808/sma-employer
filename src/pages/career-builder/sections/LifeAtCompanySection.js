@@ -26,7 +26,7 @@ const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
     }}>
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
-        maxWidth: '750px', margin: '0 auto 40px',
+        maxWidth: '1100px', margin: '0 auto 40px',
       }}>
         <h2 style={{ fontSize: `${32 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, margin: 0 }}>
           {headline}
@@ -57,7 +57,7 @@ const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
 
       <div style={{
         display: 'grid', gridTemplateColumns: `repeat(${Math.min(defaultNews.length, 3)}, 1fr)`,
-        gap: '20px', maxWidth: '750px', margin: '0 auto',
+        gap: '28px', maxWidth: '1100px', margin: '0 auto',
       }}>
         {defaultNews.filter(item => item.isVisible !== false).map((item, i) => {
           const cardContent = (
@@ -73,17 +73,17 @@ const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
               cursor: item.url ? 'pointer' : 'default',
             }}>
               <div style={{
-                height: '140px',
+                height: '200px',
                 background: item.thumbnailUrl ? `url(${item.thumbnailUrl}) center/cover no-repeat` : secondaryColor || `linear-gradient(135deg, ${primaryColor}20, ${primaryColor}08)`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: `${36 * ((theme.baseFontSize || 16) / 16)}px`,
               }}>
               </div>
-              <div style={{ padding: '16px 18px' }}>
-                <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '6px' }}>
+              <div style={{ padding: '20px 24px' }}>
+                <div style={{ fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '8px' }}>
                   {item.title}
                 </div>
-                <div style={{ fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.45 }}>
+                <div style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.45 }}>
                   {item.date}
                 </div>
               </div>

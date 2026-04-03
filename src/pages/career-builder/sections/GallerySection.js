@@ -21,8 +21,8 @@ const GallerySection = ({ theme, sectionProps = {}, settings = {} }) => {
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '12px',
-        maxWidth: '700px',
+        gap: '16px',
+        maxWidth: '900px',
         margin: '0 auto',
       }}>
         {placeholders.map((item, i) => {
@@ -36,6 +36,7 @@ const GallerySection = ({ theme, sectionProps = {}, settings = {} }) => {
                 borderRadius: `${borderRadius}px`,
                 overflow: 'hidden',
                 aspectRatio: i === 0 ? '2/1' : '1/1',
+                minHeight: '160px',
                 gridColumn: i === 0 ? 'span 2' : 'span 1',
                 background: isUrl
                   ? `url(${item}) center/cover no-repeat`

@@ -29,34 +29,34 @@ const AwardsSection = ({ theme, sectionProps = {}, settings = {} }) => {
       </h2>
 
       <div style={{
-        display: 'flex', gap: '24px', justifyContent: 'center', flexWrap: 'wrap',
-        maxWidth: '700px', margin: '0 auto',
+        display: 'flex', gap: '28px', justifyContent: 'center', flexWrap: 'wrap',
+        maxWidth: '1100px', margin: '0 auto',
       }}>
         {defaultItems.filter(item => item.isVisible !== false).map((item, i) => (
           <div key={i} style={{
             background: '#FFFFFF', // Fix card background to white
             borderRadius: `${borderRadius}px`,
-            padding: '28px 24px',
+            padding: '36px 32px',
             boxShadow: shadowMap[shadow],
             border: '1px solid rgba(0,0,0,0.06)',
-            width: '200px',
+            width: '280px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '12px',
+            gap: '16px',
           }}>
             <div style={{
-              width: 64, height: 64, borderRadius: `${borderRadius}px`,
+              width: 88, height: 88, borderRadius: `${borderRadius}px`,
               background: item.imgUrl ? `url(${item.imgUrl}) center/contain no-repeat` : secondaryColor, // Use secondaryColor for icon bg
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: `${28 * ((theme.baseFontSize || 16) / 16)}px`,
             }}>
             </div>
-            <div style={{ fontSize: `${15 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, textAlign: 'center' }}>
+            <div style={{ fontSize: `${17 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, textAlign: 'center' }}>
               {item.name}
             </div>
             <div style={{
-              fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 600, color: primaryColor,
+              fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 600, color: primaryColor,
               background: secondaryColor, padding: '3px 10px', // Use secondaryColor for year badge
               borderRadius: '20px',
             }}>

@@ -10,7 +10,7 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
     backgroundUrl,
   } = sectionProps;
 
-  const pad = `${settings.paddingTop || 80}px 40px ${settings.paddingBottom || 80}px`;
+  const pad = `${settings.paddingTop || 120}px 40px ${settings.paddingBottom || 120}px`;
 
   const btnBase = {
     padding: '14px 32px',
@@ -28,7 +28,7 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
     : { background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}DD 50%, ${primaryColor}99 100%)` };
 
   // If we have an override and no image, use the override instead of the gradient
-  const finalBgStyle = (settings.backgroundColorOverride && !backgroundUrl) 
+  const finalBgStyle = (settings.backgroundColorOverride && !backgroundUrl)
     ? { background: settings.backgroundColorOverride }
     : bgStyle;
 
@@ -47,15 +47,15 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         <h1 style={{
-          fontSize: `${42 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: (settings.backgroundColorOverride === '#FFFFFF' || backgroundColor === '#FFFFFF') && !backgroundUrl ? theme.textColor : '#fff',
-          lineHeight: 1.2, marginBottom: '16px', letterSpacing: '-0.5px',
+          fontSize: `${50 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: (settings.backgroundColorOverride === '#FFFFFF' || backgroundColor === '#FFFFFF') && !backgroundUrl ? theme.textColor : '#fff',
+          lineHeight: 1.2, marginBottom: '20px', letterSpacing: '-0.5px',
         }}>
           {headline}
         </h1>
 
         <p style={{
-          fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`, color: (settings.backgroundColorOverride === '#FFFFFF' || backgroundColor === '#FFFFFF') && !backgroundUrl ? theme.textColor : 'rgba(255,255,255,0.85)',
-          maxWidth: '500px', margin: '0 auto 32px', lineHeight: 1.6,
+          fontSize: `${18 * ((theme.baseFontSize || 16) / 16)}px`, color: (settings.backgroundColorOverride === '#FFFFFF' || backgroundColor === '#FFFFFF') && !backgroundUrl ? theme.textColor : 'rgba(255,255,255,0.85)',
+          maxWidth: '560px', margin: '0 auto 40px', lineHeight: 1.7,
           opacity: 0.8,
         }}>
           {subline}
