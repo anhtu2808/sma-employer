@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 
 const FAQSection = ({ theme, sectionProps = {}, settings = {} }) => {
-  const { primaryColor, backgroundColor, textColor, borderRadius } = theme;
-  const { headline = 'Câu hỏi thường gặp', items = [] } = sectionProps;
+  const { primaryColor, secondaryColor, backgroundColor, textColor, borderRadius } = theme;
+  const { headline = 'Frequently Asked Questions', items = [] } = sectionProps;
   const [openIndex, setOpenIndex] = useState(null);
 
   const defaultItems = items.length > 0 ? items : [
-    { question: 'Công ty có hỗ trợ thực tập sinh không?', answer: 'Có, chúng tôi luôn chào đón các bạn sinh viên tài năng.' },
-    { question: 'Thời gian làm việc như thế nào?', answer: 'Từ thứ 2 đến thứ 6, 8:30 - 17:30.' },
-    { question: 'Có hỗ trợ làm việc remote không?', answer: 'Có, nhân viên được làm việc tại nhà 2 ngày/tuần theo chính sách Hybrid Work.' },
+    { question: 'Do you offer internship programs?', answer: 'Yes, we always welcome talented students to join our team.' },
+    { question: 'What are the working hours?', answer: 'Monday to Friday, 8:30 AM - 5:30 PM.' },
+    { question: 'Do you support remote work?', answer: 'Yes, employees can work from home 2 days per week under our Hybrid Work policy.' },
   ];
+
+  const sectionBg = settings.backgroundColorOverride || backgroundColor;
 
   return (
     <div style={{
-      background: settings.backgroundColorOverride || backgroundColor,
+      background: sectionBg,
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
       textAlign: 'center',
     }}>
@@ -33,6 +35,7 @@ const FAQSection = ({ theme, sectionProps = {}, settings = {} }) => {
                 marginBottom: '10px',
                 overflow: 'hidden',
                 transition: 'all 0.2s',
+                background: '#FFFFFF', // Fix item background to white
               }}
             >
               <button
@@ -40,7 +43,7 @@ const FAQSection = ({ theme, sectionProps = {}, settings = {} }) => {
                 style={{
                   width: '100%',
                   padding: '16px 20px',
-                  background: isOpen ? `${primaryColor}08` : 'transparent',
+                  background: isOpen ? secondaryColor || `${primaryColor}08` : 'transparent', // Use secondaryColor for active bg
                   border: 'none',
                   cursor: 'pointer',
                   display: 'flex',
@@ -62,7 +65,7 @@ const FAQSection = ({ theme, sectionProps = {}, settings = {} }) => {
               </button>
               {isOpen && (
                 <div style={{
-                  padding: '0 20px 16px',
+                  padding: '16px 20px',
                   fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`,
                   color: textColor,
                   opacity: 0.65,

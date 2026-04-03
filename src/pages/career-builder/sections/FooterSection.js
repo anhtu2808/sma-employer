@@ -48,7 +48,7 @@ const FooterSection = ({ theme, footerConfig = {} }) => {
   ];
 
   return (
-    <div style={{ background: '#1a1a2e', padding: '48px 40px', color: '#fff' }}>
+    <div style={{ background: footerConfig.backgroundColorOverride || '#1a1a2e', padding: '48px 40px', color: '#fff' }}>
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
         gap: '40px', maxWidth: '960px', margin: '0 auto',
@@ -113,7 +113,7 @@ const FooterSection = ({ theme, footerConfig = {} }) => {
         </div>
 
         <div style={{ flex: 1, maxWidth: '400px', textAlign: 'right' }}>
-          <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, marginBottom: '16px' }}>Hệ thống cơ sở</div>
+          <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, marginBottom: '16px' }}>Our Locations</div>
           {contact?.addresses && contact.addresses.map((addr, i) => (
             <p key={`addr-${i}`} style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: '10px' }}>
               {addr}

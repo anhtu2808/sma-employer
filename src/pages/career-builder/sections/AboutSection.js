@@ -3,7 +3,7 @@ import React from 'react';
 const AboutSection = ({ theme, sectionProps = {}, settings = {} }) => {
   const { primaryColor, backgroundColor, textColor, borderRadius, shadow } = theme;
   const {
-    headline = 'Chúng tôi là ai?',
+    headline = 'Who We Are',
     description = 'We\'re a global technology company dedicated to solving complex problems with elegant solutions.',
     imageUrl,
   } = sectionProps;
@@ -14,9 +14,11 @@ const AboutSection = ({ theme, sectionProps = {}, settings = {} }) => {
     medium: '0 4px 20px rgba(0,0,0,0.1)',
   };
 
+  const sectionBg = settings.backgroundColorOverride || backgroundColor;
+
   return (
     <div style={{
-      background: settings.backgroundColorOverride || backgroundColor,
+      background: sectionBg,
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
       textAlign: settings.textAlign || 'center',
     }}>
