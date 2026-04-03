@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartRecruit | Webhook Developer Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        pre {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            border: 1px solid #1e293b;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .endpoint-badge {
+            background-color: #f97316;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+    <div class="max-w-5xl mx-auto px-6 py-12 lg:py-20">
+        <header class="border-b border-slate-200 pb-10 mb-12">
+            <div class="flex items-center gap-2 mb-4">
+                <div class="w-10 h-10 flex items-center justify-center">
+                    <img src="../sma-logo.svg" alt="SmartRecruit Logo" class="w-full h-full object-contain" />
+                </div>
+                <span class="text-xl font-bold tracking-tight">SmartRecruit</span>
+            </div>
+            <h1 class="text-5xl font-extrabold text-slate-900 tracking-tight">Webhook Documentation</h1>
+            <p class="text-lg text-slate-500 mt-4 max-w-2xl">Integrate real-time recruiting events into your application
+                using SmartRecruit webhooks.</p>
+        </header>
+
+        <div class="space-y-16">
+
+            <section>
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span class="text-orange-500">01</span> Overview
+                </h2>
+                <p class="text-slate-600 mb-6 leading-relaxed">
+                    Webhooks allow you to build or set up integrations which subscribe to certain events on
+                    SmartRecruit. When one of those events is triggered, we'll send a <span
+                        class="endpoint-badge">POST</span> HTTP request to the URL you configured.
+                </p>
+                <div class="bg-orange-50 border-l-4 border-orange-400 p-5 rounded-r-xl">
+                    <h4 class="text-orange-800 font-bold text-sm uppercase tracking-wider mb-1">Target URL</h4>
+                    <p class="text-orange-700 text-sm italic">Note: Your endpoint must be publicly accessible and
+                        support HTTPS.</p>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span class="text-orange-500">02</span> Security & Authentication
+                </h2>
+                <p class="text-slate-600 mb-4 leading-relaxed">
+                    For security purposes, SmartRecruit includes a digital signature in every webhook request header.
+                </p>
+                <div class="bg-slate-100 p-4 rounded-lg mb-6 border border-slate-200">
+                    <code class="text-sm font-bold text-slate-700">Header: X-SmartRecruit-Signature</code>
+                </div>
+                <h3 class="font-bold text-slate-800 mb-3 underline decoration-orange-300 underline-offset-4">How to
+                    verify:</h3>
+                <ul class="list-disc ml-6 space-y-3 text-slate-600">
+                    <li>Retrieve the <strong>Secret Key</strong> from your SmartRecruit Dashboard.</li>
+                    <li>Verify that the signature in the header matches your secret key.</li>
+                    <li>Ignore any requests that fail this verification to prevent <strong>Replay Attacks</strong>.</li>
+                </ul>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span class="text-orange-500">03</span> Event: <code
+                        class="text-orange-600">application.approved</code>
+                </h2>
+                <p class="text-slate-600 mb-6 leading-relaxed">
+                    This event is triggered when a recruiter approves a candidate's application. Use the
+                    <code>resumeUrl</code> to access the candidate's CV directly.
+                </p>
+
+                <h3 class="font-bold text-sm text-slate-400 mb-4 tracking-widest italic">Payload Example (Raw
+                    JSON)</h3>
+                <pre>
+{
+  "event": "application.approved",
+  "timestamp": "2026-04-03T09:15:22.123456789",
+  "data": {
+    "id": 102,
+    "status": "APPROVED",
+    "fullName": "Alex Johnson",
+    "email": "alex.j@devcloud.io",
+    "phone": "+14155552671",
+    "jobTitle": "Senior Java Backend Engineer",
+    "resumeName": "Alex_Johnson_CV_2026.pdf",
+    "resumeUrl": "https://api.smartrecruit.tech/files/1689204412_Alex_Johnson_Resume.pdf",
+    "appliedAt": "2026-03-28T14:20:00",
+    "reviewedByEmail": "hr-manager@company.com",
+    "isRejectedByAi": false,
+    "answers": [
+      {
+        "question": "Expected salary?",
+        "answer": "Negotiable"
+      },
+      {
+        "question": "Available to start date?",
+        "answer": "Immediate"
+      }
+    ]
+  }
+}</pre>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <span class="text-orange-500">04</span> Best Practices
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 border border-slate-200 rounded-2xl bg-white shadow-sm">
+                        <h4 class="font-bold text-slate-900 mb-2">Respond with 2xx</h4>
+                        <p class="text-sm text-slate-500">Your server must return a <span
+                                class="text-green-600 font-bold italic">200 OK</span> within 5 seconds. Otherwise, we
+                            will mark the delivery as failed.</p>
+                    </div>
+                    <div class="p-6 border border-slate-200 rounded-2xl bg-white shadow-sm">
+                        <h4 class="font-bold text-slate-900 mb-2">Idempotency</h4>
+                        <p class="text-sm text-slate-500">Event delivery may happen more than once. We recommend making
+                            your event handling logic idempotent.</p>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="border-t border-slate-200 pt-10 text-center">
+                <p class="text-slate-400 text-xs font-medium uppercase tracking-widest">
+                    &copy; 2026 SmartRecruit Ecosystem. All rights reserved.
+                </p>
+            </footer>
+        </div>
+    </div>
+
+</body>
+
+</html>

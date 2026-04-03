@@ -28,6 +28,7 @@ const normalizeApplicationDetail = (payload) => {
 
     return {
         status: info.status,
+        attempt: info.attempt,
         candidateName: info.fullName,
         candidateEmail: info.email,
         candidatePhone: info.phone,
@@ -204,11 +205,10 @@ const ApplicationDetail = () => {
                                     <button
                                         key={tab.key}
                                         onClick={() => setActiveTab(tab.key)}
-                                        className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
-                                            activeTab === tab.key
+                                        className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${activeTab === tab.key
                                                 ? 'border-orange-500 text-orange-600 dark:text-orange-400'
                                                 : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200'
-                                        }`}
+                                            }`}
                                     >
                                         <FontAwesomeIcon icon={tab.icon} className="text-base" />
                                         <span className="hidden sm:inline">{tab.label}</span>
