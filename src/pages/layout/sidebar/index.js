@@ -6,7 +6,7 @@ import {
   faCreditCard, faClockRotateLeft, faTableCells, faUsers,
   faBriefcase, faClipboard, faEnvelopeRegular, faBan,
   faBell, faStar, faRightFromBracket, faChevronLeft, faChevronRight,
-  faPaintbrush,
+  faPaintbrush, faLink
 } from '@/utils/icons';
 import Logo from '@/components/Logo';
 import Button from '@/components/Button';
@@ -21,6 +21,7 @@ const generalItems = [
   { icon: faPaintbrush, label: 'Career Page', path: '/career-builder' },
   { icon: faClipboardCheck, label: 'Scoring Criteria', path: '/scoring-criteria' },
   { icon: faBoxArchive, label: 'Archived Jobs', path: '/jobs/archived' },
+  { icon: faLink, label: 'Webhooks', path: '/webhooks' },
   { icon: faGear, label: 'Settings', path: '/settings' },
 ];
 

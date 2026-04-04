@@ -27,6 +27,7 @@ import InvitationDetail from "@/pages/invitations/detail";
 import ScoringCriteria from "@/pages/scoring-criteria";
 import CvPreview from "@/pages/cv-preview";
 import CareerPageBuilder from "@/pages/career-builder";
+import WebhookPage from "@/pages/webhook";
 
 
 export const routes = createBrowserRouter(
@@ -55,6 +56,7 @@ export const routes = createBrowserRouter(
                 <Route path="invitations" element={<InvitationList />} />
                 <Route path="invitations/:id" element={<InvitationDetail />} />
                 <Route path="scoring-criteria" element={<ScoringCriteria />} />
+                <Route path="webhooks" element={<WebhookPage />} />
             </Route>
             <Route path="cv-preview/:id" element={<CvPreview />} />
             <Route path="career-builder" element={<CareerPageBuilder />} />

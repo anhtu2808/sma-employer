@@ -1,15 +1,25 @@
 import React from 'react';
-import { Tooltip } from 'antd';
+import { Tooltip, Tag } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBan } from '../../../../utils/icons';
+import { faBan, faClockRotateLeft } from '../../../../utils/icons';
 
 const CandidateHeader = ({ app, onOpenBlock }) => {
     return (
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-gray-100 dark:border-neutral-800">
             <div className="min-w-0">
-                <h1 className="text-lg font-bold text-gray-900 dark:text-white truncate">
-                    {app.candidateName}
-                </h1>
+                <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <h1 className="text-lg font-bold text-gray-900 dark:text-white truncate">
+                        {app.candidateName}
+                    </h1>
+                    {app.attempt > 1 && (
+                        <Tooltip title={`This candidate has applied ${app.attempt} times`}>
+                            <Tag color="blue" className="rounded-full px-2.5 py-0.5 border-none bg-blue-50 text-blue-600 font-bold text-[10px] uppercase flex items-center gap-1">
+                                <FontAwesomeIcon icon={faClockRotateLeft} className="text-[10px]" />
+                                {app.attempt}th Attempt
+                            </Tag>
+                        </Tooltip>
+                    )}
+                </div>
                 <p className="text-sm text-orange-500 font-medium">{app.jobTitle}</p>
             </div>
             <Tooltip title="Blacklist this candidate">
