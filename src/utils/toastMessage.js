@@ -6,6 +6,7 @@ const toastMessage = {
   warning: (msg) => toast.warning(msg),
   info: (msg) => toast.info(msg),
   loading: (msg) => toast.loading(msg),
+  dismiss: (id) => toast.dismiss(id),
 };
 
 export default toastMessage;

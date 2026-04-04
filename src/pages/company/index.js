@@ -87,7 +87,7 @@ const CompanyProfile = () => {
 
             <Card className="p-6">
                 <Form form={form} onFinish={onFinish} className="space-y-6" disabled={!isEditing}>
-                    <GeneralInfo />
+                    <GeneralInfo form={form} isEditing={isEditing} />
                     <Classification />
                     <ContactInfo />
                     <Location form={form} isEditing={isEditing} />
