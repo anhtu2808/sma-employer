@@ -315,11 +315,15 @@ const CareerPageBuilder = () => {
       await createCareerPage(payload).unwrap();
       setStatus('published');
       toastMessage.success(status === 'archived' ? 'Career page unarchived successfully!' : 'Career page published successfully!');
+
+      // Navigate to the deployed career page URL
+      const deployedUrl = `https://${slug}.smartrecruit.tech/`;
+      window.open(deployedUrl, '_blank');
     } catch (err) {
       console.error('Publish (Unarchive) failed:', err);
       toastMessage.error(err?.message || 'Failed to publish/unarchive. Please try again.');
     }
-  }, [buildPayload, createCareerPage, status]);
+  }, [buildPayload, createCareerPage, status, slug]);
 
   /** Archive */
   const handleArchive = useCallback(async () => {

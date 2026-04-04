@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faEye, faEyeSlash } from '@/utils/icons';
+import { Tooltip } from 'antd';
 
 const CareerBuilderToolbar = ({
   slug,
@@ -38,27 +39,39 @@ const CareerBuilderToolbar = ({
           <span className="cb-toolbar-logo">CP</span>
           <span className="cb-toolbar-title">Career Page Builder</span>
           <div style={{ display: 'flex', alignItems: 'center', marginLeft: '12px', borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '12px' }}>
-             <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginRight: '4px' }}>/</span>
-             <input
-               type="text"
-               value={slug || ''}
-               onChange={(e) => onSlugChange && onSlugChange(e.target.value.toLowerCase())}
-               placeholder="page-slug"
-               style={{
-                 background: 'transparent',
-                 border: 'none',
-                 borderBottom: '1px solid rgba(255,255,255,0.3)',
-                 color: '#fff',
-                 padding: '2px 4px',
-                 fontSize: '13px',
-                 width: '180px',
-                 outline: 'none',
-                 transition: 'border-color 0.2s'
-               }}
-               onFocus={(e) => e.target.style.borderBottomColor = '#fff'}
-               onBlur={(e) => e.target.style.borderBottomColor = 'rgba(255,255,255,0.3)'}
-               spellCheck={false}
-             />
+            <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginRight: '4px' }}>/</span>
+            <Tooltip title={`Your domain will be displayed at https://${slug || 'your-slug'}.smartrecruit.tech/`} placement="bottom">
+              <input
+                type="text"
+                value={slug || ''}
+                onChange={(e) => onSlugChange && onSlugChange(e.target.value.toLowerCase())}
+                placeholder="page-slug"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  border: '1px solid rgba(255, 255, 255, 0.4)',
+                  borderRadius: '6px',
+                  color: '#fff',
+                  padding: '4px 10px',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  width: '200px',
+                  outline: 'none',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 0 8px rgba(255, 255, 255, 0.15)'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#fff';
+                  e.target.style.background = 'rgba(255, 255, 255, 0.25)';
+                  e.target.style.boxShadow = '0 0 12px rgba(255, 255, 255, 0.4)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                  e.target.style.background = 'rgba(255, 255, 255, 0.15)';
+                  e.target.style.boxShadow = '0 0 8px rgba(255, 255, 255, 0.15)';
+                }}
+                spellCheck={false}
+              />
+            </Tooltip>
           </div>
         </div>
         <span className={`cb-status-badge ${status}`} style={{ marginLeft: '12px' }}>
@@ -81,16 +94,11 @@ const CareerBuilderToolbar = ({
 
       {/* Right – Actions */}
       <div className="cb-toolbar-right">
-        <div className="cb-autosave-indicator">
-          <span className="cb-autosave-dot"></span>
-          Auto-saved
-        </div>
-
         <button
           className="cb-btn-secondary"
           onClick={onArchive}
           disabled={isSaving || isArchiving || status === 'archived'}
-          style={{ 
+          style={{
             color: status === 'archived' ? undefined : '#dc3545',
             borderColor: status === 'archived' ? undefined : '#dc3545',
             opacity: status === 'archived' ? 0.5 : 1
@@ -112,7 +120,7 @@ const CareerBuilderToolbar = ({
           onClick={onPublish}
           disabled={isSaving || isArchiving}
         >
-          {status === 'archived' 
+          {status === 'archived'
             ? (isSaving ? 'Unarchiving...' : 'Unarchive')
             : (isSaving && status === 'published' ? 'Publishing...' : 'Publish')}
         </button>
