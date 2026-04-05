@@ -25,15 +25,18 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
   // Filter logic
   const filteredJobs = useMemo(() => {
-    let jobs = fetchedJobs.map(j => ({
+    let jobs = fetchedJobs.map((j, i) => ({
       id: j.id,
-      title: j.name || 'Untitled Job',
-      dept: j.expertise?.name || j.domains?.[0]?.name || 'Other',
-      location: j.locations?.map(l => l.city).join(', ') || j.company?.country || 'Remote',
-      type: j.jobType || 'Full-time',
-      level: j.jobLevel || 'Mid',
-      model: j.workingModel || 'On-site',
-      tags: Array.isArray(j.skills) ? j.skills.map(s => s.name) : []
+      title: j.name || j.title || 'Untitled Job',
+      companyName: j.company?.name || j.companyName || '',
+      isHot: j.isHighlight === true || j.highlightJob === true || j.isHot === true,
+      location: j.locations?.length > 0 ? j.locations.map(l => l.city).join(', ') : (j.company?.country || j.workingModel || ''),
+      experience: j.minExperienceTime != null && j.maxExperienceTime != null ? `${j.minExperienceTime}-${j.maxExperienceTime} years` : (j.minExperienceTime != null ? `From ${j.minExperienceTime} years` : ''),
+      level: j.jobLevel || '',
+      model: j.workingModel || '',
+      tags: Array.isArray(j.skills) ? j.skills.map(s => s.name || s) : [],
+      salary: j.salaryStart && j.salaryEnd ? `${j.salaryStart.toLocaleString('vi-VN')} - ${j.salaryEnd.toLocaleString('vi-VN')} VND` : (j.salaryStart ? `From ${j.salaryStart.toLocaleString('vi-VN')} VND` : 'Negotiable'),
+      postedDate: (j.uploadTime || j.createdAt) ? new Date(j.uploadTime || j.createdAt).toLocaleDateString() : ''
     }));
 
     if (searchName) jobs = jobs.filter(j => j.title.toLowerCase().includes(searchName.toLowerCase()));
@@ -243,42 +246,75 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
               </div>
             ) : paginatedJobs.length > 0 ? paginatedJobs.map((job, i) => (
               <div key={job.id || i} style={{
-                background: '#FFFFFF', // Fix card background to white
+                background: '#FFFFFF',
                 borderRadius: `${borderRadius}px`,
-                padding: '24px 28px', display: 'flex', alignItems: 'center',
+                padding: '24px 28px', display: 'flex', alignItems: 'stretch',
                 justifyContent: 'space-between', boxShadow: shadowMap[shadow],
                 border: '1px solid rgba(0,0,0,0.06)', textAlign: 'left',
-                transition: 'box-shadow 0.2s',
+                transition: 'box-shadow 0.2s', gap: '20px'
               }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: `${17 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '6px' }}>
-                    {job.title}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  {/* Title & Hot Tag */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                    <div style={{ fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor }}>
+                      {job.title}
+                    </div>
+                    {job.isHot && (
+                      <span style={{
+                        padding: '2px 8px', borderRadius: '4px', fontSize: `${10 * ((theme.baseFontSize || 16) / 16)}px`,
+                        fontWeight: 700, background: '#fee2e2', color: '#ef4444', border: '1px solid #fecaca', display: 'inline-flex', alignItems: 'center', gap: '4px'
+                      }}>🔥 HOT</span>
+                    )}
                   </div>
-                  <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.5, marginBottom: '10px' }}>
-                    {job.dept} · {job.location} · {job.type}
+                  
+                  {/* Company Name */}
+                  {job.companyName && (
+                    <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.6, marginBottom: '12px', fontWeight: 500 }}>
+                      {job.companyName}
+                    </div>
+                  )}
+                  
+                  {/* Meta Info */}
+                  <div style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.5, marginBottom: '16px', display: 'flex', gap: '12px' }}>
+                    {job.location && <span>{job.location}</span>}
+                    {job.experience && <span>{job.experience}</span>}
+                    {job.model && <span>{job.model}</span>}
+                    {job.level && <span>{job.level}</span>}
                   </div>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  
+                  {/* Tags */}
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
                     {job.tags.map(tag => (
                       <span key={tag} style={{
-                        padding: '2px 10px', borderRadius: '20px', fontSize: `${11 * ((theme.baseFontSize || 16) / 16)}px`,
-                        fontWeight: 600, background: secondaryColor, color: primaryColor, // Use secondaryColor for tags
+                        padding: '4px 10px', borderRadius: '4px', fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`,
+                        fontWeight: 500, background: '#fff', color: primaryColor, border: '1px solid #e5e7eb'
                       }}>{tag}</span>
                     ))}
-                    {job.model && (
-                      <span style={{
-                        padding: '2px 10px', borderRadius: '20px', fontSize: `${11 * ((theme.baseFontSize || 16) / 16)}px`,
-                        fontWeight: 600, background: '#f0f0f0', color: textColor, opacity: 0.6,
-                      }}>{job.model}</span>
-                    )}
-                    {job.level && (
-                      <span style={{
-                        padding: '2px 10px', borderRadius: '20px', fontSize: `${11 * ((theme.baseFontSize || 16) / 16)}px`,
-                        fontWeight: 600, background: '#f0f0f0', color: textColor, opacity: 0.6,
-                      }}>{job.level}</span>
-                    )}
+                  </div>
+
+                  {/* Date Posted */}
+                  {job.postedDate && (
+                    <div style={{ fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.4, marginTop: 'auto' }}>
+                      Posted {job.postedDate}
+                    </div>
+                  )}
+                </div>
+
+                {/* Right Column: Salary & Actions */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'flex-start', flexShrink: 0, gap: '16px' }}>
+                  <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: primaryColor, textAlign: 'right' }}>
+                    {job.salary}
+                  </div>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '160px' }}>
+                    <button style={{
+                      ...btnBase, background: '#fff', color: primaryColor, border: `1px solid ${primaryColor}`, width: '100%', padding: '10px 0'
+                    }}>View Detail</button>
+                    <button style={{
+                      ...btnBase, background: primaryColor, color: '#fff', border: 'none', width: '100%', padding: '10px 0', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    }}>Apply Now</button>
                   </div>
                 </div>
-                <button style={btnStyles[buttonStyle] || btnStyles.flat}>Apply</button>
               </div>
             )) : (
               <div style={{

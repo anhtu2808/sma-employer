@@ -38,6 +38,7 @@
     "pdfjs-dist": "^3.11.174",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "react-easy-crop": "^5.5.7",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.13.0",
     "react-scripts": "5.0.1",
