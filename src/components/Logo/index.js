@@ -9,10 +9,10 @@ const Logo = ({ className = '', iconColor = '', collapsed = false }) => {
       <img
         src={iconColor === 'white' ? smaLogoWhite : smaLogo}
         alt="SmartRecruit Logo"
-        className={`${iconColor || 'text-primary'} ${collapsed ? 'w-8 h-8' : 'w-10 h-10'}`}
+        className={`${iconColor || 'text-primary'} ${collapsed ? 'w-6 h-6' : 'w-7 h-7'}`}
       />
       {!collapsed && (
-        <span className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">
+        <span className="text-base font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">
           SmartRecruit
         </span>
       )}

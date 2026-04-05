@@ -40,6 +40,17 @@ code {
   background-color: #374151;
 }
 
+/* PDF Viewer — make pages fill container width */
+.pdf-viewer-fit .rpv-core__inner-pages {
+  padding: 0 !important;
+}
+.pdf-viewer-fit .rpv-core__inner-page {
+  padding: 0 !important;
+}
+.pdf-viewer-fit .rpv-core__page-layer {
+  margin: 0 !important;
+}
+
 /* Tiptap Editor Content Styles */
 .ProseMirror {
   outline: none !important;
