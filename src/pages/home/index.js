@@ -7,6 +7,7 @@ import Services from './components/Services';
 import Challenges from './components/Challenges';
 import Footer from './components/Footer';
 import Header from './components/Header';
+import RecruiterFAQs from './components/RecruiterFAQs';
 
 const Home = () => {
     return (
@@ -24,6 +25,7 @@ const Home = () => {
                 <Features />
                 <Services />
                 <Challenges />
+                <RecruiterFAQs />
             </main>
 
             <Footer />
