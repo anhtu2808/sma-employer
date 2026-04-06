@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Slider, Select, Tag } from 'antd';
+import { Slider, Select, Tag, Spin } from 'antd';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import { Info, MapPin, Briefcase, DollarSign, Brain, Zap, X } from 'lucide-react';
+import { useGetSkillsQuery } from '@/apis/skillApi';
 
 const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
     const [filters, setFilters] = useState({
@@ -13,12 +14,28 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
         skills: currentFilters?.skills || []
     });
 
-    const [skillInput, setSkillInput] = useState('');
-    const handleAddSkill = () => {
-        const trimmed = skillInput.trim();
-        if (trimmed && !filters.skills.includes(trimmed)) {
-            setFilters({ ...filters, skills: [...filters.skills, trimmed] });
-            setSkillInput('');
+    const [searchValue, setSearchValue] = useState(''); // Lưu giá trị người dùng đang gõ
+
+    const { data: skillList, isFetching: isLoadingSkills } = useGetSkillsQuery({ size: 100 });
+
+    const skillOptions = skillList?.map(skill => ({
+        label: skill.name,
+        value: skill.name
+    })) || [];
+
+    // Hàm thêm skill chung (dùng cho cả chọn từ list và tự nhập)
+    const addSkill = (value) => {
+        const trimmedValue = value?.trim();
+        if (trimmedValue && !filters.skills.includes(trimmedValue)) {
+            setFilters(prev => ({ ...prev, skills: [...prev.skills, trimmedValue] }));
+            setSearchValue(''); // Xóa nội dung đang gõ sau khi thêm thành công
+        }
+    };
+
+    // Xử lý khi nhấn phím Enter trong ô Select
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && searchValue) {
+            addSkill(searchValue);
         }
     };
 
@@ -31,11 +48,7 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
 
     const handleReset = () => {
         const resetState = {
-            status: undefined,
-            location: undefined,
-            matchLevel: undefined,
-            minScore: undefined,
-            skills: []
+            status: undefined, location: undefined, matchLevel: undefined, minScore: undefined, skills: []
         };
         setFilters(resetState);
         onApply(resetState);
@@ -116,34 +129,39 @@ const FilterSidebar = ({ onApply, onReset, currentFilters }) => {
                     />
                 </div>
 
-                {/* Required Skills (List<String>) */}
+                {/* Required Skills Section */}
                 <div className="space-y-3">
                     <label className="flex items-center gap-2 text-neutral-900 dark:text-white font-semibold text-sm">
                         <Briefcase size={14} className="text-primary" /> Required Skills
                     </label>
-                    <div className="flex gap-2">
-                        <input
-                            placeholder="Add skill..."
-                            value={skillInput}
-                            onChange={(e) => setSkillInput(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleAddSkill()}
-                            className="flex-1 px-4 py-2 bg-neutral-50 dark:bg-gray-800 border border-neutral-100 dark:border-neutral-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all"
-                        />
-                        <Button
-                            shape="round"
-                            mode="primary"
-                            size="sm"
-                            onClick={handleAddSkill}>
-                            Add
-                        </Button>
-                    </div>
+
+                    <Select
+                        showSearch
+                        className="w-full"
+                        placeholder="Search or type new skill..."
+                        optionFilterProp="label"
+                        loading={isLoadingSkills}
+                        onSelect={(val) => addSkill(val)} // Khi click chọn từ list
+                        onSearch={(val) => setSearchValue(val)} // Cập nhật giá trị khi đang gõ
+                        onInputKeyDown={handleKeyDown} // Bắt sự kiện Enter để thêm skill lạ
+                        searchValue={searchValue} // Liên kết state search
+                        value={null}
+                        options={skillOptions}
+                        suffixIcon={isLoadingSkills ? <Spin size="small" /> : null}
+                        notFoundContent={searchValue ? (
+                            <div className="p-2 text-xs text-gray-400 italic">
+                                Press Enter to add "{searchValue}"
+                            </div>
+                        ) : null}
+                    />
+
                     <div className="flex flex-wrap gap-2 mt-3">
                         {filters.skills.map(skill => (
                             <Tag
                                 key={skill}
                                 closable
                                 onClose={() => handleRemoveSkill(skill)}
-                                className="bg-orange-50 border-orange-100 text-orange-600 font-medium rounded-lg px-2 py-1 flex items-center gap-1"
+                                className="bg-orange-50 border-orange-100 text-orange-600 font-medium rounded-lg px-2 py-1 flex items-center gap-1 m-0"
                                 closeIcon={<X size={10} />}
                             >
                                 {skill.toUpperCase()}
