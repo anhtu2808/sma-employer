@@ -428,6 +428,11 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
             value={config.backgroundColorOverride || ''}
             onChange={(v) => updateConfig('backgroundColorOverride', v)}
           />
+          <ColorField
+            label="Text Color Override"
+            value={config.textColorOverride || ''}
+            onChange={(v) => updateConfig('textColorOverride', v)}
+          />
         </div>
       );
     case 'HERO':
@@ -440,6 +445,11 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
           <StringField label="Button Text" value={props.ctaText} onChange={(v) => updateProp('ctaText', v)} />
           <StringField label="Button Link" value={props.ctaLink} onChange={(v) => updateProp('ctaLink', v)} />
           {commonSettings}
+          <ColorField
+            label="Text Color Override"
+            value={section.settings?.textColorOverride || ''}
+            onChange={(v) => updateSetting('textColorOverride', v)}
+          />
           <div className="cb-field">
             <label className="cb-field-label">Height (px)</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

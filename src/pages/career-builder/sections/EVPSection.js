@@ -50,7 +50,7 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
       <div style={{
         display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px',
-        maxWidth: '1100px', margin: '0 auto',
+        maxWidth: '1280px', margin: '0 auto',
       }}>
         {items.filter(b => b.isVisible !== false).map((b, i) => (
           <div key={i} style={{
@@ -63,8 +63,8 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
             position: 'relative',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-              <div style={{ 
-                fontSize: `${28 * ((theme.baseFontSize || 16) / 16)}px`, 
+              <div style={{
+                fontSize: `${28 * ((theme.baseFontSize || 16) / 16)}px`,
                 color: primaryColor,
                 width: '52px', height: '52px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -75,7 +75,7 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
               </div>
 
             </div>
-            
+
             <div style={{ fontSize: `${18 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '8px' }}>
               {b.title}
             </div>
