@@ -54,6 +54,8 @@ const Layout = () => {
   const location = useLocation();
   const { setHeaderConfig } = useContext(PageHeaderContext);
 
+  const isFullscreenPage = /^\/applications\/\d+$/.test(location.pathname);
+
   useEffect(() => {
     const path = location.pathname;
     // Handle dynamic routes like /jobs/:id
@@ -111,9 +113,9 @@ const Layout = () => {
       </Drawer>
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-background-light dark:bg-background-dark transition-colors duration-200">
-        <Header onMobileMenuClick={toggleMobileSidebar} />
+        {!isFullscreenPage && <Header onMobileMenuClick={toggleMobileSidebar} />}
 
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 scrollbar-thin">
+        <div className={`flex-1 overflow-y-auto scrollbar-thin ${isFullscreenPage ? 'p-2' : 'p-4 sm:p-6 lg:p-8'}`}>
           <Outlet />
         </div>
       </main>

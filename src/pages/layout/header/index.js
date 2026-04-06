@@ -40,7 +40,7 @@ const Header = ({ onMobileMenuClick }) => {
   }, [showPreview]);
 
   return (
-    <header className="h-16 sm:h-20 bg-card-light dark:bg-card-dark border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 sm:px-6 lg:px-8 flex-shrink-0 transition-colors duration-200">
+    <header className="h-12 sm:h-14 bg-card-light dark:bg-card-dark border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 sm:px-6 lg:px-8 flex-shrink-0 transition-colors duration-200">
       <div className="flex items-center gap-2 sm:gap-4">
         <button
           onClick={onMobileMenuClick}
@@ -50,11 +50,11 @@ const Header = ({ onMobileMenuClick }) => {
           <FontAwesomeIcon icon={faBars} />
         </button>
         <div className="flex flex-col">
-          <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white leading-tight">
             {headerConfig.title}
           </h1>
           {headerConfig.description && (
-            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+            <p className="text-[10px] sm:text-xs text-gray-500">
               {headerConfig.description}
             </p>
           )}

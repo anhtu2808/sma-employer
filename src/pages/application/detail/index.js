@@ -9,13 +9,14 @@ import Modal from '@/components/Modal';
 import { useBlockCandidateMutation } from '@/apis/companyApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faArrowLeft, faUser, faBrain, faCircleQuestion, faNewspaper,
+    faUser, faBrain, faNewspaper,
     faTriangleExclamation, faCircleCheck,
 } from '../../../utils/icons';
+import { Select, ConfigProvider } from 'antd';
+import { getAllowedNextStatuses } from '@/constrant/application';
 import CandidateHeader from './candidate-header';
-import Overview from './overview';
+import BasicInformation from './basic-information';
 import AiAnalysis from './ai-analysis';
-import Answers from './answers';
 import CoverLetter from './cover-letter';
 import PdfViewer from './pdf-viewer';
 
@@ -39,6 +40,9 @@ const normalizeApplicationDetail = (payload) => {
         resumeUrl: resume.resumeUrl,
         resumeName: info.resumeName,
         location: resume.addressInResume,
+        githubLink: resume.githubLink,
+        linkedinLink: resume.linkedinLink,
+        portfolioLink: resume.portfolioLink,
         answers: (info.answers || []).map((a) => ({
             question: a.questionText,
             answer: a.answerContent,
@@ -55,9 +59,8 @@ const normalizeApplicationDetail = (payload) => {
 };
 
 const TAB_KEYS = {
-    OVERVIEW: 'overview',
+    BASIC: 'basic',
     AI: 'ai',
-    QA: 'qa',
     COVER: 'cover',
 };
 
@@ -69,7 +72,7 @@ const ApplicationDetail = () => {
     const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
     const [blockReason, setBlockReason] = useState('');
     const [blockCandidate, { isLoading: isBlocking }] = useBlockCandidateMutation();
-    const [activeTab, setActiveTab] = useState(TAB_KEYS.OVERVIEW);
+    const [activeTab, setActiveTab] = useState(TAB_KEYS.BASIC);
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
     const [showToCandidate, setShowToCandidate] = useState(false);
@@ -142,13 +145,11 @@ const ApplicationDetail = () => {
     };
 
     const hasAi = !!app.aiEvaluation?.aiOverallScore;
-    const hasAnswers = app.answers?.length > 0;
     const hasCover = !!app.coverLetter;
 
     const tabs = [
-        { key: TAB_KEYS.OVERVIEW, label: 'Overview', icon: faUser },
+        { key: TAB_KEYS.BASIC, label: 'Basic Information', icon: faUser },
         ...(hasAi ? [{ key: TAB_KEYS.AI, label: 'AI Analysis', icon: faBrain }] : []),
-        ...(hasAnswers ? [{ key: TAB_KEYS.QA, label: 'Q&A', icon: faCircleQuestion }] : []),
         ...(hasCover ? [{ key: TAB_KEYS.COVER, label: 'Cover Letter', icon: faNewspaper }] : []),
     ];
 
@@ -156,19 +157,14 @@ const ApplicationDetail = () => {
         switch (activeTab) {
             case TAB_KEYS.AI:
                 return <AiAnalysis aiEvaluation={app.aiEvaluation} />;
-            case TAB_KEYS.QA:
-                return <Answers answers={app.answers} />;
             case TAB_KEYS.COVER:
                 return <CoverLetter coverLetter={app.coverLetter} />;
-            case TAB_KEYS.OVERVIEW:
+            case TAB_KEYS.BASIC:
             default:
                 return (
-                    <Overview
+                    <BasicInformation
                         app={app}
                         onSwitchToAiTab={hasAi ? () => setActiveTab(TAB_KEYS.AI) : undefined}
-                        onStatusChange={handleStatusSelect}
-                        isUpdating={isUpdating}
-                        isRejectedByAi={app.isRejectedByAi}
                     />
                 );
         }
@@ -176,64 +172,78 @@ const ApplicationDetail = () => {
 
     return (
         <div className="w-full space-y-4">
-            {/* Back button */}
-            <button
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors group"
-            >
-                <FontAwesomeIcon icon={faArrowLeft} className="text-lg group-hover:-translate-x-1 transition-transform" />
-                <span className="font-medium">Back to Pipeline</span>
-            </button>
+            {/* Unified Card */}
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-sm overflow-clip" style={{ height: 'calc(100vh - 20px)' }}>
+                {/* Tabs Bar — full width at top */}
+                <div className="flex items-center justify-between px-4 py-3">
+                    <div className="flex gap-1 bg-gray-100 dark:bg-neutral-800 rounded-full p-1">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.key}
+                                onClick={() => setActiveTab(tab.key)}
+                                className={`flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-150 ${activeTab === tab.key
+                                        ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white'
+                                        : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200'
+                                    }`}
+                            >
+                                <FontAwesomeIcon icon={tab.icon} className="text-sm" />
+                                <span className="hidden sm:inline">{tab.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                    <div className="flex items-center gap-3">
+                        {(() => {
+                            const allowedStatuses = getAllowedNextStatuses(app.status, app.isRejectedByAi);
+                            if (allowedStatuses.length === 0) return null;
+                            const statusOptions = [
+                                { value: app.status, label: APPLICATION_STATUS[app.status]?.label || app.status, disabled: true },
+                                ...allowedStatuses.map((key) => ({
+                                    value: key,
+                                    label: APPLICATION_STATUS[key]?.label || key,
+                                })),
+                            ];
+                            return (
+                                <ConfigProvider theme={{ token: { colorPrimary: '#f97316', colorBorderHover: '#f97316' } }}>
+                                    <Select
+                                        placeholder="Change status..."
+                                        onChange={handleStatusSelect}
+                                        loading={isUpdating}
+                                        className="w-36 h-8"
+                                        options={statusOptions}
+                                        size="small"
+                                        value={app.status}
+                                    />
+                                </ConfigProvider>
+                            );
+                        })()}
+                        <CandidateHeader
+                            app={app}
+                            onOpenBlock={() => setIsBlockModalOpen(true)}
+                            compact
+                        />
+                    </div>
+                </div>
 
-            {/* Vertical Layout: Info Bar on Top, PDF Below */}
-            <div className="flex flex-col gap-4" style={{ minHeight: 'calc(100vh - 140px)' }}>
-                {/* Top: Info Bar */}
-                <div className={`w-full ${!app.resumeUrl ? 'max-w-3xl mx-auto' : ''}`}>
-                    <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-sm overflow-hidden">
-                        {/* Candidate Header */}
-                        <div className="px-5 pt-5 pb-0">
-                            <CandidateHeader
-                                app={app}
-                                onOpenBlock={() => setIsBlockModalOpen(true)}
-                            />
-                        </div>
-
-                        {/* Tabs */}
-                        <div className="px-5 pt-3">
-                            <div className="flex gap-1 border-b border-gray-100 dark:border-neutral-800">
-                                {tabs.map((tab) => (
-                                    <button
-                                        key={tab.key}
-                                        onClick={() => setActiveTab(tab.key)}
-                                        className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${activeTab === tab.key
-                                                ? 'border-orange-500 text-orange-600 dark:text-orange-400'
-                                                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200'
-                                            }`}
-                                    >
-                                        <FontAwesomeIcon icon={tab.icon} className="text-base" />
-                                        <span className="hidden sm:inline">{tab.label}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Tab Content */}
+                {/* Content: Left info + Right PDF */}
+                <div className="flex flex-col lg:flex-row h-[calc(100%-42px)]">
+                    {/* Left: Tab Content */}
+                    <div className="w-full lg:w-1/2 lg:border-r border-gray-200 dark:border-neutral-800 overflow-y-auto overflow-x-hidden scrollbar-thin">
                         <div className="p-5">
                             {renderTabContent()}
                         </div>
                     </div>
-                </div>
 
-                {/* Bottom: PDF Viewer (full width) */}
-                {app.resumeUrl && (
-                    <div className="w-full flex-1" style={{ minHeight: '70vh' }}>
-                        <PdfViewer
-                            resumeUrl={app.resumeUrl}
-                            resumeName={app.resumeName}
-                            candidateName={app.candidateName}
-                        />
-                    </div>
-                )}
+                    {/* Right: PDF Viewer */}
+                    {app.resumeUrl && (
+                        <div className="w-full lg:w-1/2 overflow-hidden">
+                            <PdfViewer
+                                resumeUrl={app.resumeUrl}
+                                resumeName={app.resumeName}
+                                candidateName={app.candidateName}
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Block Modal */}

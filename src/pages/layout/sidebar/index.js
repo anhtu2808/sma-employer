@@ -90,7 +90,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
         </button>
       )}
 
-      <div className={`p-6 ${collapsed && !isMobile ? 'flex justify-center' : ''}`}>
+      <div className={`px-4 py-3 ${collapsed && !isMobile ? 'flex justify-center' : ''}`}>
         <Logo collapsed={collapsed && !isMobile} />
       </div>
 

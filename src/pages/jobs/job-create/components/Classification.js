@@ -24,8 +24,14 @@ const Classification = () => {
             isFirstRender.current = false;
             return;
         }
-        form.setFieldValue('expertiseId', undefined);
-    }, [selectedGroupId, form]);
+        const currentExpertiseId = form.getFieldValue('expertiseId');
+        const belongsToGroup = expertise.some(
+            (e) => e.id === currentExpertiseId && e.expertiseGroup?.id === selectedGroupId
+        );
+        if (!belongsToGroup) {
+            form.setFieldValue('expertiseId', undefined);
+        }
+    }, [selectedGroupId, form, expertise]);
 
     const skillOptions = skills.map((skill) => ({
         value: skill.id,

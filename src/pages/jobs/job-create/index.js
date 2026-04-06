@@ -15,7 +15,8 @@ import {
 import { useGetFeatureUsageQuery } from "@/apis/featureUsageApi";
 import { useGetSkillsQuery } from "@/apis/skillApi";
 import { useGetExpertiseQuery, useGetDomainQuery } from "@/apis/masterDataApi";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useLocation, useParams, useBlocker } from "react-router-dom";
+import { Modal } from "antd";
 import dayjs from "dayjs";
 
 // Components
@@ -61,7 +62,16 @@ const JobCreate = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [pendingValues, setPendingValues] = useState(null);
+  const [isDirty, setIsDirty] = useState(false);
   const formInitialized = React.useRef(false);
+
+  // Block browser refresh/close
+  React.useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e) => { e.preventDefault(); };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isDirty]);
 
   // Master data for AI JD import
   const { data: skills = [] } = useGetSkillsQuery({ size: 200 });
@@ -193,11 +203,13 @@ const JobCreate = () => {
       if (isEditMode) {
         await saveJobDraft({ id, body: submitData }).unwrap();
         toastMessage.success("Job updated successfully!");
+        setIsDirty(false);
         navigate(`/jobs/${id}`);
       } else {
         const res = await createSaveJobDraft(submitData).unwrap();
         const jobId = res?.data?.id || res?.id;
         toastMessage.success("Job draft saved successfully!");
+        setIsDirty(false);
         navigate(jobId ? `/jobs/${jobId}` : "/jobs");
       }
     } catch (error) {
@@ -218,11 +230,13 @@ const JobCreate = () => {
       if (isEditMode) {
         await publishJob({ id, body: submitData }).unwrap();
         toastMessage.success("Job updated and published successfully!");
+        setIsDirty(false);
         navigate(`/jobs/${id}`);
       } else {
         const res = await createPublishJob(submitData).unwrap();
         const jobId = res?.data?.id || res?.id;
         toastMessage.success("Job published successfully!");
+        setIsDirty(false);
         navigate(jobId ? `/jobs/${jobId}` : "/jobs");
       }
       setShowConfirmModal(false);
@@ -297,11 +311,26 @@ const JobCreate = () => {
   const isLoadingDraft = submitAction === "draft" && (isEditMode ? isSaving : isSavingNew);
   const isSubmitting = isLoadingPublish || isLoadingDraft;
 
+  const blocker = useBlocker(isDirty && !isSubmitting);
+
   return (
     <>
       <Preloader isLoading={isSubmitting || (isEditMode && isJobLoading)} />
+
+      <Modal
+        open={blocker.state === 'blocked'}
+        title="Unsaved changes"
+        okText="Leave"
+        cancelText="Stay"
+        okButtonProps={{ danger: true }}
+        onOk={() => blocker.proceed?.()}
+        onCancel={() => blocker.reset?.()}
+        closable={false}
+      >
+        <p>You have unsaved changes. Are you sure you want to leave? Your changes will be lost.</p>
+      </Modal>
     <div className="space-y-4">
-      <Form form={form} onFinish={onFinish} onFinishFailed={() => toastMessage.error("Please fill in all required fields before publishing.")} layout="vertical" className="block">
+      <Form form={form} onFinish={onFinish} onFinishFailed={() => toastMessage.error("Please fill in all required fields before publishing.")} onValuesChange={() => setIsDirty(true)} layout="vertical" className="block">
         {/* Top Bar */}
         <div className="flex items-center justify-between flex-wrap gap-3">
           <Button
