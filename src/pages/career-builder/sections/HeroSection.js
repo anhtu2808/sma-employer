@@ -39,6 +39,11 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
       textAlign: settings.textAlign || 'center',
       position: 'relative',
       overflow: 'hidden',
+      minHeight: `${settings.height || 500}px`,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
     }}>
       <div style={{
         position: 'absolute', top: -60, right: -60, width: 200, height: 200,
@@ -47,14 +52,14 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         <h1 style={{
-          fontSize: `${50 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: (settings.backgroundColorOverride === '#FFFFFF' || backgroundColor === '#FFFFFF') && !backgroundUrl ? theme.textColor : '#fff',
+          fontSize: `${50 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: settings.textColorOverride || ((settings.backgroundColorOverride === '#FFFFFF' || backgroundColor === '#FFFFFF') && !backgroundUrl ? theme.textColor : '#fff'),
           lineHeight: 1.2, marginBottom: '20px', letterSpacing: '-0.5px',
         }}>
           {headline}
         </h1>
 
         <p style={{
-          fontSize: `${18 * ((theme.baseFontSize || 16) / 16)}px`, color: (settings.backgroundColorOverride === '#FFFFFF' || backgroundColor === '#FFFFFF') && !backgroundUrl ? theme.textColor : 'rgba(255,255,255,0.85)',
+          fontSize: `${18 * ((theme.baseFontSize || 16) / 16)}px`, color: settings.textColorOverride || ((settings.backgroundColorOverride === '#FFFFFF' || backgroundColor === '#FFFFFF') && !backgroundUrl ? theme.textColor : 'rgba(255,255,255,0.85)'),
           maxWidth: '560px', margin: '0 auto 40px', lineHeight: 1.7,
           opacity: 0.8,
         }}>

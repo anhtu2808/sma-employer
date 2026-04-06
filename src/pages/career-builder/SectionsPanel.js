@@ -399,6 +399,8 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
       return (
         <div className="cb-section-children">
           <StringField label="Company Name" value={config.companyName} onChange={(v) => updateConfig('companyName', v)} />
+          <ImageField label="Logo Image" value={config.logoUrl} onChange={(v) => updateConfig('logoUrl', v)} />
+          <StringField label="Logo Height (px)" value={config.logoHeight} onChange={(v) => updateConfig('logoHeight', Number(v))} />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>Addresses</div>
           <ArrayEditor
             items={(config.contact?.addresses || []).map(a => ({ address: a }))}
@@ -428,6 +430,11 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
             value={config.backgroundColorOverride || ''}
             onChange={(v) => updateConfig('backgroundColorOverride', v)}
           />
+          <ColorField
+            label="Text Color Override"
+            value={config.textColorOverride || ''}
+            onChange={(v) => updateConfig('textColorOverride', v)}
+          />
         </div>
       );
     case 'HERO':
@@ -440,6 +447,34 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
           <StringField label="Button Text" value={props.ctaText} onChange={(v) => updateProp('ctaText', v)} />
           <StringField label="Button Link" value={props.ctaLink} onChange={(v) => updateProp('ctaLink', v)} />
           {commonSettings}
+          <ColorField
+            label="Text Color Override"
+            value={section.settings?.textColorOverride || ''}
+            onChange={(v) => updateSetting('textColorOverride', v)}
+          />
+          <div className="cb-field">
+            <label className="cb-field-label">Height (px)</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <input
+                type="range"
+                min={200}
+                max={800}
+                step={10}
+                value={section.settings?.height || 500}
+                onChange={(e) => updateSetting('height', Number(e.target.value))}
+                style={{ flex: 1, accentColor: '#FF6B35' }}
+              />
+              <input
+                type="number"
+                className="cb-input"
+                value={section.settings?.height || 500}
+                onChange={(e) => updateSetting('height', Number(e.target.value))}
+                min={200}
+                max={800}
+                style={{ width: 72, textAlign: 'center' }}
+              />
+            </div>
+          </div>
         </div>
       );
     case 'ABOUT':

@@ -22,13 +22,13 @@ const GallerySection = ({ theme, sectionProps = {}, settings = {} }) => {
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gap: '16px',
-        maxWidth: '900px',
+        maxWidth: '1280px',
         margin: '0 auto',
       }}>
         {placeholders.map((item, i) => {
           const isUrl = typeof item === 'string' && item.startsWith('http');
           const placeholderBg = secondaryColor || `linear-gradient(${135 + i * 20}deg, ${primaryColor}15, ${primaryColor}08)`;
-          
+
           return (
             <div
               key={i}

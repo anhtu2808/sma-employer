@@ -105,7 +105,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
         <h2 style={{ fontSize: `${32 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '8px' }}>{headline}</h2>
       </div>
 
-      <div style={{ display: 'flex', gap: '28px', maxWidth: '1100px', margin: '0 auto', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', gap: '28px', maxWidth: '1280px', margin: '0 auto', alignItems: 'flex-start' }}>
         {/* ─── Filter Sidebar ──────────────────────────────────────── */}
         <div style={{
           width: '280px', flexShrink: 0,
@@ -266,14 +266,14 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
                       }}>🔥 HOT</span>
                     )}
                   </div>
-                  
+
                   {/* Company Name */}
                   {job.companyName && (
                     <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.6, marginBottom: '12px', fontWeight: 500 }}>
                       {job.companyName}
                     </div>
                   )}
-                  
+
                   {/* Meta Info */}
                   <div style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, color: textColor, opacity: 0.5, marginBottom: '16px', display: 'flex', gap: '12px' }}>
                     {job.location && <span>{job.location}</span>}
@@ -281,7 +281,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
                     {job.model && <span>{job.model}</span>}
                     {job.level && <span>{job.level}</span>}
                   </div>
-                  
+
                   {/* Tags */}
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
                     {job.tags.map(tag => (
@@ -305,7 +305,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
                   <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: primaryColor, textAlign: 'right' }}>
                     {job.salary}
                   </div>
-                  
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '160px' }}>
                     <button style={{
                       ...btnBase, background: '#fff', color: primaryColor, border: `1px solid ${primaryColor}`, width: '100%', padding: '10px 0'

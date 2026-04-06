@@ -57,7 +57,7 @@ const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
 
       <div style={{
         display: 'grid', gridTemplateColumns: `repeat(${Math.min(defaultNews.length, 3)}, 1fr)`,
-        gap: '28px', maxWidth: '1100px', margin: '0 auto',
+        gap: '28px', maxWidth: '1280px', margin: '0 auto',
       }}>
         {defaultNews.filter(item => item.isVisible !== false).map((item, i) => {
           const cardContent = (
