@@ -96,13 +96,12 @@ const CriteriaItem = ({ criteria, isOpen, onToggle }) => {
                             {criteria.details.map((detail) => (
                                 <span
                                     key={detail.id}
-                                    className={`inline-flex items-center gap-1 text-sm font-medium px-2 py-1 rounded-lg ${
-                                        detail.status === 'MATCHED'
+                                    className={`inline-flex items-center gap-1 text-sm font-medium px-2 py-1 rounded-lg ${detail.status === 'MATCHED'
                                             ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400'
                                             : detail.status === 'FIXED'
-                                            ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
-                                            : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'
-                                    }`}
+                                                ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
+                                                : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'
+                                        }`}
                                 >
                                     <FontAwesomeIcon icon={detail.status === 'MATCHED' ? faCircleCheck : detail.status === 'FIXED' ? faGear : faCircleXmark} className="text-[13px]" />
                                     {detail.label}
@@ -159,11 +158,10 @@ const AiAnalysis = ({ aiEvaluation }) => {
                     {/* Meta badges */}
                     <div className="flex flex-wrap gap-2 mt-3">
                         {isTrueLevel != null && (
-                            <span className={`inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full ${
-                                isTrueLevel
+                            <span className={`inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full ${isTrueLevel
                                     ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
                                     : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                            }`}>
+                                }`}>
                                 <FontAwesomeIcon icon={isTrueLevel ? faCertificate : faCircleXmark} className="text-[13px]" />
                                 {isTrueLevel ? 'Match' : 'Not Match'}
                             </span>
@@ -183,7 +181,14 @@ const AiAnalysis = ({ aiEvaluation }) => {
                     </div>
                 </div>
             </div>
-
+            <div className="flex items-start gap-3 p-3 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-xl">
+                <div className="text-amber-500 mt-0.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
+                </div>
+                <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
+                    AI models can make mistakes. Scores and evaluations are <b>approximations</b> based on the provided data. Please verify important information manually.
+                </p>
+            </div>
             {/* Strengths — full width */}
             {strengths && (
                 <div className="p-4 rounded-xl bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30">

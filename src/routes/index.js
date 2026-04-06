@@ -28,7 +28,7 @@ import ScoringCriteria from "@/pages/scoring-criteria";
 import CvPreview from "@/pages/cv-preview";
 import CareerPageBuilder from "@/pages/career-builder";
 import WebhookPage from "@/pages/webhook";
-
+import LegalPage from '@/pages/legal';
 
 export const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -68,6 +68,7 @@ export const routes = createBrowserRouter(
             <Route path="login" element={<Login />} />
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="reset-password" element={<ResetPassword />} />
+            <Route path="legal/:type" element={<LegalPage />} />
         </Route>
     )
 );
