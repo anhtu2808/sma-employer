@@ -399,6 +399,8 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
       return (
         <div className="cb-section-children">
           <StringField label="Company Name" value={config.companyName} onChange={(v) => updateConfig('companyName', v)} />
+          <ImageField label="Logo Image" value={config.logoUrl} onChange={(v) => updateConfig('logoUrl', v)} />
+          <StringField label="Logo Height (px)" value={config.logoHeight} onChange={(v) => updateConfig('logoHeight', Number(v))} />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>Addresses</div>
           <ArrayEditor
             items={(config.contact?.addresses || []).map(a => ({ address: a }))}

@@ -142,6 +142,8 @@ const SAMPLE_DATA = {
 
   footerConfig: {
     companyName: 'SmartRecruit Solutions Inc.',
+    logoUrl: '',
+    logoHeight: 32,
     address: 'SmartRecruit Tower, 123 Main Street, District 1, HCMC',
     contact: { email: 'careers@smartrecruit.com', phone: '028 1234 5678', addresses: [] },
     socialLinks: [

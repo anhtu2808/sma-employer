@@ -48,27 +48,37 @@ const FooterSection = ({ theme, footerConfig = {} }) => {
   ];
 
   return (
-    <div style={{ background: footerConfig.backgroundColorOverride || '#1a1a2e', padding: '48px 40px', color: '#fff' }}>
+    <div style={{ background: footerConfig.backgroundColorOverride || '#1a1a2e', padding: '48px 40px', color: footerConfig.textColorOverride || '#fff' }}>
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
         gap: '40px', maxWidth: '960px', margin: '0 auto',
       }}>
         <div style={{ flex: 1, maxWidth: '400px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: '50%',
-              background: primaryColor, display: 'flex', alignItems: 'center',
-              justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`,
-            }}>AC</div>
+            {footerConfig.logoUrl ? (
+              <img
+                src={footerConfig.logoUrl}
+                alt={companyName}
+                style={{ height: `${footerConfig.logoHeight || 32}px`, objectFit: 'contain' }}
+              />
+            ) : (
+              <div style={{
+                width: 32, height: 32, borderRadius: '50%',
+                background: primaryColor, display: 'flex', alignItems: 'center',
+                justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`,
+              }}>
+                {companyName ? companyName.substring(0, 2).toUpperCase() : 'AC'}
+              </div>
+            )}
             <span style={{ fontWeight: 700, fontSize: `${15 * ((theme.baseFontSize || 16) / 16)}px` }}>{companyName}</span>
           </div>
           {contact?.email && (
-            <p style={{ fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, color: 'rgba(255,255,255,0.45)', marginBottom: '8px' }}>
+            <p style={{ fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, opacity: 0.7, marginBottom: '8px' }}>
               ✉ {contact.email}
             </p>
           )}
           {contact?.phone && (
-            <p style={{ fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, color: 'rgba(255,255,255,0.45)', marginBottom: '8px' }}>
+            <p style={{ fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, opacity: 0.7, marginBottom: '8px' }}>
               ☎ {contact.phone}
             </p>
           )}
@@ -115,7 +125,7 @@ const FooterSection = ({ theme, footerConfig = {} }) => {
         <div style={{ flex: 1, maxWidth: '400px', textAlign: 'right' }}>
           <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, marginBottom: '16px' }}>Our Locations</div>
           {contact?.addresses && contact.addresses.map((addr, i) => (
-            <p key={`addr-${i}`} style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: '10px' }}>
+            <p key={`addr-${i}`} style={{ fontSize: `${13 * ((theme.baseFontSize || 16) / 16)}px`, opacity: 0.7, lineHeight: 1.6, marginBottom: '10px' }}>
               {addr}
             </p>
           ))}
@@ -123,9 +133,10 @@ const FooterSection = ({ theme, footerConfig = {} }) => {
       </div>
 
       <div style={{
-        borderTop: '1px solid rgba(255,255,255,0.1)',
+        borderTop: '1px solid currentColor',
+        opacity: 0.5,
         marginTop: '36px', paddingTop: '20px',
-        textAlign: 'center', fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`, color: 'rgba(255,255,255,0.3)',
+        textAlign: 'center', fontSize: `${12 * ((theme.baseFontSize || 16) / 16)}px`,
       }}>
         {copyrightText}
       </div>
