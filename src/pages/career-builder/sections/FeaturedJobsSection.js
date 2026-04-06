@@ -1,6 +1,9 @@
 import React, { useState, useMemo } from 'react';
+import { Select, ConfigProvider } from 'antd';
 
 import { useGetJobsQuery } from '@/apis/jobApi';
+import { useGetSkillsQuery } from '@/apis/skillApi';
+import { useGetExpertiseQuery, useGetDomainQuery } from '@/apis/masterDataApi';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -11,17 +14,21 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
   // Filter state
   const [searchName, setSearchName] = useState('');
   const [searchLocation, setSearchLocation] = useState('');
-  const [selectedLevel, setSelectedLevel] = useState('');
-  const [selectedModel, setSelectedModel] = useState('');
-  const [selectedSkill, setSelectedSkill] = useState('');
   const [salaryRange, setSalaryRange] = useState([0, 100]);
   const [expRange, setExpRange] = useState([0, 10]);
-  const [selectedExpertise, setSelectedExpertise] = useState('');
-  const [selectedDomain, setSelectedDomain] = useState('');
+  const [selectedLevel, setSelectedLevel] = useState('');
+  const [selectedModel, setSelectedModel] = useState('');
+  const [selectedSkill, setSelectedSkill] = useState([]);
+  const [selectedExpertise, setSelectedExpertise] = useState([]);
+  const [selectedDomain, setSelectedDomain] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
   const { data: jobsData, isLoading } = useGetJobsQuery({ page: 0, size: 100, status: 'PUBLISHED' });
   const fetchedJobs = jobsData?.data?.content || [];
+
+  const { data: skillsOptions = [] } = useGetSkillsQuery({ size: 100 });
+  const { data: expertiseOptions = [] } = useGetExpertiseQuery({ size: 100 });
+  const { data: domainOptions = [] } = useGetDomainQuery({ size: 100 });
 
   // Filter logic
   const filteredJobs = useMemo(() => {
@@ -31,21 +38,44 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
       companyName: j.company?.name || j.companyName || '',
       isHot: j.isHighlight === true || j.highlightJob === true || j.isHot === true,
       location: j.locations?.length > 0 ? j.locations.map(l => l.city).join(', ') : (j.company?.country || j.workingModel || ''),
-      experience: j.minExperienceTime != null && j.maxExperienceTime != null ? `${j.minExperienceTime}-${j.maxExperienceTime} years` : (j.minExperienceTime != null ? `From ${j.minExperienceTime} years` : ''),
+      experience: j.experienceTime != null ? `${j.experienceTime} years` : '',
       level: j.jobLevel || '',
       model: j.workingModel || '',
       tags: Array.isArray(j.skills) ? j.skills.map(s => s.name || s) : [],
       salary: j.salaryStart && j.salaryEnd ? `${j.salaryStart.toLocaleString('vi-VN')} - ${j.salaryEnd.toLocaleString('vi-VN')} VND` : (j.salaryStart ? `From ${j.salaryStart.toLocaleString('vi-VN')} VND` : 'Negotiable'),
-      postedDate: (j.uploadTime || j.createdAt) ? new Date(j.uploadTime || j.createdAt).toLocaleDateString() : ''
+      postedDate: (j.uploadTime || j.createdAt) ? new Date(j.uploadTime || j.createdAt).toLocaleDateString() : '',
+      rawSalaryStart: j.salaryStart,
+      rawSalaryEnd: j.salaryEnd,
+      rawExp: j.experienceTime,
+      rawExpertise: j.expertise?.name || j.expertise?.title || (typeof j.expertise === 'string' ? j.expertise : ''),
+      rawDomains: Array.isArray(j.domains) ? j.domains.map(d => d.name || d) : [],
     }));
 
     if (searchName) jobs = jobs.filter(j => j.title.toLowerCase().includes(searchName.toLowerCase()));
     if (searchLocation) jobs = jobs.filter(j => j.location.toLowerCase().includes(searchLocation.toLowerCase()));
-    if (selectedLevel) jobs = jobs.filter(j => j.level === selectedLevel);
-    if (selectedModel) jobs = jobs.filter(j => j.model === selectedModel);
-    if (selectedSkill) jobs = jobs.filter(j => j.tags.some(t => t.toLowerCase().includes(selectedSkill.toLowerCase())));
+    if (selectedLevel) jobs = jobs.filter(j => j.level?.toUpperCase() === selectedLevel.toUpperCase());
+    if (selectedModel) jobs = jobs.filter(j => j.model?.toUpperCase() === selectedModel.toUpperCase());
+    if (selectedSkill?.length > 0) jobs = jobs.filter(j => selectedSkill.every(ss => j.tags.some(t => t.toLowerCase() === ss.toLowerCase())));
+    if (selectedExpertise?.length > 0) jobs = jobs.filter(j => selectedExpertise.some(se => j.rawExpertise.toLowerCase() === se.toLowerCase()));
+    if (selectedDomain?.length > 0) jobs = jobs.filter(j => selectedDomain.some(sd => j.rawDomains.some(d => d.toLowerCase() === sd.toLowerCase())));
+    
+    if (salaryRange[0] > 0 || salaryRange[1] < 100) {
+      jobs = jobs.filter(j => {
+        if (j.rawSalaryStart == null && j.rawSalaryEnd == null) return false;
+        const minM = (j.rawSalaryStart || 0) / 1000000;
+        const maxM = (j.rawSalaryEnd || j.rawSalaryStart || 0) / 1000000;
+        return Math.max(minM, salaryRange[0]) <= Math.min(maxM, salaryRange[1]);
+      });
+    }
+
+    if (expRange[0] > 0 || expRange[1] < 10) {
+      jobs = jobs.filter(j => {
+        if (j.rawExp == null) return false;
+        return j.rawExp >= expRange[0] && j.rawExp <= expRange[1];
+      });
+    }
     return jobs;
-  }, [fetchedJobs, searchName, searchLocation, selectedLevel, selectedModel, selectedSkill]);
+  }, [fetchedJobs, searchName, searchLocation, selectedLevel, selectedModel, selectedSkill, selectedExpertise, selectedDomain, salaryRange, expRange]);
 
   const totalPages = Math.max(1, Math.ceil(filteredJobs.length / ITEMS_PER_PAGE));
   const paginatedJobs = filteredJobs.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
@@ -53,9 +83,9 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
   const handleReset = () => {
     setSearchName(''); setSearchLocation('');
     setSelectedLevel(''); setSelectedModel('');
-    setSelectedSkill(''); setSalaryRange([0, 100]);
-    setExpRange([0, 10]); setSelectedExpertise('');
-    setSelectedDomain(''); setCurrentPage(1);
+    setSelectedSkill([]); setSalaryRange([0, 100]);
+    setExpRange([0, 10]); setSelectedExpertise([]);
+    setSelectedDomain([]); setCurrentPage(1);
   };
 
   const shadowMap = {
@@ -135,38 +165,68 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           {/* Job Level */}
           <div style={fieldGap}>
             <label style={labelStyle}>Job Level</label>
-            <select style={selectStyle} value={selectedLevel}
-              onChange={(e) => { setSelectedLevel(e.target.value); setCurrentPage(1); }}>
-              <option value="">Select Job Level</option>
-              <option value="Junior">Junior</option>
-              <option value="Mid">Mid</option>
-              <option value="Senior">Senior</option>
-              <option value="Lead">Lead</option>
-            </select>
+            <ConfigProvider theme={{ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }}>
+              <Select 
+                showSearch
+                allowClear
+                style={{ width: '100%' }}
+                placeholder="Select Job Level"
+                getPopupContainer={(trigger) => trigger.parentNode}
+                value={selectedLevel || undefined}
+                onChange={(value) => { setSelectedLevel(value || ''); setCurrentPage(1); }}
+                options={[
+                  { label: "Intern", value: "INTERN" },
+                  { label: "Fresher", value: "FRESHER" },
+                  { label: "Junior", value: "JUNIOR" },
+                  { label: "Middle", value: "MIDDLE" },
+                  { label: "Senior", value: "SENIOR" },
+                  { label: "Lead", value: "LEAD" },
+                  { label: "Manager", value: "MANAGER" },
+                ]}
+                filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+              />
+            </ConfigProvider>
           </div>
 
           {/* Working Model */}
           <div style={fieldGap}>
             <label style={labelStyle}>Working Model</label>
-            <select style={selectStyle} value={selectedModel}
-              onChange={(e) => { setSelectedModel(e.target.value); setCurrentPage(1); }}>
-              <option value="">Select Working Model</option>
-              <option value="Remote">Remote</option>
-              <option value="On-site">On-site</option>
-              <option value="Hybrid">Hybrid</option>
-            </select>
+            <ConfigProvider theme={{ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }}>
+              <Select 
+                showSearch
+                allowClear
+                style={{ width: '100%' }}
+                placeholder="Select Working Model"
+                getPopupContainer={(trigger) => trigger.parentNode}
+                value={selectedModel || undefined}
+                onChange={(value) => { setSelectedModel(value || ''); setCurrentPage(1); }}
+                options={[
+                  { label: "Remote", value: "REMOTE" },
+                  { label: "On-site", value: "ONSITE" },
+                  { label: "Hybrid", value: "HYBRID" },
+                ]}
+                filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+              />
+            </ConfigProvider>
           </div>
 
           {/* Skills */}
           <div style={fieldGap}>
             <label style={labelStyle}>Skills</label>
-            <select style={selectStyle} value={selectedSkill}
-              onChange={(e) => { setSelectedSkill(e.target.value); setCurrentPage(1); }}>
-              <option value="">Select skills...</option>
-              {['React', 'TypeScript', 'Python', 'Node.js', 'AWS', 'Figma', 'Docker'].map(s => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
+            <ConfigProvider theme={{ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }}>
+              <Select 
+                mode="multiple"
+                showSearch
+                allowClear
+                style={{ width: '100%' }}
+                placeholder="Select skills..."
+                getPopupContainer={(trigger) => trigger.parentNode}
+                value={selectedSkill}
+                onChange={(value) => { setSelectedSkill(value || []); setCurrentPage(1); }}
+                options={skillsOptions.map(s => ({ label: s.name, value: s.name }))}
+                filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+              />
+            </ConfigProvider>
           </div>
 
           {/* Salary Range */}
@@ -196,33 +256,44 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           {/* Expertise */}
           <div style={fieldGap}>
             <label style={labelStyle}>Expertise</label>
-            <select style={selectStyle} value={selectedExpertise}
-              onChange={(e) => setSelectedExpertise(e.target.value)}>
-              <option value="">Select expertises...</option>
-              <option value="Frontend">Frontend</option>
-              <option value="Backend">Backend</option>
-              <option value="Full-stack">Full-stack</option>
-              <option value="DevOps">DevOps</option>
-              <option value="Design">Design</option>
-            </select>
+            <ConfigProvider theme={{ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }}>
+              <Select 
+                mode="multiple"
+                showSearch
+                allowClear
+                style={{ width: '100%' }}
+                placeholder="Select expertises..."
+                getPopupContainer={(trigger) => trigger.parentNode}
+                value={selectedExpertise}
+                onChange={(value) => { setSelectedExpertise(value || []); setCurrentPage(1); }}
+                options={expertiseOptions.map(e => ({ label: e.name, value: e.name }))}
+                filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+              />
+            </ConfigProvider>
           </div>
 
           {/* Domain */}
           <div style={{ marginBottom: 0 }}>
             <label style={labelStyle}>Domain</label>
-            <select style={selectStyle} value={selectedDomain}
-              onChange={(e) => setSelectedDomain(e.target.value)}>
-              <option value="">Select domains...</option>
-              <option value="Fintech">Fintech</option>
-              <option value="E-commerce">E-commerce</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="Education">Education</option>
-            </select>
+            <ConfigProvider theme={{ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }}>
+              <Select 
+                mode="multiple"
+                showSearch
+                allowClear
+                style={{ width: '100%' }}
+                placeholder="Select domains..."
+                getPopupContainer={(trigger) => trigger.parentNode}
+                value={selectedDomain}
+                onChange={(value) => { setSelectedDomain(value || []); setCurrentPage(1); }}
+                options={domainOptions.map(d => ({ label: d.name, value: d.name }))}
+                filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+              />
+            </ConfigProvider>
           </div>
         </div>
 
         {/* ─── Job Listings ────────────────────────────────────────── */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ flex: 1, minWidth: 0, minHeight: '800px' }}>
           {/* Search bar */}
           <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
             <input

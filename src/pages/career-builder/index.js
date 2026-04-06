@@ -228,6 +228,10 @@ const CareerPageBuilder = () => {
     setActiveSection((prev) => (prev === id ? null : id));
   }, []);
 
+  const handleCanvasSelectSection = useCallback((id) => {
+    setActiveSection(id);
+  }, []);
+
   // Build a unified section list for the right panel (header + layout + footer)
   const allSections = useMemo(() => [
     { id: 'header', type: 'header', isVisible: headerConfig._visible !== false, config: headerConfig },
@@ -383,7 +387,7 @@ const CareerPageBuilder = () => {
           headerConfig={headerConfig}
           footerConfig={footerConfig}
           activeSection={activeSection}
-          onSelectSection={handleSelectSection}
+          onSelectSection={handleCanvasSelectSection}
         />
 
         {!isPreviewMode && (
