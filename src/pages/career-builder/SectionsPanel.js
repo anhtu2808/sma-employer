@@ -440,6 +440,29 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
           <StringField label="Button Text" value={props.ctaText} onChange={(v) => updateProp('ctaText', v)} />
           <StringField label="Button Link" value={props.ctaLink} onChange={(v) => updateProp('ctaLink', v)} />
           {commonSettings}
+          <div className="cb-field">
+            <label className="cb-field-label">Height (px)</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <input
+                type="range"
+                min={200}
+                max={800}
+                step={10}
+                value={section.settings?.height || 500}
+                onChange={(e) => updateSetting('height', Number(e.target.value))}
+                style={{ flex: 1, accentColor: '#FF6B35' }}
+              />
+              <input
+                type="number"
+                className="cb-input"
+                value={section.settings?.height || 500}
+                onChange={(e) => updateSetting('height', Number(e.target.value))}
+                min={200}
+                max={800}
+                style={{ width: 72, textAlign: 'center' }}
+              />
+            </div>
+          </div>
         </div>
       );
     case 'ABOUT':

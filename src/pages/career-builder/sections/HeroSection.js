@@ -39,6 +39,11 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
       textAlign: settings.textAlign || 'center',
       position: 'relative',
       overflow: 'hidden',
+      minHeight: `${settings.height || 500}px`,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
     }}>
       <div style={{
         position: 'absolute', top: -60, right: -60, width: 200, height: 200,
