@@ -97,7 +97,8 @@ const KanbanBoard = ({
                                             >
                                                 {candidates.map((app, index) => {
                                                     const isNotDraggable = app.status === 'APPLIED' || app.status === 'APPROVED';
-                                                    const matchTag = getAIMatchTag(app.aiScore);
+                                                    const scoreValue = app.evaluation?.aiScore;
+                                                    const matchTag = getAIMatchTag(scoreValue);
 
                                                     return (
                                                         <Draggable
@@ -116,23 +117,29 @@ const KanbanBoard = ({
                                                                 >
                                                                     <div className={`bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-shadow ${!isNotDraggable ? 'hover:shadow-md cursor-grab active:cursor-grabbing' : ''} group`}>
                                                                         {/* Top Row: AI Match Tag + Status */}
-                                                                        <div className="flex justify-between items-start mb-2">
-                                                                            <div className="flex items-center gap-2">
-                                                                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${matchTag.bg} ${matchTag.text}`}>
+                                                                        <div className="flex justify-between items-start mb-3">
+                                                                            <div className="flex flex-wrap gap-1.5 flex-1 pr-2">
+                                                                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${matchTag.bg} ${matchTag.text}`}>
                                                                                     {matchTag.label}
                                                                                 </span>
                                                                                 {app.isRejectedByAi && (
-                                                                                    <span className="text-[10px] font-bold tracking-wide text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-1.5 py-0.5 rounded flex items-center gap-1 border border-red-200 dark:border-red-800">
+                                                                                    <span className="text-[10px] font-bold tracking-wide text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-1.5 py-0.5 rounded flex items-center gap-1 border border-red-100 dark:border-red-800">
                                                                                         <Brain size={10} />
                                                                                         AI REJECTED
                                                                                     </span>
                                                                                 )}
                                                                             </div>
-                                                                            {app.aiScore != null && (
-                                                                                <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded flex items-center gap-1">
-                                                                                    <Brain size={10} />
-                                                                                    {app.aiScore}%
-                                                                                </span>
+
+                                                                            {/* AI SCORE */}
+                                                                            {app.evaluation?.aiScore != null && (
+                                                                                <div className="shrink-0">
+                                                                                    <span className={`text-sm font-bold ${app.evaluation.aiScore >= 80 ? 'text-emerald-600' :
+                                                                                            app.evaluation.aiScore >= 50 ? 'text-orange-500' :
+                                                                                                'text-red-500'
+                                                                                        }`}>
+                                                                                        {Math.round(app.evaluation.aiScore)}%
+                                                                                    </span>
+                                                                                </div>
                                                                             )}
                                                                         </div>
 
