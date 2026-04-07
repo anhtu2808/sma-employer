@@ -1,24 +1,83 @@
-import React, { useState } from 'react';
-import { useGetProposedCvsQuery } from '../../../apis/jobApi';
+import React, { useEffect, useRef, useState } from 'react';
+import { useGetProposedCvsQuery, useRefreshProposedCvsMutation } from '../../../apis/jobApi';
 import { useGetJobDetailQuery } from '@/apis/apis';
 import Loading from '@/components/Loading';
-import { ChevronLeft, ChevronRight, Eye, ExternalLink, MapPin, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink, MapPin, RefreshCw, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRocket, faWandMagicSparkles } from '../../../utils/icons';
+import toastMessage from '@/utils/toastMessage';
+
+const POLLING_INTERVAL = 5000;
 
 const ProposedCVs = ({ jobId }) => {
   const navigate = useNavigate();
-  const { data: jobData } = useGetJobDetailQuery(jobId, { skip: !jobId });
+  const [isJobPolling, setIsJobPolling] = useState(false);
+  const previousRefreshPendingRef = useRef(false);
+
+  const {
+    data: jobData,
+    refetch: refetchJobDetail,
+  } = useGetJobDetailQuery(jobId, {
+    skip: !jobId,
+    pollingInterval: isJobPolling ? POLLING_INTERVAL : 0,
+    refetchOnMountOrArgChange: true,
+  });
   const jobStatus = jobData?.data?.status;
   const isUnpublished = jobStatus === 'DRAFT' || jobStatus === 'PENDING_REVIEW';
+  const isRefreshPending = Boolean(jobData?.data?.proposeRefreshPending);
 
   const [params, setParams] = useState({ page: 0, size: 10 });
-  const { data: response, isFetching } = useGetProposedCvsQuery({ id: jobId, ...params }, { skip: !jobId });
+  const {
+    data: response,
+    isLoading,
+    isFetching,
+    refetch: refetchProposedCvs,
+  } = useGetProposedCvsQuery(
+    { id: jobId, ...params },
+    {
+      skip: !jobId || isUnpublished,
+      pollingInterval: isRefreshPending ? POLLING_INTERVAL : 0,
+      refetchOnMountOrArgChange: true,
+    }
+  );
+  const [refreshProposedCvs, { isLoading: isRefreshingRequest }] = useRefreshProposedCvsMutation();
   const data = response?.data || { content: [], totalElements: 0, pageNumber: params.page, pageSize: params.size, totalPages: 0 };
   const applications = data.content;
   const totalElements = data.totalElements;
   const totalPages = data.totalPages;
+  const isBusyRefreshing = isRefreshingRequest || isRefreshPending;
+
+  useEffect(() => {
+    setIsJobPolling(isRefreshPending);
+  }, [isRefreshPending]);
+
+  useEffect(() => {
+    const wasRefreshPending = previousRefreshPendingRef.current;
+
+    if (wasRefreshPending && !isRefreshPending) {
+      refetchProposedCvs();
+    }
+
+    previousRefreshPendingRef.current = isRefreshPending;
+  }, [isRefreshPending, refetchProposedCvs]);
+
+  const handleRefreshProposedCvs = async () => {
+    if (!jobId) return;
+
+    if (isRefreshPending) {
+      toastMessage.info('Refresh request is already in progress.');
+      return;
+    }
+
+    try {
+      const result = await refreshProposedCvs(jobId).unwrap();
+      toastMessage.success(result?.message || 'Refreshing proposed CVs in the background.');
+      await refetchJobDetail();
+    } catch (error) {
+      toastMessage.error(error?.data?.message || 'Failed to refresh proposed CVs');
+    }
+  };
 
   if (isUnpublished) {
     return (
@@ -38,20 +97,56 @@ const ProposedCVs = ({ jobId }) => {
             <FontAwesomeIcon icon={faWandMagicSparkles} className="text-primary text-base" />
             <span className="font-semibold text-neutral-800 dark:text-white">{totalElements}</span> proposed CVs found
           </div>
+          <button
+            type="button"
+            onClick={handleRefreshProposedCvs}
+            disabled={isBusyRefreshing}
+            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+              isBusyRefreshing
+                ? 'cursor-not-allowed bg-orange-50 text-orange-300 border border-orange-100'
+                : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
+            }`}
+            title={isRefreshPending ? 'Refresh request is already in progress' : 'Refresh proposed CVs'}
+          >
+            <RefreshCw size={15} className={isBusyRefreshing ? 'animate-spin' : ''} />
+            {isBusyRefreshing ? 'Refreshing...' : 'Refresh'}
+          </button>
         </div>
       </div>
 
+      {isRefreshPending && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl px-4 py-3 flex items-start gap-3">
+          <div className="mt-0.5 w-5 h-5 rounded-full border-2 border-amber-300 border-t-amber-600 animate-spin flex-shrink-0" />
+          <div>
+            <p className="text-sm font-semibold">Refreshing proposed CVs</p>
+            <p className="text-xs text-amber-700 mt-1">
+              AI is processing this job in the background. We&apos;ll keep the current list visible until the new results are ready.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Table */}
       <div className="bg-white dark:bg-surface-dark shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-2xl overflow-hidden flex flex-col" style={{ minHeight: 320 }}>
-        {isFetching ? (
+        {isLoading ? (
           <Loading className="py-20" size={96} />
         ) : applications.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center py-20 gap-3">
             <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center">
-              <Users size={28} className="text-orange-400" />
+              {isRefreshPending ? (
+                <RefreshCw size={28} className="text-orange-400 animate-spin" />
+              ) : (
+                <Users size={28} className="text-orange-400" />
+              )}
             </div>
-            <p className="text-sm font-semibold text-neutral-500">No proposed CVs yet</p>
-            <p className="text-xs text-neutral-400">Recommended candidates will appear here.</p>
+            <p className="text-sm font-semibold text-neutral-500">
+              {isRefreshPending ? 'Refreshing proposed CVs' : 'No proposed CVs yet'}
+            </p>
+            <p className="text-xs text-neutral-400">
+              {isRefreshPending
+                ? 'We are generating recommendations for this job. New results will appear here soon.'
+                : 'Recommended candidates will appear here.'}
+            </p>
           </div>
         ) : (
           <>
@@ -98,7 +193,7 @@ const ProposedCVs = ({ jobId }) => {
                       </td>
                       <td className="px-6 py-4 text-center">
                         <span className={`text-sm font-semibold ${getScoreColor(app.matchRate)}`}>
-                          {app.matchRate ? `${getDisplayRate(app.matchRate)}%` : '--'}
+                          {app.matchRate != null ? `${getDisplayRate(app.matchRate)}%` : '--'}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center">
@@ -122,6 +217,12 @@ const ProposedCVs = ({ jobId }) => {
             <div className="flex-shrink-0 px-6 py-4 border-t border-gray-50 dark:border-neutral-800 bg-white dark:bg-surface-dark flex items-center justify-between">
               <p className="text-xs font-medium text-gray-500">
                 Showing <span className="text-gray-900 dark:text-white font-semibold">{applications.length}</span> of <span className="text-gray-900 dark:text-white font-semibold">{totalElements}</span> Candidates
+                {isFetching && (
+                  <span className="ml-2 inline-flex items-center gap-1 text-orange-500">
+                    <RefreshCw size={12} className="animate-spin" />
+                    Updating...
+                  </span>
+                )}
               </p>
               <div className="flex items-center gap-2">
                 <button
@@ -173,14 +274,14 @@ const PublishFirstPlaceholder = ({ description, className = '' }) => (
 
 // Helper Components
 const getDisplayRate = (rate) => {
-  const numericRate = rate || 0;
+  const numericRate = Number(rate) || 0;
   return numericRate <= 1 && numericRate > 0
     ? Math.round(numericRate * 100)
     : Math.round(numericRate);
 };
 
 const getScoreColor = (score) => {
-  if (!score) return 'text-gray-300';
+  if (score == null) return 'text-gray-300';
   const percent = getDisplayRate(score);
   if (percent >= 80) return 'text-emerald-500';
   if (percent >= 60) return 'text-orange-500';

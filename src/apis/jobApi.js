@@ -133,6 +133,12 @@ export const jobApi = api.injectEndpoints({
       }),
       providesTags: (result, error, { id }) => [{ type: "Jobs", id: `PROPOSED_${id}` }],
     }),
+    refreshProposedCvs: builder.mutation({
+      query: (id) => ({
+        url: `${API_VERSION}/jobs/${id}/proposed-cv/refresh`,
+        method: "POST",
+      }),
+    }),
     getResumeDetail: builder.query({
       query: (id) => ({
         url: `${API_VERSION}/resumes/${id}`,
@@ -204,6 +210,7 @@ export const {
   useUpdateCriteriaMutation,
   useDeleteCriteriaMutation,
   useGetProposedCvsQuery,
+  useRefreshProposedCvsMutation,
   useGetResumeDetailQuery,
   useInviteCandidateMutation,
   useGetJobQuestionsQuery,
