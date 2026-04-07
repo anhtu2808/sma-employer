@@ -6,7 +6,7 @@ import {
     useGetCompanyApiKeysQuery,
     useUpdateCompanyApiKeyMutation,
 } from '@/apis/companyApiKeyApi';
-import { useGetCompaniesQuery } from '@/apis/companyApi';
+import { useGetCompaniesQuery, useGetCompanyProfileQuery } from '@/apis/companyApi';
 import { useGetMyRecruiterInfoQuery } from '@/apis/recruiterApi';
 import Loading from '@/components/Loading';
 import toastMessage from '@/utils/toastMessage';
@@ -25,13 +25,22 @@ const ApiManagementPage = () => {
     const isAdmin = tokenRole === 'ADMIN';
 
     const { data: myInfoData, isLoading: isRecruiterInfoLoading } = useGetMyRecruiterInfoQuery(undefined, { skip: isAdmin });
+    const { data: myCompanyProfileData } = useGetCompanyProfileQuery(undefined, { skip: isAdmin });
     const recruiterInfo = myInfoData?.data;
     const isRootRecruiter = recruiterInfo?.isRootRecruiter === true;
     const recruiterCompanyId = recruiterInfo?.company?.id || recruiterInfo?.companyId || '';
-    const recruiterCompanyName = recruiterInfo?.company?.name || recruiterInfo?.companyName || recruiterInfo?.company?.companyName || 'Your company';
+    const recruiterCompanyName =
+        recruiterInfo?.company?.name
+        || recruiterInfo?.companyName
+        || recruiterInfo?.company?.companyName
+        || myCompanyProfileData?.data?.name
+        || 'Your company';
     const hasPermission = isAdmin || isRootRecruiter;
 
-    const { data: companiesData, isLoading: isCompaniesLoading, isError: isCompaniesError } = useGetCompaniesQuery(undefined, {
+    const { data: companiesData, isLoading: isCompaniesLoading, isError: isCompaniesError } = useGetCompaniesQuery({
+        page: 0,
+        size: 500,
+    }, {
         skip: !isAdmin || !hasPermission,
     });
 

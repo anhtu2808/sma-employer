@@ -13,6 +13,11 @@ const Overview = ({ cvData }) => {
     const [inviteCandidate, { isLoading }] = useInviteCandidateMutation();
 
     const handleInvite = async () => {
+        if (!cvData?.candidateId || !Number.isInteger(Number(proposedResumeId))) {
+            toastMessage.error('This proposed CV is missing invitation data. Please reopen it from the proposal list.');
+            return;
+        }
+
         try {
             await inviteCandidate({
                 candidateId: cvData.candidateId,

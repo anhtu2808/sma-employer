@@ -10,11 +10,29 @@ import { faArrowLeft } from '../../utils/icons';
 const ProposedCVDetail = () => {
     const { jobId, resumeId } = useParams();
     const navigate = useNavigate();
-    const { data: response, isLoading } = useGetResumeDetailQuery(resumeId, { skip: !resumeId });
+    const numericResumeId = Number(resumeId);
+    const hasValidResumeId = Number.isInteger(numericResumeId) && numericResumeId > 0;
+    const { data: response, isLoading } = useGetResumeDetailQuery(numericResumeId, { skip: !hasValidResumeId });
 
     const cvData = response?.data;
 
     if (isLoading) return <Loading className="py-16" />;
+
+    if (!hasValidResumeId) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20">
+                <p className="text-gray-500 mb-4 text-center max-w-md">
+                    This proposed CV is still locked. Please unlock it from the proposed CV list before opening the full profile.
+                </p>
+                <button
+                    onClick={() => navigate(`/jobs/${jobId}`)}
+                    className="text-orange-500 hover:underline"
+                >
+                    Back to Job
+                </button>
+            </div>
+        );
+    }
 
     if (!cvData) {
         return (

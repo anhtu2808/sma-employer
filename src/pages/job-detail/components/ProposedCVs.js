@@ -1,8 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useGetProposedCvsQuery, useRefreshProposedCvsMutation } from '../../../apis/jobApi';
+import {
+  useGetProposedCvsQuery,
+  useRefreshProposedCvsMutation,
+  useRemoveProposedCvMutation,
+  useUnlockProposedCvMutation,
+} from '../../../apis/jobApi';
 import { useGetJobDetailQuery } from '@/apis/apis';
 import Loading from '@/components/Loading';
-import { ChevronLeft, ChevronRight, ExternalLink, MapPin, RefreshCw, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink, Lock, MapPin, RefreshCw, Trash2, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRocket, faWandMagicSparkles } from '../../../utils/icons';
@@ -42,11 +47,14 @@ const ProposedCVs = ({ jobId }) => {
     }
   );
   const [refreshProposedCvs, { isLoading: isRefreshingRequest }] = useRefreshProposedCvsMutation();
+  const [unlockProposedCv, { isLoading: isUnlocking }] = useUnlockProposedCvMutation();
+  const [removeProposedCv, { isLoading: isRemoving }] = useRemoveProposedCvMutation();
   const data = response?.data || { content: [], totalElements: 0, pageNumber: params.page, pageSize: params.size, totalPages: 0 };
   const applications = data.content;
   const totalElements = data.totalElements;
   const totalPages = data.totalPages;
   const isBusyRefreshing = isRefreshingRequest || isRefreshPending;
+  const isMutatingProposal = isUnlocking || isRemoving;
 
   useEffect(() => {
     setIsJobPolling(isRefreshPending);
@@ -76,6 +84,37 @@ const ProposedCVs = ({ jobId }) => {
       await refetchJobDetail();
     } catch (error) {
       toastMessage.error(error?.data?.message || 'Failed to refresh proposed CVs');
+    }
+  };
+
+  const handleUnlockProposal = async (proposal) => {
+    if (!proposal?.proposedResumeId) return;
+
+    try {
+      await unlockProposedCv(proposal.proposedResumeId).unwrap();
+      toastMessage.success('Candidate profile unlocked successfully.');
+      await refetchProposedCvs();
+    } catch (error) {
+      toastMessage.error(error?.data?.message || 'Failed to unlock proposed CV');
+    }
+  };
+
+  const handleRemoveProposal = async (proposal) => {
+    if (!proposal?.proposedResumeId) return;
+
+    const confirmed = window.confirm('Remove this proposed CV from the current recommendation list?');
+    if (!confirmed) return;
+
+    try {
+      await removeProposedCv({ proposedResumeId: proposal.proposedResumeId }).unwrap();
+      toastMessage.success('Proposed CV removed successfully.');
+      if (applications.length === 1 && params.page > 0) {
+        setParams((prev) => ({ ...prev, page: prev.page - 1 }));
+      } else {
+        await refetchProposedCvs();
+      }
+    } catch (error) {
+      toastMessage.error(error?.data?.message || 'Failed to remove proposed CV');
     }
   };
 
@@ -163,18 +202,18 @@ const ProposedCVs = ({ jobId }) => {
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-neutral-800">
                   {applications.map((app) => (
-                    <tr key={app.resumeId} className="hover:bg-gray-50/50 dark:hover:bg-neutral-800/50 transition-colors group">
+                    <tr key={app.proposedResumeId ?? app.resumeId} className="hover:bg-gray-50/50 dark:hover:bg-neutral-800/50 transition-colors group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4 min-w-0">
                           <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-black text-xs border border-orange-200">
-                            {app.fullName?.substring(0, 2).toUpperCase()}
+                            {app.isUnlocked ? app.fullName?.substring(0, 2).toUpperCase() : 'AI'}
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                              {app.fullName}
+                              {app.isUnlocked ? (app.fullName || 'Unknown Candidate') : 'Locked candidate profile'}
                             </p>
                             <p className="text-xs text-gray-500 flex items-center gap-1.5 truncate leading-none mt-1" title={app.address}>
-                              <MapPin size={12} className="flex-shrink-0" /> {app.address || 'No address provided'}
+                              <MapPin size={12} className="flex-shrink-0" /> {app.isUnlocked ? (app.address || 'No address provided') : 'Unlock to view location'}
                             </p>
                           </div>
                         </div>
@@ -188,7 +227,9 @@ const ProposedCVs = ({ jobId }) => {
                         <span className={`px-2.5 py-1 rounded-md text-xs font-semibold ${app.gender === 'MALE' ? 'bg-blue-50 text-blue-600' :
                             app.gender === 'FEMALE' ? 'bg-pink-50 text-pink-600' : 'bg-gray-50 text-gray-600'
                           }`}>
-                          {app.gender === 'MALE' ? 'Male' : app.gender === 'FEMALE' ? 'Female' : 'Other'}
+                          {app.isUnlocked
+                            ? (app.gender === 'MALE' ? 'Male' : app.gender === 'FEMALE' ? 'Female' : 'Other')
+                            : 'Hidden'}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center">
@@ -198,12 +239,37 @@ const ProposedCVs = ({ jobId }) => {
                       </td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex items-center justify-center gap-1">
+                          {app.isUnlocked && app.resumeId ? (
+                            <button
+                              onClick={() => navigate(`/jobs/${jobId}/proposed-cvs/${app.resumeId}?proposedResumeId=${app.proposedResumeId}`)}
+                              className="p-2.5 bg-gray-50 dark:bg-neutral-800 hover:bg-orange-500/10 text-gray-400 hover:text-orange-500 rounded-xl transition-all border border-transparent hover:border-orange-500/20"
+                              title="View Profile"
+                            >
+                              <ExternalLink size={16} />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleUnlockProposal(app)}
+                              disabled={isMutatingProposal}
+                              className={`p-2.5 rounded-xl transition-all border ${isMutatingProposal
+                                ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-300'
+                                : 'border-transparent bg-gray-50 text-gray-400 hover:border-orange-500/20 hover:bg-orange-500/10 hover:text-orange-500'
+                                }`}
+                              title="Unlock Profile"
+                            >
+                              <Lock size={16} />
+                            </button>
+                          )}
                           <button
-                            onClick={() => navigate(`/jobs/${jobId}/proposed-cvs/${app.resumeId}?proposedResumeId=${app.proposedResumeId}`)}
-                            className="p-2.5 bg-gray-50 dark:bg-neutral-800 hover:bg-orange-500/10 text-gray-400 hover:text-orange-500 rounded-xl transition-all border border-transparent hover:border-orange-500/20"
-                            title="View Profile"
+                            onClick={() => handleRemoveProposal(app)}
+                            disabled={isMutatingProposal}
+                            className={`p-2.5 rounded-xl transition-all border ${isMutatingProposal
+                              ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-300'
+                              : 'border-transparent bg-gray-50 text-gray-400 hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500'
+                              }`}
+                            title="Remove Proposal"
                           >
-                            <ExternalLink size={16} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </td>

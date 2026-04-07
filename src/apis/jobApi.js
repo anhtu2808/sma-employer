@@ -139,6 +139,27 @@ export const jobApi = api.injectEndpoints({
         method: "POST",
       }),
     }),
+    unlockProposedCv: builder.mutation({
+      query: (proposedResumeId) => ({
+        url: `${API_VERSION}/propose-cv/${proposedResumeId}/unlock`,
+        method: "PUT",
+      }),
+      invalidatesTags: (_, __, proposedResumeId) => [
+        { type: "Jobs", id: "LIST" },
+        { type: "Jobs", id: `PROPOSED_DETAIL_${proposedResumeId}` },
+      ],
+    }),
+    removeProposedCv: builder.mutation({
+      query: ({ proposedResumeId, removeStatus = "REMOVED" }) => ({
+        url: `${API_VERSION}/propose-cv/${proposedResumeId}`,
+        method: "PUT",
+        params: { removeStatus },
+      }),
+      invalidatesTags: (_, __, { proposedResumeId }) => [
+        { type: "Jobs", id: "LIST" },
+        { type: "Jobs", id: `PROPOSED_DETAIL_${proposedResumeId}` },
+      ],
+    }),
     getResumeDetail: builder.query({
       query: (id) => ({
         url: `${API_VERSION}/resumes/${id}`,
@@ -151,6 +172,11 @@ export const jobApi = api.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: (_, __, body) => (
+        body?.jobId != null
+          ? [{ type: "Jobs", id: `PROPOSED_${body.jobId}` }]
+          : []
+      ),
     }),
     getJobQuestions: builder.query({
       query: (params) => ({
@@ -211,6 +237,8 @@ export const {
   useDeleteCriteriaMutation,
   useGetProposedCvsQuery,
   useRefreshProposedCvsMutation,
+  useUnlockProposedCvMutation,
+  useRemoveProposedCvMutation,
   useGetResumeDetailQuery,
   useInviteCandidateMutation,
   useGetJobQuestionsQuery,
