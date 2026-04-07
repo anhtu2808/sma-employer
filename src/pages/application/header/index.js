@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select, Tabs, ConfigProvider } from 'antd';
-import { Search, Filter, Plus, LayoutGrid, List as ListIcon, Download, Archive } from 'lucide-react';
+import { Search, Filter, Plus, LayoutGrid, List as ListIcon, Download, Archive, FileArchive } from 'lucide-react';
 import Button from '@/components/Button';
 import { getJobStatusConfig } from '@/constrant/application';
 import { Dropdown } from 'antd';
@@ -31,6 +31,8 @@ const ApplicationHeader = ({
     onArchiveJob,
     statusFilter,
     onStatusFilterChange,
+    onDownloadZip,
+    isDownloadingZip,
 }) => {
 
     const exportMenuItems = [
@@ -45,8 +47,22 @@ const ApplicationHeader = ({
             label: 'Export as CSV (.csv)',
             icon: <FontAwesomeIcon icon={faFileLines} className="text-sm" />,
             onClick: () => onExport('CSV')
+        }, {
+            type: 'divider',
+        },
+        {
+            key: 'ZIP',
+            label: 'Download all CVs (.zip)',
+            icon: <FileArchive size={16} className="text-orange-500" />,
+            disabled: isDownloadingZip,
+            onClick: onDownloadZip
         }
     ];
+    const getExportButtonLabel = () => {
+        if (isExporting) return 'Exporting...';
+        if (isDownloadingZip) return 'Zipping...';
+        return 'Export';
+    };
     return (
         <div className="bg-white dark:bg-surface-dark shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-2xl p-4">
             <div className="flex flex-col gap-4">
@@ -187,14 +203,14 @@ const ApplicationHeader = ({
                         >
                             Filters
                         </Button>
-                        <Dropdown menu={{ items: exportMenuItems }} trigger={['click']} disabled={isExporting}>
+                        <Dropdown menu={{ items: exportMenuItems }} trigger={['click']} disabled={isExporting || isDownloadingZip}>
                             <Button
                                 mode="secondary"
                                 shape="round"
-                                loading={isExporting}
+                                loading={isExporting || isDownloadingZip}
                                 iconLeft={<Download size={16} />}
                             >
-                                {isExporting ? 'Exporting...' : 'Export'}
+                                {getExportButtonLabel()}
                             </Button>
                         </Dropdown>
                     </div>

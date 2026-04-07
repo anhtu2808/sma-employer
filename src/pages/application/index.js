@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { useGetApplicationsQuery, useUpdateApplicationStatusMutation, useLazyGetShortlistedExportQuery } from '@/apis/applicationApi';
+import { useGetApplicationsQuery, useUpdateApplicationStatusMutation, useLazyGetShortlistedExportQuery, useLazyDownloadResumesZipQuery } from '@/apis/applicationApi';
 import { useGetJobsQuery, useUpdateJobStatusMutation } from '@/apis/jobApi';
 
 import { Drawer, Modal as AntModal } from 'antd';
@@ -60,6 +60,7 @@ const ApplicationManagement = () => {
     const [triggerExport, { isFetching: isExporting }] = useLazyGetShortlistedExportQuery();
     const [updateJobStatus] = useUpdateJobStatusMutation();
     const [showToCandidate, setShowToCandidate] = useState(false);
+    const [triggerDownloadZip, { isFetching: isDownloadingZip }] = useLazyDownloadResumesZipQuery();
 
     usePageHeader('Application Management', 'Track and manage candidate applications for your jobs');
 
@@ -190,6 +191,29 @@ const ApplicationManagement = () => {
         }
     };
 
+    const handleDownloadZip = async () => {
+        if (!selectedJob) return toastMessage.warning("Please select a job first");
+
+        try {
+            toastMessage.info("Preparing ZIP file, please wait...");
+            const blob = await triggerDownloadZip(selectedJob.id).unwrap();
+
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Resumes_${selectedJob.name.replace(/\s+/g, '_')}.zip`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+            toastMessage.success("Download started!");
+        } catch (error) {
+            console.error("ZIP Error:", error);
+            toastMessage.error("Failed to download resumes");
+        }
+    };
+
     return (
         <div className="h-full flex flex-col space-y-3 animate-fadeIn font-body">
 
@@ -205,6 +229,8 @@ const ApplicationManagement = () => {
                 setIsFilterOpen={setIsFilterOpen}
                 isExporting={isExporting}
                 onExport={handleExportExcel}
+                onDownloadZip={handleDownloadZip}
+                isDownloadingZip={isDownloadingZip}
                 statusFilter={statusFilter}
                 onStatusFilterChange={handleStatusFilterChange}
                 onArchiveJob={(job) => {
