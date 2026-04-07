@@ -23,6 +23,9 @@ const Header = () => {
                             <Link to="/dashboard" className="text-sm font-bold text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">
                                 Dashboard
                             </Link>
+                            <a href="/docs/integration-api.html" className="text-sm font-bold text-neutral-600 dark:text-neutral-300 hover:text-primary transition-colors">
+                                Documentation
+                            </a>
                         </>
                     )}
                 </nav>

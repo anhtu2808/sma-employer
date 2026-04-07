@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,46 +7,85 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    body{font-family:'Inter',sans-serif;background:radial-gradient(circle at top right,rgba(249,115,22,.12),transparent 28%),radial-gradient(circle at bottom left,rgba(14,165,233,.1),transparent 24%),#f8fafc;color:#0f172a}
-    code,pre{font-family:'Fira Code',monospace} html{scroll-behavior:smooth}
-    .card{background:rgba(255,255,255,.92);border:1px solid #e2e8f0;border-radius:24px;box-shadow:0 20px 60px rgba(15,23,42,.06)}
-    .chip{display:inline-flex;padding:.35rem .75rem;border-radius:999px;border:1px solid #fed7aa;background:#fff7ed;color:#ea580c;font-weight:800;font-size:.75rem;letter-spacing:.08em}
-    .endpoint{display:inline-flex;align-items:center;justify-content:center;min-width:3.6rem;padding:.25rem .7rem;border-radius:999px;background:#f97316;color:#fff;font-weight:800;font-size:.75rem;letter-spacing:.08em}
-    .inline{display:inline-block;padding:.12rem .4rem;border-radius:.45rem;background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;font-size:.9em}
-    .toc a{display:block;padding:.65rem .85rem;border-radius:14px;color:#334155;font-weight:600}.toc a:hover{background:#fff7ed;color:#c2410c}
-    .tbl{overflow:auto;border:1px solid #e2e8f0;border-radius:18px;background:#fff}.tbl table{width:100%;min-width:680px;border-collapse:collapse}
-    .tbl th,.tbl td{padding:1rem;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top}.tbl th{background:#f8fafc;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:#64748b;font-weight:800}.tbl tr:last-child td{border-bottom:none}
-    pre{background:#0f172a;color:#e2e8f0;border:1px solid #1e293b;border-radius:18px;padding:1rem;overflow:auto;font-size:.86rem;line-height:1.7}
-    .status{display:inline-flex;padding:.25rem .6rem;border-radius:999px;font-size:.75rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
-    .processing{background:#eff6ff;color:#2563eb}.partial{background:#fff7ed;color:#ea580c}.completed{background:#ecfdf5;color:#059669}.failed{background:#fef2f2;color:#dc2626}
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top right, rgba(249,115,22,.12), transparent 28%), radial-gradient(circle at bottom left, rgba(14,165,233,.1), transparent 24%), #f8fafc;
+      color: #0f172a;
+    }
+    code, pre { font-family: 'Fira Code', monospace; }
+    .card { background: rgba(255,255,255,.92); border: 1px solid #e2e8f0; border-radius: 24px; box-shadow: 0 20px 60px rgba(15,23,42,.06); }
+    .chip { display: inline-flex; padding: .35rem .75rem; border-radius: 999px; border: 1px solid #fed7aa; background: #fff7ed; color: #ea580c; font-weight: 800; font-size: .75rem; letter-spacing: .08em; }
+    .endpoint { display: inline-flex; align-items: center; justify-content: center; min-width: 3.6rem; padding: .25rem .7rem; border-radius: 999px; background: #f97316; color: #fff; font-weight: 800; font-size: .75rem; letter-spacing: .08em; }
+    .inline { display: inline-block; padding: .12rem .4rem; border-radius: .45rem; background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; font-size: .9em; }
+    .toc a { display: block; padding: .65rem .85rem; border-radius: 14px; color: #334155; font-weight: 600; }
+    .toc a:hover { background: #fff7ed; color: #c2410c; }
+    .tbl { overflow: auto; border: 1px solid #e2e8f0; border-radius: 18px; background: #fff; }
+    .tbl table { width: 100%; min-width: 680px; border-collapse: collapse; }
+    .tbl th, .tbl td { padding: 1rem; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
+    .tbl th { background: #f8fafc; font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: #64748b; font-weight: 800; }
+    .tbl tr:last-child td { border-bottom: none; }
+    pre { background: #0f172a; color: #e2e8f0; border: 1px solid #1e293b; border-radius: 18px; padding: 1rem; overflow: auto; font-size: .86rem; line-height: 1.7; }
+    .status { display: inline-flex; padding: .25rem .6rem; border-radius: 999px; font-size: .75rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+    .processing { background: #eff6ff; color: #2563eb; }
+    .partial { background: #fff7ed; color: #ea580c; }
+    .completed { background: #ecfdf5; color: #059669; }
+    .failed { background: #fef2f2; color: #dc2626; }
   </style>
 </head>
 <body class="antialiased">
+  <header class="w-full z-50 bg-white/80 backdrop-blur-md border-b border-neutral-200 sticky top-0">
+    <div class="container mx-auto px-6 h-16 flex justify-between items-center relative">
+      <div class="flex-shrink-0 z-10">
+        <a href="/" class="flex items-center gap-2 group">
+          <img src="../sma-logo.svg" alt="SmartRecruit Logo" class="w-7 h-7">
+          <span class="text-base font-bold text-gray-900 group-hover:text-orange-500 transition-colors">SmartRecruit</span>
+        </a>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <a href="/" class="text-sm font-bold text-slate-600 hover:text-orange-500 transition-colors">Home</a>
+        <a href="/dashboard" class="text-sm font-bold text-slate-600 hover:text-orange-500 transition-colors">Dashboard</a>
+        <a href="/docs/integration-api.html" class="text-sm text-orange-500 font-bold">Documentation</a>
+      </nav>
+    </div>
+  </header>
+
   <div class="max-w-7xl mx-auto px-6 py-8 lg:py-12">
-    <header class="card overflow-hidden mb-8">
+    <section class="card overflow-hidden mb-8">
       <div class="px-6 py-8 md:px-10 md:py-10 lg:px-12 lg:py-12 bg-gradient-to-br from-orange-50 via-white to-sky-50">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-11 h-11 rounded-2xl bg-white border border-orange-100 flex items-center justify-center"><img src="../sma-logo.svg" alt="SmartRecruit" class="w-8 h-8"></div>
+          <div class="w-11 h-11 rounded-2xl bg-white border border-orange-100 flex items-center justify-center">
+            <img src="../sma-logo.svg" alt="SmartRecruit" class="w-8 h-8">
+          </div>
           <span class="text-sm font-extrabold tracking-[0.22em] uppercase text-slate-500">SmartRecruit Developer Docs</span>
         </div>
         <h1 class="text-4xl lg:text-6xl font-black tracking-tight leading-tight">Integration API Documentation</h1>
-        <p class="mt-5 text-lg lg:text-xl text-slate-600 leading-relaxed max-w-3xl">Hướng dẫn tích hợp Smart Recruit cho bên thứ ba để parse CV, chấm điểm theo JD và lấy kết quả bất đồng bộ bằng polling hoặc webhook.</p>
+        <p class="mt-5 text-lg lg:text-xl text-slate-600 leading-relaxed max-w-3xl">Integrate SmartRecruit with third-party systems to parse resumes, score candidates against a job description, and retrieve asynchronous results through polling or webhooks.</p>
         <div class="mt-8 flex flex-wrap gap-3">
-          <span class="chip">PARSING</span><span class="chip">MATCHING</span><span class="chip">PARSING_AND_MATCHING</span>
+          <span class="chip">PARSING</span>
+          <span class="chip">MATCHING</span>
+          <span class="chip">PARSING_AND_MATCHING</span>
         </div>
         <div class="grid lg:grid-cols-3 gap-4 mt-8">
-          <div class="rounded-2xl bg-white/90 border border-slate-200 p-5"><p class="text-xs font-black tracking-[0.18em] uppercase text-slate-400">Authentication</p><p class="mt-2 text-sm text-slate-600">Mọi request dùng header <span class="inline">X-API-Key</span>.</p></div>
-          <div class="rounded-2xl bg-white/90 border border-slate-200 p-5"><p class="text-xs font-black tracking-[0.18em] uppercase text-slate-400">Request Format</p><p class="mt-2 text-sm text-slate-600">Tạo job bằng <span class="inline">multipart/form-data</span>, tối đa 10 CV PDF.</p></div>
-          <div class="rounded-2xl bg-white/90 border border-slate-200 p-5"><p class="text-xs font-black tracking-[0.18em] uppercase text-slate-400">Result Delivery</p><p class="mt-2 text-sm text-slate-600">Nhận tín hiệu qua webhook hoặc polling rồi gọi <span class="inline">/results</span>.</p></div>
+          <div class="rounded-2xl bg-white/90 border border-slate-200 p-5"><p class="text-xs font-black tracking-[0.18em] uppercase text-slate-400">Authentication</p><p class="mt-2 text-sm text-slate-600">Every request must include the <span class="inline">X-API-Key</span> header.</p></div>
+          <div class="rounded-2xl bg-white/90 border border-slate-200 p-5"><p class="text-xs font-black tracking-[0.18em] uppercase text-slate-400">Request Format</p><p class="mt-2 text-sm text-slate-600">Create jobs with <span class="inline">multipart/form-data</span> and up to 10 resume PDFs per request.</p></div>
+          <div class="rounded-2xl bg-white/90 border border-slate-200 p-5"><p class="text-xs font-black tracking-[0.18em] uppercase text-slate-400">Result Delivery</p><p class="mt-2 text-sm text-slate-600">Use webhooks for notifications, then call <span class="inline">/results</span> to fetch the final payload.</p></div>
         </div>
         <div class="mt-6 rounded-2xl bg-slate-950 text-slate-200 px-5 py-4 border border-slate-800">
-          <p class="text-sm leading-relaxed"><strong class="text-white">Lưu ý:</strong> Trang này chỉ tập trung vào hướng dẫn tích hợp API. Việc cấp <span class="inline">apiKey</span>, <span class="inline">webhookSecret</span> và scope được Smart Recruit xử lý riêng.</p>
+          <p class="text-sm leading-relaxed"><strong class="text-white">Important:</strong> This page focuses on API integration only. SmartRecruit provisions <span class="inline">apiKey</span>, <span class="inline">webhookSecret</span>, and feature scope separately.</p>
         </div>
       </div>
-    </header>
+    </section>
 
     <div class="grid lg:grid-cols-[280px_minmax(0,1fr)] gap-8">
-      <aside class="lg:sticky lg:top-8 h-fit card p-5">
+      <aside class="lg:sticky lg:top-24 h-fit card p-5">
+        <p class="text-xs font-black tracking-[0.22em] uppercase text-slate-400 mb-3">Documents</p>
+        <nav class="toc mb-6">
+          <a href="/docs/integration-api.html" class="bg-orange-50 text-orange-700 border border-orange-100">Integration API</a>
+          <a href="/docs/webhooks.html">Webhook Guide</a>
+        </nav>
+
         <p class="text-xs font-black tracking-[0.22em] uppercase text-slate-400 mb-3">On this page</p>
         <nav class="toc">
           <a href="#quick-start">Quick Start</a>
@@ -60,73 +99,72 @@
           <a href="#checklist">Checklist</a>
         </nav>
         <div class="mt-6 p-4 rounded-2xl bg-orange-50 border border-orange-100">
-          <p class="text-xs font-black tracking-[0.18em] uppercase text-orange-500 mb-2">Base URL</p>
-          <code class="text-sm text-orange-700 break-all">https://your-domain.com/v1/integration</code>
-          <p class="mt-2 text-sm text-orange-700">Thay domain theo môi trường dev, staging hoặc production.</p>
+          <p class="text-xs font-black tracking-[0.18em] uppercase text-orange-500 mb-2">Environment note</p>
+          <p class="text-sm text-orange-700">Replace the domain with your development, staging, or production environment before going live.</p>
         </div>
       </aside>
 
       <main class="space-y-8">
-        <section id="quick-start" class="card p-6 lg:p-8">
+        <section id="quick-start" class="card p-6 lg:p-8 scroll-mt-24">
           <div class="flex items-center gap-4 mb-6"><span class="text-orange-500 text-sm font-black tracking-[0.2em] uppercase">01</span><h2 class="text-2xl lg:text-3xl font-black tracking-tight">Quick Start</h2></div>
           <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
-            <div class="rounded-2xl border border-slate-200 bg-white p-5"><h3 class="font-bold text-slate-900">1. Nhận API key</h3><p class="mt-2 text-sm text-slate-600">Xác nhận scope là <span class="inline">PARSING</span>, <span class="inline">MATCHING</span> hoặc <span class="inline">PARSING_AND_MATCHING</span>.</p></div>
-            <div class="rounded-2xl border border-slate-200 bg-white p-5"><h3 class="font-bold text-slate-900">2. Tạo job</h3><p class="mt-2 text-sm text-slate-600">Upload 1 đến 10 CV PDF bằng <span class="inline">multipart/form-data</span>. Matching cần thêm <span class="inline">jdText</span> hoặc <span class="inline">jdFile</span>.</p></div>
-            <div class="rounded-2xl border border-slate-200 bg-white p-5"><h3 class="font-bold text-slate-900">3. Lưu jobId</h3><p class="mt-2 text-sm text-slate-600">Response đầu tiên chỉ là thông tin khởi tạo. Hãy lưu <span class="inline">jobId</span> và <span class="inline">externalRequestId</span>.</p></div>
-            <div class="rounded-2xl border border-slate-200 bg-white p-5"><h3 class="font-bold text-slate-900">4. Lấy kết quả</h3><p class="mt-2 text-sm text-slate-600">Theo dõi trạng thái qua polling hoặc webhook. Khi job kết thúc, gọi <span class="inline">GET /jobs/{id}/results</span>.</p></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5"><h3 class="font-bold text-slate-900">1. Receive your API key</h3><p class="mt-2 text-sm text-slate-600">Confirm whether your key is scoped for <span class="inline">PARSING</span>, <span class="inline">MATCHING</span>, or <span class="inline">PARSING_AND_MATCHING</span>.</p></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5"><h3 class="font-bold text-slate-900">2. Create a job</h3><p class="mt-2 text-sm text-slate-600">Upload 1 to 10 resume PDFs through <span class="inline">multipart/form-data</span>. Matching also requires <span class="inline">jdText</span> or <span class="inline">jdFile</span>.</p></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5"><h3 class="font-bold text-slate-900">3. Store the identifiers</h3><p class="mt-2 text-sm text-slate-600">The initial response confirms job creation. Persist both <span class="inline">jobId</span> and <span class="inline">externalRequestId</span>.</p></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5"><h3 class="font-bold text-slate-900">4. Fetch the final result</h3><p class="mt-2 text-sm text-slate-600">Track status by polling or webhook. When the job finishes, call <span class="inline">GET /jobs/{id}/results</span>.</p></div>
           </div>
         </section>
 
-        <section id="authentication" class="card p-6 lg:p-8">
+        <section id="authentication" class="card p-6 lg:p-8 scroll-mt-24">
           <div class="flex items-center gap-4 mb-6"><span class="text-orange-500 text-sm font-black tracking-[0.2em] uppercase">02</span><h2 class="text-2xl lg:text-3xl font-black tracking-tight">Authentication & Scope</h2></div>
-          <p class="text-slate-600 mb-4">Tất cả endpoint integration dùng API key trong header:</p>
+          <p class="text-slate-600 mb-4">All integration endpoints require the API key in the request header:</p>
           <pre>X-API-Key: &lt;your-api-key&gt;</pre>
           <div class="tbl mt-6">
             <table>
-              <thead><tr><th>Scope</th><th>Allowed Endpoints</th><th>Ghi chú</th></tr></thead>
+              <thead><tr><th>Scope</th><th>Allowed Endpoints</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td><code>PARSING</code></td><td><code>POST /parsing-jobs</code></td><td>Chỉ parse CV.</td></tr>
-                <tr><td><code>MATCHING</code></td><td><code>POST /matching-jobs</code></td><td>Kết quả cuối chỉ có <code>matchingResult</code>.</td></tr>
-                <tr><td><code>PARSING_AND_MATCHING</code></td><td>Toàn bộ endpoint integration</td><td>Trả đầy đủ cả parse và matching.</td></tr>
+                <tr><td><code>PARSING</code></td><td><code>POST /parsing-jobs</code></td><td>Resume parsing only.</td></tr>
+                <tr><td><code>MATCHING</code></td><td><code>POST /matching-jobs</code></td><td>The final payload contains only <code>matchingResult</code>.</td></tr>
+                <tr><td><code>PARSING_AND_MATCHING</code></td><td>All integration endpoints</td><td>Returns both parsing and matching output.</td></tr>
               </tbody>
             </table>
           </div>
-          <div class="mt-6 rounded-2xl bg-orange-50 border border-orange-100 p-5"><p class="text-sm text-orange-800"><strong class="text-orange-900">Quy tắc truy cập job:</strong> chỉ API key đã tạo job mới được phép đọc trạng thái và kết quả của job đó.</p></div>
+          <div class="mt-6 rounded-2xl bg-orange-50 border border-orange-100 p-5"><p class="text-sm text-orange-800"><strong class="text-orange-900">Job ownership rule:</strong> only the API key that created a job can retrieve its status and results.</p></div>
         </section>
 
-        <section id="endpoints" class="card p-6 lg:p-8">
+        <section id="endpoints" class="card p-6 lg:p-8 scroll-mt-24">
           <div class="flex items-center gap-4 mb-6"><span class="text-orange-500 text-sm font-black tracking-[0.2em] uppercase">03</span><h2 class="text-2xl lg:text-3xl font-black tracking-tight">Endpoint Overview</h2></div>
           <div class="tbl">
             <table>
-              <thead><tr><th>Nhu cầu</th><th>Endpoint</th><th>Khi nào dùng</th></tr></thead>
+              <thead><tr><th>Use Case</th><th>Endpoint</th><th>When to Use It</th></tr></thead>
               <tbody>
-                <tr><td>Parse CV</td><td><span class="endpoint">POST</span> <code>/parsing-jobs</code></td><td>Cần trích xuất dữ liệu CV.</td></tr>
-                <tr><td>Matching theo JD</td><td><span class="endpoint">POST</span> <code>/matching-jobs</code></td><td>Cần điểm phù hợp với JD.</td></tr>
-                <tr><td>Parse + Matching</td><td><span class="endpoint">POST</span> <code>/parsing-matching-jobs</code></td><td>Cần đầy đủ <code>parsingResult</code> và <code>matchingResult</code>.</td></tr>
-                <tr><td>Kiểm tra tiến độ</td><td><span class="endpoint">GET</span> <code>/jobs/{id}</code></td><td>Chỉ trả trạng thái job và item.</td></tr>
-                <tr><td>Lấy kết quả cuối</td><td><span class="endpoint">GET</span> <code>/jobs/{id}/results</code></td><td>Trả payload parse/matching chi tiết.</td></tr>
+                <tr><td>Resume parsing</td><td><span class="endpoint">POST</span> <code>/parsing-jobs</code></td><td>Extract structured data from resumes.</td></tr>
+                <tr><td>JD matching</td><td><span class="endpoint">POST</span> <code>/matching-jobs</code></td><td>Score candidates against a job description.</td></tr>
+                <tr><td>Parsing + matching</td><td><span class="endpoint">POST</span> <code>/parsing-matching-jobs</code></td><td>Return both <code>parsingResult</code> and <code>matchingResult</code>.</td></tr>
+                <tr><td>Progress check</td><td><span class="endpoint">GET</span> <code>/jobs/{id}</code></td><td>Get job-level and item-level status only.</td></tr>
+                <tr><td>Final result</td><td><span class="endpoint">GET</span> <code>/jobs/{id}/results</code></td><td>Retrieve the detailed parsing and matching payload.</td></tr>
               </tbody>
             </table>
           </div>
           <div class="grid md:grid-cols-3 gap-4 mt-6">
-            <div class="rounded-2xl border border-slate-200 bg-white p-5"><p class="font-bold text-slate-900">File rules</p><p class="mt-2 text-sm text-slate-600">CV bắt buộc là PDF. Nếu gửi JD bằng file thì <span class="inline">jdFile</span> cũng phải là PDF.</p></div>
-            <div class="rounded-2xl border border-slate-200 bg-white p-5"><p class="font-bold text-slate-900">Batch size</p><p class="mt-2 text-sm text-slate-600">Một request chứa tối thiểu 1 CV và tối đa 10 CV.</p></div>
-            <div class="rounded-2xl border border-slate-200 bg-white p-5"><p class="font-bold text-slate-900">Time format</p><p class="mt-2 text-sm text-slate-600">Các mốc thời gian dùng ISO-8601.</p></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5"><p class="font-bold text-slate-900">File rules</p><p class="mt-2 text-sm text-slate-600">Resume files must be PDF. If you send a JD file, <span class="inline">jdFile</span> must also be a PDF.</p></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5"><p class="font-bold text-slate-900">Batch size</p><p class="mt-2 text-sm text-slate-600">Each request accepts at least 1 and at most 10 resume files.</p></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5"><p class="font-bold text-slate-900">Time format</p><p class="mt-2 text-sm text-slate-600">All timestamps use ISO-8601 formatting.</p></div>
           </div>
         </section>
 
-        <section id="job-creation" class="card p-6 lg:p-8">
+        <section id="job-creation" class="card p-6 lg:p-8 scroll-mt-24">
           <div class="flex items-center gap-4 mb-6"><span class="text-orange-500 text-sm font-black tracking-[0.2em] uppercase">04</span><h2 class="text-2xl lg:text-3xl font-black tracking-tight">Create Jobs</h2></div>
           <div class="space-y-8">
             <div>
               <h3 class="text-xl font-black text-slate-900 mb-4">A. Parsing Job</h3>
               <div class="tbl">
                 <table>
-                  <thead><tr><th>Field</th><th>Bắt buộc</th><th>Kiểu</th><th>Mô tả</th></tr></thead>
+                  <thead><tr><th>Field</th><th>Required</th><th>Type</th><th>Description</th></tr></thead>
                   <tbody>
-                    <tr><td><code>cvFiles</code></td><td>Có</td><td><code>file[]</code></td><td>Danh sách CV PDF.</td></tr>
-                    <tr><td><code>webhookUrl</code></td><td>Không</td><td><code>string</code></td><td>Webhook riêng cho request hiện tại.</td></tr>
-                    <tr><td><code>externalRequestId</code></td><td>Không</td><td><code>string</code></td><td>ID nghiệp vụ phía đối tác.</td></tr>
+                    <tr><td><code>cvFiles</code></td><td>Yes</td><td><code>file[]</code></td><td>List of resume PDF files.</td></tr>
+                    <tr><td><code>webhookUrl</code></td><td>No</td><td><code>string</code></td><td>Per-request webhook override.</td></tr>
+                    <tr><td><code>externalRequestId</code></td><td>No</td><td><code>string</code></td><td>Your own business identifier for this submission.</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -141,24 +179,24 @@
               <h3 class="text-xl font-black text-slate-900 mb-4">B. Matching Job</h3>
               <div class="tbl">
                 <table>
-                  <thead><tr><th>Field</th><th>Bắt buộc</th><th>Kiểu</th><th>Mô tả</th></tr></thead>
+                  <thead><tr><th>Field</th><th>Required</th><th>Type</th><th>Description</th></tr></thead>
                   <tbody>
-                    <tr><td><code>cvFiles</code></td><td>Có</td><td><code>file[]</code></td><td>Danh sách CV PDF.</td></tr>
-                    <tr><td><code>jdText</code></td><td>Có điều kiện</td><td><code>string</code></td><td>Nội dung JD dạng text.</td></tr>
-                    <tr><td><code>jdFile</code></td><td>Có điều kiện</td><td><code>file</code></td><td>JD PDF.</td></tr>
-                    <tr><td><code>webhookUrl</code></td><td>Không</td><td><code>string</code></td><td>Webhook callback riêng.</td></tr>
-                    <tr><td><code>externalRequestId</code></td><td>Không</td><td><code>string</code></td><td>ID nghiệp vụ phía đối tác.</td></tr>
+                    <tr><td><code>cvFiles</code></td><td>Yes</td><td><code>file[]</code></td><td>List of resume PDF files.</td></tr>
+                    <tr><td><code>jdText</code></td><td>Conditionally</td><td><code>string</code></td><td>Job description as plain text.</td></tr>
+                    <tr><td><code>jdFile</code></td><td>Conditionally</td><td><code>file</code></td><td>Job description as a PDF file.</td></tr>
+                    <tr><td><code>webhookUrl</code></td><td>No</td><td><code>string</code></td><td>Per-request webhook callback URL.</td></tr>
+                    <tr><td><code>externalRequestId</code></td><td>No</td><td><code>string</code></td><td>Your own business identifier for this submission.</td></tr>
                   </tbody>
                 </table>
               </div>
               <div class="mt-4 rounded-2xl bg-slate-50 border border-slate-200 p-5">
                 <ul class="list-disc pl-5 text-sm text-slate-600 space-y-2">
-                  <li>Phải có ít nhất một trong hai trường <code>jdText</code> hoặc <code>jdFile</code>.</li>
-                  <li>Nếu truyền cả hai, hệ thống ưu tiên <code>jdText</code>.</li>
-                  <li>Với <code>MATCHING</code>, <code>parsingResult</code> sẽ là <code>null</code>.</li>
+                  <li>You must send at least one of <code>jdText</code> or <code>jdFile</code>.</li>
+                  <li>If both are provided, the system prioritizes <code>jdText</code>.</li>
+                  <li>With <code>MATCHING</code> scope, <code>parsingResult</code> is always <code>null</code>.</li>
                 </ul>
               </div>
-              <div class="mt-4 space-y-4"><pre>curl --location 'https://your-domain.com/v1/integration/matching-jobs' \
+              <div class="mt-4"><pre>curl --location 'https://your-domain.com/v1/integration/matching-jobs' \
   --header 'X-API-Key: sma_xxx' \
   --form 'externalRequestId=REQ-20260406-002' \
   --form 'jdText=Senior Java Developer with Spring Boot, PostgreSQL, REST API and Docker.' \
@@ -166,8 +204,8 @@
             </div>
 
             <div>
-              <h3 class="text-xl font-black text-slate-900 mb-4">C. Parsing And Matching Job</h3>
-              <p class="text-slate-600 mb-4">Form fields giống matching job, nhưng payload kết quả sẽ trả đầy đủ cả <code>parsingResult</code> và <code>matchingResult</code>.</p>
+              <h3 class="text-xl font-black text-slate-900 mb-4">C. Parsing and Matching Job</h3>
+              <p class="text-slate-600 mb-4">The form fields match the matching job, but the final payload includes both <code>parsingResult</code> and <code>matchingResult</code>.</p>
               <pre>curl --location 'https://your-domain.com/v1/integration/parsing-matching-jobs' \
   --header 'X-API-Key: sma_xxx' \
   --form 'externalRequestId=REQ-20260406-004' \
@@ -187,21 +225,21 @@
           </div>
         </section>
 
-        <section id="polling" class="card p-6 lg:p-8">
+        <section id="polling" class="card p-6 lg:p-8 scroll-mt-24">
           <div class="flex items-center gap-4 mb-6"><span class="text-orange-500 text-sm font-black tracking-[0.2em] uppercase">05</span><h2 class="text-2xl lg:text-3xl font-black tracking-tight">Polling & Results</h2></div>
           <div class="grid lg:grid-cols-2 gap-6">
             <div class="rounded-2xl border border-slate-200 bg-white p-6">
               <ol class="space-y-3 text-sm text-slate-600 leading-relaxed list-decimal pl-5">
-                <li>Gọi API tạo job và lưu <code>jobId</code>, <code>externalRequestId</code>.</li>
-                <li>Polling <code>GET /v1/integration/jobs/{id}</code> để kiểm tra tiến độ.</li>
-                <li>Khi job ở trạng thái <code>COMPLETED</code>, <code>PARTIAL</code> hoặc <code>FAILED</code>, gọi <code>GET /v1/integration/jobs/{id}/results</code>.</li>
-                <li>Đọc kết quả ở từng item để biết CV nào thành công hoặc lỗi.</li>
+                <li>Create the job and store both <code>jobId</code> and <code>externalRequestId</code>.</li>
+                <li>Poll <code>GET /v1/integration/jobs/{id}</code> to track progress.</li>
+                <li>When the job reaches <code>COMPLETED</code>, <code>PARTIAL</code>, or <code>FAILED</code>, call <code>GET /v1/integration/jobs/{id}/results</code>.</li>
+                <li>Inspect each item to determine which resumes succeeded or failed.</li>
               </ol>
             </div>
             <div class="rounded-2xl border border-slate-200 bg-white p-6">
               <ul class="space-y-3 text-sm text-slate-600 leading-relaxed">
-                <li><strong class="text-slate-900">GET /jobs/{id}</strong>: chỉ trả trạng thái job và item, không có payload parse/matching chi tiết.</li>
-                <li><strong class="text-slate-900">GET /jobs/{id}/results</strong>: trả toàn bộ trạng thái cùng <code>parsingResult</code> hoặc <code>matchingResult</code> nếu đã có.</li>
+                <li><strong class="text-slate-900">GET /jobs/{id}</strong>: returns job and item status only, without the detailed parsing or matching payload.</li>
+                <li><strong class="text-slate-900">GET /jobs/{id}/results</strong>: returns the full response including <code>parsingResult</code> and <code>matchingResult</code> when available.</li>
               </ul>
             </div>
           </div>
@@ -229,15 +267,15 @@
           </div>
         </section>
 
-        <section id="webhooks" class="card p-6 lg:p-8">
+        <section id="webhooks" class="card p-6 lg:p-8 scroll-mt-24">
           <div class="flex items-center gap-4 mb-6"><span class="text-orange-500 text-sm font-black tracking-[0.2em] uppercase">06</span><h2 class="text-2xl lg:text-3xl font-black tracking-tight">Webhook Callback</h2></div>
           <div class="grid lg:grid-cols-2 gap-6">
             <div class="rounded-2xl border border-slate-200 bg-white p-6">
               <ul class="list-disc pl-5 text-sm text-slate-600 space-y-2">
-                <li>Webhook được gọi khi một <code>item</code> thay đổi trạng thái.</li>
-                <li>Webhook cũng được gọi khi trạng thái tổng của <code>job</code> thay đổi.</li>
-                <li>Nếu request không truyền <code>webhookUrl</code>, hệ thống dùng <code>defaultWebhookUrl</code> của API key.</li>
-                <li>Nếu request truyền <code>webhookUrl</code>, điều này chỉ hợp lệ khi <code>allowWebhookOverride = true</code>.</li>
+                <li>A webhook is sent whenever an individual <code>item</code> changes status.</li>
+                <li>A webhook is also sent whenever the overall <code>job</code> status changes.</li>
+                <li>If the request does not provide <code>webhookUrl</code>, the system uses the API key's <code>defaultWebhookUrl</code>.</li>
+                <li>If the request provides <code>webhookUrl</code>, it is only accepted when <code>allowWebhookOverride = true</code>.</li>
               </ul>
             </div>
             <div class="rounded-2xl border border-slate-200 bg-white p-6">
@@ -248,7 +286,9 @@ X-SmartRecruit-Signature: sha256=&lt;hex&gt;</pre>
             </div>
           </div>
           <div class="mt-6 grid xl:grid-cols-2 gap-6">
-            <div><h3 class="text-lg font-black text-slate-900 mb-3">integration.job.item.updated</h3><pre>{
+            <div>
+              <h3 class="text-lg font-black text-slate-900 mb-3">integration.job.item.updated</h3>
+              <pre>{
   "event": "integration.job.item.updated",
   "timestamp": "2026-04-06T15:16:02Z",
   "jobId": 101,
@@ -259,8 +299,11 @@ X-SmartRecruit-Signature: sha256=&lt;hex&gt;</pre>
   "resumeId": 5001,
   "evaluationId": 7001,
   "errorMessage": null
-}</pre></div>
-            <div><h3 class="text-lg font-black text-slate-900 mb-3">integration.job.updated</h3><pre>{
+}</pre>
+            </div>
+            <div>
+              <h3 class="text-lg font-black text-slate-900 mb-3">integration.job.updated</h3>
+              <pre>{
   "event": "integration.job.updated",
   "timestamp": "2026-04-06T15:16:30Z",
   "jobId": 101,
@@ -268,11 +311,12 @@ X-SmartRecruit-Signature: sha256=&lt;hex&gt;</pre>
   "status": "COMPLETED",
   "completedAt": "2026-04-06T22:16:30",
   "errorMessage": null
-}</pre></div>
+}</pre>
+            </div>
           </div>
           <div class="mt-6 rounded-3xl bg-slate-950 text-slate-200 p-6 border border-slate-800">
             <h3 class="text-xl font-black text-white mb-4">Verify Signature</h3>
-            <p class="text-sm text-slate-300 mb-4">Webhook được ký bằng <code>webhookSecret</code> của API key, không dùng <code>apiKey</code>. Chuỗi cần ký có dạng:</p>
+            <p class="text-sm text-slate-300 mb-4">Webhook requests are signed with the API key's <code>webhookSecret</code>, not the <code>apiKey</code>. Build the signed string using this format:</p>
             <pre>&lt;timestamp&gt;.&lt;raw-json-body&gt;</pre>
             <pre>signedPayload = timestamp + "." + rawBody
 expected = "sha256=" + HMAC_SHA256_HEX(webhookSecret, signedPayload)
@@ -280,48 +324,48 @@ compare(expected, X-SmartRecruit-Signature)</pre>
           </div>
         </section>
 
-        <section id="statuses" class="card p-6 lg:p-8">
+        <section id="statuses" class="card p-6 lg:p-8 scroll-mt-24">
           <div class="flex items-center gap-4 mb-6"><span class="text-orange-500 text-sm font-black tracking-[0.2em] uppercase">07</span><h2 class="text-2xl lg:text-3xl font-black tracking-tight">Statuses</h2></div>
           <div class="grid xl:grid-cols-2 gap-6">
             <div class="rounded-2xl border border-slate-200 bg-white p-6">
               <h3 class="text-lg font-black text-slate-900 mb-4">Job Status</h3>
               <div class="space-y-3 text-sm text-slate-600">
-                <div><span class="status processing">PENDING</span> Job đã tạo nhưng chưa bắt đầu xử lý.</div>
-                <div><span class="status processing">PROCESSING</span> Các item đang được xử lý.</div>
-                <div><span class="status partial">PARTIAL</span> Có item thành công hoặc thất bại, hoặc job hoàn tất với cả kết quả lẫn lỗi.</div>
-                <div><span class="status completed">COMPLETED</span> Tất cả item xử lý thành công.</div>
-                <div><span class="status failed">FAILED</span> Tất cả item đều thất bại.</div>
+                <div><span class="status processing">PENDING</span> The job has been created but processing has not started yet.</div>
+                <div><span class="status processing">PROCESSING</span> The system is actively processing one or more items.</div>
+                <div><span class="status partial">PARTIAL</span> Some items succeeded while others failed, or the job finished with mixed outcomes.</div>
+                <div><span class="status completed">COMPLETED</span> Every item finished successfully.</div>
+                <div><span class="status failed">FAILED</span> Every item failed.</div>
               </div>
             </div>
             <div class="rounded-2xl border border-slate-200 bg-white p-6">
               <h3 class="text-lg font-black text-slate-900 mb-4">Item Status</h3>
               <div class="space-y-3 text-sm text-slate-600">
-                <div><span class="status processing">PENDING</span> Item đã được tạo nhưng chưa xử lý.</div>
-                <div><span class="status processing">PARSING</span> Đang parse CV.</div>
-                <div><span class="status processing">MATCHING</span> Đang chấm điểm theo JD.</div>
-                <div><span class="status completed">COMPLETED</span> Item xử lý thành công.</div>
-                <div><span class="status failed">FAILED</span> Item xử lý thất bại.</div>
+                <div><span class="status processing">PENDING</span> The item has been created but has not started processing.</div>
+                <div><span class="status processing">PARSING</span> The resume is currently being parsed.</div>
+                <div><span class="status processing">MATCHING</span> The resume is currently being evaluated against the job description.</div>
+                <div><span class="status completed">COMPLETED</span> The item finished successfully.</div>
+                <div><span class="status failed">FAILED</span> The item failed.</div>
               </div>
             </div>
           </div>
         </section>
 
-        <section id="errors" class="card p-6 lg:p-8">
+        <section id="errors" class="card p-6 lg:p-8 scroll-mt-24">
           <div class="flex items-center gap-4 mb-6"><span class="text-orange-500 text-sm font-black tracking-[0.2em] uppercase">08</span><h2 class="text-2xl lg:text-3xl font-black tracking-tight">Error Codes</h2></div>
           <div class="tbl">
             <table>
-              <thead><tr><th>HTTP</th><th>Message</th><th>Khi nào xảy ra</th></tr></thead>
+              <thead><tr><th>HTTP</th><th>Message</th><th>Typical Cause</th></tr></thead>
               <tbody>
-                <tr><td><code>400</code></td><td><code>At least one CV file is required</code></td><td>Thiếu <code>cvFiles</code>.</td></tr>
-                <tr><td><code>400</code></td><td><code>Maximum 10 CV files per request</code></td><td>Vượt quá 10 CV trong một request.</td></tr>
-                <tr><td><code>400</code></td><td><code>CV file must be PDF</code></td><td>CV không phải PDF.</td></tr>
-                <tr><td><code>400</code></td><td><code>JD text or JD file is required</code></td><td>Matching job thiếu cả <code>jdText</code> và <code>jdFile</code>.</td></tr>
-                <tr><td><code>403</code></td><td><code>Missing api key</code></td><td>Thiếu header <code>X-API-Key</code>.</td></tr>
-                <tr><td><code>403</code></td><td><code>Invalid api key</code></td><td>API key không hợp lệ hoặc đã inactive.</td></tr>
-                <tr><td><code>403</code></td><td><code>Api key is not allowed to use this feature</code></td><td>API key sai scope.</td></tr>
-                <tr><td><code>403</code></td><td><code>Webhook override is not allowed for this api key</code></td><td>Không được phép override <code>webhookUrl</code>.</td></tr>
-                <tr><td><code>404</code></td><td><code>Integration job not found</code></td><td>Không tìm thấy job.</td></tr>
-                <tr><td><code>500</code></td><td><code>Failed to upload file</code></td><td>Lỗi lưu trữ file.</td></tr>
+                <tr><td><code>400</code></td><td><code>At least one CV file is required</code></td><td>The request does not include <code>cvFiles</code>.</td></tr>
+                <tr><td><code>400</code></td><td><code>Maximum 10 CV files per request</code></td><td>The request contains more than 10 resume files.</td></tr>
+                <tr><td><code>400</code></td><td><code>CV file must be PDF</code></td><td>One or more resumes are not PDF files.</td></tr>
+                <tr><td><code>400</code></td><td><code>JD text or JD file is required</code></td><td>A matching job is missing both <code>jdText</code> and <code>jdFile</code>.</td></tr>
+                <tr><td><code>403</code></td><td><code>Missing api key</code></td><td>The request is missing the <code>X-API-Key</code> header.</td></tr>
+                <tr><td><code>403</code></td><td><code>Invalid api key</code></td><td>The API key is invalid or inactive.</td></tr>
+                <tr><td><code>403</code></td><td><code>Api key is not allowed to use this feature</code></td><td>The API key scope does not permit the requested endpoint.</td></tr>
+                <tr><td><code>403</code></td><td><code>Webhook override is not allowed for this api key</code></td><td>The API key is not allowed to override <code>webhookUrl</code>.</td></tr>
+                <tr><td><code>404</code></td><td><code>Integration job not found</code></td><td>No matching job exists for the provided identifier.</td></tr>
+                <tr><td><code>500</code></td><td><code>Failed to upload file</code></td><td>The file storage step failed.</td></tr>
               </tbody>
             </table>
           </div>
@@ -332,27 +376,27 @@ compare(expected, X-SmartRecruit-Signature)</pre>
 }</pre></div>
         </section>
 
-        <section id="checklist" class="card p-6 lg:p-8">
+        <section id="checklist" class="card p-6 lg:p-8 scroll-mt-24">
           <div class="flex items-center gap-4 mb-6"><span class="text-orange-500 text-sm font-black tracking-[0.2em] uppercase">09</span><h2 class="text-2xl lg:text-3xl font-black tracking-tight">Integration Checklist</h2></div>
           <div class="grid md:grid-cols-2 gap-4">
             <div class="rounded-2xl border border-slate-200 bg-white p-5">
               <p class="font-bold text-slate-900 mb-3">Before go-live</p>
               <ul class="space-y-2 text-sm text-slate-600">
-                <li>Đã nhận <code>apiKey</code> và <code>webhookSecret</code>.</li>
-                <li>Đã biết scope của key và base URL theo môi trường.</li>
-                <li>Đã hỗ trợ upload <code>multipart/form-data</code>.</li>
-                <li>Đã gửi CV đúng định dạng PDF.</li>
-                <li>Đã chuẩn bị <code>jdText</code> hoặc <code>jdFile</code> cho luồng matching.</li>
+                <li>You have received both <code>apiKey</code> and <code>webhookSecret</code>.</li>
+                <li>You know the feature scope of the key and the correct base URL for each environment.</li>
+                <li>Your client supports <code>multipart/form-data</code> uploads.</li>
+                <li>All resume files are valid PDF documents.</li>
+                <li>You are ready to supply <code>jdText</code> or <code>jdFile</code> for matching flows.</li>
               </ul>
             </div>
             <div class="rounded-2xl border border-slate-200 bg-white p-5">
               <p class="font-bold text-slate-900 mb-3">Best practices</p>
               <ul class="space-y-2 text-sm text-slate-600">
-                <li>Nên truyền <code>externalRequestId</code> để map job với hệ thống đối tác.</li>
-                <li>Tự xử lý idempotency ở phía client để tránh submit trùng.</li>
-                <li>Dùng webhook để nhận tín hiệu, dùng <code>/results</code> để lấy dữ liệu cuối.</li>
-                <li>Luôn lưu <code>jobId</code> và giữ polling fallback.</li>
-                <li>Verify chữ ký webhook trước khi xử lý nghiệp vụ.</li>
+                <li>Send <code>externalRequestId</code> so you can map SmartRecruit jobs back to your own system.</li>
+                <li>Handle idempotency on the client side to avoid duplicate submissions.</li>
+                <li>Use webhooks for notifications and <code>/results</code> for final data retrieval.</li>
+                <li>Always persist <code>jobId</code> and keep polling as a fallback path.</li>
+                <li>Verify the webhook signature before processing any business logic.</li>
               </ul>
             </div>
           </div>
@@ -360,5 +404,66 @@ compare(expected, X-SmartRecruit-Signature)</pre>
       </main>
     </div>
   </div>
+
+  <footer class="bg-[#0f172a] text-white py-16 border-t border-white/10">
+    <div class="container mx-auto px-6 max-w-6xl">
+      <div class="grid md:grid-cols-4 gap-12 mb-12">
+        <div class="col-span-1 md:col-span-1">
+          <div class="flex items-center gap-2 mb-6">
+            <a href="/" class="flex items-center gap-2 group">
+              <img src="../sma-logo.svg" alt="SmartRecruit Logo" class="w-7 h-7 brightness-0 invert">
+              <span class="text-base font-bold text-white">SmartRecruit</span>
+            </a>
+          </div>
+          <p class="text-neutral-400 text-sm leading-relaxed mb-6">
+            AI-powered Resume Scoring Platform connecting top talent with leading companies.
+          </p>
+          <div class="flex gap-4">
+            <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 cursor-pointer transition-colors">
+              <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 5.06 3.66 9.29 8.35 10.04v-7.1H7.85v-2.94h2.5V9.77c0-2.47 1.48-3.86 3.7-3.86 1.05 0 2.15.19 2.15.19v2.36h-1.21c-1.22 0-1.6.75-1.6 1.54v1.85h2.64l-.42 2.94h-2.22v7.1C18.34 21.29 22 17.06 22 12c0-5.52-4.48-10-10-10z" /></svg>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 cursor-pointer transition-colors">
+              <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold mb-6">For Candidates</h4>
+          <ul class="space-y-3 text-sm text-neutral-400">
+            <li><a href="#" class="hover:text-orange-500 transition-colors">Browse Jobs</a></li>
+            <li><a href="#" class="hover:text-orange-500 transition-colors">CV Builder</a></li>
+            <li><a href="#" class="hover:text-orange-500 transition-colors">Career Tips</a></li>
+            <li><a href="#" class="hover:text-orange-500 transition-colors">Salary Guide</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold mb-6">For Recruiters</h4>
+          <ul class="space-y-3 text-sm text-neutral-400">
+            <li><a href="/register/recruiter" class="hover:text-orange-500 transition-colors">Post a Job</a></li>
+            <li><a href="#" class="hover:text-orange-500 transition-colors">Pricing Plans</a></li>
+            <li><a href="#" class="hover:text-orange-500 transition-colors">Search Talent</a></li>
+            <li><a href="#" class="hover:text-orange-500 transition-colors">Employer Branding</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold mb-6">Company</h4>
+          <ul class="space-y-3 text-sm text-neutral-400">
+            <li><a href="#" class="hover:text-orange-500 transition-colors">About Us</a></li>
+            <li><a href="#" class="hover:text-orange-500 transition-colors">Contact</a></li>
+            <li><a href="/docs/integration-api.html" class="hover:text-orange-500 transition-colors">API Documentation</a></li>
+            <li><a href="/legal/privacy" class="hover:text-orange-500 transition-colors">Privacy Policy</a></li>
+            <li><a href="/legal/terms" class="hover:text-orange-500 transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-8 border-t border-white/10 text-center text-neutral-500 text-sm">
+        &copy; 2026 SmartRecruit. All rights reserved.
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
