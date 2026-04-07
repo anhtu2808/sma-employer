@@ -47,7 +47,7 @@ const SECTION_META = {
 
 // --- Mini Editor Components ---
 
-const ImageField = ({ label, value, onChange }) => {
+const ImageField = ({ label, value, onChange, accept = 'image/*' }) => {
   const [uploadFile, { isLoading }] = useUploadFileMutation();
   const fileInputRef = useRef(null);
 
@@ -55,8 +55,11 @@ const ImageField = ({ label, value, onChange }) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
+    if (accept === 'image/*' && !file.type.startsWith('image/')) {
       toastMessage.error('Please upload an image file');
+      return;
+    } else if (accept === 'image/*,video/*' && !file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+      toastMessage.error('Please upload an image or video file');
       return;
     }
 
@@ -87,7 +90,7 @@ const ImageField = ({ label, value, onChange }) => {
         />
         <input
           type="file"
-          accept="image/*"
+          accept={accept}
           ref={fileInputRef}
           style={{ display: 'none' }}
           onChange={handleUpload}
@@ -101,7 +104,13 @@ const ImageField = ({ label, value, onChange }) => {
           {isLoading ? '...' : 'Upload'}
         </button>
       </div>
-      {value && <img src={value} alt="Preview" style={{ marginTop: 8, maxWidth: '100%', maxHeight: '100px', objectFit: 'contain', borderRadius: 4, border: '1px solid rgba(255,255,255,0.1)' }} />}
+      {value && (
+        value.match(/\.(mp4|webm|ogg|mov)$/i) ? (
+          <video src={value} style={{ marginTop: 8, maxWidth: '100%', maxHeight: '100px', borderRadius: 4, border: '1px solid rgba(255,255,255,0.1)' }} controls muted />
+        ) : (
+          <img src={value} alt="Preview" style={{ marginTop: 8, maxWidth: '100%', maxHeight: '100px', objectFit: 'contain', borderRadius: 4, border: '1px solid rgba(255,255,255,0.1)' }} />
+        )
+      )}
     </div>
   );
 };
@@ -168,6 +177,35 @@ const StringField = ({ label, value, onChange, placeholder, multiline = false })
           placeholder={placeholder}
         />
       )}
+    </div>
+  );
+};
+
+const SliderField = ({ label, value, onChange, min = 0, max = 100, step = 1, defaultValue = 50 }) => {
+  const currentVal = value !== undefined && value !== null && value !== '' ? Number(value) : defaultValue;
+  return (
+    <div className="cb-field">
+      <label className="cb-field-label">{label}</label>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={currentVal}
+          onChange={(e) => onChange(Number(e.target.value))}
+          style={{ flex: 1, accentColor: '#FF6B35' }}
+        />
+        <input
+          type="number"
+          className="cb-input"
+          value={currentVal}
+          onChange={(e) => onChange(Number(e.target.value))}
+          min={min}
+          max={max}
+          style={{ width: 72, textAlign: 'center' }}
+        />
+      </div>
     </div>
   );
 };
@@ -354,7 +392,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
         <div className="cb-section-children">
           <StringField label="Company Name" value={config.companyName} onChange={(v) => updateConfig('companyName', v)} />
           <ImageField label="Logo Image" value={config.logoUrl} onChange={(v) => updateConfig('logoUrl', v)} />
-          <StringField label="Logo Height (px)" value={config.logoHeight} onChange={(v) => updateConfig('logoHeight', Number(v))} />
+          <SliderField label="Logo Height (px)" value={config.logoHeight} onChange={(v) => updateConfig('logoHeight', v)} min={20} max={200} step={2} defaultValue={40} />
           <div className="cb-field">
             <label className="cb-field-label">Sticky Header</label>
             <select
@@ -400,7 +438,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
         <div className="cb-section-children">
           <StringField label="Company Name" value={config.companyName} onChange={(v) => updateConfig('companyName', v)} />
           <ImageField label="Logo Image" value={config.logoUrl} onChange={(v) => updateConfig('logoUrl', v)} />
-          <StringField label="Logo Height (px)" value={config.logoHeight} onChange={(v) => updateConfig('logoHeight', Number(v))} />
+          <SliderField label="Logo Height (px)" value={config.logoHeight} onChange={(v) => updateConfig('logoHeight', v)} min={20} max={200} step={2} defaultValue={40} />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>Addresses</div>
           <ArrayEditor
             items={(config.contact?.addresses || []).map(a => ({ address: a }))}
@@ -442,7 +480,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
         <div className="cb-section-children">
           <StringField label="Headline" value={props.headline} onChange={(v) => updateProp('headline', v)} />
           <StringField label="Subline" value={props.subline} onChange={(v) => updateProp('subline', v)} multiline />
-          <ImageField label="Background Image" value={props.backgroundUrl} onChange={(v) => updateProp('backgroundUrl', v)} />
+          <ImageField label="Background Media" value={props.backgroundUrl} onChange={(v) => updateProp('backgroundUrl', v)} accept="image/*,video/*" />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>CTA Button</div>
           <StringField label="Button Text" value={props.ctaText} onChange={(v) => updateProp('ctaText', v)} />
           <StringField label="Button Link" value={props.ctaLink} onChange={(v) => updateProp('ctaLink', v)} />
@@ -452,29 +490,15 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
             value={section.settings?.textColorOverride || ''}
             onChange={(v) => updateSetting('textColorOverride', v)}
           />
-          <div className="cb-field">
-            <label className="cb-field-label">Height (px)</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <input
-                type="range"
-                min={200}
-                max={800}
-                step={10}
-                value={section.settings?.height || 500}
-                onChange={(e) => updateSetting('height', Number(e.target.value))}
-                style={{ flex: 1, accentColor: '#FF6B35' }}
-              />
-              <input
-                type="number"
-                className="cb-input"
-                value={section.settings?.height || 500}
-                onChange={(e) => updateSetting('height', Number(e.target.value))}
-                min={200}
-                max={800}
-                style={{ width: 72, textAlign: 'center' }}
-              />
-            </div>
-          </div>
+          <SliderField
+            label="Height (px)"
+            value={section.settings?.height}
+            onChange={(v) => updateSetting('height', v)}
+            min={200}
+            max={800}
+            step={10}
+            defaultValue={500}
+          />
         </div>
       );
     case 'ABOUT':

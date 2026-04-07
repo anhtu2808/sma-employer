@@ -51,7 +51,7 @@ const FooterSection = ({ theme, footerConfig = {} }) => {
     <div style={{ background: footerConfig.backgroundColorOverride || '#1a1a2e', padding: '48px 40px', color: footerConfig.textColorOverride || '#fff' }}>
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
-        gap: '40px', maxWidth: '960px', margin: '0 auto',
+        gap: '40px', maxWidth: '1280px', margin: '0 auto',
       }}>
         <div style={{ flex: 1, maxWidth: '400px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>

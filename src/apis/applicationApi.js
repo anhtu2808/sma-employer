@@ -53,6 +53,13 @@ export const applicationApi = api.injectEndpoints({
                 params: { jobId, type },
             }),
         }),
+        downloadResumesZip: builder.query({
+            query: (jobId) => ({
+                url: `${API_VERSION}/applications/jobs/${jobId}/download-resumes`,
+                method: 'GET',
+                responseHandler: (response) => response.blob(),
+            }),
+        }),
     }),
 });
 
@@ -61,5 +68,6 @@ export const {
     useGetApplicationDetailQuery,
     useGetApplicationStatusSummaryQuery,
     useUpdateApplicationStatusMutation,
-    useLazyGetShortlistedExportQuery
+    useLazyGetShortlistedExportQuery,
+    useLazyDownloadResumesZipQuery
 } = applicationApi;
