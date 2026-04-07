@@ -51,6 +51,7 @@ const Footer = () => {
                         <ul className="space-y-3 text-sm text-neutral-400">
                             <li><a href="#" className="hover:text-primary transition-colors">About Us</a></li>
                             <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
+                            <li><a href="/docs/integration-api.html" className="hover:text-primary transition-colors">API Documentation</a></li>
                             <li><Link to="/legal/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
                             <li><Link to="/legal/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
                         </ul>

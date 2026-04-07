@@ -3,6 +3,21 @@ import { API_VERSION } from "./baseApi";
 
 export const companyApi = api.injectEndpoints({
     endpoints: (builder) => ({
+        getCompanies: builder.query({
+            query: (params) => ({
+                url: `${API_VERSION}/companies`,
+                method: 'GET',
+                params,
+            }),
+            transformResponse: (response) => {
+                if (Array.isArray(response?.data)) return response.data;
+                if (Array.isArray(response?.data?.content)) return response.data.content;
+                if (Array.isArray(response?.data?.items)) return response.data.items;
+                if (Array.isArray(response)) return response;
+                return [];
+            },
+            providesTags: ['Companies'],
+        }),
         getCompanyProfile: builder.query({
             query: () => `${API_VERSION}/companies/my-company`,
             providesTags: ['Companies'],
@@ -50,4 +65,12 @@ export const companyApi = api.injectEndpoints({
     }),
 });
 
-export const { useGetCompanyProfileQuery, useUpdateCompanyProfileMutation, useGetCompanyLocationQuery, useGetBlacklistQuery, useBlockCandidateMutation, useUnblockCandidateMutation } = companyApi;
+export const {
+    useGetCompaniesQuery,
+    useGetCompanyProfileQuery,
+    useUpdateCompanyProfileMutation,
+    useGetCompanyLocationQuery,
+    useGetBlacklistQuery,
+    useBlockCandidateMutation,
+    useUnblockCandidateMutation
+} = companyApi;

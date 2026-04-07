@@ -3,135 +3,262 @@
  * Maps Material Icon names to FA icon definitions for dynamic icon resolution
  */
 import {
-  faArrowLeft,
-  faArrowRight,
-  faArrowUpRightFromSquare,
-  faBan,
-  faBars,
-  faBarsStaggered,
-  faBell,
-  faBolt,
-  faBookmark as faBookmarkSolid,
-  faBrain,
-  faBriefcase,
-  faBuilding,
-  faCalendar,
-  faCalendarDay,
-  faCalendarDays,
-  faCalendarXmark,
-  faCamera,
-  faCertificate,
-  faChartPie,
-  faChartSimple,
-  faCheck,
-  faChevronDown,
-  faChevronLeft,
-  faChevronRight,
-  faCircleCheck,
-  faCircleExclamation,
-  faCircleInfo,
-  faCirclePlus,
-  faCircleQuestion,
-  faCircleUser,
-  faCircleXmark,
-  faCity,
-  faClipboard,
-  faClipboardCheck,
-  faClockRotateLeft,
-  faCloudArrowUp,
-  faCode,
-  faCopy,
-  faCreditCard,
-  faDiagramProject,
-  faDownload,
-  faEllipsisVertical,
-  faEnvelope,
-  faEye,
-  faEyeSlash,
-  faFileArrowUp,
-  faFileCirclePlus,
-  faFileLines,
-  faFilePdf,
-  faFilter,
-  faFire,
-  faFolderOpen,
-  faGear,
-  faGift,
-  faGlobe,
-  faGraduationCap,
-  faHandPointer,
-  faImage,
-  faImages,
-  faInbox,
-  faKey,
-  faLayerGroup,
-  faLightbulb,
-  faLink,
-  faLinkSlash,
-  faList,
-  faLocationDot,
-  faLock,
-  faMagnifyingGlass,
-  faMap,
-  faMedal,
-  faMicrochip,
-  faNewspaper,
-  faPaintbrush,
-  faPalette,
-  faPaperclip,
-  faPen,
-  faPenRuler,
-  faPenToSquare,
-  faPeopleGroup,
-  faPhone,
-  faPlus,
-  faQrcode,
-  faRectangleList,
-  faRightFromBracket,
-  faRightLeft,
-  faRocket,
-  faRotate,
-  faRotateLeft,
-  faRotateRight,
-  faArrowsRotate,
-  faShareNodes,
-  faShieldHalved,
-  faSort,
-  faStar,
-  faStopwatch,
-  faTableCells,
-  faThumbsDown,
-  faThumbsUp,
-  faTrash,
-  faTrashCan,
-  faTriangleExclamation,
-  faUpload,
-  faUser,
-  faUserGroup,
-  faUserPlus,
-  faUserShield,
-  faUserSlash,
-  faUsers,
-  faWandMagicSparkles,
-  faXmark,
-  faBoxArchive,
-  faArrowTrendUp,
-  faSliders,
-  faFileImage,
-  faClock,
-  faArrowRotateLeft,
-  faChevronUp,
+  faArrowLeft as _faArrowLeft,
+  faArrowRight as _faArrowRight,
+  faArrowUpRightFromSquare as _faArrowUpRightFromSquare,
+  faBan as _faBan,
+  faBars as _faBars,
+  faBarsStaggered as _faBarsStaggered,
+  faBell as _faBell,
+  faBolt as _faBolt,
+  faBookmark as _faBookmarkSolid,
+  faBrain as _faBrain,
+  faBriefcase as _faBriefcase,
+  faBuilding as _faBuilding,
+  faCalendar as _faCalendar,
+  faCalendarDay as _faCalendarDay,
+  faCalendarDays as _faCalendarDays,
+  faCalendarXmark as _faCalendarXmark,
+  faCamera as _faCamera,
+  faCertificate as _faCertificate,
+  faChartPie as _faChartPie,
+  faChartSimple as _faChartSimple,
+  faCheck as _faCheck,
+  faChevronDown as _faChevronDown,
+  faChevronLeft as _faChevronLeft,
+  faChevronRight as _faChevronRight,
+  faCircleCheck as _faCircleCheck,
+  faCircleExclamation as _faCircleExclamation,
+  faCircleInfo as _faCircleInfo,
+  faCirclePlus as _faCirclePlus,
+  faCircleQuestion as _faCircleQuestion,
+  faCircleUser as _faCircleUser,
+  faCircleXmark as _faCircleXmark,
+  faCity as _faCity,
+  faClipboard as _faClipboard,
+  faClipboardCheck as _faClipboardCheck,
+  faClockRotateLeft as _faClockRotateLeft,
+  faCloudArrowUp as _faCloudArrowUp,
+  faCode as _faCode,
+  faCopy as _faCopy,
+  faCreditCard as _faCreditCard,
+  faDiagramProject as _faDiagramProject,
+  faDownload as _faDownload,
+  faEllipsisVertical as _faEllipsisVertical,
+  faEnvelope as _faEnvelope,
+  faEye as _faEye,
+  faEyeSlash as _faEyeSlash,
+  faFileArrowUp as _faFileArrowUp,
+  faFileCirclePlus as _faFileCirclePlus,
+  faFileLines as _faFileLines,
+  faFilePdf as _faFilePdf,
+  faFilter as _faFilter,
+  faFire as _faFire,
+  faFolderOpen as _faFolderOpen,
+  faGear as _faGear,
+  faGift as _faGift,
+  faGlobe as _faGlobe,
+  faGraduationCap as _faGraduationCap,
+  faHandPointer as _faHandPointer,
+  faImage as _faImage,
+  faImages as _faImages,
+  faInbox as _faInbox,
+  faKey as _faKey,
+  faLayerGroup as _faLayerGroup,
+  faLightbulb as _faLightbulb,
+  faLink as _faLink,
+  faLinkSlash as _faLinkSlash,
+  faList as _faList,
+  faLocationDot as _faLocationDot,
+  faLock as _faLock,
+  faMagnifyingGlass as _faMagnifyingGlass,
+  faMap as _faMap,
+  faMedal as _faMedal,
+  faMicrochip as _faMicrochip,
+  faNewspaper as _faNewspaper,
+  faPaintbrush as _faPaintbrush,
+  faPalette as _faPalette,
+  faPaperclip as _faPaperclip,
+  faPen as _faPen,
+  faPenRuler as _faPenRuler,
+  faPenToSquare as _faPenToSquare,
+  faPeopleGroup as _faPeopleGroup,
+  faPhone as _faPhone,
+  faPlus as _faPlus,
+  faQrcode as _faQrcode,
+  faRectangleList as _faRectangleList,
+  faRightFromBracket as _faRightFromBracket,
+  faRightLeft as _faRightLeft,
+  faRocket as _faRocket,
+  faRotate as _faRotate,
+  faRotateLeft as _faRotateLeft,
+  faRotateRight as _faRotateRight,
+  faArrowsRotate as _faArrowsRotate,
+  faShareNodes as _faShareNodes,
+  faShieldHalved as _faShieldHalved,
+  faSort as _faSort,
+  faStar as _faStar,
+  faStopwatch as _faStopwatch,
+  faTableCells as _faTableCells,
+  faThumbsDown as _faThumbsDown,
+  faThumbsUp as _faThumbsUp,
+  faTrash as _faTrash,
+  faTrashCan as _faTrashCan,
+  faTriangleExclamation as _faTriangleExclamation,
+  faUpload as _faUpload,
+  faUser as _faUser,
+  faUserGroup as _faUserGroup,
+  faUserPlus as _faUserPlus,
+  faUserShield as _faUserShield,
+  faUserSlash as _faUserSlash,
+  faUsers as _faUsers,
+  faWandMagicSparkles as _faWandMagicSparkles,
+  faXmark as _faXmark,
+  faBoxArchive as _faBoxArchive,
+  faArrowTrendUp as _faArrowTrendUp,
+  faSliders as _faSliders,
+  faFileImage as _faFileImage,
+  faClock as _faClock,
+  faArrowRotateLeft as _faArrowRotateLeft,
+  faChevronUp as _faChevronUp,
+
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
-  faBookmark as faBookmarkRegular,
-  faClock as faClockRegular,
-  faEnvelope as faEnvelopeRegular,
-  faStar as faStarRegular,
+  faBookmark as _faBookmarkRegular,
+  faClock as _faClockRegular,
+  faEnvelope as _faEnvelopeRegular,
+  faStar as _faStarRegular,
   faCircleQuestion as faCircleQuestionRegular,
+
 } from '@fortawesome/free-regular-svg-icons';
 
-import { faCircleQuestion as faCircleQuestionFallback } from '@fortawesome/free-solid-svg-icons';
+import { faCircleQuestion as faCircleQuestionFallback 
+} from '@fortawesome/free-solid-svg-icons';
+
+export const faArrowLeft = _faArrowLeft;
+export const faArrowRight = _faArrowRight;
+export const faArrowUpRightFromSquare = _faArrowUpRightFromSquare;
+export const faBan = _faBan;
+export const faBars = _faBars;
+export const faBarsStaggered = _faBarsStaggered;
+export const faBell = _faBell;
+export const faBolt = _faBolt;
+export const faBookmarkSolid = _faBookmarkSolid;
+export const faBrain = _faBrain;
+export const faBriefcase = _faBriefcase;
+export const faBuilding = _faBuilding;
+export const faCalendar = _faCalendar;
+export const faCalendarDay = _faCalendarDay;
+export const faCalendarDays = _faCalendarDays;
+export const faCalendarXmark = _faCalendarXmark;
+export const faCamera = _faCamera;
+export const faCertificate = _faCertificate;
+export const faChartPie = _faChartPie;
+export const faChartSimple = _faChartSimple;
+export const faCheck = _faCheck;
+export const faChevronDown = _faChevronDown;
+export const faChevronLeft = _faChevronLeft;
+export const faChevronRight = _faChevronRight;
+export const faCircleCheck = _faCircleCheck;
+export const faCircleExclamation = _faCircleExclamation;
+export const faCircleInfo = _faCircleInfo;
+export const faCirclePlus = _faCirclePlus;
+export const faCircleQuestion = _faCircleQuestion;
+export const faCircleUser = _faCircleUser;
+export const faCircleXmark = _faCircleXmark;
+export const faCity = _faCity;
+export const faClipboard = _faClipboard;
+export const faClipboardCheck = _faClipboardCheck;
+export const faClockRotateLeft = _faClockRotateLeft;
+export const faCloudArrowUp = _faCloudArrowUp;
+export const faCode = _faCode;
+export const faCopy = _faCopy;
+export const faCreditCard = _faCreditCard;
+export const faDiagramProject = _faDiagramProject;
+export const faDownload = _faDownload;
+export const faEllipsisVertical = _faEllipsisVertical;
+export const faEnvelope = _faEnvelope;
+export const faEye = _faEye;
+export const faEyeSlash = _faEyeSlash;
+export const faFileArrowUp = _faFileArrowUp;
+export const faFileCirclePlus = _faFileCirclePlus;
+export const faFileLines = _faFileLines;
+export const faFilePdf = _faFilePdf;
+export const faFilter = _faFilter;
+export const faFire = _faFire;
+export const faFolderOpen = _faFolderOpen;
+export const faGear = _faGear;
+export const faGift = _faGift;
+export const faGlobe = _faGlobe;
+export const faGraduationCap = _faGraduationCap;
+export const faHandPointer = _faHandPointer;
+export const faImage = _faImage;
+export const faImages = _faImages;
+export const faInbox = _faInbox;
+export const faKey = _faKey;
+export const faLayerGroup = _faLayerGroup;
+export const faLightbulb = _faLightbulb;
+export const faLink = _faLink;
+export const faLinkSlash = _faLinkSlash;
+export const faList = _faList;
+export const faLocationDot = _faLocationDot;
+export const faLock = _faLock;
+export const faMagnifyingGlass = _faMagnifyingGlass;
+export const faMap = _faMap;
+export const faMedal = _faMedal;
+export const faMicrochip = _faMicrochip;
+export const faNewspaper = _faNewspaper;
+export const faPaintbrush = _faPaintbrush;
+export const faPalette = _faPalette;
+export const faPaperclip = _faPaperclip;
+export const faPen = _faPen;
+export const faPenRuler = _faPenRuler;
+export const faPenToSquare = _faPenToSquare;
+export const faPeopleGroup = _faPeopleGroup;
+export const faPhone = _faPhone;
+export const faPlus = _faPlus;
+export const faQrcode = _faQrcode;
+export const faRectangleList = _faRectangleList;
+export const faRightFromBracket = _faRightFromBracket;
+export const faRightLeft = _faRightLeft;
+export const faRocket = _faRocket;
+export const faRotate = _faRotate;
+export const faRotateLeft = _faRotateLeft;
+export const faRotateRight = _faRotateRight;
+export const faArrowsRotate = _faArrowsRotate;
+export const faShareNodes = _faShareNodes;
+export const faShieldHalved = _faShieldHalved;
+export const faSort = _faSort;
+export const faStar = _faStar;
+export const faStopwatch = _faStopwatch;
+export const faTableCells = _faTableCells;
+export const faThumbsDown = _faThumbsDown;
+export const faThumbsUp = _faThumbsUp;
+export const faTrash = _faTrash;
+export const faTrashCan = _faTrashCan;
+export const faTriangleExclamation = _faTriangleExclamation;
+export const faUpload = _faUpload;
+export const faUser = _faUser;
+export const faUserGroup = _faUserGroup;
+export const faUserPlus = _faUserPlus;
+export const faUserShield = _faUserShield;
+export const faUserSlash = _faUserSlash;
+export const faUsers = _faUsers;
+export const faWandMagicSparkles = _faWandMagicSparkles;
+export const faXmark = _faXmark;
+export const faBoxArchive = _faBoxArchive;
+export const faArrowTrendUp = _faArrowTrendUp;
+export const faSliders = _faSliders;
+export const faFileImage = _faFileImage;
+export const faClock = _faClock;
+export const faArrowRotateLeft = _faArrowRotateLeft;
+export const faChevronUp = _faChevronUp;
+export const faBookmarkRegular = _faBookmarkRegular;
+export const faClockRegular = _faClockRegular;
+export const faEnvelopeRegular = _faEnvelopeRegular;
+export const faStarRegular = _faStarRegular;
+
 
 
 /**
@@ -349,129 +476,3 @@ export function resolveIcon(name) {
   if (!name) return faCircleQuestionFallback;
   return materialToFA[name] || faCircleQuestionFallback;
 }
-
-// Re-export everything for convenient imports
-export {
-  faArrowLeft,
-  faArrowRight,
-  faArrowUpRightFromSquare,
-  faBan,
-  faBars,
-  faBarsStaggered,
-  faBell,
-  faBolt,
-  faBookmarkSolid,
-  faBookmarkRegular,
-  faBrain,
-  faBriefcase,
-  faBuilding,
-  faCalendar,
-  faCalendarDay,
-  faCalendarDays,
-  faCalendarXmark,
-  faCamera,
-  faCertificate,
-  faChartPie,
-  faChartSimple,
-  faCheck,
-  faChevronDown,
-  faChevronLeft,
-  faChevronRight,
-  faCircleCheck,
-  faCircleExclamation,
-  faCircleInfo,
-  faCirclePlus,
-  faCircleQuestion,
-  faCircleUser,
-  faCircleXmark,
-  faCity,
-  faClipboard,
-  faClipboardCheck,
-  faClock,
-  faClockRegular,
-  faClockRotateLeft,
-  faCloudArrowUp,
-  faCode,
-  faCopy,
-  faCreditCard,
-  faDiagramProject,
-  faDownload,
-  faEllipsisVertical,
-  faEnvelope,
-  faEnvelopeRegular,
-  faEye,
-  faEyeSlash,
-  faFileArrowUp,
-  faFileCirclePlus,
-  faFileImage,
-  faFileLines,
-  faFilePdf,
-  faFilter,
-  faFire,
-  faFolderOpen,
-  faGear,
-  faGift,
-  faGlobe,
-  faGraduationCap,
-  faHandPointer,
-  faImage,
-  faImages,
-  faInbox,
-  faKey,
-  faLayerGroup,
-  faLightbulb,
-  faLink,
-  faLinkSlash,
-  faList,
-  faLocationDot,
-  faLock,
-  faMagnifyingGlass,
-  faMap,
-  faMedal,
-  faMicrochip,
-  faNewspaper,
-  faPaintbrush,
-  faPalette,
-  faPaperclip,
-  faPen,
-  faPenRuler,
-  faPenToSquare,
-  faPeopleGroup,
-  faPhone,
-  faPlus,
-  faQrcode,
-  faRectangleList,
-  faRightFromBracket,
-  faRightLeft,
-  faRocket,
-  faRotate,
-  faRotateLeft,
-  faRotateRight,
-  faArrowsRotate,
-  faShareNodes,
-  faShieldHalved,
-  faSort,
-  faStar,
-  faStarRegular,
-  faStopwatch,
-  faTableCells,
-  faThumbsDown,
-  faThumbsUp,
-  faTrash,
-  faTrashCan,
-  faTriangleExclamation,
-  faUpload,
-  faUser,
-  faUserGroup,
-  faUserPlus,
-  faUserShield,
-  faUserSlash,
-  faUsers,
-  faWandMagicSparkles,
-  faXmark,
-  faBoxArchive,
-  faArrowTrendUp,
-  faSliders,
-  faArrowRotateLeft,
-  faChevronUp,
-};

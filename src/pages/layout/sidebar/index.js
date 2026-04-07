@@ -6,7 +6,7 @@ import {
   faCreditCard, faClockRotateLeft, faTableCells, faUsers,
   faBriefcase, faClipboard, faEnvelopeRegular, faBan,
   faBell, faStar, faRightFromBracket, faChevronLeft, faChevronRight,
-  faPaintbrush, faLink
+  faPaintbrush, faLink, faKey
 } from '@/utils/icons';
 import Logo from '@/components/Logo';
 import Button from '@/components/Button';
@@ -22,6 +22,7 @@ const generalItems = [
   { icon: faClipboardCheck, label: 'Scoring Criteria', path: '/scoring-criteria' },
   { icon: faBoxArchive, label: 'Archived Jobs', path: '/jobs/archived' },
   { icon: faLink, label: 'Webhooks', path: '/webhooks' },
+  { icon: faKey, label: 'API Management', path: '/api-management' },
   { icon: faGear, label: 'Settings', path: '/settings' },
 ];
 
@@ -52,14 +53,29 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
   const { data: myInfoData } = useGetMyRecruiterInfoQuery();
   const isRecruiter = Boolean(myInfoData?.data);
   const isRootRecruiter = myInfoData?.data?.isRootRecruiter === true;
+  const accessToken = localStorage.getItem('accessToken');
+  const isAdmin = React.useMemo(() => {
+    if (!accessToken) return false;
+    try {
+      const payload = JSON.parse(atob(accessToken.split('.')[1]));
+      if (payload?.role === 'ADMIN') return true;
+      if (Array.isArray(payload?.roles) && payload.roles.includes('ADMIN')) return true;
+      if (Array.isArray(payload?.authorities) && payload.authorities.some((item) => item === 'ADMIN' || item === 'ROLE_ADMIN')) return true;
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }, [accessToken]);
 
   const filteredBillingItems = isRootRecruiter
     ? billingMenuItems
     : billingMenuItems.filter(item => item.path !== '/billing-plans');
 
-  const filteredGeneralItems = isRootRecruiter
-    ? generalItems
-    : generalItems.filter(item => item.path !== '/company');
+  const filteredGeneralItems = generalItems.filter((item) => {
+    if (item.path === '/company') return isRootRecruiter;
+    if (item.path === '/api-management') return isRootRecruiter || isAdmin;
+    return true;
+  });
 
   const menuItems = [
     { icon: faTableCells, label: 'Dashboard', path: '/dashboard' },

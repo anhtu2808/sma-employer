@@ -24,7 +24,8 @@ const routeTitleMap = {
   '/blacklist': 'Blacklist',
   '/invitations': 'Invitations',
   '/scoring-criteria': 'Scoring Criteria',
-  '/webhooks': 'Webhooks'
+  '/webhooks': 'Webhooks',
+  '/api-management': 'API Management'
 };
 
 const routeSubtitleMap = {
@@ -45,7 +46,8 @@ const routeSubtitleMap = {
   '/blacklist': 'Manage your candidate blacklist',
   '/invitations': 'Manage candidate invitations',
   '/scoring-criteria': 'Manage your AI evaluation criteria and scoring rules',
-  '/webhooks': 'Manage your webhooks and integrations'
+  '/webhooks': 'Manage your webhooks and integrations',
+  '/api-management': 'Create and manage API keys for integration access'
 };
 
 const Layout = () => {

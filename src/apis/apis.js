@@ -35,5 +35,6 @@ export const authApi = api.injectEndpoints({
 
 export const { useRegisterRecruiterMutation, useUploadFileMutation, useForgotPasswordMutation, useResetPasswordMutation } = authApi;
 export * from "./companyApi";
+export * from "./companyApiKeyApi";
 export * from "./jobApi";
 export * from "./recruiterApi";
