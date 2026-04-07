@@ -181,6 +181,35 @@ const StringField = ({ label, value, onChange, placeholder, multiline = false })
   );
 };
 
+const SliderField = ({ label, value, onChange, min = 0, max = 100, step = 1, defaultValue = 50 }) => {
+  const currentVal = value !== undefined && value !== null && value !== '' ? Number(value) : defaultValue;
+  return (
+    <div className="cb-field">
+      <label className="cb-field-label">{label}</label>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={currentVal}
+          onChange={(e) => onChange(Number(e.target.value))}
+          style={{ flex: 1, accentColor: '#FF6B35' }}
+        />
+        <input
+          type="number"
+          className="cb-input"
+          value={currentVal}
+          onChange={(e) => onChange(Number(e.target.value))}
+          min={min}
+          max={max}
+          style={{ width: 72, textAlign: 'center' }}
+        />
+      </div>
+    </div>
+  );
+};
+
 const VisibilityToggle = ({ label, isVisible, onChange }) => {
   return (
     <div className="cb-field-label-row" style={{ marginBottom: 12 }}>
@@ -363,7 +392,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
         <div className="cb-section-children">
           <StringField label="Company Name" value={config.companyName} onChange={(v) => updateConfig('companyName', v)} />
           <ImageField label="Logo Image" value={config.logoUrl} onChange={(v) => updateConfig('logoUrl', v)} />
-          <StringField label="Logo Height (px)" value={config.logoHeight} onChange={(v) => updateConfig('logoHeight', Number(v))} />
+          <SliderField label="Logo Height (px)" value={config.logoHeight} onChange={(v) => updateConfig('logoHeight', v)} min={20} max={200} step={2} defaultValue={40} />
           <div className="cb-field">
             <label className="cb-field-label">Sticky Header</label>
             <select
@@ -409,7 +438,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
         <div className="cb-section-children">
           <StringField label="Company Name" value={config.companyName} onChange={(v) => updateConfig('companyName', v)} />
           <ImageField label="Logo Image" value={config.logoUrl} onChange={(v) => updateConfig('logoUrl', v)} />
-          <StringField label="Logo Height (px)" value={config.logoHeight} onChange={(v) => updateConfig('logoHeight', Number(v))} />
+          <SliderField label="Logo Height (px)" value={config.logoHeight} onChange={(v) => updateConfig('logoHeight', v)} min={20} max={200} step={2} defaultValue={40} />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>Addresses</div>
           <ArrayEditor
             items={(config.contact?.addresses || []).map(a => ({ address: a }))}
@@ -461,29 +490,15 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
             value={section.settings?.textColorOverride || ''}
             onChange={(v) => updateSetting('textColorOverride', v)}
           />
-          <div className="cb-field">
-            <label className="cb-field-label">Height (px)</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <input
-                type="range"
-                min={200}
-                max={800}
-                step={10}
-                value={section.settings?.height || 500}
-                onChange={(e) => updateSetting('height', Number(e.target.value))}
-                style={{ flex: 1, accentColor: '#FF6B35' }}
-              />
-              <input
-                type="number"
-                className="cb-input"
-                value={section.settings?.height || 500}
-                onChange={(e) => updateSetting('height', Number(e.target.value))}
-                min={200}
-                max={800}
-                style={{ width: 72, textAlign: 'center' }}
-              />
-            </div>
-          </div>
+          <SliderField
+            label="Height (px)"
+            value={section.settings?.height}
+            onChange={(v) => updateSetting('height', v)}
+            min={200}
+            max={800}
+            step={10}
+            defaultValue={500}
+          />
         </div>
       );
     case 'ABOUT':
