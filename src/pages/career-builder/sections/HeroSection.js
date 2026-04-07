@@ -23,14 +23,21 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
 
   const sectionBg = settings.backgroundColorOverride || backgroundColor;
 
-  const bgStyle = backgroundUrl
+  const isVideoBg = backgroundUrl && backgroundUrl.match(/\.(mp4|webm|ogg|mov)$/i);
+
+  const bgStyle = (backgroundUrl && !isVideoBg)
     ? { backgroundImage: `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(${backgroundUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : { background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}DD 50%, ${primaryColor}99 100%)` };
 
-  // If we have an override and no image, use the override instead of the gradient
-  const finalBgStyle = (settings.backgroundColorOverride && !backgroundUrl)
-    ? { background: settings.backgroundColorOverride }
-    : bgStyle;
+  // If we have an override and no image/video, use the override instead of the gradient
+  let finalBgStyle;
+  if (isVideoBg) {
+    finalBgStyle = { backgroundColor: settings.backgroundColorOverride || '#000' };
+  } else if (settings.backgroundColorOverride && !backgroundUrl) {
+    finalBgStyle = { background: settings.backgroundColorOverride };
+  } else {
+    finalBgStyle = bgStyle;
+  }
 
   return (
     <div style={{
@@ -45,9 +52,41 @@ const HeroSection = ({ theme, sectionProps = {}, settings = {} }) => {
       alignItems: 'center',
       justifyContent: 'center',
     }}>
+      {isVideoBg && (
+        <>
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              zIndex: 0
+            }}
+          >
+            <source src={backgroundUrl} />
+          </video>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0,0,0,0.45)', // Overlay to mimic gradient darkening
+            zIndex: 0
+          }} />
+        </>
+      )}
+
       <div style={{
         position: 'absolute', top: -60, right: -60, width: 200, height: 200,
         borderRadius: '50%', background: 'rgba(255,255,255,0.08)',
+        zIndex: 0
       }} />
 
       <div style={{ position: 'relative', zIndex: 1 }}>

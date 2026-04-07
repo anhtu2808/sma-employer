@@ -47,7 +47,7 @@ const SECTION_META = {
 
 // --- Mini Editor Components ---
 
-const ImageField = ({ label, value, onChange }) => {
+const ImageField = ({ label, value, onChange, accept = 'image/*' }) => {
   const [uploadFile, { isLoading }] = useUploadFileMutation();
   const fileInputRef = useRef(null);
 
@@ -55,8 +55,11 @@ const ImageField = ({ label, value, onChange }) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
+    if (accept === 'image/*' && !file.type.startsWith('image/')) {
       toastMessage.error('Please upload an image file');
+      return;
+    } else if (accept === 'image/*,video/*' && !file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+      toastMessage.error('Please upload an image or video file');
       return;
     }
 
@@ -87,7 +90,7 @@ const ImageField = ({ label, value, onChange }) => {
         />
         <input
           type="file"
-          accept="image/*"
+          accept={accept}
           ref={fileInputRef}
           style={{ display: 'none' }}
           onChange={handleUpload}
@@ -101,7 +104,13 @@ const ImageField = ({ label, value, onChange }) => {
           {isLoading ? '...' : 'Upload'}
         </button>
       </div>
-      {value && <img src={value} alt="Preview" style={{ marginTop: 8, maxWidth: '100%', maxHeight: '100px', objectFit: 'contain', borderRadius: 4, border: '1px solid rgba(255,255,255,0.1)' }} />}
+      {value && (
+        value.match(/\.(mp4|webm|ogg|mov)$/i) ? (
+          <video src={value} style={{ marginTop: 8, maxWidth: '100%', maxHeight: '100px', borderRadius: 4, border: '1px solid rgba(255,255,255,0.1)' }} controls muted />
+        ) : (
+          <img src={value} alt="Preview" style={{ marginTop: 8, maxWidth: '100%', maxHeight: '100px', objectFit: 'contain', borderRadius: 4, border: '1px solid rgba(255,255,255,0.1)' }} />
+        )
+      )}
     </div>
   );
 };
@@ -442,7 +451,7 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
         <div className="cb-section-children">
           <StringField label="Headline" value={props.headline} onChange={(v) => updateProp('headline', v)} />
           <StringField label="Subline" value={props.subline} onChange={(v) => updateProp('subline', v)} multiline />
-          <ImageField label="Background Image" value={props.backgroundUrl} onChange={(v) => updateProp('backgroundUrl', v)} />
+          <ImageField label="Background Media" value={props.backgroundUrl} onChange={(v) => updateProp('backgroundUrl', v)} accept="image/*,video/*" />
           <div className="cb-config-section-title" style={{ marginTop: 16 }}>CTA Button</div>
           <StringField label="Button Text" value={props.ctaText} onChange={(v) => updateProp('ctaText', v)} />
           <StringField label="Button Link" value={props.ctaLink} onChange={(v) => updateProp('ctaLink', v)} />
