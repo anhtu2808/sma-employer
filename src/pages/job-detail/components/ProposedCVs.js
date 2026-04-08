@@ -51,6 +51,7 @@ const ProposedCVs = ({ jobId }) => {
   const [removeProposedCv, { isLoading: isRemoving }] = useRemoveProposedCvMutation();
   const data = response?.data || { content: [], totalElements: 0, pageNumber: params.page, pageSize: params.size, totalPages: 0 };
   const applications = data.content;
+  const normalizedApplications = applications.map(normalizeProposal);
   const totalElements = data.totalElements;
   const totalPages = data.totalPages;
   const isBusyRefreshing = isRefreshingRequest || isRefreshPending;
@@ -201,7 +202,7 @@ const ProposedCVs = ({ jobId }) => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-neutral-800">
-                  {applications.map((app) => (
+                  {normalizedApplications.map((app) => (
                     <tr key={app.proposedResumeId ?? app.resumeId} className="hover:bg-gray-50/50 dark:hover:bg-neutral-800/50 transition-colors group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4 min-w-0">
@@ -339,6 +340,22 @@ const PublishFirstPlaceholder = ({ description, className = '' }) => (
 );
 
 // Helper Components
+const normalizeProposal = (proposal = {}) => ({
+  proposedResumeId: proposal.id ?? proposal.proposedResumeId ?? null,
+  resumeId: proposal.identity?.resumeId ?? proposal.resumeId ?? null,
+  candidateId: proposal.identity?.candidateId ?? proposal.candidateId ?? null,
+  jobId: proposal.identity?.jobId ?? proposal.jobId ?? null,
+  fullName: proposal.candidate?.fullName ?? proposal.fullName ?? null,
+  jobTitle: proposal.candidate?.jobTitle ?? proposal.jobTitle ?? null,
+  address: proposal.candidate?.address ?? proposal.address ?? null,
+  gender: proposal.candidate?.gender ?? proposal.gender ?? null,
+  isUnlocked: proposal.access?.unlocked ?? proposal.isUnlocked ?? false,
+  matchRate: proposal.scores?.matchRate ?? proposal.matchRate ?? null,
+  aiScore: proposal.scores?.aiScore ?? proposal.aiScore ?? null,
+  status: proposal.status ?? null,
+  proposedAt: proposal.proposedAt ?? null,
+});
+
 const getDisplayRate = (rate) => {
   const numericRate = Number(rate) || 0;
   return numericRate <= 1 && numericRate > 0
