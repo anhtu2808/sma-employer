@@ -14,6 +14,8 @@ import ApplicationHeader from './header';
 import { exportCandidates } from './export';
 import { Checkbox } from 'antd';
 import { useSearchParams } from 'react-router-dom';
+import RecruiteeConfigModal from './recruitee';
+import { useGetRecruiteeConfigQuery } from '@/apis/recruiteeApi';
 
 const STATUS_COLUMNS = [
     { id: 'APPLIED', title: 'Applied', color: '#01afffff' },
@@ -61,7 +63,8 @@ const ApplicationManagement = () => {
     const [updateJobStatus] = useUpdateJobStatusMutation();
     const [showToCandidate, setShowToCandidate] = useState(false);
     const [triggerDownloadZip, { isFetching: isDownloadingZip }] = useLazyDownloadResumesZipQuery();
-
+    const [isRecruiteeModalOpen, setIsRecruiteeModalOpen] = useState(false);
+    const { data: recruiteeConfig } = useGetRecruiteeConfigQuery();
     usePageHeader('Application Management', 'Track and manage candidate applications for your jobs');
 
     useEffect(() => {
@@ -125,6 +128,7 @@ const ApplicationManagement = () => {
     if (isJobsLoading) return <Loading className="py-16" />;
 
     const jobs = jobsResponse?.data?.content || [];
+
 
     const onDragEnd = async (result) => {
         const { destination, source, draggableId } = result;
@@ -232,6 +236,8 @@ const ApplicationManagement = () => {
                 onDownloadZip={handleDownloadZip}
                 isDownloadingZip={isDownloadingZip}
                 statusFilter={statusFilter}
+                recruiteeConfig={recruiteeConfig?.data}
+                onConnectRecruitee={() => setIsRecruiteeModalOpen(true)}
                 onStatusFilterChange={handleStatusFilterChange}
                 onArchiveJob={(job) => {
                     AntModal.confirm({
@@ -292,7 +298,11 @@ const ApplicationManagement = () => {
                     />
                 )}
             </div>
-
+            <RecruiteeConfigModal
+                open={isRecruiteeModalOpen}
+                onClose={() => setIsRecruiteeModalOpen(false)}
+                jobs={jobsResponse?.data?.content || []}
+            />
             <Modal
                 open={isRejectModalOpen}
                 title="Reject Candidate"
