@@ -6,6 +6,7 @@ import { getJobStatusConfig } from '@/constrant/application';
 import { Dropdown } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileLines, faTableCells } from '../../../utils/icons';
+import IntegrationMenu from '../integration';
 
 const APPLICATION_STATUS_TABS = [
     { key: '', label: 'All' },
@@ -33,6 +34,8 @@ const ApplicationHeader = ({
     onStatusFilterChange,
     onDownloadZip,
     isDownloadingZip,
+    recruiteeConfig,
+    onConnectRecruitee,
 }) => {
 
     const exportMenuItems = [
@@ -194,6 +197,7 @@ const ApplicationHeader = ({
                     </div>
 
                     <div className="flex items-center gap-3 w-full lg:w-auto shrink-0">
+
                         <Button
                             mode="secondary"
                             className=""
@@ -213,6 +217,10 @@ const ApplicationHeader = ({
                                 {getExportButtonLabel()}
                             </Button>
                         </Dropdown>
+                        <IntegrationMenu
+                            config={recruiteeConfig}
+                            onConnectRecruitee={onConnectRecruitee}
+                        />
                     </div>
                 </div>
 
