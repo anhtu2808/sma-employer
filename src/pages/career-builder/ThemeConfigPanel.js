@@ -2,6 +2,8 @@ import React from 'react';
 
 const FONT_OPTIONS = [
   'Inter', 'Roboto', 'Poppins', 'Manrope', 'DM Sans', 'Outfit', 'Plus Jakarta Sans',
+  'Montserrat', 'Lato', 'Open Sans', 'Nunito', 'Raleway', 'Rubik', 'Work Sans',
+  'Oswald', 'Playfair Display', 'Lora', 'Merriweather'
 ];
 
 const ThemeConfigPanel = ({ theme, onThemeChange }) => {
