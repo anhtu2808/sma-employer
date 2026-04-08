@@ -25,7 +25,6 @@ const SECTION_COMPONENTS = {
   CTA_FOOTER: CTAFooterSection,
 };
 
-
 const CanvasPreview = ({
   theme,
   layoutConfig,
@@ -62,8 +61,12 @@ const CanvasPreview = ({
   };
   const spacingPad = getSpacingValue(theme.spacing);
 
+  const fontName = theme.bodyFont || theme.fontFamily || 'Inter';
+  const fontUrl = `https://fonts.googleapis.com/css2?family=${fontName.replace(/ /g, '+')}:wght@300;400;500;600;700&display=swap`;
+
   return (
     <div className="cb-canvas-container">
+      <link href={fontUrl} rel="stylesheet" />
       <div
         className="cb-canvas"
         style={{
