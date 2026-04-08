@@ -212,9 +212,9 @@ const ProposedCVs = ({ jobId }) => {
               <table className="w-full text-left border-collapse table-fixed">
                 <thead className="sticky top-0 z-20 bg-gray-50 dark:bg-neutral-900 shadow-sm">
                   <tr>
-                    <th className="px-6 py-4 w-[35%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
-                    <th className="px-6 py-4 w-[25%] text-sm font-semibold text-gray-500 tracking-wide">Job Title</th>
-                    <th className="px-6 py-4 w-[15%] text-sm font-semibold text-gray-500 tracking-wide">Gender</th>
+                    <th className="px-6 py-4 w-[25%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
+                    <th className="px-6 py-4 w-[30%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
+                    <th className="px-6 py-4 w-[20%] text-sm font-semibold text-gray-500 tracking-wide">Job Title</th>
                     <th className="px-6 py-4 w-[15%] text-sm font-semibold text-gray-500 tracking-wide text-center">AI Match Rate</th>
                     <th className="px-6 py-4 w-[10%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
                   </tr>
@@ -234,29 +234,31 @@ const ProposedCVs = ({ jobId }) => {
                             <p className="text-xs text-gray-500 flex items-center gap-1.5 truncate leading-none mt-1" title={app.address}>
                               <MapPin size={12} className="flex-shrink-0" /> {app.isUnlocked ? (app.address || 'No address provided') : 'Unlock to view location'}
                             </p>
-                            <div className="mt-2 rounded-xl border border-orange-100 bg-orange-50/70 px-3 py-2">
-                              <div className="flex items-start gap-2">
-                                <div className={`mt-0.5 flex h-5 w-5 items-center justify-center rounded-full ${
-                                  isEvaluationPendingStatus(app.evaluationStatus)
-                                    ? 'border-2 border-orange-200 border-t-orange-500 animate-spin'
-                                    : 'bg-orange-100 text-orange-500'
-                                }`}>
-                                  {!isEvaluationPendingStatus(app.evaluationStatus) && (
-                                    <FontAwesomeIcon icon={faWandMagicSparkles} className="text-[10px]" />
-                                  )}
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                  <p className="text-[11px] font-semibold uppercase tracking-wide text-orange-700">
-                                    {isEvaluationPendingStatus(app.evaluationStatus) ? 'AI overview is updating' : 'AI overview'}
-                                  </p>
-                                  <p
-                                    className="mt-1 text-xs leading-relaxed text-gray-600 line-clamp-2"
-                                    title={getOverviewTitle(app)}
-                                  >
-                                    {getOverviewText(app)}
-                                  </p>
-                                </div>
-                              </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="rounded-xl border border-orange-100 bg-orange-50/70 px-3 py-2">
+                          <div className="flex items-start gap-2">
+                            <div className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full ${
+                              isEvaluationPendingStatus(app.evaluationStatus)
+                                ? 'border-2 border-orange-200 border-t-orange-500 animate-spin'
+                                : 'bg-orange-100 text-orange-500'
+                            }`}>
+                              {!isEvaluationPendingStatus(app.evaluationStatus) && (
+                                <FontAwesomeIcon icon={faWandMagicSparkles} className="text-[10px]" />
+                              )}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[11px] font-semibold uppercase tracking-wide text-orange-700">
+                                {isEvaluationPendingStatus(app.evaluationStatus) ? 'AI overview is updating' : 'AI overview'}
+                              </p>
+                              <p
+                                className="mt-1 text-xs leading-relaxed text-gray-600 line-clamp-3"
+                                title={getOverviewTitle(app)}
+                              >
+                                {getOverviewText(app)}
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -264,15 +266,6 @@ const ProposedCVs = ({ jobId }) => {
                       <td className="px-6 py-4">
                         <span className="text-sm text-gray-700 dark:text-neutral-300 font-medium">
                           {app.jobTitle || 'N/A'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2.5 py-1 rounded-md text-xs font-semibold ${app.gender === 'MALE' ? 'bg-blue-50 text-blue-600' :
-                            app.gender === 'FEMALE' ? 'bg-pink-50 text-pink-600' : 'bg-gray-50 text-gray-600'
-                          }`}>
-                          {app.isUnlocked
-                            ? (app.gender === 'MALE' ? 'Male' : app.gender === 'FEMALE' ? 'Female' : 'Other')
-                            : 'Hidden'}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center">
@@ -398,7 +391,6 @@ const normalizeProposal = (proposal = {}) => ({
   fullName: proposal.candidate?.fullName ?? proposal.fullName ?? null,
   jobTitle: proposal.candidate?.jobTitle ?? proposal.jobTitle ?? null,
   address: proposal.candidate?.address ?? proposal.address ?? null,
-  gender: proposal.candidate?.gender ?? proposal.gender ?? null,
   isUnlocked: proposal.access?.unlocked ?? proposal.isUnlocked ?? false,
   matchRate: proposal.scores?.matchRate ?? proposal.matchRate ?? null,
   aiScore: proposal.scores?.aiScore ?? proposal.aiScore ?? null,
