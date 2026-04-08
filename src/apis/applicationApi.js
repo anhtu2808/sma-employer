@@ -53,12 +53,22 @@ export const applicationApi = api.injectEndpoints({
                 params: { jobId, type },
             }),
         }),
+
         downloadResumesZip: builder.query({
             query: (jobId) => ({
                 url: `${API_VERSION}/applications/jobs/${jobId}/download-resumes`,
                 method: 'GET',
                 responseHandler: (response) => response.blob(),
             }),
+        }),
+
+        retryMatching: builder.mutation({
+            query: ({ jobId, resumeId }) => ({
+                url: `${API_VERSION}/matching/detail`,
+                method: "POST",
+                params: { jobId, resumeId },
+            }),
+            invalidatesTags: [{ type: "Applications", id: "LIST" }],
         }),
     }),
 });
@@ -69,5 +79,6 @@ export const {
     useGetApplicationStatusSummaryQuery,
     useUpdateApplicationStatusMutation,
     useLazyGetShortlistedExportQuery,
-    useLazyDownloadResumesZipQuery
+    useLazyDownloadResumesZipQuery,
+    useRetryMatchingMutation
 } = applicationApi;

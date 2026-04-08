@@ -9,9 +9,10 @@ import Modal from '@/components/Modal';
 import { useBlockCandidateMutation } from '@/apis/companyApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faUser, faBrain, faNewspaper,
+    faUser, faNewspaper,
     faTriangleExclamation, faCircleCheck,
 } from '../../../utils/icons';
+import { Sparkles } from 'lucide-react';
 import { Select, ConfigProvider } from 'antd';
 import { getAllowedNextStatuses } from '@/constrant/application';
 import CandidateHeader from './candidate-header';
@@ -149,7 +150,7 @@ const ApplicationDetail = () => {
 
     const tabs = [
         { key: TAB_KEYS.BASIC, label: 'Basic Information', icon: faUser },
-        ...(hasAi ? [{ key: TAB_KEYS.AI, label: 'AI Analysis', icon: faBrain }] : []),
+        ...(hasAi ? [{ key: TAB_KEYS.AI, label: 'AI Analysis', lucideIcon: Sparkles }] : []),
         ...(hasCover ? [{ key: TAB_KEYS.COVER, label: 'Cover Letter', icon: faNewspaper }] : []),
     ];
 
@@ -186,7 +187,7 @@ const ApplicationDetail = () => {
                                         : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200'
                                     }`}
                             >
-                                <FontAwesomeIcon icon={tab.icon} className="text-sm" />
+                                {tab.lucideIcon ? <tab.lucideIcon size={14} /> : <FontAwesomeIcon icon={tab.icon} className="text-sm" />}
                                 <span className="hidden sm:inline">{tab.label}</span>
                             </button>
                         ))}

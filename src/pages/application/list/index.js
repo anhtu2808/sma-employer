@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ExternalLink, Mail, Calendar, MapPin, Brain, Briefcase, Eye } from 'lucide-react';
+import { ExternalLink, Mail, Calendar, MapPin, Brain, Briefcase, Eye, RotateCcw, Sparkles } from 'lucide-react';
 import moment from 'moment';
 import { Table, Select, ConfigProvider, Modal as AntModal } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,8 @@ import { getApplicationStatusConfig, getAllowedNextStatuses, APPLICATION_STATUS 
 import Loading from '@/components/Loading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '../../../utils/icons';
+import { useRetryMatchingMutation } from '@/apis/applicationApi';
+import toastMessage from '@/utils/toastMessage';
 
 const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPage, onPageChange, onStatusUpdate }) => {
     const navigate = useNavigate();
@@ -14,6 +16,24 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
     const [rejectReason, setRejectReason] = useState('');
     const [approveModal, setApproveModal] = useState({ open: false, id: null });
     const [evalModal, setEvalModal] = useState({ open: false, evaluation: null, candidateName: '' });
+    const [retryMatching] = useRetryMatchingMutation();
+    const [retryingId, setRetryingId] = useState(null);
+
+    const handleRetry = async (app) => {
+        if (!app?.resumeId || !app?.jobId) {
+            toastMessage.error('Missing job or resume reference for retry');
+            return;
+        }
+        try {
+            setRetryingId(app.applicationId);
+            await retryMatching({ jobId: app.jobId, resumeId: app.resumeId }).unwrap();
+            toastMessage.success('Retry triggered. Evaluation in progress...');
+        } catch (e) {
+            toastMessage.error(e?.data?.message || 'Failed to retry evaluation');
+        } finally {
+            setRetryingId(null);
+        }
+    };
 
     const handleStatusSelect = (appId, status, isRejectedByAi) => {
         if (status === 'REJECTED') {
@@ -83,9 +103,22 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
             key: 'evaluation',
             width: '55%',
             render: (evaluation, app) => {
+                const aiEnabled = app?.enableAiScoring === true;
+
+                // Case 1: job has AI scoring disabled
+                if (!aiEnabled) {
+                    return (
+                        <div className="flex items-center gap-2 text-sm text-gray-400 italic">
+                            <Sparkles size={14} className="flex-shrink-0" />
+                            <span>AI Scoring is not enabled for this job</span>
+                        </div>
+                    );
+                }
+
                 const aiScore = evaluation?.aiScore;
                 const criteriaScores = evaluation?.criteriaScores || [];
 
+                // Case 2: scoring finished — show full breakdown
                 if (evaluation && evaluation.status === 'FINISH') {
                     return (
                         <div className="flex items-start gap-5">
@@ -121,15 +154,32 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                     );
                 }
 
-                return (
-                    <span className="text-sm text-gray-400 italic">
-                        {evaluation?.status === 'PARTIAL' || evaluation?.status === 'WAITING'
-                            ? 'Evaluating...'
-                            : evaluation?.status === 'FAIL'
-                                ? 'Failed'
-                                : 'Not evaluated'}
-                    </span>
-                );
+                // Case 3: in progress
+                if (evaluation?.status === 'WAITING' || evaluation?.status === 'PARTIAL') {
+                    return <span className="text-sm text-gray-400 italic">Evaluating...</span>;
+                }
+
+                // Case 4: failed — show retry button
+                if (evaluation?.status === 'FAIL') {
+                    const isRetrying = retryingId === app.applicationId;
+                    return (
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-red-500 italic">Failed</span>
+                            <button
+                                onClick={() => handleRetry(app)}
+                                disabled={isRetrying || !app.resumeId || !app.jobId}
+                                className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-orange-600 hover:text-white bg-orange-50 hover:bg-orange-500 border border-orange-200 hover:border-orange-500 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                title="Retry AI evaluation"
+                            >
+                                <RotateCcw size={12} className={isRetrying ? 'animate-spin' : ''} />
+                                {isRetrying ? 'Retrying...' : 'Retry'}
+                            </button>
+                        </div>
+                    );
+                }
+
+                // Case 5: never evaluated
+                return <span className="text-sm text-gray-400 italic">Not evaluated</span>;
             },
         },
         {
