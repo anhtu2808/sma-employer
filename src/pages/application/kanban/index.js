@@ -3,6 +3,7 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Mail, Calendar, MapPin, Brain, Paperclip } from 'lucide-react';
 import moment from 'moment';
 import { getApplicationStatusConfig } from '@/constrant/application';
+import { Tooltip } from 'antd';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -134,22 +135,33 @@ const KanbanBoard = ({
                                                                             {app.evaluation?.aiScore != null && (
                                                                                 <div className="shrink-0">
                                                                                     <span className={`text-sm font-bold ${app.evaluation.aiScore >= 80 ? 'text-emerald-600' :
-                                                                                            app.evaluation.aiScore >= 50 ? 'text-orange-500' :
-                                                                                                'text-red-500'
+                                                                                        app.evaluation.aiScore >= 50 ? 'text-orange-500' :
+                                                                                            'text-red-500'
                                                                                         }`}>
                                                                                         {Math.round(app.evaluation.aiScore)}%
                                                                                     </span>
                                                                                 </div>
                                                                             )}
+
                                                                         </div>
 
                                                                         {/* Candidate Name */}
-                                                                        <h4
-                                                                            className="text-base font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary transition-colors truncate cursor-pointer hover:underline"
-                                                                            onClick={() => navigate(`/applications/${app.applicationId}`)}
-                                                                        >
-                                                                            {app.candidateName}
-                                                                        </h4>
+                                                                        <div className="flex justify-between items-start mb-1 gap-2">
+                                                                            <h4
+                                                                                className="text-base font-semibold text-gray-900 dark:text-white group-hover:text-primary transition-colors truncate cursor-pointer hover:underline"
+                                                                                onClick={() => navigate(`/applications/${app.applicationId}`)}
+                                                                            >
+                                                                                {app.candidateName}
+                                                                            </h4>
+
+                                                                            {app.totalApplicationsToCompany > 1 && (
+                                                                                <Tooltip title={`Total ${app.totalApplicationsToCompany} applications to your company.`}>
+                                                                                    <span className="flex-shrink-0 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 rounded-full border border-purple-200 dark:border-purple-800">
+                                                                                        {app.totalApplicationsToCompany}
+                                                                                    </span>
+                                                                                </Tooltip>
+                                                                            )}
+                                                                        </div>
 
                                                                         {/* Email */}
                                                                         <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-1.5 truncate">
