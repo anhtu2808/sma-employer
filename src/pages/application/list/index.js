@@ -64,6 +64,15 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                         <p className="text-sm text-gray-500 flex items-center gap-1 truncate lowercase leading-none mt-1">
                             <Mail size={13} className="flex-shrink-0" /> {app.candidateEmail}
                         </p>
+                        <p className={`text-[11px] w-fit font-medium inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border ${app.totalApplicationsToCompany > 1
+                                ? 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/20 dark:text-purple-400'
+                                : 'bg-gray-50 text-gray-600 border-gray-100 dark:bg-neutral-800 dark:text-neutral-400'
+                            }`}>
+                            <Briefcase size={10} />
+                            {app.totalApplicationsToCompany > 1
+                                ? `${app.totalApplicationsToCompany} total apps to your company`
+                                : 'New candidate for company'}
+                        </p>
                         {app.location && (
                             <p className="text-sm text-gray-400 flex items-center gap-1 mt-1">
                                 <MapPin size={13} className="flex-shrink-0" /> {app.location}
