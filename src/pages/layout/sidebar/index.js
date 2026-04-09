@@ -15,23 +15,6 @@ import { useGetNotificationsQuery } from '@/apis/notificationApi';
 import { useGetMyRecruiterInfoQuery } from '@/apis/recruiterApi';
 
 
-
-const generalItems = [
-  { icon: faBuilding, label: 'Company', path: '/company' },
-  { icon: faPaintbrush, label: 'Career Page', path: '/career-builder' },
-  { icon: faClipboardCheck, label: 'Scoring Criteria', path: '/scoring-criteria' },
-  { icon: faBoxArchive, label: 'Archived Jobs', path: '/jobs/archived' },
-  { icon: faLink, label: 'Webhooks', path: '/webhooks' },
-  { icon: faKey, label: 'API Management', path: '/api-management' },
-  { icon: faGear, label: 'Settings', path: '/settings' },
-];
-
-const billingMenuItems = [
-  { icon: faCreditCard, label: 'Billing & Plans', path: '/billing-plans' },
-  { icon: faClockRotateLeft, label: 'Usage', path: '/usage' },
-];
-
-
 const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false }) => {
   const location = useLocation();
   const handleLogout = async () => {
@@ -67,25 +50,11 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
     }
   }, [accessToken]);
 
-  const filteredBillingItems = isRootRecruiter
-    ? billingMenuItems
-    : billingMenuItems.filter(item => item.path !== '/billing-plans');
+  // --- Grouped sidebar sections ---
 
-  const filteredGeneralItems = generalItems.filter((item) => {
-    if (item.path === '/company') return isRootRecruiter;
-    if (item.path === '/api-management') return isRootRecruiter || isAdmin;
-    return true;
-  });
-
-  const menuItems = [
+  // 1. Overview
+  const overviewItems = [
     { icon: faTableCells, label: 'Dashboard', path: '/dashboard' },
-    ...(isRootRecruiter ? [{ icon: faUsers, label: 'Recruiters', path: '/recruiters' }] : []),
-    { icon: faBriefcase, label: 'Jobs', path: '/jobs' },
-    { icon: faClipboard, label: 'Applications', path: '/applications' },
-    { icon: faEnvelopeRegular, label: 'Invitations', path: '/invitations' },
-    { icon: faBan, label: 'Blacklist', path: '/blacklist' },
-    // Only show Billing & Usage for recruiters (ROOT and RECRUITER)
-    ...(isRecruiter ? filteredBillingItems : []),
     {
       icon: faBell,
       label: 'Notifications',
@@ -93,6 +62,96 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
       badge: unreadCount > 0 ? unreadCount : null
     },
   ];
+
+  // 2. Recruitment
+  const recruitmentItems = [
+    { icon: faBriefcase, label: 'Jobs', path: '/jobs' },
+    { icon: faBoxArchive, label: 'Archived Jobs', path: '/jobs/archived' },
+    { icon: faClipboard, label: 'Applications', path: '/applications' },
+    { icon: faEnvelopeRegular, label: 'Invitations', path: '/invitations' },
+    { icon: faClipboardCheck, label: 'Scoring Criteria', path: '/scoring-criteria' },
+  ];
+
+  // 3. Management (role-filtered)
+  const managementItemsRaw = [
+    { icon: faUsers, label: 'Recruiters', path: '/recruiters', requireRoot: true },
+    { icon: faBuilding, label: 'Company', path: '/company', requireRoot: true },
+    { icon: faBan, label: 'Blacklist', path: '/blacklist' },
+  ];
+  const managementItems = managementItemsRaw.filter((item) => {
+    if (item.requireRoot) return isRootRecruiter;
+    return true;
+  });
+
+  // 4. Configuration / Settings
+  const configItemsRaw = [
+    { icon: faPaintbrush, label: 'Career Page', path: '/career-builder' },
+    { icon: faLink, label: 'Webhooks', path: '/webhooks' },
+    { icon: faKey, label: 'API Management', path: '/api-management', requireRootOrAdmin: true },
+    { icon: faGear, label: 'Settings', path: '/settings' },
+  ];
+  const configItems = configItemsRaw.filter((item) => {
+    if (item.requireRootOrAdmin) return isRootRecruiter || isAdmin;
+    return true;
+  });
+
+  // 5. Billing (only for recruiters)
+  const billingItemsRaw = [
+    { icon: faCreditCard, label: 'Billing & Plans', path: '/billing-plans', requireRoot: true },
+    { icon: faClockRotateLeft, label: 'Usage', path: '/usage' },
+  ];
+  const billingItems = isRecruiter
+    ? billingItemsRaw.filter((item) => {
+        if (item.requireRoot) return isRootRecruiter;
+        return true;
+      })
+    : [];
+
+  // All sections
+  const sections = [
+    { title: 'Overview', items: overviewItems },
+    { title: 'Recruitment', items: recruitmentItems },
+    ...(managementItems.length > 0 ? [{ title: 'Management', items: managementItems }] : []),
+    { title: 'Configuration', items: configItems },
+    ...(billingItems.length > 0 ? [{ title: 'Billing', items: billingItems }] : []),
+  ];
+
+  // Render a single nav item
+  const renderNavItem = (item) => (
+    <NavLink
+      key={item.path}
+      to={item.path}
+      onClick={onMobileClose}
+      className={({ isActive }) => {
+        // Don't highlight "Jobs" when on archived jobs page
+        const checkActive = item.path === '/jobs' && location.pathname.startsWith('/jobs/archived') ? false : isActive;
+        return `flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors ${collapsed && !isMobile ? 'justify-center px-2' : ''} ${checkActive
+          ? 'bg-orange-50 dark:bg-primary/20 text-primary font-medium'
+          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white group'
+          }`
+      }}
+      title={collapsed && !isMobile ? item.label : ''}
+    >
+      <>
+        <div className="relative flex items-center justify-center w-5 text-center">
+          <FontAwesomeIcon icon={item.icon} className="group-hover:text-primary transition-colors" />
+          {collapsed && !isMobile && item.badge > 0 && (
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white dark:border-card-dark rounded-full"></span>
+          )}
+        </div>
+
+        {(!collapsed || isMobile) && (
+          <span className="flex-1 text-left">{item.label}</span>
+        )}
+
+        {(!collapsed || isMobile) && item.badge > 0 && (
+          <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+            {item.badge > 99 ? '99+' : item.badge}
+          </span>
+        )}
+      </>
+    </NavLink>
+  );
 
   return (
     <aside className={`bg-card-light dark:bg-card-dark ${!isMobile ? 'border-r border-gray-200 dark:border-gray-800' : ''} flex flex-col h-full flex-shrink-0 transition-all duration-300 ease-in-out relative ${collapsed && !isMobile ? 'w-20' : 'w-64'}`}>
@@ -111,104 +170,40 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
       </div>
 
       <div className={`flex-1 px-4 overflow-y-auto ${collapsed && !isMobile ? 'px-2' : ''}`}>
-        <div className="mb-6">
-          {(!collapsed || isMobile) && (
-            <p className="px-4 text-xs font-semibold text-muted-light dark:text-muted-dark uppercase tracking-wider mb-2">
-              Menu
-            </p>
-          )}
-          <nav className="space-y-1">
-            {menuItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                onClick={onMobileClose}
-                className={({ isActive }) => {
-                  const checkActive = item.path === '/jobs' && location.pathname.startsWith('/jobs/archived') ? false : isActive;
-                  return `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${collapsed && !isMobile ? 'justify-center px-2' : ''} ${checkActive
-                    ? 'bg-orange-50 dark:bg-primary/20 text-primary font-medium'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white group'
-                    }`
-                }}
-                title={collapsed && !isMobile ? item.label : ''}
-              >
-                <>
-                  <div className="relative flex items-center justify-center">
-                    <FontAwesomeIcon icon={item.icon} className="group-hover:text-primary transition-colors" />
-                    {collapsed && !isMobile && item.badge > 0 && (
-                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white dark:border-card-dark rounded-full"></span>
-                    )}
-                  </div>
-
-                  {(!collapsed || isMobile) && (
-                    <span className="flex-1 text-left">{item.label}</span>
-                  )}
-
-                  {(!collapsed || isMobile) && item.badge > 0 && (
-                    <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
-                      {item.badge > 99 ? '99+' : item.badge}
-                    </span>
-                  )}
-                </>
-              </NavLink>
-            ))}
-          </nav>
-        </div>
-
-        {/* General Section */}
-        <div className="mb-6">
-          {(!collapsed || isMobile) && (
-            <p className="px-4 text-xs font-semibold text-muted-light dark:text-muted-dark uppercase tracking-wider mb-2">
-              General
-            </p>
-          )}
-          <nav className="space-y-1">
-            {filteredGeneralItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                onClick={onMobileClose}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${collapsed && !isMobile ? 'justify-center px-2' : ''} ${isActive
-                    ? 'bg-orange-50 dark:bg-primary/20 text-primary font-medium'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white group'
-                  }`
-                }
-                title={collapsed && !isMobile ? item.label : ''}
-              >
-                <>
-                  <FontAwesomeIcon icon={item.icon} className="group-hover:text-primary transition-colors" />
-                  {(!collapsed || isMobile) && item.label}
-                </>
-              </NavLink>
-            ))}
-          </nav>
-        </div>
+        {sections.map((section) => (
+          <div key={section.title} className="mb-4">
+            {(!collapsed || isMobile) && (
+              <p className="px-4 text-xs font-semibold text-muted-light dark:text-muted-dark uppercase tracking-wider mb-1.5">
+                {section.title}
+              </p>
+            )}
+            {collapsed && !isMobile && (
+              <div className="border-t border-gray-200 dark:border-gray-700 mx-2 mb-2"></div>
+            )}
+            <nav className="space-y-0.5">
+              {section.items.map(renderNavItem)}
+            </nav>
+          </div>
+        ))}
       </div>
 
       {/* Upgrade Plan Card - Only for root recruiters */}
       {(!collapsed || isMobile) && isRecruiter && isRootRecruiter && (
-        <div className="p-4">
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-3">
-              <FontAwesomeIcon icon={faStar} />
+        <div className="px-4 pb-2">
+          <Link
+            to="/billing-plans"
+            onClick={onMobileClose}
+            className="flex items-center gap-3 p-3 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-primary/10 dark:to-amber-900/10 rounded-xl border border-orange-100 dark:border-orange-900/30 hover:shadow-md transition-all group"
+          >
+            <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center text-primary flex-shrink-0">
+              <FontAwesomeIcon icon={faStar} className="text-sm" />
             </div>
-            <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Upgrade Plan</h4>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-              Unlock premium features like AI candidate matching.
-            </p>
-            <Link to="/billing-plans" className="block w-full">
-              <Button
-                fullWidth
-                mode="primary"
-                shape="rounded"
-                className=""
-                onClick={onMobileClose}
-              >
-                View Plans
-              </Button>
-            </Link>
-          </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">Upgrade Plan</p>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-tight mt-0.5">Unlock AI features</p>
+            </div>
+            <FontAwesomeIcon icon={faChevronRight} className="text-xs text-gray-400 group-hover:text-primary transition-colors" />
+          </Link>
         </div>
       )}
 
@@ -241,3 +236,4 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
 };
 
 export default Sidebar;
+

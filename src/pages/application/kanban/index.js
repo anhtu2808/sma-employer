@@ -14,6 +14,7 @@ const KanbanBoard = ({
 }) => {
     const navigate = useNavigate();
     const [draggingColumn, setDraggingColumn] = useState(null);
+    const [draggingItem, setDraggingItem] = useState(null);
 
     const isValidDrop = (sourceId, targetId) => {
         if (!draggingColumn) return true;
@@ -25,7 +26,11 @@ const KanbanBoard = ({
             return ['REJECTED', 'APPROVED'].includes(targetId);
         }
         if (sourceId === 'REJECTED') {
-            return ['APPROVED'].includes(targetId);
+            if (targetId === 'APPROVED') {
+                // Only allow drag to APPROVED if the item was rejected by AI
+                return draggingItem?.isRejectedByAi === true;
+            }
+            return false;
         }
         return false;
     };
@@ -51,9 +56,28 @@ const KanbanBoard = ({
 
     return (
         <DragDropContext
-            onDragStart={(start) => setDraggingColumn(start.source.droppableId)}
+            onDragStart={(start) => {
+                setDraggingColumn(start.source.droppableId);
+                // Find the dragging item to check isRejectedByAi
+                const sourceColumn = start.source.droppableId;
+                const candidates = getCandidatesByStatus(sourceColumn);
+                const draggedApp = candidates.find(app => app.applicationId.toString() === start.draggableId);
+                setDraggingItem(draggedApp || null);
+            }}
             onDragEnd={(result) => {
+                const currentDraggingItem = draggingItem;
                 setDraggingColumn(null);
+                setDraggingItem(null);
+
+                // Block REJECTED → APPROVED if not AI-rejected
+                if (
+                    result.source?.droppableId === 'REJECTED' &&
+                    result.destination?.droppableId === 'APPROVED' &&
+                    currentDraggingItem?.isRejectedByAi !== true
+                ) {
+                    return; // silently block the drop
+                }
+
                 onDragEnd(result);
             }}
         >
@@ -97,7 +121,10 @@ const KanbanBoard = ({
                                                 `}
                                             >
                                                 {candidates.map((app, index) => {
-                                                    const isNotDraggable = app.status === 'APPLIED' || app.status === 'APPROVED';
+                                                    // APPLIED and APPROVED can't be dragged at all
+                                                    // REJECTED cards that are NOT AI-rejected also can't be dragged (nowhere valid to go)
+                                                    const isNotDraggable = app.status === 'APPLIED' || app.status === 'APPROVED'
+                                                        || (app.status === 'REJECTED' && app.isRejectedByAi !== true);
                                                     const scoreValue = app.evaluation?.aiScore;
                                                     const matchTag = getAIMatchTag(scoreValue);
 
