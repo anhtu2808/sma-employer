@@ -42,6 +42,7 @@ const SAMPLE_DATA = {
     colors: { primary: '#FF6B35', secondary: '#E6F0FF', background: '#FFFFFF', text: '#1D1D1F' },
     typography: { fontFamily: 'Inter', baseFontSize: 16 },
     styling: { borderRadius: 12, buttonStyle: 'shadow' },
+    effects: { shadow: 'subtle', spacing: 'normal' },
   },
 
   layoutConfig: [
@@ -166,8 +167,8 @@ const flattenTheme = (tc) => ({
   baseFontSize: tc?.typography?.baseFontSize || 16,
   borderRadius: tc?.styling?.borderRadius || 12,
   buttonStyle: tc?.styling?.buttonStyle || 'shadow',
-  shadow: 'subtle',
-  spacing: 'normal',
+  shadow: tc?.effects?.shadow || 'subtle',
+  spacing: tc?.effects?.spacing || 'normal',
 });
 
 /** Unflatten theme back to BE structure for saving */
@@ -185,6 +186,10 @@ const unflattenTheme = (flat) => ({
   styling: {
     borderRadius: flat.borderRadius,
     buttonStyle: flat.buttonStyle,
+  },
+  effects: {
+    shadow: flat.shadow,
+    spacing: flat.spacing,
   },
 });
 

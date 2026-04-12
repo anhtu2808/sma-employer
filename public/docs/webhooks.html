@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
@@ -7,26 +7,123 @@
     <title>SmartRecruit | Webhook Developer Guide</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
         rel="stylesheet">
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, rgba(249, 115, 22, .12), transparent 28%), radial-gradient(circle at bottom left, rgba(14, 165, 233, .1), transparent 24%), #f8fafc;
+            color: #0f172a;
+        }
+
+        code,
+        pre {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, .92);
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, .06);
+        }
+
+        .chip {
+            display: inline-flex;
+            padding: .35rem .75rem;
+            border-radius: 999px;
+            border: 1px solid #fed7aa;
+            background: #fff7ed;
+            color: #ea580c;
+            font-weight: 800;
+            font-size: .75rem;
+            letter-spacing: .08em;
+        }
+
+        .endpoint {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 3.6rem;
+            padding: .25rem .7rem;
+            border-radius: 999px;
+            background: #f97316;
+            color: #fff;
+            font-weight: 800;
+            font-size: .75rem;
+            letter-spacing: .08em;
+        }
+
+        .inline {
+            display: inline-block;
+            padding: .12rem .4rem;
+            border-radius: .45rem;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #c2410c;
+            font-size: .9em;
+        }
+
+        .toc a {
+            display: block;
+            padding: .65rem .85rem;
+            border-radius: 14px;
+            color: #334155;
+            font-weight: 600;
+        }
+
+        .toc a:hover {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .tbl {
+            overflow: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            background: #fff;
+        }
+
+        .tbl table {
+            width: 100%;
+            min-width: 680px;
+            border-collapse: collapse;
+        }
+
+        .tbl th,
+        .tbl td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .tbl th {
+            background: #f8fafc;
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: #64748b;
+            font-weight: 800;
+        }
+
+        .tbl tr:last-child td {
+            border-bottom: none;
         }
 
         pre {
-            background-color: #0f172a;
+            background: #0f172a;
             color: #e2e8f0;
-            padding: 1.25rem;
-            border-radius: 0.75rem;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.875rem;
-            line-height: 1.5;
             border: 1px solid #1e293b;
-        }
-
-        code {
-            font-family: 'Fira Code', monospace;
+            border-radius: 18px;
+            padding: 1rem;
+            overflow: auto;
+            font-size: .86rem;
+            line-height: 1.7;
         }
 
         .endpoint-badge {
@@ -41,71 +138,130 @@
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-900 antialiased">
-
-    <div class="max-w-5xl mx-auto px-6 py-12 lg:py-20">
-        <header class="border-b border-slate-200 pb-10 mb-12">
-            <div class="flex items-center gap-2 mb-4">
-                <div class="w-10 h-10 flex items-center justify-center">
-                    <img src="../sma-logo.svg" alt="SmartRecruit Logo" class="w-full h-full object-contain" />
-                </div>
-                <span class="text-xl font-bold tracking-tight">SmartRecruit</span>
+<body class="antialiased">
+    <header class="w-full z-50 bg-white/80 backdrop-blur-md border-b border-neutral-200 sticky top-0">
+        <div class="container mx-auto px-6 h-16 flex justify-between items-center relative">
+            <div class="flex-shrink-0 z-10">
+                <a href="/" class="flex items-center gap-2 group">
+                    <img src="../sma-logo.svg" alt="SmartRecruit Logo" class="w-7 h-7">
+                    <span
+                        class="text-base font-bold text-gray-900 group-hover:text-orange-500 transition-colors">SmartRecruit</span>
+                </a>
             </div>
-            <h1 class="text-5xl font-extrabold text-slate-900 tracking-tight">Webhook Documentation</h1>
-            <p class="text-lg text-slate-500 mt-4 max-w-2xl">Integrate real-time recruiting events into your application
-                using SmartRecruit webhooks.</p>
-        </header>
 
-        <div class="space-y-16">
+            <nav class="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                <a href="/" class="text-sm font-bold text-slate-600 hover:text-orange-500 transition-colors">Home</a>
+                <a href="/dashboard"
+                    class="text-sm font-bold text-slate-600 hover:text-orange-500 transition-colors">Dashboard</a>
+                <a href="/docs/integration-api.html" class="text-sm text-orange-500 font-bold italic">Documentation</a>
+            </nav>
+        </div>
+    </header>
 
-            <section>
-                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-                    <span class="text-orange-500">01</span> Overview
-                </h2>
-                <p class="text-slate-600 mb-6 leading-relaxed">
-                    Webhooks allow you to build or set up integrations which subscribe to certain events on
-                    SmartRecruit. When one of those events is triggered, we'll send a <span
-                        class="endpoint-badge">POST</span> HTTP request to the URL you configured.
-                </p>
-                <div class="bg-orange-50 border-l-4 border-orange-400 p-5 rounded-r-xl">
-                    <h4 class="text-orange-800 font-bold text-sm uppercase tracking-wider mb-1">Target URL</h4>
-                    <p class="text-orange-700 text-sm italic">Note: Your endpoint must be publicly accessible and
-                        support HTTPS.</p>
+    <div class="max-w-7xl mx-auto px-6 py-8 lg:py-12">
+        <section class="card overflow-hidden mb-8">
+            <div
+                class="px-6 py-8 md:px-10 md:py-10 lg:px-12 lg:py-12 bg-gradient-to-br from-orange-50 via-white to-sky-50">
+                <div class="flex items-center gap-3 mb-6">
+                    <div
+                        class="w-11 h-11 rounded-2xl bg-white border border-orange-100 flex items-center justify-center">
+                        <img src="../sma-logo.svg" alt="SmartRecruit" class="w-8 h-8">
+                    </div>
+                    <span class="text-sm font-extrabold tracking-[0.22em] uppercase text-slate-500">SmartRecruit
+                        Developer Docs</span>
                 </div>
-            </section>
+                <h1 class="text-4xl lg:text-6xl font-black tracking-tight leading-tight">Webhook Documentation</h1>
+                <p class="mt-5 text-lg lg:text-xl text-slate-600 leading-relaxed max-w-3xl">Integrate real-time
+                    recruiting events into your application using SmartRecruit webhooks.</p>
 
-            <section>
-                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-                    <span class="text-orange-500">02</span> Security & Authentication
-                </h2>
-                <p class="text-slate-600 mb-4 leading-relaxed">
-                    For security purposes, SmartRecruit includes a digital signature in every webhook request header.
-                </p>
-                <div class="bg-slate-100 p-4 rounded-lg mb-6 border border-slate-200">
-                    <code class="text-sm font-bold text-slate-700">Header: X-SmartRecruit-Signature</code>
+                <div class="grid lg:grid-cols-2 gap-4 mt-8">
+                    <div class="rounded-2xl bg-white/90 border border-slate-200 p-5">
+                        <p class="text-xs font-black tracking-[0.18em] uppercase text-slate-400">Security</p>
+                        <p class="mt-2 text-sm text-slate-600">Every webhook includes a digital signature for
+                            verification.</p>
+                    </div>
+                    <div class="rounded-2xl bg-white/90 border border-slate-200 p-5">
+                        <p class="text-xs font-black tracking-[0.18em] uppercase text-slate-400">Real-time</p>
+                        <p class="mt-2 text-sm text-slate-600">Receive instant updates when candidates are approved or
+                            status changes.</p>
+                    </div>
                 </div>
-                <h3 class="font-bold text-slate-800 mb-3 underline decoration-orange-300 underline-offset-4">How to
-                    verify:</h3>
-                <ul class="list-disc ml-6 space-y-3 text-slate-600">
-                    <li>Retrieve the <strong>Secret Key</strong> from your SmartRecruit Dashboard.</li>
-                    <li>Verify that the signature in the header matches your secret key.</li>
-                    <li>Ignore any requests that fail this verification to prevent <strong>Replay Attacks</strong>.</li>
-                </ul>
-            </section>
+            </div>
+        </section>
 
-            <section class="mb-12">
-                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-                    <span class="text-orange-500">03</span> Event: <code
-                        class="text-orange-600">application.approved</code>
-                </h2>
-                <p class="text-slate-600 mb-6 leading-relaxed">
-                    This event is triggered when a recruiter approves a candidate's application. Use the
-                    <code>resumeUrl</code> to access the candidate's CV directly.
-                </p>
+        <div class="grid lg:grid-cols-[280px_minmax(0,1fr)] gap-8">
+            <aside class="lg:sticky lg:top-24 h-fit card p-5">
+                <p class="text-xs font-black tracking-[0.22em] uppercase text-slate-400 mb-3">Documents</p>
+                <nav class="toc mb-6">
+                    <a href="/docs/integration-api.html">Integration API</a>
+                    <a href="/docs/webhooks.html" class="bg-orange-50 text-orange-700 border border-orange-100">Webhook
+                        Guide</a>
+                </nav>
 
-                <h3 class="font-bold text-sm text-slate-400 mb-4 tracking-widest italic">Payload Example (Raw
-                    JSON)</h3>
-                <pre>
+                <p class="text-xs font-black tracking-[0.22em] uppercase text-slate-400 mb-3">On this page</p>
+                <nav class="toc">
+                    <a href="#overview">01. Overview</a>
+                    <a href="#security">02. Security & Auth</a>
+                    <a href="#event-approved">03. Event: Approved</a>
+                    <a href="#best-practices">04. Best Practices</a>
+                </nav>
+            </aside>
+
+            <main class="space-y-8">
+
+                <section id="overview" class="card p-6 lg:p-8 scroll-mt-24">
+                    <div class="flex items-center gap-4 mb-6">
+                        <span class="text-orange-500 text-sm font-black tracking-[0.2em] uppercase">01</span>
+                        <h2 class="text-2xl lg:text-3xl font-black tracking-tight">Overview</h2>
+                    </div>
+                    <p class="text-slate-600 mb-6 leading-relaxed">
+                        Webhooks allow you to build or set up integrations which subscribe to certain events on
+                        SmartRecruit. When one of those events is triggered, we'll send a <span
+                            class="endpoint-badge uppercase">POST</span> HTTP request to the URL you configured.
+                    </p>
+                    <div class="bg-orange-50 border-l-4 border-orange-400 p-5 rounded-r-xl">
+                        <h4 class="text-orange-800 font-bold text-sm uppercase tracking-wider mb-1">Target URL</h4>
+                        <p class="text-orange-700 text-sm italic">Note: Your endpoint must be publicly accessible and
+                            support HTTPS.</p>
+                    </div>
+                </section>
+
+                <section id="security" class="card p-6 lg:p-8 scroll-mt-24">
+                    <div class="flex items-center gap-4 mb-6">
+                        <span class="text-orange-500 text-sm font-black tracking-[0.2em] uppercase">02</span>
+                        <h2 class="text-2xl lg:text-3xl font-black tracking-tight">Security & Authentication</h2>
+                    </div>
+                    <p class="text-slate-600 mb-4 leading-relaxed">
+                        For security purposes, SmartRecruit includes a digital signature in every webhook request
+                        header.
+                    </p>
+                    <div
+                        class="bg-slate-100 p-4 rounded-lg mb-6 border border-slate-200 font-mono text-sm font-bold text-slate-700">
+                        Header: X-SmartRecruit-Signature
+                    </div>
+                    <h3 class="font-bold text-slate-800 mb-3 underline decoration-orange-300 underline-offset-4">How to
+                        verify:</h3>
+                    <ul class="list-disc ml-6 space-y-3 text-slate-600">
+                        <li>Retrieve the <strong>Secret Key</strong> from your SmartRecruit Dashboard.</li>
+                        <li>Verify that the signature in the header matches your secret key.</li>
+                        <li>Ignore any requests that fail this verification to prevent <strong>Replay Attacks</strong>.
+                        </li>
+                    </ul>
+                </section>
+
+                <section id="event-approved" class="card p-6 lg:p-8 scroll-mt-24">
+                    <div class="flex items-center gap-4 mb-6">
+                        <span class="text-orange-500 text-sm font-black tracking-[0.2em] uppercase">03</span>
+                        <h2 class="text-2xl lg:text-3xl font-black tracking-tight font-mono">Event: application.approved
+                        </h2>
+                    </div>
+                    <p class="text-slate-600 mb-6 leading-relaxed italic">
+                        This event is triggered when a recruiter approves a candidate's application. Use the
+                        <code>resumeUrl</code> to access the candidate's CV directly.
+                    </p>
+                    <h3 class="font-bold text-xs text-slate-400 mb-4 tracking-widest uppercase italic">Payload Example
+                        (Raw JSON)</h3>
+                    <pre>
 {
   "event": "application.approved",
   "timestamp": "2026-04-03T09:15:22.123456789",
@@ -133,35 +289,104 @@
     ]
   }
 }</pre>
-            </section>
+                </section>
 
-            <section>
-                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-                    <span class="text-orange-500">04</span> Best Practices
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="p-6 border border-slate-200 rounded-2xl bg-white shadow-sm">
-                        <h4 class="font-bold text-slate-900 mb-2">Respond with 2xx</h4>
-                        <p class="text-sm text-slate-500">Your server must return a <span
-                                class="text-green-600 font-bold italic">200 OK</span> within 5 seconds. Otherwise, we
-                            will mark the delivery as failed.</p>
+                <section id="best-practices" class="card p-6 lg:p-8 scroll-mt-24">
+                    <div class="flex items-center gap-4 mb-6">
+                        <span class="text-orange-500 text-sm font-black tracking-[0.2em] uppercase">04</span>
+                        <h2 class="text-2xl lg:text-3xl font-black tracking-tight">Best Practices</h2>
                     </div>
-                    <div class="p-6 border border-slate-200 rounded-2xl bg-white shadow-sm">
-                        <h4 class="font-bold text-slate-900 mb-2">Idempotency</h4>
-                        <p class="text-sm text-slate-500">Event delivery may happen more than once. We recommend making
-                            your event handling logic idempotent.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 italic">
+                        <div class="p-6 border border-slate-200 rounded-2xl bg-white shadow-sm">
+                            <h4 class="font-bold text-slate-900 mb-2 uppercase">Respond with 2xx</h4>
+                            <p class="text-sm text-slate-500">Your server must return a <span
+                                    class="text-green-600 font-bold italic">200 OK</span> within 5 seconds. Otherwise,
+                                we will mark the delivery as failed.</p>
+                        </div>
+                        <div class="p-6 border border-slate-200 rounded-2xl bg-white shadow-sm">
+                            <h4 class="font-bold text-slate-900 mb-2 uppercase tracking-tight">Idempotency</h4>
+                            <p class="text-sm text-slate-500">Event delivery may happen more than once. We recommend
+                                making your event handling logic idempotent.</p>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <footer class="border-t border-slate-200 pt-10 text-center">
-                <p class="text-slate-400 text-xs font-medium uppercase tracking-widest">
-                    &copy; 2026 SmartRecruit Ecosystem. All rights reserved.
-                </p>
-            </footer>
+            </main>
         </div>
     </div>
 
+    <footer class="bg-[#0f172a] text-white py-16 border-t border-white/10">
+        <div class="container mx-auto px-6 max-w-6xl">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-2 mb-6">
+                        <a href="/" class="flex items-center gap-2 group">
+                            <img src="../sma-logo.svg" alt="SmartRecruit Logo" class="w-7 h-7 brightness-0 invert">
+                            <span class="text-base font-bold text-white">SmartRecruit</span>
+                        </a>
+                    </div>
+                    <p class="text-neutral-400 text-sm leading-relaxed mb-6">
+                        AI-powered Resume Scoring Platform connecting top talent with leading companies.
+                    </p>
+                    <div class="flex gap-4">
+                        <div
+                            class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 cursor-pointer transition-colors">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12c0 5.06 3.66 9.29 8.35 10.04v-7.1H7.85v-2.94h2.5V9.77c0-2.47 1.48-3.86 3.7-3.86 1.05 0 2.15.19 2.15.19v2.36h-1.21c-1.22 0-1.6.75-1.6 1.54v1.85h2.64l-.42 2.94h-2.22v7.1C18.34 21.29 22 17.06 22 12c0-5.52-4.48-10-10-10z" />
+                            </svg>
+                        </div>
+                        <div
+                            class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 cursor-pointer transition-colors">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6">For Candidates</h4>
+                    <ul class="space-y-3 text-sm text-neutral-400">
+                        <li><a href="#" class="hover:text-orange-500 transition-colors">Browse Jobs</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors">CV Builder</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors">Career Tips</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors">Salary Guide</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6">For Recruiters</h4>
+                    <ul class="space-y-3 text-sm text-neutral-400">
+                        <li><a href="/register/recruiter" class="hover:text-orange-500 transition-colors">Post a Job</a>
+                        </li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors">Pricing Plans</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors">Search Talent</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors">Employer Branding</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6">Company</h4>
+                    <ul class="space-y-3 text-sm text-neutral-400">
+                        <li><a href="#" class="hover:text-orange-500 transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-orange-500 transition-colors">Contact</a></li>
+                        <li><a href="/docs/integration-api.html" class="hover:text-orange-500 transition-colors">API
+                                Documentation</a></li>
+                        <li><a href="/legal/privacy" class="hover:text-orange-500 transition-colors">Privacy Policy</a>
+                        </li>
+                        <li><a href="/legal/terms" class="hover:text-orange-500 transition-colors">Terms of Service</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/10 text-center text-neutral-500 text-sm">
+                &copy; 2026 SmartRecruit. All rights reserved.
+            </div>
+        </div>
+    </footer>
 </body>
 
 </html>

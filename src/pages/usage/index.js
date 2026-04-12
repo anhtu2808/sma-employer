@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Col, Row } from "antd";
 import {
   useGetFeatureUsageHistoryQuery,
@@ -58,14 +58,26 @@ const Usage = () => {
 
   const dateRange = useMemo(() => getDateRangeByPreset(selectedPreset), [selectedPreset]);
 
+  const [appliedSearch, setAppliedSearch] = useState("");
+
+  // Debounce search to avoid excessive API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAppliedSearch(searchValue);
+      setPage(0);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchValue]);
+
   const historyParams = useMemo(
     () => ({
       page,
       size: DEFAULT_PAGE_SIZE,
       startDate: toLocalDateTimeParam(dateRange.startDate),
       endDate: toLocalDateTimeParam(dateRange.endDate),
+      ...(appliedSearch.trim() ? { search: appliedSearch.trim() } : {}),
     }),
-    [dateRange.endDate, dateRange.startDate, page]
+    [dateRange.endDate, dateRange.startDate, page, appliedSearch]
   );
 
   const {
@@ -75,7 +87,19 @@ const Usage = () => {
   } = useGetFeatureUsageHistoryQuery(historyParams, { skip: !hasAccessToken });
 
   const quotas = useMemo(() => mapQuotas(featureUsage), [featureUsage]);
-  const historyContent = historyData?.content ?? [];
+
+  // Client-side filtering as fallback (in case backend ignores 'search' param)
+  const historyContent = useMemo(() => {
+    const content = historyData?.content ?? [];
+    const term = appliedSearch.trim().toLowerCase();
+    if (!term) return content;
+    return content.filter((item) => {
+      const featureName = (item?.featureName || "").toLowerCase();
+      const planName = (item?.planName || "").toLowerCase();
+      return featureName.includes(term) || planName.includes(term);
+    });
+  }, [historyData?.content, appliedSearch]);
+
   const pageNumber = historyData?.pageNumber ?? 0;
   const totalPages = Math.max(1, historyData?.totalPages ?? 1);
 
