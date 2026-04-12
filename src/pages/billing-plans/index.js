@@ -10,10 +10,15 @@ const BillingPlans = () => {
   const { data: plans = [], isLoading: isPlansLoading } = useGetPlansQuery({
     planType: PLAN_TYPES.MAIN,
     planTarget: PLAN_TARGETS.COMPANY,
+
   });
 
   const { data: addons = [], isLoading: isAddonsLoading } = useGetPlansQuery({
     planType: PLAN_TYPES.ADDONS_QUOTA,
+    planTarget: PLAN_TARGETS.COMPANY,
+  });
+  const { data: addonsFeature = [], isLoading: isAddonsFeatureLoading } = useGetPlansQuery({
+    planType: PLAN_TYPES.ADDONS_FEATURE,
     planTarget: PLAN_TARGETS.COMPANY,
   });
 
@@ -51,7 +56,11 @@ const BillingPlans = () => {
       </div>
 
       <div className="w-full">
-        <Addons plans={addons} onOpenPaymentModal={handleOpenPaymentModal} />
+        <Addons
+          quotaPlans={addons}
+          featurePlans={addonsFeature}
+          onOpenPaymentModal={handleOpenPaymentModal}
+        />
       </div>
 
       <PaymentModal

@@ -160,6 +160,15 @@ export const jobApi = api.injectEndpoints({
         { type: "Jobs", id: `PROPOSED_DETAIL_${proposedResumeId}` },
       ],
     }),
+    getProposedCvDetail: builder.query({
+      query: (proposedResumeId) => ({
+        url: `${API_VERSION}/propose-cv/${proposedResumeId}`,
+        method: "GET",
+      }),
+      providesTags: (_, __, proposedResumeId) => [
+        { type: "Jobs", id: `PROPOSED_DETAIL_${proposedResumeId}` },
+      ],
+    }),
     getResumeDetail: builder.query({
       query: (id) => ({
         url: `${API_VERSION}/resumes/${id}`,
@@ -239,6 +248,7 @@ export const {
   useRefreshProposedCvsMutation,
   useUnlockProposedCvMutation,
   useRemoveProposedCvMutation,
+  useGetProposedCvDetailQuery,
   useGetResumeDetailQuery,
   useInviteCandidateMutation,
   useGetJobQuestionsQuery,

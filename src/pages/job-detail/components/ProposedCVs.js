@@ -18,6 +18,7 @@ const POLLING_INTERVAL = 5000;
 const ProposedCVs = ({ jobId }) => {
   const navigate = useNavigate();
   const [isJobPolling, setIsJobPolling] = useState(false);
+  const [isEvaluationPolling, setIsEvaluationPolling] = useState(false);
   const previousRefreshPendingRef = useRef(false);
 
   const {
@@ -42,7 +43,7 @@ const ProposedCVs = ({ jobId }) => {
     { id: jobId, ...params },
     {
       skip: !jobId || isUnpublished,
-      pollingInterval: isRefreshPending ? POLLING_INTERVAL : 0,
+      pollingInterval: isRefreshPending || isEvaluationPolling ? POLLING_INTERVAL : 0,
       refetchOnMountOrArgChange: true,
     }
   );
@@ -51,6 +52,8 @@ const ProposedCVs = ({ jobId }) => {
   const [removeProposedCv, { isLoading: isRemoving }] = useRemoveProposedCvMutation();
   const data = response?.data || { content: [], totalElements: 0, pageNumber: params.page, pageSize: params.size, totalPages: 0 };
   const applications = data.content;
+  const normalizedApplications = applications.map(normalizeProposal);
+  const hasEvaluationInProgress = normalizedApplications.some((proposal) => isEvaluationPendingStatus(proposal.evaluationStatus));
   const totalElements = data.totalElements;
   const totalPages = data.totalPages;
   const isBusyRefreshing = isRefreshingRequest || isRefreshPending;
@@ -69,6 +72,10 @@ const ProposedCVs = ({ jobId }) => {
 
     previousRefreshPendingRef.current = isRefreshPending;
   }, [isRefreshPending, refetchProposedCvs]);
+
+  useEffect(() => {
+    setIsEvaluationPolling(hasEvaluationInProgress);
+  }, [hasEvaluationInProgress]);
 
   const handleRefreshProposedCvs = async () => {
     if (!jobId) return;
@@ -165,6 +172,18 @@ const ProposedCVs = ({ jobId }) => {
         </div>
       )}
 
+      {!isRefreshPending && hasEvaluationInProgress && (
+        <div className="bg-sky-50 border border-sky-200 text-sky-800 rounded-2xl px-4 py-3 flex items-start gap-3">
+          <div className="mt-0.5 w-5 h-5 rounded-full border-2 border-sky-300 border-t-sky-600 animate-spin flex-shrink-0" />
+          <div>
+            <p className="text-sm font-semibold">AI scoring is still running</p>
+            <p className="text-xs text-sky-700 mt-1">
+              We&apos;re polling this list for fresh AI overviews and scores. You can keep reviewing candidates while new results stream in.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Table */}
       <div className="bg-white dark:bg-surface-dark shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-2xl overflow-hidden flex flex-col" style={{ minHeight: 320 }}>
         {isLoading ? (
@@ -193,15 +212,15 @@ const ProposedCVs = ({ jobId }) => {
               <table className="w-full text-left border-collapse table-fixed">
                 <thead className="sticky top-0 z-20 bg-gray-50 dark:bg-neutral-900 shadow-sm">
                   <tr>
-                    <th className="px-6 py-4 w-[35%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
-                    <th className="px-6 py-4 w-[25%] text-sm font-semibold text-gray-500 tracking-wide">Job Title</th>
-                    <th className="px-6 py-4 w-[15%] text-sm font-semibold text-gray-500 tracking-wide">Gender</th>
+                    <th className="px-6 py-4 w-[25%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
+                    <th className="px-6 py-4 w-[30%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
+                    <th className="px-6 py-4 w-[20%] text-sm font-semibold text-gray-500 tracking-wide">Job Title</th>
                     <th className="px-6 py-4 w-[15%] text-sm font-semibold text-gray-500 tracking-wide text-center">AI Match Rate</th>
                     <th className="px-6 py-4 w-[10%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-neutral-800">
-                  {applications.map((app) => (
+                  {normalizedApplications.map((app) => (
                     <tr key={app.proposedResumeId ?? app.resumeId} className="hover:bg-gray-50/50 dark:hover:bg-neutral-800/50 transition-colors group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4 min-w-0">
@@ -219,23 +238,48 @@ const ProposedCVs = ({ jobId }) => {
                         </div>
                       </td>
                       <td className="px-6 py-4">
+                        <div className="rounded-xl border border-orange-100 bg-orange-50/70 px-3 py-2">
+                          <div className="flex items-start gap-2">
+                            <div className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full ${
+                              isEvaluationPendingStatus(app.evaluationStatus)
+                                ? 'border-2 border-orange-200 border-t-orange-500 animate-spin'
+                                : 'bg-orange-100 text-orange-500'
+                            }`}>
+                              {!isEvaluationPendingStatus(app.evaluationStatus) && (
+                                <FontAwesomeIcon icon={faWandMagicSparkles} className="text-[10px]" />
+                              )}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[11px] font-semibold uppercase tracking-wide text-orange-700">
+                                {isEvaluationPendingStatus(app.evaluationStatus) ? 'AI overview is updating' : 'AI overview'}
+                              </p>
+                              <p
+                                className="mt-1 text-xs leading-relaxed text-gray-600 line-clamp-3"
+                                title={getOverviewTitle(app)}
+                              >
+                                {getOverviewText(app)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
                         <span className="text-sm text-gray-700 dark:text-neutral-300 font-medium">
                           {app.jobTitle || 'N/A'}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2.5 py-1 rounded-md text-xs font-semibold ${app.gender === 'MALE' ? 'bg-blue-50 text-blue-600' :
-                            app.gender === 'FEMALE' ? 'bg-pink-50 text-pink-600' : 'bg-gray-50 text-gray-600'
-                          }`}>
-                          {app.isUnlocked
-                            ? (app.gender === 'MALE' ? 'Male' : app.gender === 'FEMALE' ? 'Female' : 'Other')
-                            : 'Hidden'}
-                        </span>
-                      </td>
                       <td className="px-6 py-4 text-center">
-                        <span className={`text-sm font-semibold ${getScoreColor(app.matchRate)}`}>
-                          {app.matchRate != null ? `${getDisplayRate(app.matchRate)}%` : '--'}
-                        </span>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className={`text-sm font-semibold ${getScoreColor(app.matchRate)}`}>
+                            {app.matchRate != null ? `${getDisplayRate(app.matchRate)}%` : '--'}
+                          </span>
+                          {isEvaluationPendingStatus(app.evaluationStatus) && (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-orange-500">
+                              <RefreshCw size={11} className="animate-spin" />
+                              Scoring...
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex items-center justify-center gap-1">
@@ -339,6 +383,48 @@ const PublishFirstPlaceholder = ({ description, className = '' }) => (
 );
 
 // Helper Components
+const normalizeProposal = (proposal = {}) => ({
+  proposedResumeId: proposal.id ?? proposal.proposedResumeId ?? null,
+  resumeId: proposal.identity?.resumeId ?? proposal.resumeId ?? null,
+  candidateId: proposal.identity?.candidateId ?? proposal.candidateId ?? null,
+  jobId: proposal.identity?.jobId ?? proposal.jobId ?? null,
+  fullName: proposal.candidate?.fullName ?? proposal.fullName ?? null,
+  jobTitle: proposal.candidate?.jobTitle ?? proposal.jobTitle ?? null,
+  address: proposal.candidate?.address ?? proposal.address ?? null,
+  isUnlocked: proposal.access?.unlocked ?? proposal.isUnlocked ?? false,
+  matchRate: proposal.scores?.matchRate ?? proposal.matchRate ?? null,
+  aiScore: proposal.scores?.aiScore ?? proposal.aiScore ?? null,
+  overview: proposal.scores?.overview ?? proposal.overview ?? null,
+  evaluationStatus: proposal.scores?.evaluationStatus ?? proposal.evaluationStatus ?? null,
+  status: proposal.status ?? null,
+  proposedAt: proposal.proposedAt ?? null,
+});
+
+const isEvaluationPendingStatus = (status) => status === 'WAITING' || status === 'PARTIAL';
+
+const getOverviewText = (proposal) => {
+  if (isEvaluationPendingStatus(proposal?.evaluationStatus)) {
+    return 'AI is evaluating how this resume matches the current job. Overview will appear automatically when scoring is complete.';
+  }
+
+  return normalizeOverview(proposal?.overview) || 'No AI overview available yet.';
+};
+
+const getOverviewTitle = (proposal) => normalizeOverview(proposal?.overview) || getOverviewText(proposal);
+
+const normalizeOverview = (overview) => {
+  if (!overview) return '';
+
+  return String(overview)
+    .replace(/<\/?(ul|ol)>/gi, '')
+    .replace(/<li>/gi, '- ')
+    .replace(/<\/li>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+};
+
 const getDisplayRate = (rate) => {
   const numericRate = Number(rate) || 0;
   return numericRate <= 1 && numericRate > 0

@@ -507,7 +507,13 @@ const getScoreColor = (score) => {
 
 const parseBullets = (text) => {
     if (!text) return [];
-    return text
+    // Strip HTML tags and split on newlines or closing tags
+    const stripped = text
+        .replace(/<\/li>/gi, '\n')
+        .replace(/<\/[^>]+>/gi, '\n')
+        .replace(/<[^>]+>/gi, '')
+        .replace(/&[a-z]+;/gi, ' ');
+    return stripped
         .split('\n')
         .map(line => line.replace(/^[-*•+]\s*/, '').trim())
         .filter(line => line.length > 0);

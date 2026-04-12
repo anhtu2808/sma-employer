@@ -6,6 +6,7 @@ import { getJobStatusConfig } from '@/constrant/application';
 import { Dropdown } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileLines, faTableCells } from '../../../utils/icons';
+import IntegrationMenu from '../integration';
 
 const APPLICATION_STATUS_TABS = [
     { key: '', label: 'All' },
@@ -36,6 +37,8 @@ const ApplicationHeader = ({
     sortBy,
     onSortChange,
     showAiSort,
+    recruiteeConfig,
+    onConnectRecruitee,
 }) => {
 
     const exportMenuItems = [
@@ -208,6 +211,7 @@ const ApplicationHeader = ({
                                 ]}
                             />
                         )}
+
                         <Button
                             mode="secondary"
                             className=""
@@ -227,6 +231,10 @@ const ApplicationHeader = ({
                                 {getExportButtonLabel()}
                             </Button>
                         </Dropdown>
+                        <IntegrationMenu
+                            config={recruiteeConfig}
+                            onConnectRecruitee={onConnectRecruitee}
+                        />
                     </div>
                 </div>
 
