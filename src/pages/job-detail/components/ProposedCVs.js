@@ -243,113 +243,134 @@ const ProposedCVs = ({ jobId }) => {
               <table className="w-full text-left border-collapse table-fixed">
                 <thead className="sticky top-0 z-20 bg-gray-50 dark:bg-neutral-900 shadow-sm">
                   <tr>
-                    <th className="px-6 py-4 w-[25%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
-                    <th className="px-6 py-4 w-[30%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
-                    <th className="px-6 py-4 w-[20%] text-sm font-semibold text-gray-500 tracking-wide">Job Title</th>
+                    <th className="px-6 py-4 w-[24%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
+                    <th className="px-6 py-4 w-[28%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
+                    <th className="px-6 py-4 w-[23%] text-sm font-semibold text-gray-500 tracking-wide">Strengths</th>
                     <th className="px-6 py-4 w-[15%] text-sm font-semibold text-gray-500 tracking-wide text-center">AI Match Rate</th>
                     <th className="px-6 py-4 w-[10%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-neutral-800">
-                  {normalizedApplications.map((app) => (
-                    <tr key={app.proposedResumeId ?? app.resumeId} className="hover:bg-gray-50/50 dark:hover:bg-neutral-800/50 transition-colors group">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-4 min-w-0">
-                          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-black text-xs border border-orange-200">
-                            {app.isUnlocked ? app.fullName?.substring(0, 2).toUpperCase() : 'AI'}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                              {app.isUnlocked ? (app.fullName || 'Unknown Candidate') : 'Locked candidate profile'}
-                            </p>
-                            <p className="text-xs text-gray-500 flex items-center gap-1.5 truncate leading-none mt-1" title={app.address}>
-                              <MapPin size={12} className="flex-shrink-0" /> {app.isUnlocked ? (app.address || 'No address provided') : 'Unlock to view location'}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="rounded-xl border border-orange-100 bg-orange-50/70 px-3 py-2">
-                          <div className="flex items-start gap-2">
-                            <div className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full ${
-                              isEvaluationPendingStatus(app.evaluationStatus)
-                                ? 'border-2 border-orange-200 border-t-orange-500 animate-spin'
-                                : 'bg-orange-100 text-orange-500'
-                            }`}>
-                              {!isEvaluationPendingStatus(app.evaluationStatus) && (
-                                <FontAwesomeIcon icon={faWandMagicSparkles} className="text-[10px]" />
-                              )}
+                  {normalizedApplications.map((app) => {
+                    const strengthItems = getStrengthItems(app);
+
+                    return (
+                      <tr key={app.proposedResumeId ?? app.resumeId} className="hover:bg-gray-50/50 dark:hover:bg-neutral-800/50 transition-colors group">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-4 min-w-0">
+                            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-black text-xs border border-orange-200">
+                              {app.isUnlocked ? app.fullName?.substring(0, 2).toUpperCase() : 'AI'}
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="text-[11px] font-semibold uppercase tracking-wide text-orange-700">
-                                {isEvaluationPendingStatus(app.evaluationStatus) ? 'AI overview is updating' : 'AI overview'}
+                              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                {app.isUnlocked ? (app.fullName || 'Unknown Candidate') : 'Locked candidate profile'}
                               </p>
-                              <p
-                                className="mt-1 text-xs leading-relaxed text-gray-600 line-clamp-3"
-                                title={getOverviewTitle(app)}
-                              >
-                                {getOverviewText(app)}
+                              <p className="text-xs text-gray-500 flex items-center gap-1.5 truncate leading-none mt-1" title={app.address}>
+                                <MapPin size={12} className="flex-shrink-0" /> {app.isUnlocked ? (app.address || 'No address provided') : 'Unlock to view location'}
                               </p>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm text-gray-700 dark:text-neutral-300 font-medium">
-                          {app.jobTitle || 'N/A'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <div className="flex flex-col items-center gap-1">
-                          <span className={`text-sm font-semibold ${getScoreColor(app.matchRate)}`}>
-                            {app.matchRate != null ? `${getDisplayRate(app.matchRate)}%` : '--'}
-                          </span>
-                          {isEvaluationPendingStatus(app.evaluationStatus) && (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-orange-500">
-                              <RefreshCw size={11} className="animate-spin" />
-                              Scoring...
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          {app.isUnlocked && app.resumeId ? (
-                            <button
-                              onClick={() => navigate(`/jobs/${jobId}/proposed-cvs/${app.resumeId}?proposedResumeId=${app.proposedResumeId}`)}
-                              className="p-2.5 bg-gray-50 dark:bg-neutral-800 hover:bg-orange-500/10 text-gray-400 hover:text-orange-500 rounded-xl transition-all border border-transparent hover:border-orange-500/20"
-                              title="View Profile"
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="rounded-xl border border-orange-100 bg-orange-50/70 px-3 py-2">
+                            <div className="flex items-start gap-2">
+                              <div className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full ${
+                                isEvaluationPendingStatus(app.evaluationStatus)
+                                  ? 'border-2 border-orange-200 border-t-orange-500 animate-spin'
+                                  : 'bg-orange-100 text-orange-500'
+                              }`}>
+                                {!isEvaluationPendingStatus(app.evaluationStatus) && (
+                                  <FontAwesomeIcon icon={faWandMagicSparkles} className="text-[10px]" />
+                                )}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[11px] font-semibold uppercase tracking-wide text-orange-700">
+                                  {isEvaluationPendingStatus(app.evaluationStatus) ? 'AI overview is updating' : 'AI overview'}
+                                </p>
+                                <p
+                                  className="mt-1 text-xs leading-relaxed text-gray-600 line-clamp-3"
+                                  title={getOverviewTitle(app)}
+                                >
+                                  {getOverviewText(app)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {strengthItems.length > 0 ? (
+                            <ul
+                              className="space-y-1.5"
+                              title={strengthItems.join('\n')}
                             >
-                              <ExternalLink size={16} />
-                            </button>
+                              {strengthItems.map((strength, index) => (
+                                <li
+                                  key={`${app.proposedResumeId ?? app.resumeId}-strength-${index}`}
+                                  className="flex items-start gap-2 text-xs leading-relaxed text-gray-600"
+                                >
+                                  <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-400" />
+                                  <span className="line-clamp-1">{strength}</span>
+                                </li>
+                              ))}
+                            </ul>
                           ) : (
+                            <p className="text-xs text-gray-400 italic">
+                              {getStrengthFallbackText(app)}
+                            </p>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <div className="flex flex-col items-center gap-1">
+                            <span className={`text-sm font-semibold ${getScoreColor(app.matchRate)}`}>
+                              {app.matchRate != null ? `${getDisplayRate(app.matchRate)}%` : '--'}
+                            </span>
+                            {isEvaluationPendingStatus(app.evaluationStatus) && (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-orange-500">
+                                <RefreshCw size={11} className="animate-spin" />
+                                Scoring...
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            {app.isUnlocked && app.resumeId ? (
+                              <button
+                                onClick={() => navigate(`/jobs/${jobId}/proposed-cvs/${app.resumeId}?proposedResumeId=${app.proposedResumeId}`)}
+                                className="p-2.5 bg-gray-50 dark:bg-neutral-800 hover:bg-orange-500/10 text-gray-400 hover:text-orange-500 rounded-xl transition-all border border-transparent hover:border-orange-500/20"
+                                title="View Profile"
+                              >
+                                <ExternalLink size={16} />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleUnlockProposal(app)}
+                                disabled={isMutatingProposal}
+                                className={`p-2.5 rounded-xl transition-all border ${isMutatingProposal
+                                  ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-300'
+                                  : 'border-transparent bg-gray-50 text-gray-400 hover:border-orange-500/20 hover:bg-orange-500/10 hover:text-orange-500'
+                                  }`}
+                                title="Unlock Profile"
+                              >
+                                <Lock size={16} />
+                              </button>
+                            )}
                             <button
-                              onClick={() => handleUnlockProposal(app)}
+                              onClick={() => handleRemoveProposal(app)}
                               disabled={isMutatingProposal}
                               className={`p-2.5 rounded-xl transition-all border ${isMutatingProposal
                                 ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-300'
-                                : 'border-transparent bg-gray-50 text-gray-400 hover:border-orange-500/20 hover:bg-orange-500/10 hover:text-orange-500'
+                                : 'border-transparent bg-gray-50 text-gray-400 hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500'
                                 }`}
-                              title="Unlock Profile"
+                              title="Remove Proposal"
                             >
-                              <Lock size={16} />
+                              <Trash2 size={16} />
                             </button>
-                          )}
-                          <button
-                            onClick={() => handleRemoveProposal(app)}
-                            disabled={isMutatingProposal}
-                            className={`p-2.5 rounded-xl transition-all border ${isMutatingProposal
-                              ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-300'
-                              : 'border-transparent bg-gray-50 text-gray-400 hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-500'
-                              }`}
-                            title="Remove Proposal"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -426,6 +447,7 @@ const normalizeProposal = (proposal = {}) => ({
   matchRate: proposal.scores?.matchRate ?? proposal.matchRate ?? null,
   aiScore: proposal.scores?.aiScore ?? proposal.aiScore ?? null,
   overview: proposal.scores?.overview ?? proposal.overview ?? null,
+  strengths: proposal.scores?.strengths ?? proposal.strengths ?? null,
   evaluationStatus: proposal.scores?.evaluationStatus ?? proposal.evaluationStatus ?? null,
   status: proposal.status ?? null,
   proposedAt: proposal.proposedAt ?? null,
@@ -455,6 +477,50 @@ const normalizeOverview = (overview) => {
     .replace(/\s+/g, ' ')
     .trim();
 };
+
+const extractInsightItems = (content, { splitComma = false } = {}) => {
+  if (!content) return [];
+
+  const normalized = String(content)
+    .replace(/<\/li>/gi, '\n')
+    .replace(/<li>/gi, '')
+    .replace(/<\/?(ul|ol)>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/\r/g, '');
+
+  const lines = normalized
+    .split('\n')
+    .map((line) => line.replace(/^[-*+\u2022]\s*/, '').replace(/\s+/g, ' ').trim())
+    .filter(Boolean);
+
+  if (splitComma && lines.length === 1 && lines[0].includes(',')) {
+    return lines[0]
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  return lines;
+};
+
+const getStrengthItems = (proposal) => {
+  if (isEvaluationPendingStatus(proposal?.evaluationStatus)) {
+    return ['AI is still identifying the strongest signals in this resume.'];
+  }
+
+  const strengths = extractInsightItems(proposal?.strengths, { splitComma: true });
+  return strengths.slice(0, 3);
+};
+
+const getStrengthFallbackText = (proposal) => (
+  isEvaluationPendingStatus(proposal?.evaluationStatus)
+    ? 'Strengths are being generated...'
+    : 'No strengths available yet.'
+);
 
 const getDisplayRate = (rate) => {
   const numericRate = Number(rate) || 0;

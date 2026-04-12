@@ -43,7 +43,13 @@ const CopyableField = ({ icon, label, value, href }) => {
     );
 };
 
-const BasicInformation = ({ app, onSwitchToAiTab }) => {
+const BasicInformation = ({
+    app,
+    onSwitchToAiTab,
+    metaTitle = 'Application Info',
+    metaItems,
+    showDecisionHistory = true,
+}) => {
     const [openAccordionKey, setOpenAccordionKey] = useState('about');
 
     const statusConfig = app.status
@@ -56,6 +62,31 @@ const BasicInformation = ({ app, onSwitchToAiTab }) => {
     const hasWeakness = !!app.aiEvaluation?.weakness;
     const hasAccordion = hasAnswers || hasSummary || hasStrengths || hasWeakness;
     const hasSocialLinks = app.linkedinLink || app.githubLink || app.portfolioLink;
+    const defaultMetaItems = [
+        app.status && {
+            label: 'Status',
+            value: statusConfig.label,
+            valueClassName: statusConfig.textColor,
+        },
+        app.appliedAt && {
+            label: 'Applied',
+            value: new Date(app.appliedAt).toLocaleDateString(),
+        },
+        app.source && {
+            label: 'Source',
+            value: app.source,
+        },
+        app.aiScore != null && {
+            label: 'AI Score',
+            value: `${app.aiScore}%`,
+            labelClassName: 'text-orange-400',
+            valueClassName: 'text-sm font-bold text-orange-500 group-hover:text-orange-600',
+            wrapperClassName: 'bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20',
+            onClick: onSwitchToAiTab,
+            trailingIcon: <FontAwesomeIcon icon={faArrowRight} className="text-[13px] ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />,
+        },
+    ].filter(Boolean);
+    const resolvedMetaItems = (metaItems ?? defaultMetaItems).filter(Boolean);
 
     const accordionItems = [
         hasAnswers && {
@@ -227,46 +258,48 @@ const BasicInformation = ({ app, onSwitchToAiTab }) => {
             )}
 
             {/* Application Info Grid */}
-            <div className="space-y-3">
-                <h4 className="text-sm font-bold text-gray-600 dark:text-neutral-300 uppercase tracking-wider">
-                    Application Info
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                    <div className="flex flex-col gap-1 p-3 bg-gray-50 dark:bg-neutral-800/50 rounded-xl">
-                        <span className="text-sm text-gray-500">Status</span>
-                        <span className={`text-base font-semibold ${statusConfig.textColor}`}>{statusConfig.label}</span>
+            {resolvedMetaItems.length > 0 && (
+                <div className="space-y-3">
+                    <h4 className="text-sm font-bold text-gray-600 dark:text-neutral-300 uppercase tracking-wider">
+                        {metaTitle}
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3">
+                        {resolvedMetaItems.map((item, index) => {
+                            const cardClassName = `flex flex-col gap-1 p-3 rounded-xl text-left transition-colors ${
+                                item.wrapperClassName || 'bg-gray-50 dark:bg-neutral-800/50'
+                            }`;
+                            const labelClassName = item.labelClassName || 'text-sm text-gray-500';
+                            const valueClassName = item.valueClassName || 'text-base font-medium text-gray-800 dark:text-neutral-200';
+
+                            if (item.onClick) {
+                                return (
+                                    <button
+                                        key={`${item.label}-${index}`}
+                                        onClick={item.onClick}
+                                        className={`${cardClassName} group`}
+                                    >
+                                        <span className={labelClassName}>{item.label}</span>
+                                        <span className={valueClassName}>
+                                            {item.value}
+                                            {item.trailingIcon}
+                                        </span>
+                                    </button>
+                                );
+                            }
+
+                            return (
+                                <div key={`${item.label}-${index}`} className={cardClassName}>
+                                    <span className={labelClassName}>{item.label}</span>
+                                    <span className={valueClassName}>{item.value}</span>
+                                </div>
+                            );
+                        })}
                     </div>
-                    {app.appliedAt && (
-                        <div className="flex flex-col gap-1 p-3 bg-gray-50 dark:bg-neutral-800/50 rounded-xl">
-                            <span className="text-sm text-gray-500">Applied</span>
-                            <span className="text-base font-medium text-gray-800 dark:text-neutral-200">
-                                {new Date(app.appliedAt).toLocaleDateString()}
-                            </span>
-                        </div>
-                    )}
-                    {app.source && (
-                        <div className="flex flex-col gap-1 p-3 bg-gray-50 dark:bg-neutral-800/50 rounded-xl">
-                            <span className="text-sm text-gray-500">Source</span>
-                            <span className="text-base font-medium text-gray-800 dark:text-neutral-200">{app.source}</span>
-                        </div>
-                    )}
-                    {app.aiScore != null && (
-                        <button
-                            onClick={onSwitchToAiTab}
-                            className="flex flex-col gap-1 p-3 bg-orange-50 dark:bg-orange-900/10 rounded-xl text-left hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors group"
-                        >
-                            <span className="text-xs text-orange-400">AI Score</span>
-                            <span className="text-sm font-bold text-orange-500 group-hover:text-orange-600">
-                                {app.aiScore}%
-                                <FontAwesomeIcon icon={faArrowRight} className="text-[13px] ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </span>
-                        </button>
-                    )}
                 </div>
-            </div>
+            )}
 
             {/* Decision History */}
-            {(app.status === 'REJECTED' || app.status === 'APPROVED') && (
+            {showDecisionHistory && (app.status === 'REJECTED' || app.status === 'APPROVED') && (
                 <div className="space-y-3">
                     <h4 className="text-sm font-bold text-gray-600 dark:text-neutral-300 uppercase tracking-wider">
                         <span className="flex items-center gap-1.5">
