@@ -68,25 +68,6 @@ const ProposedCVDetail = () => {
         );
     }
 
-    const proposalMetaItems = [
-        proposedCv.proposalStatus && {
-            label: 'Proposal Status',
-            value: formatProposalStatus(proposedCv.proposalStatus),
-        },
-        proposedCv.proposedAt && {
-            label: 'Proposed On',
-            value: formatDateTime(proposedCv.proposedAt),
-        },
-        proposedCv.aiScore != null && {
-            label: 'AI Score',
-            value: formatPercent(proposedCv.aiScore),
-            labelClassName: 'text-orange-400',
-            valueClassName: 'text-lg font-bold text-orange-500 group-hover:text-orange-600',
-            wrapperClassName: 'bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20',
-            onClick: hasAi ? () => setActiveTab(TAB_KEYS.AI) : undefined,
-        },
-    ].filter(Boolean);
-
     const renderTabContent = () => {
         switch (activeTab) {
             case TAB_KEYS.AI:
@@ -97,12 +78,10 @@ const ProposedCVDetail = () => {
                     <BasicInformation
                         app={proposedCv}
                         onSwitchToAiTab={hasAi ? () => setActiveTab(TAB_KEYS.AI) : undefined}
-                        metaTitle="Proposal Info"
-                        metaItems={proposalMetaItems}
+                        metaItems={[]}
                         showDecisionHistory={false}
                         hideCandidateSummary
                         hideLocationInContact
-                        emphasizeMeta
                     />
                 );
         }
@@ -225,27 +204,6 @@ const normalizePercentNumber = (value) => {
     return numericValue <= 1 && numericValue > 0
         ? Math.round(numericValue * 100)
         : Math.round(numericValue);
-};
-
-const formatPercent = (value) => {
-    const normalizedValue = normalizePercentNumber(value);
-    return normalizedValue == null ? '--' : `${normalizedValue}%`;
-};
-
-const formatDateTime = (value) => {
-    if (!value) return 'N/A';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return 'N/A';
-    return date.toLocaleString();
-};
-
-const formatProposalStatus = (status) => {
-    if (!status) return 'N/A';
-    return String(status)
-        .toLowerCase()
-        .split('_')
-        .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
-        .join(' ');
 };
 
 export default ProposedCVDetail;

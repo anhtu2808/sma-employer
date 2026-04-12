@@ -4,12 +4,14 @@ import { useParams } from 'react-router-dom';
 import { useInviteCandidateMutation } from '@/apis/jobApi';
 import toastMessage from '@/utils/toastMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBriefcase, faEnvelope, faPhone, faWandMagicSparkles } from '../../utils/icons';
+import { faBriefcase, faWandMagicSparkles } from '../../utils/icons';
 import { MapPin, ShieldCheck, Sparkles, Target } from 'lucide-react';
 
 const Overview = ({ cvData, proposedResumeId }) => {
     const { jobId } = useParams();
     const [inviteCandidate, { isLoading }] = useInviteCandidateMutation();
+    const proposalStatusLabel = getProposalStatusBadgeLabel(cvData?.status, cvData?.unlocked);
+    const canInviteCandidate = canInvite(cvData?.status);
 
     const handleInvite = async () => {
         if (!cvData?.candidate_id || !Number.isInteger(Number(proposedResumeId))) {
@@ -57,39 +59,26 @@ const Overview = ({ cvData, proposedResumeId }) => {
                                 </span>
                             )}
                         </div>
-
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
-                            {cvData.email && (
-                                <span className="flex items-center gap-1.5">
-                                    <FontAwesomeIcon icon={faEnvelope} className="text-sm" />
-                                    {cvData.email}
-                                </span>
-                            )}
-                            {cvData.phone && (
-                                <span className="flex items-center gap-1.5">
-                                    <FontAwesomeIcon icon={faPhone} className="text-sm" />
-                                    {cvData.phone}
-                                </span>
-                            )}
-                        </div>
                     </div>
                 </div>
 
                 <div className="flex flex-col items-start xl:items-end gap-3">
                     <div className="flex items-center gap-3 flex-wrap">
-                        <InfoPill icon={<ShieldCheck size={14} />} label={cvData.unlocked ? 'Unlocked' : 'Locked'} />
+                        <InfoPill icon={<ShieldCheck size={14} />} label={proposalStatusLabel} />
                         <InfoPill icon={<Target size={14} />} label={`Match ${formatPercent(cvData.match_rate)}`} />
                         <InfoPill icon={<Sparkles size={14} />} label={`AI ${formatPercent(cvData.ai_overall_score)}`} accent />
                     </div>
-                    <Button
-                        mode="primary"
-                        size="md"
-                        shape="rounded"
-                        loading={isLoading}
-                        onClick={handleInvite}
-                    >
-                        Invite Candidate
-                    </Button>
+                    {canInviteCandidate && (
+                        <Button
+                            mode="primary"
+                            size="md"
+                            shape="rounded"
+                            loading={isLoading}
+                            onClick={handleInvite}
+                        >
+                            Invite Candidate
+                        </Button>
+                    )}
                 </div>
             </div>
         </div>
@@ -113,6 +102,35 @@ const formatPercent = (value) => {
         ? Math.round(numericValue * 100)
         : Math.round(numericValue);
     return `${displayValue}%`;
+};
+
+const normalizeStatusKey = (status) => String(status || '')
+    .trim()
+    .replace(/\s+/g, '_')
+    .toUpperCase();
+
+const formatProposalStatus = (status) => {
+    if (!status) return 'N/A';
+    return String(status)
+        .toLowerCase()
+        .split('_')
+        .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
+        .join(' ');
+};
+
+const isNoActionStatus = (status) => {
+    const normalizedStatus = normalizeStatusKey(status);
+    return !normalizedStatus || normalizedStatus === 'NO_ACTION';
+};
+
+const canInvite = (status) => isNoActionStatus(status);
+
+const getProposalStatusBadgeLabel = (status, unlocked) => {
+    if (!isNoActionStatus(status)) {
+        return formatProposalStatus(status);
+    }
+
+    return unlocked ? 'Unlocked' : 'Locked';
 };
 
 export default Overview;
