@@ -1,16 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useGetProposedCvDetailQuery } from '@/apis/jobApi';
 import Loading from '@/components/Loading';
 import Overview from './Overview';
 import PdfViewer from '@/pages/application/detail/pdf-viewer';
+import BasicInformation from '@/pages/application/detail/basic-information';
+import AiAnalysis from '@/pages/application/detail/ai-analysis';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '../../utils/icons';
+import { Sparkles } from 'lucide-react';
+
+const TAB_KEYS = {
+    BASIC: 'basic',
+    AI: 'ai',
+};
 
 const ProposedCVDetail = () => {
     const { jobId } = useParams();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const [activeTab, setActiveTab] = useState(TAB_KEYS.BASIC);
     const proposedResumeIdParam = searchParams.get('proposedResumeId');
     const numericProposedResumeId = Number(proposedResumeIdParam);
     const hasValidProposedResumeId = Number.isInteger(numericProposedResumeId) && numericProposedResumeId > 0;
@@ -19,7 +28,13 @@ const ProposedCVDetail = () => {
     });
 
     const cvData = response?.data;
+    const proposedCv = normalizeProposedCvDetail(cvData);
     const errorMessage = error?.data?.message || 'Proposed CV not found or unavailable.';
+    const hasAi = hasAiEvaluation(proposedCv?.aiEvaluation);
+    const tabs = [
+        { key: TAB_KEYS.BASIC, label: 'Basic Information' },
+        ...(hasAi ? [{ key: TAB_KEYS.AI, label: 'AI Analysis', icon: Sparkles }] : []),
+    ];
 
     if (isLoading) return <Loading className="py-16" />;
 
@@ -39,7 +54,7 @@ const ProposedCVDetail = () => {
         );
     }
 
-    if (!cvData) {
+    if (!cvData || !proposedCv) {
         return (
             <div className="flex flex-col items-center justify-center py-20">
                 <p className="text-gray-500 mb-4 text-center max-w-md">{errorMessage}</p>
@@ -53,8 +68,50 @@ const ProposedCVDetail = () => {
         );
     }
 
+    const proposalMetaItems = [
+        proposedCv.proposalStatus && {
+            label: 'Proposal Status',
+            value: formatProposalStatus(proposedCv.proposalStatus),
+        },
+        proposedCv.proposedAt && {
+            label: 'Proposed On',
+            value: formatDateTime(proposedCv.proposedAt),
+        },
+        proposedCv.matchRate != null && {
+            label: 'Match Rate',
+            value: formatPercent(proposedCv.matchRate),
+            valueClassName: `text-base font-semibold ${getMetricTextColor(proposedCv.matchRate)}`,
+        },
+        proposedCv.aiScore != null && {
+            label: 'AI Score',
+            value: formatPercent(proposedCv.aiScore),
+            labelClassName: 'text-orange-400',
+            valueClassName: 'text-sm font-bold text-orange-500 group-hover:text-orange-600',
+            wrapperClassName: 'bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20',
+            onClick: hasAi ? () => setActiveTab(TAB_KEYS.AI) : undefined,
+        },
+    ].filter(Boolean);
+
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case TAB_KEYS.AI:
+                return hasAi ? <AiAnalysis aiEvaluation={proposedCv.aiEvaluation} /> : null;
+            case TAB_KEYS.BASIC:
+            default:
+                return (
+                    <BasicInformation
+                        app={proposedCv}
+                        onSwitchToAiTab={hasAi ? () => setActiveTab(TAB_KEYS.AI) : undefined}
+                        metaTitle="Proposal Info"
+                        metaItems={proposalMetaItems}
+                        showDecisionHistory={false}
+                    />
+                );
+        }
+    };
+
     return (
-        <div className="w-full space-y-5">
+        <div className="w-full space-y-4">
             <button
                 onClick={() => navigate(`/jobs/${jobId}`)}
                 className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors group"
@@ -63,98 +120,142 @@ const ProposedCVDetail = () => {
                 <span className="font-medium">Back to Job pipeline</span>
             </button>
 
-            <Overview cvData={cvData} proposedResumeId={numericProposedResumeId} />
-
-            <div className="grid grid-cols-1 xl:grid-cols-[460px_minmax(0,1fr)] gap-6 items-start">
-                <div className="space-y-4 xl:sticky xl:top-5">
-                    <InsightCard
-                        title="Summary"
-                        content={cvData.summary}
-                        tone="orange"
-                    />
-                    <InsightCard
-                        title="Strengths"
-                        content={cvData.strengths}
-                        tone="emerald"
-                    />
-                    <InsightCard
-                        title="Weakness"
-                        content={cvData.weakness}
-                        tone="rose"
-                    />
+            <div
+                className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-sm overflow-hidden flex flex-col"
+                style={{ height: 'calc(100vh - 20px)' }}
+            >
+                <div className="shrink-0 border-b border-gray-200 dark:border-neutral-800">
+                    <Overview cvData={cvData} proposedResumeId={numericProposedResumeId} />
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden min-h-[720px]">
-                    {cvData.resume_url ? (
-                        <PdfViewer
-                            resumeUrl={cvData.resume_url}
-                            resumeName={cvData.file_name || cvData.resume_name}
-                            candidateName={cvData.full_name || cvData.resume_name}
-                        />
-                    ) : (
-                        <div className="h-full min-h-[720px] flex items-center justify-center px-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                            CV preview is not available for this proposed candidate.
+                <div className="shrink-0 px-4 py-3 border-b border-gray-200 dark:border-neutral-800">
+                    <div className="flex gap-1 bg-gray-100 dark:bg-neutral-800 rounded-full p-1 w-fit">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.key}
+                                onClick={() => setActiveTab(tab.key)}
+                                className={`flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-150 ${
+                                    activeTab === tab.key
+                                        ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white'
+                                        : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200'
+                                }`}
+                            >
+                                {tab.icon ? <tab.icon size={14} /> : null}
+                                <span>{tab.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
+                    <div className="w-full lg:w-1/2 lg:border-r border-gray-200 dark:border-neutral-800 overflow-y-auto overflow-x-hidden scrollbar-thin">
+                        <div className="p-5">
+                            {renderTabContent()}
                         </div>
-                    )}
+                    </div>
+
+                    <div className="w-full lg:w-1/2 overflow-hidden">
+                        {proposedCv.resumeUrl ? (
+                            <PdfViewer
+                                resumeUrl={proposedCv.resumeUrl}
+                                resumeName={proposedCv.resumeName}
+                                candidateName={proposedCv.candidateName}
+                            />
+                        ) : (
+                            <div className="h-full min-h-[720px] flex items-center justify-center px-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                                CV preview is not available for this proposed candidate.
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
     );
 };
 
-const InsightCard = ({ title, content, tone }) => {
-    const toneClass = tone === 'emerald'
-        ? 'border-emerald-200 bg-emerald-50/60 dark:border-emerald-900 dark:bg-emerald-950/30'
-        : tone === 'rose'
-            ? 'border-rose-200 bg-rose-50/60 dark:border-rose-900 dark:bg-rose-950/30'
-            : 'border-orange-200 bg-orange-50/60 dark:border-orange-900 dark:bg-orange-950/30';
+const normalizeProposedCvDetail = (payload) => {
+    if (!payload) return null;
 
-    return (
-        <section className={`rounded-2xl border shadow-sm p-6 ${toneClass}`}>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">{title}</h2>
-            <div className="text-[15px] leading-8 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                <InsightContent content={content} />
-            </div>
-        </section>
-    );
+    const aiScore = normalizePercentNumber(payload.ai_overall_score);
+    const matchRate = normalizePercentNumber(payload.match_rate);
+    const hasAi = aiScore != null || payload.summary || payload.strengths || payload.weakness;
+
+    return {
+        candidateName: payload.full_name || payload.resume_name || payload.file_name || 'Unknown Candidate',
+        candidateEmail: payload.email || null,
+        candidatePhone: payload.phone || null,
+        jobTitle: payload.job_title || 'N/A',
+        location: payload.address || null,
+        githubLink: payload.github_link || null,
+        linkedinLink: payload.linkedin_link || null,
+        portfolioLink: payload.portfolio_link || null,
+        answers: [],
+        aiScore,
+        aiEvaluation: hasAi
+            ? {
+                aiOverallScore: aiScore ?? 0,
+                summary: payload.summary || null,
+                strengths: payload.strengths || null,
+                weakness: payload.weakness || null,
+                criteriaScores: [],
+            }
+            : null,
+        resumeUrl: payload.resume_url || null,
+        resumeName: payload.file_name || payload.resume_name || payload.full_name || 'Resume',
+        proposalStatus: payload.status || null,
+        proposedAt: payload.proposed_at || null,
+        matchRate,
+    };
 };
 
-const InsightContent = ({ content }) => {
-    const normalized = normalizeInsightContent(content);
+const hasAiEvaluation = (evaluation) => (
+    Boolean(
+        evaluation
+        && (
+            evaluation.aiOverallScore != null
+            || evaluation.summary
+            || evaluation.strengths
+            || evaluation.weakness
+            || (Array.isArray(evaluation.criteriaScores) && evaluation.criteriaScores.length > 0)
+        )
+    )
+);
 
-    if (!normalized) {
-        return 'Not available yet.';
-    }
-
-    const lines = normalized
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean);
-
-    if (lines.some((line) => line.startsWith('- '))) {
-        return (
-            <div className="space-y-2.5">
-                {lines.map((line, index) => (
-                    <p key={`${line}-${index}`}>{line}</p>
-                ))}
-            </div>
-        );
-    }
-
-    return normalized;
+const normalizePercentNumber = (value) => {
+    if (value == null || Number.isNaN(Number(value))) return null;
+    const numericValue = Number(value);
+    return numericValue <= 1 && numericValue > 0
+        ? Math.round(numericValue * 100)
+        : Math.round(numericValue);
 };
 
-const normalizeInsightContent = (content) => {
-    if (!content) return '';
+const formatPercent = (value) => {
+    const normalizedValue = normalizePercentNumber(value);
+    return normalizedValue == null ? '--' : `${normalizedValue}%`;
+};
 
-    return String(content)
-        .replace(/<\/?(ul|ol)>/gi, '')
-        .replace(/<li>/gi, '- ')
-        .replace(/<\/li>/gi, '\n')
-        .replace(/<br\s*\/?>/gi, '\n')
-        .replace(/<[^>]+>/g, '')
-        .replace(/\n{3,}/g, '\n\n')
-        .trim();
+const formatDateTime = (value) => {
+    if (!value) return 'N/A';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'N/A';
+    return date.toLocaleString();
+};
+
+const formatProposalStatus = (status) => {
+    if (!status) return 'N/A';
+    return String(status)
+        .toLowerCase()
+        .split('_')
+        .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
+        .join(' ');
+};
+
+const getMetricTextColor = (score) => {
+    const normalizedScore = normalizePercentNumber(score);
+    if (normalizedScore == null) return 'text-gray-500';
+    if (normalizedScore >= 80) return 'text-emerald-600';
+    if (normalizedScore >= 60) return 'text-orange-500';
+    return 'text-red-500';
 };
 
 export default ProposedCVDetail;
