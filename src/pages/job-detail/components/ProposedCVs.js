@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { InputNumber } from 'antd';
 import {
   useGetProposedCvsQuery,
   useRefreshProposedCvsMutation,
@@ -14,12 +15,16 @@ import { faRocket, faWandMagicSparkles } from '../../../utils/icons';
 import toastMessage from '@/utils/toastMessage';
 
 const POLLING_INTERVAL = 5000;
+const DEFAULT_MIN_MATCH_RATE = 30;
+const MIN_MATCH_RATE = 0;
+const MAX_MATCH_RATE = 100;
 
 const ProposedCVs = ({ jobId }) => {
   const navigate = useNavigate();
   const [isJobPolling, setIsJobPolling] = useState(false);
   const [isEvaluationPolling, setIsEvaluationPolling] = useState(false);
   const previousRefreshPendingRef = useRef(false);
+  const [minMatchRate, setMinMatchRate] = useState(DEFAULT_MIN_MATCH_RATE);
 
   const {
     data: jobData,
@@ -30,6 +35,7 @@ const ProposedCVs = ({ jobId }) => {
     refetchOnMountOrArgChange: true,
   });
   const jobStatus = jobData?.data?.status;
+  const persistedMinMatchRate = jobData?.data?.proposeRefreshMinMatchRate;
   const isUnpublished = jobStatus === 'DRAFT' || jobStatus === 'PENDING_REVIEW';
   const isRefreshPending = Boolean(jobData?.data?.proposeRefreshPending);
 
@@ -77,6 +83,10 @@ const ProposedCVs = ({ jobId }) => {
     setIsEvaluationPolling(hasEvaluationInProgress);
   }, [hasEvaluationInProgress]);
 
+  useEffect(() => {
+    setMinMatchRate(normalizeMinMatchRate(persistedMinMatchRate));
+  }, [jobId, persistedMinMatchRate]);
+
   const handleRefreshProposedCvs = async () => {
     if (!jobId) return;
 
@@ -86,7 +96,11 @@ const ProposedCVs = ({ jobId }) => {
     }
 
     try {
-      const result = await refreshProposedCvs(jobId).unwrap();
+      const normalizedMinMatchRate = normalizeMinMatchRate(minMatchRate);
+      const result = await refreshProposedCvs({
+        id: jobId,
+        minMatchRate: normalizedMinMatchRate,
+      }).unwrap();
       toastMessage.success(result?.message || 'Refreshing proposed CVs in the background.');
       await refetchJobDetail();
     } catch (error) {
@@ -143,21 +157,38 @@ const ProposedCVs = ({ jobId }) => {
             <FontAwesomeIcon icon={faWandMagicSparkles} className="text-primary text-base" />
             <span className="font-semibold text-neutral-800 dark:text-white">{totalElements}</span> proposed CVs found
           </div>
-          <button
-            type="button"
-            onClick={handleRefreshProposedCvs}
-            disabled={isBusyRefreshing}
-            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-              isBusyRefreshing
-                ? 'cursor-not-allowed bg-orange-50 text-orange-300 border border-orange-100'
-                : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
-            }`}
-            title={isRefreshPending ? 'Refresh request is already in progress' : 'Refresh proposed CVs'}
-          >
-            <RefreshCw size={15} className={isBusyRefreshing ? 'animate-spin' : ''} />
-            {isBusyRefreshing ? 'Refreshing...' : 'Refresh'}
-          </button>
+          <div className="flex flex-col sm:flex-row sm:items-end gap-3 w-full sm:w-auto">
+            <div className="w-full sm:w-[180px]">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Minimum match rate</p>
+              <InputNumber
+                min={MIN_MATCH_RATE}
+                max={MAX_MATCH_RATE}
+                value={minMatchRate}
+                onChange={(value) => setMinMatchRate(normalizeMinMatchRate(value))}
+                disabled={isBusyRefreshing}
+                addonAfter="%"
+                className="mt-1 w-full"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleRefreshProposedCvs}
+              disabled={isBusyRefreshing}
+              className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                isBusyRefreshing
+                  ? 'cursor-not-allowed bg-orange-50 text-orange-300 border border-orange-100'
+                  : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
+              }`}
+              title={isRefreshPending ? 'Refresh request is already in progress' : 'Refresh proposed CVs'}
+            >
+              <RefreshCw size={15} className={isBusyRefreshing ? 'animate-spin' : ''} />
+              {isBusyRefreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
+          </div>
         </div>
+        <p className="mt-3 text-xs text-neutral-400">
+          Only candidates with AI match rate at or above {normalizeMinMatchRate(minMatchRate)}% will be kept in the proposed list after refresh.
+        </p>
       </div>
 
       {isRefreshPending && (
@@ -438,6 +469,13 @@ const getScoreColor = (score) => {
   if (percent >= 80) return 'text-emerald-500';
   if (percent >= 60) return 'text-orange-500';
   return 'text-red-500';
+};
+
+const normalizeMinMatchRate = (value) => {
+  if (value == null || value === '') return DEFAULT_MIN_MATCH_RATE;
+  const numericValue = Number(value);
+  if (Number.isNaN(numericValue)) return DEFAULT_MIN_MATCH_RATE;
+  return Math.min(MAX_MATCH_RATE, Math.max(MIN_MATCH_RATE, Math.round(numericValue)));
 };
 
 export default ProposedCVs;
