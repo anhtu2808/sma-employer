@@ -13,6 +13,8 @@ import Button from '@/components/Button';
 import authService from '@/services/authService';
 import { useGetNotificationsQuery } from '@/apis/notificationApi';
 import { useGetMyRecruiterInfoQuery } from '@/apis/recruiterApi';
+import { useGetPlansQuery } from '@/apis/planApi';
+import { PLAN_TYPES, PLAN_TARGETS } from '@/constrant/plan';
 
 
 const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false }) => {
@@ -49,6 +51,12 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
       return false;
     }
   }, [accessToken]);
+
+  const { data: mainPlans = [] } = useGetPlansQuery(
+    { planType: PLAN_TYPES.MAIN, planTarget: PLAN_TARGETS.COMPANY },
+    { skip: !isRootRecruiter }
+  );
+  const hasCurrentPlan = mainPlans.some((p) => p?.isCurrent);
 
   // --- Grouped sidebar sections ---
 
@@ -188,7 +196,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
       </div>
 
       {/* Upgrade Plan Card - Only for root recruiters */}
-      {(!collapsed || isMobile) && isRecruiter && isRootRecruiter && (
+      {(!collapsed || isMobile) && isRecruiter && isRootRecruiter && !hasCurrentPlan && (
         <div className="px-4 pb-2">
           <Link
             to="/billing-plans"
