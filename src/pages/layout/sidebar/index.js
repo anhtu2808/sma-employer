@@ -106,6 +106,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
   // 5. Billing (only for recruiters)
   const billingItemsRaw = [
     { icon: faCreditCard, label: 'Billing & Plans', path: '/billing-plans', requireRoot: true },
+    { icon: faClockRotateLeft, label: 'Payment History', path: '/payment-history', requireRoot: true },
     { icon: faClockRotateLeft, label: 'Usage', path: '/usage' },
   ];
   const billingItems = isRecruiter

@@ -37,7 +37,7 @@ const getRoute = (noti) => {
         case 'SYSTEM':
         case 'PAYMENT_SUCCESS':
         case 'PAYMENT_FAILURE':
-            return '/billing-plans';
+            return '/payment-history';
         case 'APPLICATION_STATUS':
             return noti.relatedEntityId ? `/applications/${noti.relatedEntityId}` : '/applications';
         case 'FLAGGED_JOB':
