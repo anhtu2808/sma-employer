@@ -33,6 +33,9 @@ const ApplicationHeader = ({
     onStatusFilterChange,
     onDownloadZip,
     isDownloadingZip,
+    sortBy,
+    onSortChange,
+    showAiSort,
 }) => {
 
     const exportMenuItems = [
@@ -194,6 +197,17 @@ const ApplicationHeader = ({
                     </div>
 
                     <div className="flex items-center gap-3 w-full lg:w-auto shrink-0">
+                        {showAiSort && (
+                            <Select
+                                value={sortBy}
+                                onChange={onSortChange}
+                                className="min-w-[160px]"
+                                options={[
+                                    { value: 'AI_SCORE', label: 'By Score' },
+                                    { value: 'DATE', label: 'By Date' },
+                                ]}
+                            />
+                        )}
                         <Button
                             mode="secondary"
                             className=""

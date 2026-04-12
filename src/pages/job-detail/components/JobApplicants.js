@@ -26,6 +26,7 @@ const JobApplicants = ({ jobId }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filter, setFilter] = useState({ page: 0, size: 10 });
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [sortBy, setSortBy] = useState('AI_SCORE');
     const [page, setPage] = useState(0);
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
     const [rejectData, setRejectData] = useState({ id: null, status: null });
@@ -37,8 +38,10 @@ const JobApplicants = ({ jobId }) => {
 
     const [updateStatus] = useUpdateApplicationStatusMutation();
 
+    const showAiSort = jobData?.data?.enableAiScoring === true;
+
     const { data: appData, isLoading } = useGetApplicationsQuery(
-        { ...filter, jobId },
+        { ...filter, jobId, sortBy: showAiSort ? sortBy : undefined },
         { skip: !jobId }
     );
 
@@ -288,6 +291,17 @@ const JobApplicants = ({ jobId }) => {
                                 </button>
                             )}
                         </div>
+                        {showAiSort && (
+                            <Select
+                                value={sortBy}
+                                onChange={setSortBy}
+                                className="min-w-[160px]"
+                                options={[
+                                    { value: 'AI_SCORE', label: 'By Score' },
+                                    { value: 'DATE', label: 'By Date' },
+                                ]}
+                            />
+                        )}
                         <Button
                             mode="secondary"
                             shape="round"

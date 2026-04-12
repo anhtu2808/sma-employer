@@ -32,6 +32,7 @@ const ApplicationManagement = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filter, setFilter] = useState({ page: 0, size: 50 });
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [sortBy, setSortBy] = useState('AI_SCORE');
     const viewMode = searchParams.get('tab') === 'list' ? 'list' : 'kanban';
     const statusFilter = searchParams.get('status') || '';
     const setViewMode = (mode) => {
@@ -88,10 +89,11 @@ const ApplicationManagement = () => {
         }
     };
 
-    const { data: appData, isLoading: isAppLoading } = useGetApplicationsQuery(
-        { ...filter, jobId: selectedJob?.id },
-        { skip: !selectedJob?.id }
+    const showAiSort = selectedJob?.enableAiScoring === true;
 
+    const { data: appData, isLoading: isAppLoading } = useGetApplicationsQuery(
+        { ...filter, jobId: selectedJob?.id, sortBy: showAiSort ? sortBy : undefined },
+        { skip: !selectedJob?.id }
     );
     useEffect(() => {
         setFilter(prev => ({ ...prev, page: page }));
@@ -233,6 +235,9 @@ const ApplicationManagement = () => {
                 isDownloadingZip={isDownloadingZip}
                 statusFilter={statusFilter}
                 onStatusFilterChange={handleStatusFilterChange}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                showAiSort={showAiSort}
                 onArchiveJob={(job) => {
                     AntModal.confirm({
                         title: 'Archive Job',
