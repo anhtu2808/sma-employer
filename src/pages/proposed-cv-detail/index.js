@@ -77,16 +77,11 @@ const ProposedCVDetail = () => {
             label: 'Proposed On',
             value: formatDateTime(proposedCv.proposedAt),
         },
-        proposedCv.matchRate != null && {
-            label: 'Match Rate',
-            value: formatPercent(proposedCv.matchRate),
-            valueClassName: `text-base font-semibold ${getMetricTextColor(proposedCv.matchRate)}`,
-        },
         proposedCv.aiScore != null && {
             label: 'AI Score',
             value: formatPercent(proposedCv.aiScore),
             labelClassName: 'text-orange-400',
-            valueClassName: 'text-sm font-bold text-orange-500 group-hover:text-orange-600',
+            valueClassName: 'text-lg font-bold text-orange-500 group-hover:text-orange-600',
             wrapperClassName: 'bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20',
             onClick: hasAi ? () => setActiveTab(TAB_KEYS.AI) : undefined,
         },
@@ -105,6 +100,9 @@ const ProposedCVDetail = () => {
                         metaTitle="Proposal Info"
                         metaItems={proposalMetaItems}
                         showDecisionHistory={false}
+                        hideCandidateSummary
+                        hideLocationInContact
+                        emphasizeMeta
                     />
                 );
         }
@@ -148,13 +146,13 @@ const ProposedCVDetail = () => {
                 </div>
 
                 <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
-                    <div className="w-full lg:w-1/2 lg:border-r border-gray-200 dark:border-neutral-800 overflow-y-auto overflow-x-hidden scrollbar-thin">
+                    <div className="w-full lg:w-[45%] lg:border-r border-gray-200 dark:border-neutral-800 overflow-y-auto overflow-x-hidden scrollbar-thin">
                         <div className="p-5">
                             {renderTabContent()}
                         </div>
                     </div>
 
-                    <div className="w-full lg:w-1/2 overflow-hidden">
+                    <div className="w-full lg:w-[55%] overflow-hidden">
                         {proposedCv.resumeUrl ? (
                             <PdfViewer
                                 resumeUrl={proposedCv.resumeUrl}
@@ -248,14 +246,6 @@ const formatProposalStatus = (status) => {
         .split('_')
         .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
         .join(' ');
-};
-
-const getMetricTextColor = (score) => {
-    const normalizedScore = normalizePercentNumber(score);
-    if (normalizedScore == null) return 'text-gray-500';
-    if (normalizedScore >= 80) return 'text-emerald-600';
-    if (normalizedScore >= 60) return 'text-orange-500';
-    return 'text-red-500';
 };
 
 export default ProposedCVDetail;
