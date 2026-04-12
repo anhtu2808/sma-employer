@@ -338,14 +338,48 @@ const RecruiterRegister = () => {
                             </div>
 
                             <div className="col-span-full">
-                                <Input label={<>Office Address <span className="text-red-500">*</span></>} name="address" required onChange={handleChange} />
+                                <Input
+                                    label={<>Office Address <span className="text-red-500">*</span></>}
+                                    name="address"
+                                    required
+                                    onChange={handleChange}
+                                    placeholder="e.g. 123 Nguyen Hue Street"
+                                />
                             </div>
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <Input label="District" name="district" placeholder="e.g. District 1" onChange={handleChange} />
-                                <Input label="City" name="city" placeholder="e.g. Ho Chi Minh City" onChange={handleChange} />
+                                <Input
+                                    label={<>District <span className="text-red-500">*</span></>}
+                                    name="district"
+                                    placeholder="e.g. District 1"
+                                    required
+                                    onChange={handleChange}
+                                />
+                                <Input
+                                    label={<>City <span className="text-red-500">*</span></>}
+                                    name="city"
+                                    placeholder="e.g. Ho Chi Minh City"
+                                    required
+                                    onChange={handleChange}
+                                />
                             </div>
-                            <Input label="Country" name="country" placeholder="Vietnam" onChange={handleChange} />
-                            <Input label="Website" name="companyLink" placeholder="https://..." onChange={handleChange} />
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <Input
+                                    label={<>Country <span className="text-red-500">*</span></>}
+                                    name="country"
+                                    placeholder="Vietnam"
+                                    required
+                                    defaultValue="Vietnam"
+                                    onChange={handleChange}
+                                />
+                                <Input
+                                    label="Website"
+                                    name="companyLink"
+                                    placeholder="https://..."
+                                    onChange={handleChange}
+                                />
+                            </div>
                         </div>
 
                         <div className="space-y-6 pt-4">

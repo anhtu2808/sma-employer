@@ -33,11 +33,15 @@ const SideDecorator = () => {
             </div>
 
             <div className="relative z-10 flex items-center gap-4 text-sm text-white/70">
-                <span>© 2026 SmartRecruit</span>
+                <span>© 2026 SmartRecruit Inc.</span>
                 <span className="w-1 h-1 bg-white/50 rounded-full"></span>
-                <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+                <Link to="/legal/privacy" className="hover:text-white transition-colors underline-offset-4 hover:underline">
+                    Privacy Policy
+                </Link>
                 <span className="w-1 h-1 bg-white/50 rounded-full"></span>
-                <Link to="/contact" className="hover:text-white transition-colors">Contact</Link>
+                <Link to="/legal/terms" className="hover:text-white transition-colors underline-offset-4 hover:underline">
+                    Terms of Service
+                </Link>
             </div>
         </div>
     );
