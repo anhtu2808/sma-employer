@@ -14,6 +14,7 @@ import ProposedCVDetail from '@/pages/proposed-cv-detail';
 import Login from '@/pages/login';
 import ApplicationManagement from "@/pages/application";
 import BillingPlans from '@/pages/billing-plans';
+import PaymentHistory from '@/pages/payment-history';
 import Checkout from '@/pages/checkout';
 import ApplicationDetail from "@/pages/application/detail";
 import Usage from "@/pages/usage";
@@ -51,6 +52,7 @@ export const routes = createBrowserRouter(
                 <Route path="settings" element={<Settings />} />
                 <Route path="help" element={<Dashboard />} />
                 <Route path="billing-plans" element={<BillingPlans />} />
+                <Route path="payment-history" element={<PaymentHistory />} />
                 <Route path="usage" element={<Usage />} />
                 <Route path="notifications" element={<NotificationList />} />
                 <Route path="blacklist" element={<CompanyBlacklist />} />

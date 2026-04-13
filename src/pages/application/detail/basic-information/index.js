@@ -49,6 +49,9 @@ const BasicInformation = ({
     metaTitle = 'Application Info',
     metaItems,
     showDecisionHistory = true,
+    hideCandidateSummary = false,
+    hideLocationInContact = false,
+    emphasizeMeta = false,
 }) => {
     const [openAccordionKey, setOpenAccordionKey] = useState('about');
 
@@ -87,6 +90,13 @@ const BasicInformation = ({
         },
     ].filter(Boolean);
     const resolvedMetaItems = (metaItems ?? defaultMetaItems).filter(Boolean);
+    const showCandidateSummary = !hideCandidateSummary;
+    const showContactSection = Boolean(
+        app.candidatePhone
+        || app.candidateEmail
+        || (!hideLocationInContact && app.location)
+    );
+    const showInfoCard = showCandidateSummary || showContactSection;
 
     const accordionItems = [
         hasAnswers && {
@@ -149,43 +159,51 @@ const BasicInformation = ({
     return (
         <div className="space-y-6">
             {/* Candidate Info + Contact */}
-            <div className="bg-gray-50 dark:bg-neutral-800/30 rounded-xl p-5 space-y-5">
-                {/* Candidate Info */}
-                <div className="space-y-2.5">
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{app.candidateName}</h2>
-                    <div className="flex items-center gap-2 text-base text-gray-800 dark:text-neutral-200">
-                        <FontAwesomeIcon icon={faBriefcase} className="text-sm text-gray-500 dark:text-neutral-400" />
-                        <span>{app.jobTitle}</span>
-                    </div>
-                    {app.location && (
-                        <div className="flex items-center gap-2 text-base text-gray-800 dark:text-neutral-200">
-                            <FontAwesomeIcon icon={faGlobe} className="text-sm text-gray-500 dark:text-neutral-400" />
-                            <span>{app.location}</span>
+            {showInfoCard && (
+                <div className="bg-gray-50 dark:bg-neutral-800/30 rounded-xl p-5 space-y-5">
+                    {/* Candidate Info */}
+                    {showCandidateSummary && (
+                        <div className="space-y-2.5">
+                            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{app.candidateName}</h2>
+                            <div className="flex items-center gap-2 text-base text-gray-800 dark:text-neutral-200">
+                                <FontAwesomeIcon icon={faBriefcase} className="text-sm text-gray-500 dark:text-neutral-400" />
+                                <span>{app.jobTitle}</span>
+                            </div>
+                            {app.location && (
+                                <div className="flex items-center gap-2 text-base text-gray-800 dark:text-neutral-200">
+                                    <FontAwesomeIcon icon={faGlobe} className="text-sm text-gray-500 dark:text-neutral-400" />
+                                    <span>{app.location}</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Divider */}
+                    {showCandidateSummary && showContactSection && (
+                        <div className="border-t border-gray-200 dark:border-neutral-700" />
+                    )}
+
+                    {/* Contact Information */}
+                    {showContactSection && (
+                        <div className="space-y-3">
+                            <h4 className="text-sm font-bold text-gray-600 dark:text-neutral-300 uppercase tracking-wider">
+                                Contact Information
+                            </h4>
+                            <div className="flex flex-col gap-3">
+                                {app.candidatePhone && (
+                                    <CopyableField icon={faPhone} label="Phone Number" value={app.candidatePhone} href={`tel:${app.candidatePhone}`} />
+                                )}
+                                {app.candidateEmail && (
+                                    <CopyableField icon={faEnvelope} label="Email" value={app.candidateEmail} href={`mailto:${app.candidateEmail}`} />
+                                )}
+                                {!hideLocationInContact && app.location && (
+                                    <CopyableField icon={faLocationDot} label="Address" value={app.location} />
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
-
-                {/* Divider */}
-                <div className="border-t border-gray-200 dark:border-neutral-700" />
-
-                {/* Contact Information */}
-                <div className="space-y-3">
-                    <h4 className="text-sm font-bold text-gray-600 dark:text-neutral-300 uppercase tracking-wider">
-                        Contact Information
-                    </h4>
-                    <div className="flex flex-col gap-3">
-                        {app.candidatePhone && (
-                            <CopyableField icon={faPhone} label="Phone Number" value={app.candidatePhone} href={`tel:${app.candidatePhone}`} />
-                        )}
-                        {app.candidateEmail && (
-                            <CopyableField icon={faEnvelope} label="Email" value={app.candidateEmail} href={`mailto:${app.candidateEmail}`} />
-                        )}
-                        {app.location && (
-                            <CopyableField icon={faLocationDot} label="Address" value={app.location} />
-                        )}
-                    </div>
-                </div>
-            </div>
+            )}
 
             {/* Social Links */}
             {hasSocialLinks && (
@@ -263,13 +281,19 @@ const BasicInformation = ({
                     <h4 className="text-sm font-bold text-gray-600 dark:text-neutral-300 uppercase tracking-wider">
                         {metaTitle}
                     </h4>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className={`grid gap-3 ${emphasizeMeta ? 'grid-cols-1' : 'grid-cols-2'}`}>
                         {resolvedMetaItems.map((item, index) => {
-                            const cardClassName = `flex flex-col gap-1 p-3 rounded-xl text-left transition-colors ${
+                            const cardClassName = `flex flex-col rounded-xl text-left transition-colors ${
+                                emphasizeMeta ? 'gap-2 p-4 sm:p-5 min-h-[104px]' : 'gap-1 p-3'
+                            } ${
                                 item.wrapperClassName || 'bg-gray-50 dark:bg-neutral-800/50'
                             }`;
-                            const labelClassName = item.labelClassName || 'text-sm text-gray-500';
-                            const valueClassName = item.valueClassName || 'text-base font-medium text-gray-800 dark:text-neutral-200';
+                            const labelClassName = item.labelClassName || (emphasizeMeta
+                                ? 'text-xs font-semibold uppercase tracking-[0.18em] text-gray-500'
+                                : 'text-sm text-gray-500');
+                            const valueClassName = item.valueClassName || (emphasizeMeta
+                                ? 'text-lg font-semibold text-gray-800 dark:text-neutral-100'
+                                : 'text-base font-medium text-gray-800 dark:text-neutral-200');
 
                             if (item.onClick) {
                                 return (

@@ -69,7 +69,7 @@ const NotificationItem = ({ noti }) => {
                 break;
             case 'PAYMENT_SUCCESS':
             case 'PAYMENT_FAILURE':
-                navigate('/billing-plans');
+                navigate('/payment-history');
                 break;
             case 'APPLICATION_STATUS':
                 if (noti.relatedEntityId) {

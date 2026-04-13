@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { useGetProposedCvDetailQuery } from '@/apis/jobApi';
+import { useGetProposedCvDetailQuery, useUnlockProposedCvMutation } from '@/apis/jobApi';
 import Loading from '@/components/Loading';
 import Overview from './Overview';
 import PdfViewer from '@/pages/application/detail/pdf-viewer';
@@ -8,7 +8,8 @@ import BasicInformation from '@/pages/application/detail/basic-information';
 import AiAnalysis from '@/pages/application/detail/ai-analysis';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '../../utils/icons';
-import { Sparkles } from 'lucide-react';
+import { Lock, Sparkles } from 'lucide-react';
+import toastMessage from '@/utils/toastMessage';
 
 const TAB_KEYS = {
     BASIC: 'basic',
@@ -23,9 +24,10 @@ const ProposedCVDetail = () => {
     const proposedResumeIdParam = searchParams.get('proposedResumeId');
     const numericProposedResumeId = Number(proposedResumeIdParam);
     const hasValidProposedResumeId = Number.isInteger(numericProposedResumeId) && numericProposedResumeId > 0;
-    const { data: response, isLoading, error } = useGetProposedCvDetailQuery(numericProposedResumeId, {
+    const { data: response, isLoading, error, refetch } = useGetProposedCvDetailQuery(numericProposedResumeId, {
         skip: !hasValidProposedResumeId,
     });
+    const [unlockProposedCv, { isLoading: isUnlocking }] = useUnlockProposedCvMutation();
 
     const cvData = response?.data;
     const proposedCv = normalizeProposedCvDetail(cvData);
@@ -68,29 +70,17 @@ const ProposedCVDetail = () => {
         );
     }
 
-    const proposalMetaItems = [
-        proposedCv.proposalStatus && {
-            label: 'Proposal Status',
-            value: formatProposalStatus(proposedCv.proposalStatus),
-        },
-        proposedCv.proposedAt && {
-            label: 'Proposed On',
-            value: formatDateTime(proposedCv.proposedAt),
-        },
-        proposedCv.matchRate != null && {
-            label: 'Match Rate',
-            value: formatPercent(proposedCv.matchRate),
-            valueClassName: `text-base font-semibold ${getMetricTextColor(proposedCv.matchRate)}`,
-        },
-        proposedCv.aiScore != null && {
-            label: 'AI Score',
-            value: formatPercent(proposedCv.aiScore),
-            labelClassName: 'text-orange-400',
-            valueClassName: 'text-sm font-bold text-orange-500 group-hover:text-orange-600',
-            wrapperClassName: 'bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20',
-            onClick: hasAi ? () => setActiveTab(TAB_KEYS.AI) : undefined,
-        },
-    ].filter(Boolean);
+    const handleUnlock = async () => {
+        if (!numericProposedResumeId) return;
+
+        try {
+            await unlockProposedCv(numericProposedResumeId).unwrap();
+            toastMessage.success('Candidate profile unlocked successfully.');
+            await refetch();
+        } catch (unlockError) {
+            toastMessage.error(unlockError?.data?.message || 'Failed to unlock proposed CV');
+        }
+    };
 
     const renderTabContent = () => {
         switch (activeTab) {
@@ -102,9 +92,10 @@ const ProposedCVDetail = () => {
                     <BasicInformation
                         app={proposedCv}
                         onSwitchToAiTab={hasAi ? () => setActiveTab(TAB_KEYS.AI) : undefined}
-                        metaTitle="Proposal Info"
-                        metaItems={proposalMetaItems}
+                        metaItems={[]}
                         showDecisionHistory={false}
+                        hideCandidateSummary
+                        hideLocationInContact
                     />
                 );
         }
@@ -125,7 +116,12 @@ const ProposedCVDetail = () => {
                 style={{ height: 'calc(100vh - 20px)' }}
             >
                 <div className="shrink-0 border-b border-gray-200 dark:border-neutral-800">
-                    <Overview cvData={cvData} proposedResumeId={numericProposedResumeId} />
+                    <Overview
+                        proposal={proposedCv}
+                        proposedResumeId={numericProposedResumeId}
+                        onUnlock={handleUnlock}
+                        isUnlocking={isUnlocking}
+                    />
                 </div>
 
                 <div className="shrink-0 px-4 py-3 border-b border-gray-200 dark:border-neutral-800">
@@ -148,14 +144,26 @@ const ProposedCVDetail = () => {
                 </div>
 
                 <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
-                    <div className="w-full lg:w-1/2 lg:border-r border-gray-200 dark:border-neutral-800 overflow-y-auto overflow-x-hidden scrollbar-thin">
+                    <div className="w-full lg:w-[45%] lg:border-r border-gray-200 dark:border-neutral-800 overflow-y-auto overflow-x-hidden scrollbar-thin">
                         <div className="p-5">
                             {renderTabContent()}
                         </div>
                     </div>
 
-                    <div className="w-full lg:w-1/2 overflow-hidden">
-                        {proposedCv.resumeUrl ? (
+                    <div className="w-full lg:w-[55%] overflow-hidden">
+                        {!proposedCv.isUnlocked ? (
+                            <div className="h-full min-h-[720px] flex flex-col items-center justify-center gap-3 px-6 text-center">
+                                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 text-orange-500">
+                                    <Lock size={28} />
+                                </div>
+                                <p className="text-base font-semibold text-gray-700 dark:text-neutral-200">
+                                    Unlock required to view the candidate CV
+                                </p>
+                                <p className="max-w-md text-sm text-gray-500 dark:text-gray-400">
+                                    Recruiters can review the AI analysis first, but the resume preview and personal details stay hidden until this proposed CV is unlocked.
+                                </p>
+                            </div>
+                        ) : proposedCv.resumeUrl ? (
                             <PdfViewer
                                 resumeUrl={proposedCv.resumeUrl}
                                 resumeName={proposedCv.resumeName}
@@ -176,16 +184,21 @@ const ProposedCVDetail = () => {
 const normalizeProposedCvDetail = (payload) => {
     if (!payload) return null;
 
+    const isUnlocked = Boolean(payload.unlocked);
     const aiScore = normalizePercentNumber(payload.ai_overall_score);
     const matchRate = normalizePercentNumber(payload.match_rate);
     const hasAi = aiScore != null || payload.summary || payload.strengths || payload.weakness;
 
     return {
-        candidateName: payload.full_name || payload.resume_name || payload.file_name || 'Unknown Candidate',
+        candidateId: payload.candidate_id || null,
+        resumeId: payload.resume_id || null,
+        jobId: payload.job_id || null,
+        candidateName: isUnlocked ? (payload.full_name || payload.resume_name || payload.file_name || 'Unknown Candidate') : 'Locked candidate profile',
         candidateEmail: payload.email || null,
         candidatePhone: payload.phone || null,
-        jobTitle: payload.job_title || 'N/A',
+        jobTitle: isUnlocked ? (payload.job_title || 'N/A') : null,
         location: payload.address || null,
+        avatar: payload.avatar || null,
         githubLink: payload.github_link || null,
         linkedinLink: payload.linkedin_link || null,
         portfolioLink: payload.portfolio_link || null,
@@ -201,10 +214,12 @@ const normalizeProposedCvDetail = (payload) => {
             }
             : null,
         resumeUrl: payload.resume_url || null,
-        resumeName: payload.file_name || payload.resume_name || payload.full_name || 'Resume',
+        resumeName: isUnlocked ? (payload.file_name || payload.resume_name || payload.full_name || 'Resume') : null,
         proposalStatus: payload.status || null,
+        status: payload.status || null,
         proposedAt: payload.proposed_at || null,
         matchRate,
+        isUnlocked,
     };
 };
 
@@ -227,35 +242,6 @@ const normalizePercentNumber = (value) => {
     return numericValue <= 1 && numericValue > 0
         ? Math.round(numericValue * 100)
         : Math.round(numericValue);
-};
-
-const formatPercent = (value) => {
-    const normalizedValue = normalizePercentNumber(value);
-    return normalizedValue == null ? '--' : `${normalizedValue}%`;
-};
-
-const formatDateTime = (value) => {
-    if (!value) return 'N/A';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return 'N/A';
-    return date.toLocaleString();
-};
-
-const formatProposalStatus = (status) => {
-    if (!status) return 'N/A';
-    return String(status)
-        .toLowerCase()
-        .split('_')
-        .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
-        .join(' ');
-};
-
-const getMetricTextColor = (score) => {
-    const normalizedScore = normalizePercentNumber(score);
-    if (normalizedScore == null) return 'text-gray-500';
-    if (normalizedScore >= 80) return 'text-emerald-600';
-    if (normalizedScore >= 60) return 'text-orange-500';
-    return 'text-red-500';
 };
 
 export default ProposedCVDetail;
