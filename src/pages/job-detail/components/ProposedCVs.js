@@ -24,7 +24,8 @@ const ProposedCVs = ({ jobId }) => {
   const [isJobPolling, setIsJobPolling] = useState(false);
   const [isEvaluationPolling, setIsEvaluationPolling] = useState(false);
   const previousRefreshPendingRef = useRef(false);
-  const [minMatchRate, setMinMatchRate] = useState(DEFAULT_MIN_MATCH_RATE);
+  const [draftMinMatchRate, setDraftMinMatchRate] = useState(DEFAULT_MIN_MATCH_RATE);
+  const [isDraftDirty, setIsDraftDirty] = useState(false);
 
   const {
     data: jobData,
@@ -35,9 +36,15 @@ const ProposedCVs = ({ jobId }) => {
     refetchOnMountOrArgChange: true,
   });
   const jobStatus = jobData?.data?.status;
-  const persistedMinMatchRate = jobData?.data?.proposeRefreshMinMatchRate;
+  const persistedAppliedMinMatchRate = jobData?.data?.proposeRefreshMinMatchRate;
+  const persistedTargetMinMatchRate = jobData?.data?.proposeRefreshTargetMinMatchRate;
   const isUnpublished = jobStatus === 'DRAFT' || jobStatus === 'PENDING_REVIEW';
   const isRefreshPending = Boolean(jobData?.data?.proposeRefreshPending);
+  const appliedMinMatchRate = normalizeMinMatchRate(persistedAppliedMinMatchRate);
+  const pendingTargetMinMatchRate = normalizeMinMatchRate(
+    persistedTargetMinMatchRate ?? persistedAppliedMinMatchRate
+  );
+  const requestedMinMatchRate = isRefreshPending ? pendingTargetMinMatchRate : appliedMinMatchRate;
 
   const [params, setParams] = useState({ page: 0, size: 10 });
   const {
@@ -62,8 +69,10 @@ const ProposedCVs = ({ jobId }) => {
   const hasEvaluationInProgress = normalizedApplications.some((proposal) => isEvaluationPendingStatus(proposal.evaluationStatus));
   const totalElements = data.totalElements;
   const totalPages = data.totalPages;
-  const isBusyRefreshing = isRefreshingRequest || isRefreshPending;
+  const isBusyRefreshing = isRefreshingRequest;
   const isMutatingProposal = isUnlocking || isRemoving;
+  const isPendingThresholdUpdate = isRefreshPending && requestedMinMatchRate !== appliedMinMatchRate;
+  const canSubmitRefresh = !isRefreshingRequest && (!isRefreshPending || draftMinMatchRate !== requestedMinMatchRate);
 
   useEffect(() => {
     setIsJobPolling(isRefreshPending);
@@ -84,28 +93,49 @@ const ProposedCVs = ({ jobId }) => {
   }, [hasEvaluationInProgress]);
 
   useEffect(() => {
-    setMinMatchRate(normalizeMinMatchRate(persistedMinMatchRate));
-  }, [jobId, persistedMinMatchRate]);
+    setIsDraftDirty(false);
+  }, [jobId]);
+
+  useEffect(() => {
+    if (!isDraftDirty) {
+      setDraftMinMatchRate(requestedMinMatchRate);
+    }
+  }, [isDraftDirty, jobId, requestedMinMatchRate]);
+
+  useEffect(() => {
+    if (draftMinMatchRate === requestedMinMatchRate) {
+      setIsDraftDirty(false);
+    }
+  }, [draftMinMatchRate, requestedMinMatchRate]);
 
   const handleRefreshProposedCvs = async () => {
     if (!jobId) return;
 
-    if (isRefreshPending) {
-      toastMessage.info('Refresh request is already in progress.');
-      return;
-    }
-
     try {
-      const normalizedMinMatchRate = normalizeMinMatchRate(minMatchRate);
+      const normalizedMinMatchRate = normalizeMinMatchRate(draftMinMatchRate);
       const result = await refreshProposedCvs({
         id: jobId,
         minMatchRate: normalizedMinMatchRate,
       }).unwrap();
+      setIsDraftDirty(false);
       toastMessage.success(result?.message || 'Refreshing proposed CVs in the background.');
       await refetchJobDetail();
     } catch (error) {
       toastMessage.error(error?.data?.message || 'Failed to refresh proposed CVs');
     }
+  };
+
+  const handleDraftMinMatchRateChange = (value) => {
+    const normalizedValue = normalizeMinMatchRate(value);
+    setDraftMinMatchRate(normalizedValue);
+    setIsDraftDirty(normalizedValue !== requestedMinMatchRate);
+  };
+
+  const openProposalDetail = (proposal) => {
+    if (!proposal?.proposedResumeId) return;
+
+    const routeResumeId = proposal.resumeId ?? `proposal-${proposal.proposedResumeId}`;
+    navigate(`/jobs/${jobId}/proposed-cvs/${routeResumeId}?proposedResumeId=${proposal.proposedResumeId}`);
   };
 
   const handleUnlockProposal = async (proposal) => {
@@ -158,36 +188,47 @@ const ProposedCVs = ({ jobId }) => {
             <span className="font-semibold text-neutral-800 dark:text-white">{totalElements}</span> proposed CVs found
           </div>
           <div className="flex flex-col sm:flex-row sm:items-end gap-3 w-full sm:w-auto">
-            <div className="w-full sm:w-[180px]">
+            <div className="w-full sm:w-[240px]">
               <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Minimum match rate</p>
-              <InputNumber
-                min={MIN_MATCH_RATE}
-                max={MAX_MATCH_RATE}
-                value={minMatchRate}
-                onChange={(value) => setMinMatchRate(normalizeMinMatchRate(value))}
-                disabled={isBusyRefreshing}
-                addonAfter="%"
-                className="mt-1 w-full"
-              />
+              <div className="mt-1 flex h-[42px] items-stretch overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-colors focus-within:border-orange-400">
+                <InputNumber
+                  min={MIN_MATCH_RATE}
+                  max={MAX_MATCH_RATE}
+                  value={draftMinMatchRate}
+                  onChange={handleDraftMinMatchRateChange}
+                  disabled={isBusyRefreshing}
+                  controls={false}
+                  className="h-full w-full !border-0 !shadow-none [&_.ant-input-number-input-wrap]:h-full [&_.ant-input-number-input]:h-full [&_.ant-input-number-input]:px-4 [&_.ant-input-number-input]:text-sm [&_.ant-input-number-input]:font-semibold"
+                />
+                <div className="flex items-center border-l border-neutral-200 px-3 text-sm font-semibold text-neutral-500">
+                  %
+                </div>
+              </div>
             </div>
             <button
               type="button"
               onClick={handleRefreshProposedCvs}
-              disabled={isBusyRefreshing}
+              disabled={!canSubmitRefresh}
               className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                isBusyRefreshing
+                !canSubmitRefresh
                   ? 'cursor-not-allowed bg-orange-50 text-orange-300 border border-orange-100'
                   : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
               }`}
-              title={isRefreshPending ? 'Refresh request is already in progress' : 'Refresh proposed CVs'}
+              title={isRefreshPending ? 'Update the refresh threshold for the current background run' : 'Refresh proposed CVs'}
             >
-              <RefreshCw size={15} className={isBusyRefreshing ? 'animate-spin' : ''} />
-              {isBusyRefreshing ? 'Refreshing...' : 'Refresh'}
+              <RefreshCw size={15} className={isRefreshingRequest ? 'animate-spin' : ''} />
+              {isRefreshPending ? 'Update Refresh' : 'Refresh'}
             </button>
           </div>
         </div>
         <p className="mt-3 text-xs text-neutral-400">
-          Only candidates with AI match rate at or above {normalizeMinMatchRate(minMatchRate)}% will be kept in the proposed list after refresh.
+          {isRefreshPending
+            ? isPendingThresholdUpdate
+              ? `Current results still reflect the previous ${appliedMinMatchRate}% minimum while a new refresh is running with ${requestedMinMatchRate}%.`
+              : `A refresh is running with the current ${requestedMinMatchRate}% minimum. The list will update automatically when it finishes.`
+            : isDraftDirty
+              ? `Current results are based on ${appliedMinMatchRate}%. Refresh to apply the new ${draftMinMatchRate}% minimum.`
+              : `Only candidates with AI match rate at or above ${appliedMinMatchRate}% will be kept in the proposed list after refresh.`}
         </p>
       </div>
 
@@ -197,7 +238,9 @@ const ProposedCVs = ({ jobId }) => {
           <div>
             <p className="text-sm font-semibold">Refreshing proposed CVs</p>
             <p className="text-xs text-amber-700 mt-1">
-              AI is processing this job in the background. We&apos;ll keep the current list visible until the new results are ready.
+              {isPendingThresholdUpdate
+                ? `AI is processing the latest ${requestedMinMatchRate}% minimum in the background. We&apos;ll keep the current ${appliedMinMatchRate}% list visible until the new results are ready.`
+                : `AI is processing this job in the background with the current ${requestedMinMatchRate}% minimum. We&apos;ll keep the current list visible until the new results are ready.`}
             </p>
           </div>
         </div>
@@ -247,7 +290,7 @@ const ProposedCVs = ({ jobId }) => {
                     <th className="px-6 py-4 w-[28%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
                     <th className="px-6 py-4 w-[23%] text-sm font-semibold text-gray-500 tracking-wide">Strengths</th>
                     <th className="px-6 py-4 w-[15%] text-sm font-semibold text-gray-500 tracking-wide text-center">AI Match Rate</th>
-                    <th className="px-6 py-4 w-[10%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
+                    <th className="px-6 py-4 w-[14%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-neutral-800">
@@ -334,15 +377,14 @@ const ProposedCVs = ({ jobId }) => {
                         </td>
                         <td className="px-6 py-4 text-center">
                           <div className="flex items-center justify-center gap-1">
-                            {app.isUnlocked && app.resumeId ? (
-                              <button
-                                onClick={() => navigate(`/jobs/${jobId}/proposed-cvs/${app.resumeId}?proposedResumeId=${app.proposedResumeId}`)}
-                                className="p-2.5 bg-gray-50 dark:bg-neutral-800 hover:bg-orange-500/10 text-gray-400 hover:text-orange-500 rounded-xl transition-all border border-transparent hover:border-orange-500/20"
-                                title="View Profile"
-                              >
-                                <ExternalLink size={16} />
-                              </button>
-                            ) : (
+                            <button
+                              onClick={() => openProposalDetail(app)}
+                              className="p-2.5 bg-gray-50 dark:bg-neutral-800 hover:bg-orange-500/10 text-gray-400 hover:text-orange-500 rounded-xl transition-all border border-transparent hover:border-orange-500/20"
+                              title={app.isUnlocked ? 'View candidate details' : 'View masked candidate details'}
+                            >
+                              <ExternalLink size={16} />
+                            </button>
+                            {!app.isUnlocked && (
                               <button
                                 onClick={() => handleUnlockProposal(app)}
                                 disabled={isMutatingProposal}

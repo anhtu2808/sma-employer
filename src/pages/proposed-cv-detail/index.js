@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { useGetProposedCvDetailQuery } from '@/apis/jobApi';
+import { useGetProposedCvDetailQuery, useUnlockProposedCvMutation } from '@/apis/jobApi';
 import Loading from '@/components/Loading';
 import Overview from './Overview';
 import PdfViewer from '@/pages/application/detail/pdf-viewer';
@@ -8,7 +8,8 @@ import BasicInformation from '@/pages/application/detail/basic-information';
 import AiAnalysis from '@/pages/application/detail/ai-analysis';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '../../utils/icons';
-import { Sparkles } from 'lucide-react';
+import { Lock, Sparkles } from 'lucide-react';
+import toastMessage from '@/utils/toastMessage';
 
 const TAB_KEYS = {
     BASIC: 'basic',
@@ -23,9 +24,10 @@ const ProposedCVDetail = () => {
     const proposedResumeIdParam = searchParams.get('proposedResumeId');
     const numericProposedResumeId = Number(proposedResumeIdParam);
     const hasValidProposedResumeId = Number.isInteger(numericProposedResumeId) && numericProposedResumeId > 0;
-    const { data: response, isLoading, error } = useGetProposedCvDetailQuery(numericProposedResumeId, {
+    const { data: response, isLoading, error, refetch } = useGetProposedCvDetailQuery(numericProposedResumeId, {
         skip: !hasValidProposedResumeId,
     });
+    const [unlockProposedCv, { isLoading: isUnlocking }] = useUnlockProposedCvMutation();
 
     const cvData = response?.data;
     const proposedCv = normalizeProposedCvDetail(cvData);
@@ -68,6 +70,18 @@ const ProposedCVDetail = () => {
         );
     }
 
+    const handleUnlock = async () => {
+        if (!numericProposedResumeId) return;
+
+        try {
+            await unlockProposedCv(numericProposedResumeId).unwrap();
+            toastMessage.success('Candidate profile unlocked successfully.');
+            await refetch();
+        } catch (unlockError) {
+            toastMessage.error(unlockError?.data?.message || 'Failed to unlock proposed CV');
+        }
+    };
+
     const renderTabContent = () => {
         switch (activeTab) {
             case TAB_KEYS.AI:
@@ -102,7 +116,12 @@ const ProposedCVDetail = () => {
                 style={{ height: 'calc(100vh - 20px)' }}
             >
                 <div className="shrink-0 border-b border-gray-200 dark:border-neutral-800">
-                    <Overview cvData={cvData} proposedResumeId={numericProposedResumeId} />
+                    <Overview
+                        proposal={proposedCv}
+                        proposedResumeId={numericProposedResumeId}
+                        onUnlock={handleUnlock}
+                        isUnlocking={isUnlocking}
+                    />
                 </div>
 
                 <div className="shrink-0 px-4 py-3 border-b border-gray-200 dark:border-neutral-800">
@@ -132,7 +151,19 @@ const ProposedCVDetail = () => {
                     </div>
 
                     <div className="w-full lg:w-[55%] overflow-hidden">
-                        {proposedCv.resumeUrl ? (
+                        {!proposedCv.isUnlocked ? (
+                            <div className="h-full min-h-[720px] flex flex-col items-center justify-center gap-3 px-6 text-center">
+                                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 text-orange-500">
+                                    <Lock size={28} />
+                                </div>
+                                <p className="text-base font-semibold text-gray-700 dark:text-neutral-200">
+                                    Unlock required to view the candidate CV
+                                </p>
+                                <p className="max-w-md text-sm text-gray-500 dark:text-gray-400">
+                                    Recruiters can review the AI analysis first, but the resume preview and personal details stay hidden until this proposed CV is unlocked.
+                                </p>
+                            </div>
+                        ) : proposedCv.resumeUrl ? (
                             <PdfViewer
                                 resumeUrl={proposedCv.resumeUrl}
                                 resumeName={proposedCv.resumeName}
@@ -153,16 +184,21 @@ const ProposedCVDetail = () => {
 const normalizeProposedCvDetail = (payload) => {
     if (!payload) return null;
 
+    const isUnlocked = Boolean(payload.unlocked);
     const aiScore = normalizePercentNumber(payload.ai_overall_score);
     const matchRate = normalizePercentNumber(payload.match_rate);
     const hasAi = aiScore != null || payload.summary || payload.strengths || payload.weakness;
 
     return {
-        candidateName: payload.full_name || payload.resume_name || payload.file_name || 'Unknown Candidate',
+        candidateId: payload.candidate_id || null,
+        resumeId: payload.resume_id || null,
+        jobId: payload.job_id || null,
+        candidateName: isUnlocked ? (payload.full_name || payload.resume_name || payload.file_name || 'Unknown Candidate') : 'Locked candidate profile',
         candidateEmail: payload.email || null,
         candidatePhone: payload.phone || null,
-        jobTitle: payload.job_title || 'N/A',
+        jobTitle: isUnlocked ? (payload.job_title || 'N/A') : null,
         location: payload.address || null,
+        avatar: payload.avatar || null,
         githubLink: payload.github_link || null,
         linkedinLink: payload.linkedin_link || null,
         portfolioLink: payload.portfolio_link || null,
@@ -178,10 +214,12 @@ const normalizeProposedCvDetail = (payload) => {
             }
             : null,
         resumeUrl: payload.resume_url || null,
-        resumeName: payload.file_name || payload.resume_name || payload.full_name || 'Resume',
+        resumeName: isUnlocked ? (payload.file_name || payload.resume_name || payload.full_name || 'Resume') : null,
         proposalStatus: payload.status || null,
+        status: payload.status || null,
         proposedAt: payload.proposed_at || null,
         matchRate,
+        isUnlocked,
     };
 };
 
