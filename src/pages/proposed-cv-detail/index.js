@@ -95,7 +95,9 @@ const ProposedCVDetail = () => {
                         metaItems={[]}
                         showDecisionHistory={false}
                         hideCandidateSummary
-                        hideLocationInContact
+                        renderInsightsExpanded
+                        maskPrivateContactWhenLocked
+                        hideSocialLinksWhenLocked
                     />
                 );
         }
@@ -193,10 +195,10 @@ const normalizeProposedCvDetail = (payload) => {
         candidateId: payload.candidate_id || null,
         resumeId: payload.resume_id || null,
         jobId: payload.job_id || null,
-        candidateName: isUnlocked ? (payload.full_name || payload.resume_name || payload.file_name || 'Unknown Candidate') : 'Locked candidate profile',
+        candidateName: payload.full_name || payload.resume_name || payload.file_name || 'Unknown Candidate',
         candidateEmail: payload.email || null,
         candidatePhone: payload.phone || null,
-        jobTitle: isUnlocked ? (payload.job_title || 'N/A') : null,
+        jobTitle: payload.job_title || null,
         location: payload.address || null,
         avatar: payload.avatar || null,
         githubLink: payload.github_link || null,

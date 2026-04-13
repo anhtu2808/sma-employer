@@ -11,7 +11,20 @@ import { faLinkedinIn, faGithub } from '@fortawesome/free-brands-svg-icons';
 import { getApplicationStatusConfig } from '@/constrant/application';
 import Answers from '../answers';
 
-const CopyableField = ({ icon, label, value, href }) => {
+const CopyableField = ({ icon, value, href, masked = false }) => {
+    if (masked) {
+        return (
+            <div className="flex items-center gap-2.5">
+                <FontAwesomeIcon icon={icon} className="text-base text-gray-500 dark:text-neutral-400 w-4" />
+                <div className="flex-1 min-w-0">
+                    <span className="inline-flex max-w-full rounded-md bg-gray-200/80 px-2.5 py-1 text-base font-medium tracking-[0.18em] text-gray-500 blur-[1px] dark:bg-neutral-700/80 dark:text-neutral-300">
+                        {value}
+                    </span>
+                </div>
+            </div>
+        );
+    }
+
     const handleCopy = () => {
         navigator.clipboard.writeText(value).then(() => {
             toastMessage.success('Copied!');
@@ -43,6 +56,25 @@ const CopyableField = ({ icon, label, value, href }) => {
     );
 };
 
+const InsightSection = ({ section }) => (
+    <div className="rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 dark:border-neutral-700 dark:bg-neutral-800/30">
+        <div className="mb-3 flex items-center gap-2">
+            <FontAwesomeIcon icon={section.icon} className={`text-base ${section.iconClassName}`} />
+            <h3 className={`text-base font-bold ${section.titleClassName}`}>{section.title}</h3>
+        </div>
+        <div
+            className="prose max-w-none text-gray-800 dark:text-neutral-200 leading-relaxed [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_li]:text-base [&_li]:list-disc [&_li]:text-gray-800 dark:[&_li]:text-neutral-200"
+            dangerouslySetInnerHTML={{ __html: section.content }}
+        />
+    </div>
+);
+
+const LockedSocialPill = ({ label }) => (
+    <span className="inline-flex items-center rounded-lg border border-dashed border-gray-300 bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+        {label}
+    </span>
+);
+
 const BasicInformation = ({
     app,
     onSwitchToAiTab,
@@ -52,8 +84,12 @@ const BasicInformation = ({
     hideCandidateSummary = false,
     hideLocationInContact = false,
     emphasizeMeta = false,
+    renderInsightsExpanded = false,
+    maskPrivateContactWhenLocked = false,
+    hideSocialLinksWhenLocked = false,
 }) => {
     const [openAccordionKey, setOpenAccordionKey] = useState('about');
+    const isPrivateInfoLocked = maskPrivateContactWhenLocked && app?.isUnlocked === false;
 
     const statusConfig = app.status
         ? getApplicationStatusConfig(app.status)
@@ -63,7 +99,8 @@ const BasicInformation = ({
     const hasSummary = !!app.aiEvaluation?.summary;
     const hasStrengths = !!app.aiEvaluation?.strengths;
     const hasWeakness = !!app.aiEvaluation?.weakness;
-    const hasAccordion = hasAnswers || hasSummary || hasStrengths || hasWeakness;
+    const hasInsights = hasSummary || hasStrengths || hasWeakness;
+    const hasAccordion = hasAnswers || (!renderInsightsExpanded && hasInsights);
     const hasSocialLinks = app.linkedinLink || app.githubLink || app.portfolioLink;
     const defaultMetaItems = [
         app.status && {
@@ -97,6 +134,7 @@ const BasicInformation = ({
         || (!hideLocationInContact && app.location)
     );
     const showInfoCard = showCandidateSummary || showContactSection;
+    const showLockedSocialLinks = Boolean(isPrivateInfoLocked && hideSocialLinksWhenLocked && hasSocialLinks);
 
     const accordionItems = [
         hasAnswers && {
@@ -109,7 +147,7 @@ const BasicInformation = ({
             ),
             children: <Answers answers={app.answers} />,
         },
-        hasSummary && {
+        !renderInsightsExpanded && hasSummary && {
             key: 'about',
             label: (
                 <span className="flex items-center gap-2 font-bold text-gray-800 dark:text-neutral-200">
@@ -124,7 +162,7 @@ const BasicInformation = ({
                 />
             ),
         },
-        hasStrengths && {
+        !renderInsightsExpanded && hasStrengths && {
             key: 'strengths',
             label: (
                 <span className="flex items-center gap-2 font-bold text-emerald-600 dark:text-emerald-400">
@@ -139,7 +177,7 @@ const BasicInformation = ({
                 />
             ),
         },
-        hasWeakness && {
+        !renderInsightsExpanded && hasWeakness && {
             key: 'weaknesses',
             label: (
                 <span className="flex items-center gap-2 font-bold text-amber-600 dark:text-amber-400">
@@ -153,6 +191,33 @@ const BasicInformation = ({
                     dangerouslySetInnerHTML={{ __html: app.aiEvaluation.weakness }}
                 />
             ),
+        },
+    ].filter(Boolean);
+
+    const insightSections = [
+        hasSummary && {
+            key: 'about',
+            title: 'About Candidate',
+            titleClassName: 'text-gray-800 dark:text-neutral-200',
+            icon: faUser,
+            iconClassName: 'text-gray-500 dark:text-neutral-400',
+            content: app.aiEvaluation.summary,
+        },
+        hasStrengths && {
+            key: 'strengths',
+            title: 'Strengths',
+            titleClassName: 'text-emerald-600 dark:text-emerald-400',
+            icon: faThumbsUp,
+            iconClassName: 'text-emerald-500 dark:text-emerald-400',
+            content: app.aiEvaluation.strengths,
+        },
+        hasWeakness && {
+            key: 'weaknesses',
+            title: 'Weaknesses',
+            titleClassName: 'text-amber-600 dark:text-amber-400',
+            icon: faThumbsDown,
+            iconClassName: 'text-amber-500 dark:text-amber-400',
+            content: app.aiEvaluation.weakness,
         },
     ].filter(Boolean);
 
@@ -191,13 +256,27 @@ const BasicInformation = ({
                             </h4>
                             <div className="flex flex-col gap-3">
                                 {app.candidatePhone && (
-                                    <CopyableField icon={faPhone} label="Phone Number" value={app.candidatePhone} href={`tel:${app.candidatePhone}`} />
+                                    <CopyableField
+                                        icon={faPhone}
+                                        value={isPrivateInfoLocked ? getMaskedPhone(app.candidatePhone) : app.candidatePhone}
+                                        href={isPrivateInfoLocked ? undefined : `tel:${app.candidatePhone}`}
+                                        masked={isPrivateInfoLocked}
+                                    />
                                 )}
                                 {app.candidateEmail && (
-                                    <CopyableField icon={faEnvelope} label="Email" value={app.candidateEmail} href={`mailto:${app.candidateEmail}`} />
+                                    <CopyableField
+                                        icon={faEnvelope}
+                                        value={isPrivateInfoLocked ? getMaskedEmail(app.candidateEmail) : app.candidateEmail}
+                                        href={isPrivateInfoLocked ? undefined : `mailto:${app.candidateEmail}`}
+                                        masked={isPrivateInfoLocked}
+                                    />
                                 )}
                                 {!hideLocationInContact && app.location && (
-                                    <CopyableField icon={faLocationDot} label="Address" value={app.location} />
+                                    <CopyableField
+                                        icon={faLocationDot}
+                                        value={isPrivateInfoLocked ? getMaskedAddress(app.location) : app.location}
+                                        masked={isPrivateInfoLocked}
+                                    />
                                 )}
                             </div>
                         </div>
@@ -206,7 +285,7 @@ const BasicInformation = ({
             )}
 
             {/* Social Links */}
-            {hasSocialLinks && (
+            {hasSocialLinks && !showLockedSocialLinks && (
                 <div className="space-y-3">
                     <h4 className="text-sm font-bold text-gray-600 dark:text-neutral-300 uppercase tracking-wider">
                         Social
@@ -246,6 +325,27 @@ const BasicInformation = ({
                             </a>
                         )}
                     </div>
+                </div>
+            )}
+
+            {showLockedSocialLinks && (
+                <div className="space-y-3">
+                    <h4 className="text-sm font-bold text-gray-600 dark:text-neutral-300 uppercase tracking-wider">
+                        Social
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                        {app.linkedinLink && <LockedSocialPill label="LinkedIn locked" />}
+                        {app.githubLink && <LockedSocialPill label="GitHub locked" />}
+                        {app.portfolioLink && <LockedSocialPill label="Portfolio locked" />}
+                    </div>
+                </div>
+            )}
+
+            {renderInsightsExpanded && insightSections.length > 0 && (
+                <div className="space-y-4">
+                    {insightSections.map((section) => (
+                        <InsightSection key={section.key} section={section} />
+                    ))}
                 </div>
             )}
 
@@ -365,6 +465,55 @@ const BasicInformation = ({
             )}
         </div>
     );
+};
+
+const getMaskedEmail = (value) => {
+    if (!value) return '*****@*****';
+
+    const [localPart = '', domainPart = ''] = String(value).split('@');
+    const maskedLocal = maskKeepEdges(localPart, 1, 0);
+    const domainSegments = domainPart.split('.');
+    const primaryDomain = domainSegments.shift() || '';
+    const topLevelDomain = domainSegments.join('.');
+    const maskedDomain = maskKeepEdges(primaryDomain, 1, 0);
+
+    return topLevelDomain
+        ? `${maskedLocal}@${maskedDomain}.${maskKeepEdges(topLevelDomain, 0, 0)}`
+        : `${maskedLocal}@${maskedDomain}`;
+};
+
+const getMaskedPhone = (value) => {
+    if (!value) return '********';
+
+    const digits = String(value).replace(/\D/g, '');
+    if (!digits) return '********';
+
+    return digits.length <= 4
+        ? '*'.repeat(digits.length)
+        : `${'*'.repeat(Math.max(0, digits.length - 2))}${digits.slice(-2)}`;
+};
+
+const getMaskedAddress = (value) => {
+    if (!value) return '**********';
+    return maskKeepEdges(String(value).trim(), 0, 0);
+};
+
+const maskKeepEdges = (value, visibleStart = 0, visibleEnd = 0) => {
+    const normalizedValue = String(value || '').trim();
+    if (!normalizedValue) return '****';
+
+    const safeVisibleStart = Math.max(0, visibleStart);
+    const safeVisibleEnd = Math.max(0, visibleEnd);
+
+    if (normalizedValue.length <= safeVisibleStart + safeVisibleEnd) {
+        return '*'.repeat(Math.max(4, normalizedValue.length));
+    }
+
+    const start = normalizedValue.slice(0, safeVisibleStart);
+    const end = safeVisibleEnd > 0 ? normalizedValue.slice(-safeVisibleEnd) : '';
+    const maskedLength = Math.max(4, normalizedValue.length - safeVisibleStart - safeVisibleEnd);
+
+    return `${start}${'*'.repeat(maskedLength)}${end}`;
 };
 
 export default BasicInformation;

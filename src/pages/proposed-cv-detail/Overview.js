@@ -5,7 +5,7 @@ import { useInviteCandidateMutation } from '@/apis/jobApi';
 import toastMessage from '@/utils/toastMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faWandMagicSparkles } from '../../utils/icons';
-import { Lock, MapPin, ShieldCheck, Sparkles, Target } from 'lucide-react';
+import { Lock, ShieldCheck, Sparkles } from 'lucide-react';
 
 const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false }) => {
     const { jobId } = useParams();
@@ -77,12 +77,6 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false })
                                     {proposal.jobTitle}
                                 </span>
                             )}
-                            {proposal?.location && (
-                                <span className="flex items-center gap-1.5">
-                                    <MapPin size={14} />
-                                    {proposal.location}
-                                </span>
-                            )}
                         </div>
                     </div>
                 </div>
@@ -90,7 +84,6 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false })
                 <div className="flex flex-col items-start xl:items-end gap-3">
                     <div className="flex items-center gap-3 flex-wrap">
                         <InfoPill icon={<ShieldCheck size={14} />} label={proposalStatusLabel} />
-                        <InfoPill icon={<Target size={14} />} label={`Match ${formatPercent(proposal?.matchRate)}`} />
                         <InfoPill icon={<Sparkles size={14} />} label={`AI ${formatPercent(proposal?.aiScore)}`} accent />
                     </div>
                     {canInviteCandidate && (

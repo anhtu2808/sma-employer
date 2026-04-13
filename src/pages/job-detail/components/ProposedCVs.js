@@ -8,7 +8,7 @@ import {
 } from '../../../apis/jobApi';
 import { useGetJobDetailQuery } from '@/apis/apis';
 import Loading from '@/components/Loading';
-import { ChevronLeft, ChevronRight, ExternalLink, Lock, MapPin, RefreshCw, Trash2, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink, Lock, RefreshCw, Trash2, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRocket, faWandMagicSparkles } from '../../../utils/icons';
@@ -228,7 +228,7 @@ const ProposedCVs = ({ jobId }) => {
               : `A refresh is running with the current ${requestedMinMatchRate}% minimum. The list will update automatically when it finishes.`
             : isDraftDirty
               ? `Current results are based on ${appliedMinMatchRate}%. Refresh to apply the new ${draftMinMatchRate}% minimum.`
-              : `Only candidates with AI match rate at or above ${appliedMinMatchRate}% will be kept in the proposed list after refresh.`}
+              : `Only candidates with match rate at or above ${appliedMinMatchRate}% will be kept in the proposed list after refresh.`}
         </p>
       </div>
 
@@ -289,7 +289,7 @@ const ProposedCVs = ({ jobId }) => {
                     <th className="px-6 py-4 w-[24%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
                     <th className="px-6 py-4 w-[28%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
                     <th className="px-6 py-4 w-[23%] text-sm font-semibold text-gray-500 tracking-wide">Strengths</th>
-                    <th className="px-6 py-4 w-[15%] text-sm font-semibold text-gray-500 tracking-wide text-center">AI Match Rate</th>
+                    <th className="px-6 py-4 w-[15%] text-sm font-semibold text-gray-500 tracking-wide text-center">Match Rate</th>
                     <th className="px-6 py-4 w-[14%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
                   </tr>
                 </thead>
@@ -300,18 +300,10 @@ const ProposedCVs = ({ jobId }) => {
                     return (
                       <tr key={app.proposedResumeId ?? app.resumeId} className="hover:bg-gray-50/50 dark:hover:bg-neutral-800/50 transition-colors group">
                         <td className="px-6 py-4">
-                          <div className="flex items-center gap-4 min-w-0">
-                            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-black text-xs border border-orange-200">
-                              {app.isUnlocked ? app.fullName?.substring(0, 2).toUpperCase() : 'AI'}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                                {app.isUnlocked ? (app.fullName || 'Unknown Candidate') : 'Locked candidate profile'}
-                              </p>
-                              <p className="text-xs text-gray-500 flex items-center gap-1.5 truncate leading-none mt-1" title={app.address}>
-                                <MapPin size={12} className="flex-shrink-0" /> {app.isUnlocked ? (app.address || 'No address provided') : 'Unlock to view location'}
-                              </p>
-                            </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                              {app.fullName || 'Unknown Candidate'}
+                            </p>
                           </div>
                         </td>
                         <td className="px-6 py-4">
