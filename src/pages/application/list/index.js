@@ -65,12 +65,12 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                             <Mail size={13} className="flex-shrink-0" /> {app.candidateEmail}
                         </p>
                         <p className={`text-[11px] w-fit font-medium inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border ${app.totalApplicationsToCompany > 1
-                                ? 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/20 dark:text-purple-400'
-                                : 'bg-gray-50 text-gray-600 border-gray-100 dark:bg-neutral-800 dark:text-neutral-400'
+                            ? 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/20 dark:text-purple-400'
+                            : 'bg-gray-50 text-gray-600 border-gray-100 dark:bg-neutral-800 dark:text-neutral-400'
                             }`}>
                             <Briefcase size={10} />
                             {app.totalApplicationsToCompany > 1
-                                ? `${app.totalApplicationsToCompany} total apps to your company`
+                                ? `${app.totalApplicationsToCompany} total applications to your company`
                                 : 'New candidate for company'}
                         </p>
                         {app.location && (
