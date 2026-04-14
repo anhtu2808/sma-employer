@@ -34,5 +34,5 @@ export const JOB_LEVEL_OPTIONS = [
     { value: 'MIDDLE', label: 'Middle' },
     { value: 'SENIOR', label: 'Senior' },
     { value: 'MANAGER', label: 'Manager' },
-    { value: 'DIRECTOR', label: 'Director' },
+    // { value: 'DIRECTOR', label: 'Director' },
 ];
