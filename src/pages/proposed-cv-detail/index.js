@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { useGetProposedCvDetailQuery, useUnlockProposedCvMutation } from '@/apis/jobApi';
+import { useGetProposedCvDetailQuery, useGetResumeDetailQuery, useUnlockProposedCvMutation } from '@/apis/jobApi';
 import Loading from '@/components/Loading';
 import Overview from './Overview';
-import PdfViewer from '@/pages/application/detail/pdf-viewer';
 import BasicInformation from '@/pages/application/detail/basic-information';
 import AiAnalysis from '@/pages/application/detail/ai-analysis';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '../../utils/icons';
 import { Lock, Sparkles } from 'lucide-react';
 import toastMessage from '@/utils/toastMessage';
+import ResumePreviewPanel from './ResumePreviewPanel';
 
 const TAB_KEYS = {
     BASIC: 'basic',
@@ -31,6 +31,20 @@ const ProposedCVDetail = () => {
 
     const cvData = response?.data;
     const proposedCv = normalizeProposedCvDetail(cvData);
+    const shouldLoadProfileResume = Boolean(
+        proposedCv?.isUnlocked
+        && proposedCv?.resumeType === 'PROFILE'
+        && Number.isInteger(Number(proposedCv?.resumeId))
+    );
+    const {
+        data: profileResumeResponse,
+        isFetching: isProfileResumeLoading,
+        isError: isProfileResumeError,
+        error: profileResumeError,
+    } = useGetResumeDetailQuery(proposedCv?.resumeId, {
+        skip: !shouldLoadProfileResume,
+    });
+    const profileResume = profileResumeResponse?.data ?? null;
     const errorMessage = error?.data?.message || 'Proposed CV not found or unavailable.';
     const hasAi = hasAiEvaluation(proposedCv?.aiEvaluation);
     const tabs = [
@@ -165,16 +179,14 @@ const ProposedCVDetail = () => {
                                     Recruiters can review the AI analysis first, but the resume preview and personal details stay hidden until this proposed CV is unlocked.
                                 </p>
                             </div>
-                        ) : proposedCv.resumeUrl ? (
-                            <PdfViewer
-                                resumeUrl={proposedCv.resumeUrl}
-                                resumeName={proposedCv.resumeName}
-                                candidateName={proposedCv.candidateName}
-                            />
                         ) : (
-                            <div className="h-full min-h-[720px] flex items-center justify-center px-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                                CV preview is not available for this proposed candidate.
-                            </div>
+                            <ResumePreviewPanel
+                                proposal={proposedCv}
+                                profileResume={profileResume}
+                                isProfileResumeLoading={isProfileResumeLoading}
+                                isProfileResumeError={isProfileResumeError}
+                                profileResumeError={profileResumeError}
+                            />
                         )}
                     </div>
                 </div>
@@ -204,6 +216,7 @@ const normalizeProposedCvDetail = (payload) => {
         githubLink: payload.github_link || null,
         linkedinLink: payload.linkedin_link || null,
         portfolioLink: payload.portfolio_link || null,
+        resumeType: payload.resume_type || null,
         answers: [],
         aiScore,
         aiEvaluation: hasAi
