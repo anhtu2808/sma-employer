@@ -156,6 +156,7 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
           <Button
             mode="primary"
             shape="rounded"
+            fullWidth
             onClick={(e) => {
               e.stopPropagation();
               const duration = !selectedDuration && plan.durations.length > 0
@@ -163,7 +164,7 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
                 : selectedDuration;
               onOpenPaymentModal(plan, duration);
             }}
-            className="w-full bg-primary hover:bg-primary-dark text-white font-bold rounded-xl transition-all shadow-md mt-auto text-sm tracking-wide"
+            className="shadow-md mt-auto"
           >
             Subscribe Now
           </Button>

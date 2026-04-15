@@ -12,7 +12,7 @@ import { JOB_STATUS_TABS, JOB_SORT_OPTIONS } from '@/constrant';
 import toastMessage from '@/utils/toastMessage';
 import JobFilterDrawer from './filter-drawer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBriefcase, faFilter, faMagnifyingGlass, faPlus } from '../../utils/icons';
+import { faBriefcase, faFilter, faMagnifyingGlass, faPlus, faBoxArchive } from '../../utils/icons';
 
 const createDefaultFilters = () => ({
     workingModel: null,
@@ -178,15 +178,24 @@ const JobsList = ({ archivedOnly = false }) => {
                                 items={tabItems}
                                 className="flex-1"
                             />
-                            <Button
-                                mode="primary"
-                                onClick={() => navigate('/jobs/create')}
-                                shape="round"
-                                iconLeft={<FontAwesomeIcon icon={faPlus} />}
-                                className="shrink-0 ml-4 self-center mb-2"
-                            >
-                                Post a Job
-                            </Button>
+                            <div className="flex items-center gap-3 shrink-0 ml-4 self-center mb-2">
+                                <Button
+                                    mode="secondary"
+                                    onClick={() => navigate('/jobs/archived')}
+                                    shape="round"
+                                    iconLeft={<FontAwesomeIcon icon={faBoxArchive} />}
+                                >
+                                    Archived Jobs
+                                </Button>
+                                <Button
+                                    mode="primary"
+                                    onClick={() => navigate('/jobs/create')}
+                                    shape="round"
+                                    iconLeft={<FontAwesomeIcon icon={faPlus} />}
+                                >
+                                    Post a Job
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -266,7 +275,9 @@ const JobsList = ({ archivedOnly = false }) => {
                                         title: 'Archive Job',
                                         content: 'Are you sure you want to archive this job? It will be moved to the Archived section.',
                                         okText: 'Yes, Archive',
+                                        okButtonProps: { danger: true },
                                         cancelText: 'Cancel',
+                                        centered: true,
                                         onOk: async () => {
                                             try {
                                                 await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
@@ -282,7 +293,9 @@ const JobsList = ({ archivedOnly = false }) => {
                                         title: 'Unarchive Job',
                                         content: 'Are you sure you want to unarchive this job? It will be moved back to Draft status.',
                                         okText: 'Yes, Unarchive',
+                                        okButtonProps: { danger: true },
                                         cancelText: 'Cancel',
+                                        centered: true,
                                         onOk: async () => {
                                             try {
                                                 await updateJobStatus({ id: job.id, status: 'DRAFT' }).unwrap();
@@ -300,6 +313,7 @@ const JobsList = ({ archivedOnly = false }) => {
                                         okText: 'Yes, Delete',
                                         okButtonProps: { danger: true },
                                         cancelText: 'Cancel',
+                                        centered: true,
                                         onOk: async () => {
                                             try {
                                                 await deleteJob(job.id).unwrap();

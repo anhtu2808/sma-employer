@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Select, Input, Switch, Divider } from 'antd';
+import { Form, Select, Input, Switch, Divider, Modal } from 'antd';
 import toastMessage from '@/utils/toastMessage';
 import Button from '@/components/Button';
 import { useGetJobQuestionsQuery, useCreateJobQuestionMutation, useUpdateJobQuestionMutation, useDeleteJobQuestionMutation } from '@/apis/jobApi';
@@ -196,9 +196,15 @@ const ScreeningQuestions = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => {
-                                                        if (window.confirm('Are you sure you want to delete this question?')) {
-                                                            handleDeleteQuestion(q.id);
-                                                        }
+                                                        Modal.confirm({
+                                                            title: 'Delete Question',
+                                                            content: 'Are you sure you want to delete this question?',
+                                                            okText: 'Delete',
+                                                            okButtonProps: { danger: true },
+                                                            cancelText: 'Cancel',
+                                                            centered: true,
+                                                            onOk: () => handleDeleteQuestion(q.id),
+                                                        });
                                                     }}
                                                     className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
                                                     title="Delete question"

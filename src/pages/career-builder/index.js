@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { Modal } from 'antd';
 import toastMessage from '@/utils/toastMessage';
 import { useCreateCareerPageMutation, useGetCareerPageManageQuery, useArchiveCareerPageMutation } from '@/apis/careerPageApi';
 import CareerBuilderToolbar from './CareerBuilderToolbar';
@@ -337,22 +338,28 @@ const CareerPageBuilder = () => {
   }, [buildPayload, createCareerPage, status, slug]);
 
   /** Archive */
-  const handleArchive = useCallback(async () => {
+  const handleArchive = useCallback(() => {
     // Only confirm if not already archived
     if (status === 'archived') return;
     
-    if (!window.confirm('Are you sure you want to archive this career page? It will no longer be visible to candidates.')) {
-      return;
-    }
-    
-    try {
-      await archiveCareerPageApi().unwrap();
-      setStatus('archived');
-      toastMessage.success('Career page archived successfully!');
-    } catch (err) {
-      console.error('Archive failed:', err);
-      toastMessage.error(err?.message || 'Failed to archive. Please try again.');
-    }
+    Modal.confirm({
+      title: 'Archive Career Page',
+      content: 'Are you sure you want to archive this career page? It will no longer be visible to candidates.',
+      okText: 'Yes, Archive',
+      okButtonProps: { danger: true },
+      cancelText: 'Cancel',
+      centered: true,
+      onOk: async () => {
+        try {
+          await archiveCareerPageApi().unwrap();
+          setStatus('archived');
+          toastMessage.success('Career page archived successfully!');
+        } catch (err) {
+          console.error('Archive failed:', err);
+          toastMessage.error(err?.message || 'Failed to archive. Please try again.');
+        }
+      }
+    });
   }, [archiveCareerPageApi, status]);
 
   if (isLoadingPage && !dataLoaded) {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Modal } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronDown,
@@ -239,11 +240,19 @@ const ArrayEditor = ({ items = [], onChange, schema, renderItemSummary, optionsM
   };
 
   const handleDelete = (index) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      const newItems = [...items];
-      newItems.splice(index, 1);
-      onChange(newItems);
-    }
+    Modal.confirm({
+      title: 'Delete Item',
+      content: 'Are you sure you want to delete this item?',
+      okText: 'Delete',
+      okButtonProps: { danger: true },
+      cancelText: 'Cancel',
+      centered: true,
+      onOk: () => {
+        const newItems = [...items];
+        newItems.splice(index, 1);
+        onChange(newItems);
+      }
+    });
   };
 
   // Move up/down

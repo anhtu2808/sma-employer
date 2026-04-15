@@ -72,7 +72,7 @@ const WebhookPage = () => {
             title: 'Delete Webhook',
             content: 'Are you sure you want to delete this webhook? This action cannot be undone.',
             okText: 'Delete',
-            okType: 'danger',
+            okButtonProps: { danger: true },
             cancelText: 'Cancel',
             centered: true,
             onOk: async () => {
