@@ -249,7 +249,9 @@ const ApplicationManagement = () => {
                         title: 'Archive Job',
                         content: 'Are you sure you want to archive this job? It will be moved to the Archived section.',
                         okText: 'Yes, Archive',
+                        okButtonProps: { danger: true },
                         cancelText: 'Cancel',
+                        centered: true,
                         onOk: async () => {
                             try {
                                 // Find the previous job before archiving

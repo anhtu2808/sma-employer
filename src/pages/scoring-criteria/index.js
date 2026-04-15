@@ -79,6 +79,7 @@ const ScoringCriteria = () => {
       okText: 'Yes, Delete',
       okButtonProps: { danger: true },
       cancelText: 'Cancel',
+      centered: true,
       onOk: async () => {
         try {
           await deleteCriteria(criteria.id).unwrap();

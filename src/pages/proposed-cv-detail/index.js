@@ -137,6 +137,7 @@ const ProposedCVDetail = () => {
                         proposedResumeId={numericProposedResumeId}
                         onUnlock={handleUnlock}
                         isUnlocking={isUnlocking}
+                        refetch={refetch}
                     />
                 </div>
 

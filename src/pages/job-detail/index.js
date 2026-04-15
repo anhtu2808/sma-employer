@@ -85,9 +85,10 @@ const JobDetail = () => {
         Modal.confirm({
             title: 'Close Job',
             content: 'Are you sure you want to close this job? This action cannot be undone.',
-            okText: 'Yes',
-            okType: 'danger',
-            cancelText: 'No',
+            okText: 'Close Job Now',
+            okButtonProps: { danger: true },
+            cancelText: 'Cancel',
+            centered: true,
             onOk: async () => {
                 try {
                     await updateJobStatus({ id: job.id, status: 'CLOSED' }).unwrap();
@@ -231,6 +232,7 @@ const JobDetail = () => {
                                             okText: 'Yes, Delete',
                                             okButtonProps: { danger: true },
                                             cancelText: 'Cancel',
+                                            centered: true,
                                             onOk: async () => {
                                                 try {
                                                     await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
@@ -274,6 +276,7 @@ const JobDetail = () => {
                                     okText: 'Yes, Delete',
                                     okButtonProps: { danger: true },
                                     cancelText: 'Cancel',
+                                    centered: true,
                                     onOk: async () => {
                                         try {
                                             await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();
@@ -311,7 +314,9 @@ const JobDetail = () => {
                                         title: 'Archive Job',
                                         content: 'Are you sure you want to archive this job? It will be moved to the Archived section.',
                                         okText: 'Yes, Archive',
+                                        okButtonProps: { danger: true },
                                         cancelText: 'Cancel',
+                                        centered: true,
                                         onOk: async () => {
                                             try {
                                                 await updateJobStatus({ id: job.id, status: 'ARCHIVED' }).unwrap();

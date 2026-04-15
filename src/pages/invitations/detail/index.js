@@ -31,7 +31,7 @@ const InvitationDetail = () => {
         </div>
     );
 
-    const { company, candidate, job, status, content } = invitation;
+    const { candidate, job, status } = invitation;
     const statusConfig = STATUS_CONFIG[status] || { color: 'default', label: status };
 
     const formatSalary = (start, end, currency) => {
@@ -41,37 +41,37 @@ const InvitationDetail = () => {
     };
 
     return (
-        <div className="max-w-4xl space-y-6 animate-fadeIn pb-10">
+        <div className="w-full space-y-4 animate-fadeIn pb-10">
             {/* Header / Actions */}
-            <div className="flex items-center justify-between">
-                <Button
-                    mode="secondary"
+            <div className="flex items-center justify-between flex-wrap gap-3">
+                <button
                     onClick={() => navigate('/invitations')}
-                    iconLeft={<ArrowLeft size={18} />}
-                    className="!bg-white dark:!bg-gray-800"
+                    className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors group"
                 >
-                    Back to List
-                </Button>
-                <Tag color={statusConfig.color} className="!text-sm !font-semibold !px-3 !py-1 !rounded-full !border-0 m-0">
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                    <span className="font-medium">Back to List</span>
+                </button>
+                <div className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold border ${
+                    status === 'ACCEPTED' ? 'bg-emerald-100 text-emerald-700 border-emerald-300' :
+                        status === 'DECLINED' ? 'bg-red-100 text-red-600 border-red-300' :
+                            status === 'RECEIVED' ? 'bg-amber-100 text-amber-700 border-amber-300' :
+                                'bg-blue-100 text-blue-700 border-blue-300'
+                }`}>
+                    <span className={`w-2 h-2 rounded-full ${
+                        status === 'ACCEPTED' ? 'bg-emerald-500' :
+                            status === 'DECLINED' ? 'bg-red-500' :
+                                status === 'RECEIVED' ? 'bg-amber-500' :
+                                    'bg-blue-500'
+                    }`} />
                     {statusConfig.label}
-                </Tag>
+                </div>
             </div>
 
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
-                {/* Left Column: Job & Company */}
+                {/* Left Column: Job */}
                 <div className="md:col-span-2 space-y-6">
-                    {/* Message Card */}
-                    {content && (
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Message from Company</h3>
-                            <div className="p-4 bg-orange-50/50 dark:bg-orange-900/10 rounded-xl border border-orange-100 dark:border-orange-500/20 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                                “{content}”
-                            </div>
-                        </div>
-                    )}
-
                     {/* Job Details Card */}
                     {job && (
                         <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
@@ -161,36 +161,6 @@ const InvitationDetail = () => {
                                         <User className="text-gray-400 shrink-0" size={16} />
                                         <span className="text-gray-600 dark:text-gray-300 capitalize">{candidate.user?.gender?.toLowerCase() || 'N/A'}</span>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Company Info */}
-                    {company && (
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-                            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-700 pb-3 flex items-center gap-2">
-                                <Building2 className="text-gray-400" size={18} />
-                                Company Info
-                            </h3>
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 dark:border-gray-600 overflow-hidden flex items-center justify-center shrink-0">
-                                    {company.logo ? (
-                                        <img src={company.logo} alt="Logo" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <Building2 className="text-gray-400" size={20} />
-                                    )}
-                                </div>
-                                <div className="min-w-0">
-                                    <div className="font-semibold text-gray-900 dark:text-white truncate">{company.name}</div>
-                                    <div className="text-xs text-gray-500 truncate">{company.industry}</div>
-                                </div>
-                            </div>
-                            
-                            <div className="space-y-3 pt-2">
-                                <div className="flex items-start gap-3 text-sm">
-                                    <Mail className="text-gray-400 shrink-0 mt-0.5" size={16} />
-                                    <span className="text-gray-600 dark:text-gray-300 break-all">{company.email || 'N/A'}</span>
                                 </div>
                             </div>
                         </div>
