@@ -31,6 +31,7 @@ import CareerPageBuilder from "@/pages/career-builder";
 import WebhookPage from "@/pages/webhook";
 import LegalPage from '@/pages/legal';
 import ApiManagementPage from '@/pages/api-management';
+import TalentPool from '@/pages/talent-pool';
 
 export const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -61,6 +62,7 @@ export const routes = createBrowserRouter(
                 <Route path="scoring-criteria" element={<ScoringCriteria />} />
                 <Route path="webhooks" element={<WebhookPage />} />
                 <Route path="api-management" element={<ApiManagementPage />} />
+                <Route path="talent-pool" element={<TalentPool />} />
             </Route>
             <Route path="cv-preview/:id" element={<CvPreview />} />
             <Route path="career-builder" element={<CareerPageBuilder />} />

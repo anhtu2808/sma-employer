@@ -6,7 +6,7 @@ import {
   faCreditCard, faClockRotateLeft, faTableCells, faUsers,
   faBriefcase, faClipboard, faEnvelopeRegular, faBan,
   faBell, faStar, faRightFromBracket, faChevronLeft, faChevronRight,
-  faPaintbrush, faLink, faKey
+  faPaintbrush, faLink, faKey, faFolderOpen
 } from '@/utils/icons';
 import Logo from '@/components/Logo';
 import Button from '@/components/Button';
@@ -77,6 +77,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
     { icon: faClipboard, label: 'Applications', path: '/applications' },
     { icon: faEnvelopeRegular, label: 'Invitations', path: '/invitations' },
     { icon: faClipboardCheck, label: 'Scoring Criteria', path: '/scoring-criteria' },
+    { icon: faFolderOpen, label: 'Talent Pool', path: '/talent-pool' },
   ];
 
   // 3. Management (role-filtered)
