@@ -44,7 +44,6 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                     style={{ ...provided.draggableProps.style }}
-                    className={`shrink-0 ${snapshot.isDragging ? 'z-50 shadow-2xl scale-[1.02]' : ''}`}
                 >
                     <div
                         className="w-[240px] bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm transition-all hover:shadow-md cursor-grab active:cursor-grabbing group relative overflow-hidden"
@@ -75,7 +74,7 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
                                     </p>
                                 </div>
                                 {scoreValue != null && (
-                                    <span className={`text-base font-bold shrink-0 ${getScoreColor(scoreValue)}`}>
+                                    <span className={`text-base font-bold shrink-0 mr-4 ${getScoreColor(scoreValue)}`}>
                                         {(scoreValue / 10).toFixed(1)}
                                     </span>
                                 )}

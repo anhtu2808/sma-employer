@@ -12,7 +12,6 @@ const PoolColumn = ({
     onEdit,
     onDelete,
     onRemoveCandidate,
-    onAddCandidate,
 }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [localSearch, setLocalSearch] = useState('');
@@ -34,12 +33,6 @@ const PoolColumn = ({
     }, [isSearchOpen]);
 
     const menuItems = [
-        {
-            key: 'add',
-            label: 'Add Candidate',
-            icon: <UserPlus size={14} />,
-            onClick: () => onAddCandidate(pool.id),
-        },
         {
             key: 'edit',
             label: 'Edit Configuration',
@@ -133,7 +126,7 @@ const PoolColumn = ({
                     <div
                         {...provided.droppableProps}
                         ref={provided.innerRef}
-                        className={`px-5 py-4 overflow-x-auto custom-scrollbar min-h-[140px] flex gap-3 flex-nowrap rounded-b-2xl transition-colors duration-200
+                        className={`relative px-5 py-4 overflow-x-auto custom-scrollbar min-h-[162px] flex gap-3 flex-nowrap rounded-b-2xl transition-colors duration-200
                             ${snapshot.isDraggingOver ? 'bg-orange-100/60 dark:bg-orange-800/40' : ''}
                         `}
                     >
@@ -142,12 +135,12 @@ const PoolColumn = ({
                                 <Spin />
                             </div>
                         ) : filteredCandidates.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-8 text-center w-full">
-                                <div className="w-20 h-20 rounded-2xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center mb-3 border border-gray-100 dark:border-gray-700">
-                                    <Star size={32} className="text-gray-200 dark:text-gray-600" />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
+                                <div className="w-14 h-14 rounded-2xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center mb-2 border border-gray-100 dark:border-gray-700">
+                                    <Star size={24} className="text-gray-200 dark:text-gray-600" />
                                 </div>
                                 <p className="text-sm font-semibold text-gray-400 dark:text-gray-500">No candidates</p>
-                                <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">
+                                <p className="text-xs text-gray-300 dark:text-gray-600">
                                     No candidates found for this category.
                                 </p>
                             </div>

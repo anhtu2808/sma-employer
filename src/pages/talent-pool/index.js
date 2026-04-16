@@ -5,7 +5,6 @@ import { usePageHeader } from '@/hooks/usePageHeader';
 import toastMessage from '@/utils/toastMessage';
 import TalentPoolHeader from './header';
 import PoolColumn from './pool-column';
-import AddCandidateModal from './add-candidate-modal';
 import CreatePoolModal from './create-pool-modal';
 import { useGetTalentPoolsQuery, useCreateTalentPoolMutation, useDeleteTalentPoolItemMutation, useAddTalentPoolItemMutation, useUpdateTalentPoolMutation, useDeleteTalentPoolMutation } from '@/apis/talentPoolApi';
 
@@ -22,8 +21,6 @@ const TalentPool = () => {
     const totalCandidates = pools.reduce((acc, pool) => acc + (pool.totalItems || 0), 0);
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [addModalOpen, setAddModalOpen] = useState(false);
-    const [addModalPoolId, setAddModalPoolId] = useState(null);
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editModalData, setEditModalData] = useState(null);
@@ -99,26 +96,6 @@ const TalentPool = () => {
         }
     };
 
-    const handleOpenAddModal = (poolId) => {
-        setAddModalPoolId(poolId);
-        setAddModalOpen(true);
-    };
-
-    const handleAddCandidates = async (applicationIds) => {
-        if (!addModalPoolId || applicationIds.length === 0) return;
-
-        try {
-            // Need to add them one by one if not batch API
-            await Promise.all(applicationIds.map(appId => addItem({ applicationId: appId, groupId: addModalPoolId }).unwrap()));
-            toastMessage.success(`${applicationIds.length} candidate(s) added to pool`);
-        } catch(err) {
-            toastMessage.error('Failed to add candidates');
-        }
-
-        setAddModalOpen(false);
-        setAddModalPoolId(null);
-    };
-
     // --- Drag & Drop ---
     const handleDragEnd = async (result) => {
         const { destination, source, draggableId } = result;
@@ -162,22 +139,11 @@ const TalentPool = () => {
                                 onEdit={handleEditPool}
                                 onDelete={handleDeletePool}
                                 onRemoveCandidate={handleRemoveCandidate}
-                                onAddCandidate={handleOpenAddModal}
                             />
                         ))}
                     </div>
                 </DragDropContext>
             </div>
-
-            {/* Add Candidate Modal */}
-            <AddCandidateModal
-                open={addModalOpen}
-                onCancel={() => {
-                    setAddModalOpen(false);
-                    setAddModalPoolId(null);
-                }}
-                onSubmit={handleAddCandidates}
-            />
 
             {/* Create Pool Modal */}
             <CreatePoolModal
