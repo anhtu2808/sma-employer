@@ -2,8 +2,9 @@ import React from 'react';
 import { Tooltip, Tag } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBan, faClockRotateLeft } from '../../../../utils/icons';
+import { FolderPlus } from 'lucide-react';
 
-const CandidateHeader = ({ app, onOpenBlock, compact = false }) => {
+const CandidateHeader = ({ app, onOpenBlock, onOpenAddToPool, compact = false }) => {
     if (compact) {
         return (
             <div className="flex items-center gap-2">
@@ -15,6 +16,15 @@ const CandidateHeader = ({ app, onOpenBlock, compact = false }) => {
                         </Tag>
                     </Tooltip>
                 )}
+                <Tooltip title="Add to Talent Pool">
+                    <button
+                        type="button"
+                        onClick={onOpenAddToPool}
+                        className="flex items-center justify-center w-6 h-6 rounded-full border border-orange-200 bg-orange-50 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300 dark:border-orange-900/50 dark:bg-orange-900/20"
+                    >
+                        <FolderPlus size={11} strokeWidth={2.5} />
+                    </button>
+                </Tooltip>
                 <Tooltip title="Blacklist this candidate">
                     <button
                         type="button"
@@ -46,15 +56,26 @@ const CandidateHeader = ({ app, onOpenBlock, compact = false }) => {
                 </div>
                 <p className="text-sm text-orange-500 font-medium">{app.jobTitle}</p>
             </div>
-            <Tooltip title="Blacklist this candidate">
-                <button
-                    type="button"
-                    onClick={onOpenBlock}
-                    className="flex items-center justify-center w-9 h-9 rounded-full border border-red-100 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 dark:border-red-900/50 dark:bg-red-900/20"
-                >
-                    <FontAwesomeIcon icon={faBan} className="text-[18px]" />
-                </button>
-            </Tooltip>
+            <div className="flex items-center gap-2">
+                <Tooltip title="Add to Talent Pool">
+                    <button
+                        type="button"
+                        onClick={onOpenAddToPool}
+                        className="flex items-center justify-center w-9 h-9 rounded-full border border-orange-200 bg-orange-50 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300 dark:border-orange-900/50 dark:bg-orange-900/20"
+                    >
+                        <FolderPlus size={18} />
+                    </button>
+                </Tooltip>
+                <Tooltip title="Blacklist this candidate">
+                    <button
+                        type="button"
+                        onClick={onOpenBlock}
+                        className="flex items-center justify-center w-9 h-9 rounded-full border border-red-100 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 dark:border-red-900/50 dark:bg-red-900/20"
+                    >
+                        <FontAwesomeIcon icon={faBan} className="text-[18px]" />
+                    </button>
+                </Tooltip>
+            </div>
         </div>
     );
 };
