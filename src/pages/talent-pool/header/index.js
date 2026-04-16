@@ -1,8 +1,6 @@
 import React from 'react';
 import { Search, Plus } from 'lucide-react';
-import { Select } from 'antd';
 import Button from '@/components/Button';
-import { MOCK_JOBS } from '../mockData';
 
 const TalentPoolHeader = ({
     poolCount,
@@ -10,8 +8,6 @@ const TalentPoolHeader = ({
     searchTerm,
     setSearchTerm,
     onCreatePool,
-    jobFilter,
-    setJobFilter,
 }) => {
     return (
         <div className="bg-white dark:bg-surface-dark shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-2xl p-4">
@@ -57,14 +53,6 @@ const TalentPoolHeader = ({
                             </button>
                         )}
                     </div>
-                    <Select
-                        allowClear
-                        placeholder="Filter by job"
-                        value={jobFilter}
-                        onChange={(val) => setJobFilter(val || null)}
-                        className="min-w-[200px]"
-                        options={MOCK_JOBS.map((j) => ({ value: j.id, label: j.name }))}
-                    />
                 </div>
             </div>
         </div>

@@ -3,69 +3,29 @@ import { DragDropContext } from '@hello-pangea/dnd';
 import { Modal as AntModal } from 'antd';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import toastMessage from '@/utils/toastMessage';
-import { useCreateTalentPoolMutation } from '@/apis/talentPoolApi';
 import TalentPoolHeader from './header';
 import PoolColumn from './pool-column';
 import AddCandidateModal from './add-candidate-modal';
 import CreatePoolModal from './create-pool-modal';
-import { MOCK_CANDIDATES, INITIAL_POOLS, POOL_COLORS } from './mockData';
+import { useGetTalentPoolsQuery, useCreateTalentPoolMutation, useDeleteTalentPoolItemMutation, useAddTalentPoolItemMutation } from '@/apis/talentPoolApi';
 
 const TalentPool = () => {
     usePageHeader('Talent Pool', 'Organize and manage your potential candidates');
 
-    const [pools, setPools] = useState(INITIAL_POOLS);
+    const { data: poolsResponse } = useGetTalentPoolsQuery();
+    const pools = poolsResponse?.data || [];
+    
+    // Total candidates count computed from API response
+    const totalCandidates = pools.reduce((acc, pool) => acc + (pool.totalItems || 0), 0);
+
     const [searchTerm, setSearchTerm] = useState('');
-    const [jobFilter, setJobFilter] = useState(null);
     const [addModalOpen, setAddModalOpen] = useState(false);
     const [addModalPoolId, setAddModalPoolId] = useState(null);
     const [createModalOpen, setCreateModalOpen] = useState(false);
 
     const [createTalentPool, { isLoading: isCreating }] = useCreateTalentPoolMutation();
-
-    // Build candidate lookup map
-    const candidateMap = useMemo(() => {
-        const map = {};
-        MOCK_CANDIDATES.forEach((c) => {
-            map[c.applicationId] = c;
-        });
-        return map;
-    }, []);
-
-    // Collect all candidate IDs across all pools (for add-modal exclusion)
-    const allPoolCandidateIds = useMemo(() => {
-        const ids = [];
-        pools.forEach((p) => ids.push(...p.candidateIds));
-        return ids;
-    }, [pools]);
-
-    // Total candidates count
-    const totalCandidates = allPoolCandidateIds.length;
-
-    // Get candidates for a pool, applying search + job filters
-    const getCandidatesForPool = useCallback(
-        (pool) => {
-            let candidates = pool.candidateIds
-                .map((id) => candidateMap[id])
-                .filter(Boolean);
-
-            if (jobFilter) {
-                candidates = candidates.filter((c) => c.jobId === jobFilter);
-            }
-
-            if (searchTerm) {
-                const term = searchTerm.toLowerCase();
-                candidates = candidates.filter(
-                    (c) =>
-                        c.candidateName.toLowerCase().includes(term) ||
-                        c.candidateEmail.toLowerCase().includes(term) ||
-                        (c.jobTitle && c.jobTitle.toLowerCase().includes(term))
-                );
-            }
-
-            return candidates;
-        },
-        [candidateMap, searchTerm, jobFilter]
-    );
+    const [deleteItem] = useDeleteTalentPoolItemMutation();
+    const [addItem] = useAddTalentPoolItemMutation();
 
     // --- Pool CRUD ---
     const handleCreatePool = () => {
@@ -74,14 +34,7 @@ const TalentPool = () => {
 
     const handleConfirmCreatePool = async (name, color) => {
         try {
-            const result = await createTalentPool({ name, color }).unwrap();
-            const newPool = {
-                id: result?.id || result?._id || `pool_${Date.now()}`,
-                name: result?.name || name,
-                color: result?.color || color,
-                candidateIds: [],
-            };
-            setPools((prev) => [...prev, newPool]);
+            await createTalentPool({ name, color }).unwrap();
             toastMessage.success('Pool created successfully');
             setCreateModalOpen(false);
         } catch (error) {
@@ -91,9 +44,10 @@ const TalentPool = () => {
     };
 
     const handleRenamePool = (poolId, newName) => {
-        setPools((prev) =>
-            prev.map((p) => (p.id === poolId ? { ...p, name: newName } : p))
-        );
+        // TODO: Call API to rename pool when you have that endpoint
+        // setPools((prev) =>
+        //     prev.map((p) => (p.id === poolId ? { ...p, name: newName } : p))
+        // );
     };
 
     const handleDeletePool = (poolId) => {
@@ -102,37 +56,34 @@ const TalentPool = () => {
 
         AntModal.confirm({
             title: 'Delete Pool',
-            content: `Are you sure you want to delete "${pool.name}"? ${pool.candidateIds.length > 0
-                ? `${pool.candidateIds.length} candidate(s) will be removed from this pool.`
-                : ''
-                }`,
+            content: `Are you sure you want to delete "${pool.name}"?`,
             okText: 'Delete',
             okButtonProps: { danger: true },
             cancelText: 'Cancel',
             centered: true,
             onOk: () => {
-                setPools((prev) => prev.filter((p) => p.id !== poolId));
+                // TODO: Call API to delete pool
+                // setPools((prev) => prev.filter((p) => p.id !== poolId));
                 toastMessage.success(`Pool "${pool.name}" deleted`);
             },
         });
     };
 
     const handleChangeColor = (poolId, color) => {
-        setPools((prev) =>
-            prev.map((p) => (p.id === poolId ? { ...p, color } : p))
-        );
+        // TODO: Call API to change color
+        // setPools((prev) =>
+        //     prev.map((p) => (p.id === poolId ? { ...p, color } : p))
+        // );
     };
 
     // --- Candidate operations ---
-    const handleRemoveCandidate = (poolId, candidateId) => {
-        setPools((prev) =>
-            prev.map((p) =>
-                p.id === poolId
-                    ? { ...p, candidateIds: p.candidateIds.filter((id) => id !== candidateId) }
-                    : p
-            )
-        );
-        toastMessage.success('Candidate removed from pool');
+    const handleRemoveCandidate = async (poolId, candidateId) => {
+        try {
+            await deleteItem(candidateId).unwrap();
+            toastMessage.success('Candidate removed from pool');
+        } catch(error) {
+            toastMessage.error('Failed to remove candidate');
+        }
     };
 
     const handleOpenAddModal = (poolId) => {
@@ -140,47 +91,40 @@ const TalentPool = () => {
         setAddModalOpen(true);
     };
 
-    const handleAddCandidates = (candidateIds) => {
-        if (!addModalPoolId || candidateIds.length === 0) return;
+    const handleAddCandidates = async (applicationIds) => {
+        if (!addModalPoolId || applicationIds.length === 0) return;
 
-        setPools((prev) =>
-            prev.map((p) =>
-                p.id === addModalPoolId
-                    ? { ...p, candidateIds: [...p.candidateIds, ...candidateIds] }
-                    : p
-            )
-        );
+        try {
+            // Need to add them one by one if not batch API
+            await Promise.all(applicationIds.map(appId => addItem({ applicationId: appId, groupId: addModalPoolId }).unwrap()));
+            toastMessage.success(`${applicationIds.length} candidate(s) added to pool`);
+        } catch(err) {
+            toastMessage.error('Failed to add candidates');
+        }
+
         setAddModalOpen(false);
         setAddModalPoolId(null);
-        toastMessage.success(`${candidateIds.length} candidate(s) added to pool`);
     };
 
     // --- Drag & Drop ---
-    const handleDragEnd = (result) => {
+    const handleDragEnd = async (result) => {
         const { destination, source, draggableId } = result;
 
         if (!destination) return;
-        if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+        if (destination.droppableId === source.droppableId) return; // Ignore reordering in same list for now
 
-        const candidateId = parseInt(draggableId, 10);
+        // Extract itemId and applicationId from draggableId
+        const [itemId, appId] = draggableId.split('_');
 
-        setPools((prev) => {
-            const newPools = prev.map((p) => ({ ...p, candidateIds: [...p.candidateIds] }));
-
-            // Remove from source
-            const sourcePool = newPools.find((p) => p.id === source.droppableId);
-            if (sourcePool) {
-                sourcePool.candidateIds = sourcePool.candidateIds.filter((id) => id !== candidateId);
-            }
-
-            // Add to destination
-            const destPool = newPools.find((p) => p.id === destination.droppableId);
-            if (destPool) {
-                destPool.candidateIds.splice(destination.index, 0, candidateId);
-            }
-
-            return newPools;
-        });
+        try {
+            // Delete from old pool
+            await deleteItem(itemId).unwrap();
+            // Add to new pool
+            await addItem({ applicationId: appId, groupId: destination.droppableId }).unwrap();
+        } catch (error) {
+            console.error("Drag and drop failed:", error);
+            toastMessage.error('Failed to move candidate');
+        }
     };
 
     return (
@@ -191,8 +135,6 @@ const TalentPool = () => {
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
                 onCreatePool={handleCreatePool}
-                jobFilter={jobFilter}
-                setJobFilter={setJobFilter}
             />
 
             {/* Pool Rows */}
@@ -203,7 +145,7 @@ const TalentPool = () => {
                             <PoolColumn
                                 key={pool.id}
                                 pool={pool}
-                                candidates={getCandidatesForPool(pool)}
+                                globalSearchTerm={searchTerm}
                                 onRename={handleRenamePool}
                                 onDelete={handleDeletePool}
                                 onChangeColor={handleChangeColor}
@@ -223,7 +165,6 @@ const TalentPool = () => {
                     setAddModalPoolId(null);
                 }}
                 onSubmit={handleAddCandidates}
-                existingIds={allPoolCandidateIds}
             />
 
             {/* Create Pool Modal */}

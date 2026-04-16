@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 import { MoreVertical, Edit3, Trash2, Palette, Search, UserPlus, Plus, X, Star } from 'lucide-react';
-import { Dropdown, Tooltip } from 'antd';
+import { Dropdown, Tooltip, Spin } from 'antd';
 import CandidateCard from '../candidate-card';
-import { POOL_COLORS } from '../mockData';
+import { POOL_COLORS } from '../constants';
+import { useGetTalentPoolItemsQuery } from '@/apis/talentPoolApi';
 
 const PoolColumn = ({
     pool,
-    candidates,
+    globalSearchTerm,
     onRename,
     onDelete,
     onChangeColor,
@@ -20,6 +21,15 @@ const PoolColumn = ({
     const [localSearch, setLocalSearch] = useState('');
     const inputRef = useRef(null);
     const searchRef = useRef(null);
+
+    const { data: itemsResponse, isLoading } = useGetTalentPoolItemsQuery({ groupId: pool.id, page: 0, size: 100 });
+    const candidates = itemsResponse?.data?.content || [];
+
+    const filteredCandidates = candidates.filter(c => {
+        const term = (isSearchOpen && localSearch ? localSearch : globalSearchTerm).toLowerCase();
+        if (!term) return true;
+        return (c.candidateName?.toLowerCase().includes(term) || c.candidateEmail?.toLowerCase().includes(term));
+    });
 
     useEffect(() => {
         if (isEditing && inputRef.current) {
@@ -89,18 +99,6 @@ const PoolColumn = ({
             onClick: () => onDelete(pool.id),
         },
     ];
-
-    // Filter candidates by local search
-    const filteredCandidates = localSearch
-        ? candidates.filter((c) => {
-            const term = localSearch.toLowerCase();
-            return (
-                c.candidateName.toLowerCase().includes(term) ||
-                c.candidateEmail.toLowerCase().includes(term) ||
-                (c.jobTitle && c.jobTitle.toLowerCase().includes(term))
-            );
-        })
-        : candidates;
 
     return (
         <div className="bg-white dark:bg-surface-dark border border-neutral-100 dark:border-neutral-800 rounded-2xl overflow-hidden shadow-sm">
@@ -201,7 +199,11 @@ const PoolColumn = ({
                             ${snapshot.isDraggingOver ? 'bg-orange-100/60 dark:bg-orange-800/40' : ''}
                         `}
                     >
-                        {filteredCandidates.length === 0 ? (
+                        {isLoading ? (
+                            <div className="flex justify-center items-center py-8 w-full">
+                                <Spin />
+                            </div>
+                        ) : filteredCandidates.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-8 text-center w-full">
                                 <div className="w-20 h-20 rounded-2xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center mb-3 border border-gray-100 dark:border-gray-700">
                                     <Star size={32} className="text-gray-200 dark:text-gray-600" />
@@ -214,7 +216,7 @@ const PoolColumn = ({
                         ) : (
                             filteredCandidates.map((candidate, index) => (
                                 <CandidateCard
-                                    key={candidate.applicationId}
+                                    key={candidate.id}
                                     candidate={candidate}
                                     index={index}
                                     poolColor={pool.color}

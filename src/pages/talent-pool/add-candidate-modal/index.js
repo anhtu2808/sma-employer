@@ -1,34 +1,30 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Check } from 'lucide-react';
-import { Select } from 'antd';
+import { Select, Spin } from 'antd';
 import Modal from '@/components/Modal';
-import { MOCK_CANDIDATES, MOCK_JOBS } from '../mockData';
+import { useGetApplicationsQuery } from '@/apis/applicationApi';
 
-const AddCandidateModal = ({ open, onCancel, onSubmit, existingIds = [] }) => {
+const AddCandidateModal = ({ open, onCancel, onSubmit }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedIds, setSelectedIds] = useState([]);
-    const [jobFilter, setJobFilter] = useState(null);
+
+    const { data: applicationsResponse, isLoading } = useGetApplicationsQuery({ page: 0, size: 100 });
+    const allCandidates = applicationsResponse?.data?.content || [];
 
     const filteredCandidates = useMemo(() => {
-        return MOCK_CANDIDATES.filter((c) => {
-            // Exclude already-in-pool candidates
-            if (existingIds.includes(c.applicationId)) return false;
-
-            // Job filter
-            if (jobFilter && c.jobId !== jobFilter) return false;
-
+        return allCandidates.filter((c) => {
             // Search
             if (searchTerm) {
                 const term = searchTerm.toLowerCase();
                 return (
-                    c.candidateName.toLowerCase().includes(term) ||
-                    c.candidateEmail.toLowerCase().includes(term) ||
+                    c.candidateName?.toLowerCase().includes(term) ||
+                    c.candidateEmail?.toLowerCase().includes(term) ||
                     (c.jobTitle && c.jobTitle.toLowerCase().includes(term))
                 );
             }
             return true;
         });
-    }, [searchTerm, existingIds, jobFilter]);
+    }, [searchTerm, allCandidates]);
 
     const toggleSelect = (id) => {
         setSelectedIds((prev) =>
@@ -40,13 +36,11 @@ const AddCandidateModal = ({ open, onCancel, onSubmit, existingIds = [] }) => {
         onSubmit(selectedIds);
         setSearchTerm('');
         setSelectedIds([]);
-        setJobFilter(null);
     };
 
     const handleCancel = () => {
         setSearchTerm('');
         setSelectedIds([]);
-        setJobFilter(null);
         onCancel();
     };
 
@@ -80,32 +74,28 @@ const AddCandidateModal = ({ open, onCancel, onSubmit, existingIds = [] }) => {
                             className="w-full pl-10 pr-4 py-2.5 bg-neutral-50 dark:bg-gray-900 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-neutral-400/60 dark:text-white"
                         />
                     </div>
-                    <Select
-                        allowClear
-                        placeholder="Filter by job"
-                        value={jobFilter}
-                        onChange={(val) => setJobFilter(val || null)}
-                        className="min-w-[160px]"
-                        options={MOCK_JOBS.map((j) => ({ value: j.id, label: j.name }))}
-                    />
                 </div>
 
                 {/* Candidate List */}
                 <div className="max-h-[340px] overflow-y-auto custom-scrollbar space-y-1.5 pr-1">
-                    {filteredCandidates.length === 0 ? (
+                    {isLoading ? (
+                        <div className="flex justify-center items-center py-10 w-full">
+                            <Spin />
+                        </div>
+                    ) : filteredCandidates.length === 0 ? (
                         <div className="text-center py-10">
                             <p className="text-sm text-gray-400">No candidates found</p>
                             <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">
-                                Try adjusting your search or filter
+                                Try adjusting your search
                             </p>
                         </div>
                     ) : (
                         filteredCandidates.map((c) => {
-                            const isSelected = selectedIds.includes(c.applicationId);
+                            const isSelected = selectedIds.includes(c.id); // application ID is essentially c.id
                             return (
                                 <button
-                                    key={c.applicationId}
-                                    onClick={() => toggleSelect(c.applicationId)}
+                                    key={c.id}
+                                    onClick={() => toggleSelect(c.id)}
                                     className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left
                                         ${isSelected
                                             ? 'border-primary/50 bg-orange-50/50 dark:bg-primary/10 ring-1 ring-primary/20'
@@ -129,9 +119,9 @@ const AddCandidateModal = ({ open, onCancel, onSubmit, existingIds = [] }) => {
                                             <span className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                                                 {c.candidateName}
                                             </span>
-                                            {c.evaluation?.aiScore != null && (
-                                                <span className={`text-xs font-bold ${getScoreColor(c.evaluation.aiScore)}`}>
-                                                    {Math.round(c.evaluation.aiScore)}%
+                                            {c.aiOverallScore != null && (
+                                                <span className={`text-xs font-bold ${getScoreColor(c.aiOverallScore)}`}>
+                                                    {(c.aiOverallScore / 10).toFixed(1)}
                                                 </span>
                                             )}
                                         </div>
@@ -139,11 +129,11 @@ const AddCandidateModal = ({ open, onCancel, onSubmit, existingIds = [] }) => {
                                             <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
                                                 {c.candidateEmail}
                                             </span>
-                                            {c.jobTitle && (
+                                            {c.originalJobTitle && (
                                                 <>
                                                     <span className="text-gray-300 dark:text-gray-600">·</span>
                                                     <span className="text-xs text-blue-500 font-medium truncate">
-                                                        {c.jobTitle}
+                                                        {c.originalJobTitle}
                                                     </span>
                                                 </>
                                             )}

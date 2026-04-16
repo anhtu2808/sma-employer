@@ -15,11 +15,12 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
         return 'text-red-500';
     };
 
-    const scoreValue = candidate.evaluation?.aiScore;
+    const scoreValue = candidate.aiOverallScore;
+    const dragId = `${candidate.id}_${candidate.applicationId}`;
 
     return (
         <Draggable
-            draggableId={candidate.applicationId.toString()}
+            draggableId={dragId}
             index={index}
         >
             {(provided, snapshot) => (
@@ -39,7 +40,7 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    onRemove(candidate.applicationId);
+                                    onRemove(candidate.id);
                                 }}
                                 className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-300 hover:text-red-500 transition-all z-10"
                             >
@@ -74,10 +75,10 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
 
                         {/* Bottom section: Job + Location + Date */}
                         <div className="px-4 pt-2.5 pb-3 space-y-1.5">
-                            {candidate.jobTitle && (
+                            {candidate.originalJobTitle && (
                                 <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
                                     <Briefcase size={12} className="shrink-0 text-gray-400" />
-                                    <span className="truncate font-medium">{candidate.jobTitle}</span>
+                                    <span className="truncate font-medium">{candidate.originalJobTitle}</span>
                                 </div>
                             )}
                             {candidate.location && (
@@ -87,7 +88,7 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
                                 </div>
                             )}
                             <p className="text-[11px] text-primary/60 mt-1">
-                                Added at {candidate.appliedAt ? moment(candidate.appliedAt).format('MMM DD, YYYY') : 'N/A'}
+                                Added at {candidate.addedAt ? moment(candidate.addedAt).format('MMM DD, YYYY') : 'N/A'}
                             </p>
                         </div>
                     </div>
