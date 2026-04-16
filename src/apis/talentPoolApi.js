@@ -57,6 +57,14 @@ export const talentPoolApi = api.injectEndpoints({
             invalidatesTags: (result, error, { groupId }) => [{ type: "TalentPools", id: `Items-${groupId}` }, "TalentPools"], // Also invalidate general list maybe for counts
         }),
 
+        deleteTalentPool: builder.mutation({
+            query: (id) => ({
+                url: `${API_VERSION}/talent-pools/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["TalentPools"],
+        }),
+
         deleteTalentPoolItem: builder.mutation({
             query: (id) => ({
                 url: `${API_VERSION}/talent-pools/items/${id}`,
@@ -73,6 +81,7 @@ export const {
     useGetTalentPoolItemsQuery,
     useCreateTalentPoolMutation,
     useUpdateTalentPoolMutation,
+    useDeleteTalentPoolMutation,
     useAddTalentPoolItemMutation,
     useDeleteTalentPoolItemMutation,
 } = talentPoolApi;

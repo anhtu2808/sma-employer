@@ -7,7 +7,7 @@ import TalentPoolHeader from './header';
 import PoolColumn from './pool-column';
 import AddCandidateModal from './add-candidate-modal';
 import CreatePoolModal from './create-pool-modal';
-import { useGetTalentPoolsQuery, useCreateTalentPoolMutation, useDeleteTalentPoolItemMutation, useAddTalentPoolItemMutation, useUpdateTalentPoolMutation } from '@/apis/talentPoolApi';
+import { useGetTalentPoolsQuery, useCreateTalentPoolMutation, useDeleteTalentPoolItemMutation, useAddTalentPoolItemMutation, useUpdateTalentPoolMutation, useDeleteTalentPoolMutation } from '@/apis/talentPoolApi';
 
 const TalentPool = () => {
     usePageHeader('Talent Pool', 'Organize and manage your potential candidates');
@@ -30,6 +30,7 @@ const TalentPool = () => {
 
     const [createTalentPool, { isLoading: isCreating }] = useCreateTalentPoolMutation();
     const [updateTalentPool, { isLoading: isUpdating }] = useUpdateTalentPoolMutation();
+    const [deleteTalentPool] = useDeleteTalentPoolMutation();
     const [deleteItem] = useDeleteTalentPoolItemMutation();
     const [addItem] = useAddTalentPoolItemMutation();
 
@@ -77,10 +78,13 @@ const TalentPool = () => {
             okButtonProps: { danger: true },
             cancelText: 'Cancel',
             centered: true,
-            onOk: () => {
-                // TODO: Call API to delete pool
-                // setPools((prev) => prev.filter((p) => p.id !== poolId));
-                toastMessage.success(`Pool "${pool.name}" deleted`);
+            onOk: async () => {
+                try {
+                    await deleteTalentPool(poolId).unwrap();
+                    toastMessage.success(`Pool "${pool.name}" deleted`);
+                } catch (error) {
+                    toastMessage.error(error?.data?.message || 'Failed to delete pool');
+                }
             },
         });
     };
