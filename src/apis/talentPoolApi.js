@@ -6,6 +6,9 @@ export const talentPoolApi = api.injectEndpoints({
             query: () => ({
                 url: `${API_VERSION}/talent-pools`,
                 method: "GET",
+                params: {
+                    sort: 'id,asc'
+                }
             }),
             providesTags: ["TalentPools"],
         }),
@@ -36,6 +39,15 @@ export const talentPoolApi = api.injectEndpoints({
             invalidatesTags: ["TalentPools"],
         }),
 
+        updateTalentPool: builder.mutation({
+            query: ({ id, ...data }) => ({
+                url: `${API_VERSION}/talent-pools/${id}`,
+                method: "PUT",
+                body: data, // { name, color }
+            }),
+            invalidatesTags: (result, error, { id }) => [{ type: "TalentPools", id }, "TalentPools"],
+        }),
+
         addTalentPoolItem: builder.mutation({
             query: (data) => ({
                 url: `${API_VERSION}/talent-pools/items`,
@@ -60,6 +72,7 @@ export const {
     useGetTalentPoolByIdQuery,
     useGetTalentPoolItemsQuery,
     useCreateTalentPoolMutation,
+    useUpdateTalentPoolMutation,
     useAddTalentPoolItemMutation,
     useDeleteTalentPoolItemMutation,
 } = talentPoolApi;

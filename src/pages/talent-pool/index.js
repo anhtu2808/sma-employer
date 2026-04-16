@@ -7,13 +7,16 @@ import TalentPoolHeader from './header';
 import PoolColumn from './pool-column';
 import AddCandidateModal from './add-candidate-modal';
 import CreatePoolModal from './create-pool-modal';
-import { useGetTalentPoolsQuery, useCreateTalentPoolMutation, useDeleteTalentPoolItemMutation, useAddTalentPoolItemMutation } from '@/apis/talentPoolApi';
+import { useGetTalentPoolsQuery, useCreateTalentPoolMutation, useDeleteTalentPoolItemMutation, useAddTalentPoolItemMutation, useUpdateTalentPoolMutation } from '@/apis/talentPoolApi';
 
 const TalentPool = () => {
     usePageHeader('Talent Pool', 'Organize and manage your potential candidates');
 
     const { data: poolsResponse } = useGetTalentPoolsQuery();
-    const pools = poolsResponse?.data || [];
+    const pools = useMemo(() => {
+        const data = poolsResponse?.data || [];
+        return [...data].sort((a, b) => a.id - b.id);
+    }, [poolsResponse]);
     
     // Total candidates count computed from API response
     const totalCandidates = pools.reduce((acc, pool) => acc + (pool.totalItems || 0), 0);
@@ -22,8 +25,11 @@ const TalentPool = () => {
     const [addModalOpen, setAddModalOpen] = useState(false);
     const [addModalPoolId, setAddModalPoolId] = useState(null);
     const [createModalOpen, setCreateModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [editModalData, setEditModalData] = useState(null);
 
     const [createTalentPool, { isLoading: isCreating }] = useCreateTalentPoolMutation();
+    const [updateTalentPool, { isLoading: isUpdating }] = useUpdateTalentPoolMutation();
     const [deleteItem] = useDeleteTalentPoolItemMutation();
     const [addItem] = useAddTalentPoolItemMutation();
 
@@ -43,11 +49,21 @@ const TalentPool = () => {
         }
     };
 
-    const handleRenamePool = (poolId, newName) => {
-        // TODO: Call API to rename pool when you have that endpoint
-        // setPools((prev) =>
-        //     prev.map((p) => (p.id === poolId ? { ...p, name: newName } : p))
-        // );
+    const handleEditPool = (pool) => {
+        setEditModalData(pool);
+        setEditModalOpen(true);
+    };
+
+    const handleConfirmEditPool = async (name, color) => {
+        try {
+            await updateTalentPool({ id: editModalData.id, name, color }).unwrap();
+            toastMessage.success('Pool updated successfully');
+            setEditModalOpen(false);
+            setEditModalData(null);
+        } catch (error) {
+            console.error('Failed to update pool:', error);
+            toastMessage.error(error?.data?.message || 'Failed to update pool');
+        }
     };
 
     const handleDeletePool = (poolId) => {
@@ -67,13 +83,6 @@ const TalentPool = () => {
                 toastMessage.success(`Pool "${pool.name}" deleted`);
             },
         });
-    };
-
-    const handleChangeColor = (poolId, color) => {
-        // TODO: Call API to change color
-        // setPools((prev) =>
-        //     prev.map((p) => (p.id === poolId ? { ...p, color } : p))
-        // );
     };
 
     // --- Candidate operations ---
@@ -146,9 +155,8 @@ const TalentPool = () => {
                                 key={pool.id}
                                 pool={pool}
                                 globalSearchTerm={searchTerm}
-                                onRename={handleRenamePool}
+                                onEdit={handleEditPool}
                                 onDelete={handleDeletePool}
-                                onChangeColor={handleChangeColor}
                                 onRemoveCandidate={handleRemoveCandidate}
                                 onAddCandidate={handleOpenAddModal}
                             />
@@ -173,6 +181,18 @@ const TalentPool = () => {
                 onCancel={() => setCreateModalOpen(false)}
                 onCreate={handleConfirmCreatePool}
                 isCreating={isCreating}
+            />
+
+            {/* Edit Pool Modal */}
+            <CreatePoolModal
+                open={editModalOpen}
+                onCancel={() => {
+                    setEditModalOpen(false);
+                    setEditModalData(null);
+                }}
+                onCreate={handleConfirmEditPool}
+                isCreating={isUpdating}
+                initialData={editModalData}
             />
         </div>
     );

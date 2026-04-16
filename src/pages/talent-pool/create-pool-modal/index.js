@@ -2,18 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { FolderPlus } from 'lucide-react';
 import Modal from '@/components/Modal';
 
-const CreatePoolModal = ({ open, onCancel, onCreate, isCreating }) => {
+const CreatePoolModal = ({ open, onCancel, onCreate, isCreating, initialData = null }) => {
     const [name, setName] = useState('');
     const [color, setColor] = useState('#EF4444');
     const [error, setError] = useState('');
 
     useEffect(() => {
         if (open) {
-            setName('');
-            setColor('#EF4444');
+            if (initialData) {
+                setName(initialData.name);
+                setColor(initialData.color);
+            } else {
+                setName('');
+                setColor('#EF4444');
+            }
             setError('');
         }
-    }, [open]);
+    }, [open, initialData]);
 
     const handleSave = () => {
         if (!name.trim()) {
@@ -30,7 +35,7 @@ const CreatePoolModal = ({ open, onCancel, onCreate, isCreating }) => {
             title={
                 <div className="flex items-center gap-2 text-gray-700">
                     <FolderPlus className="w-5 h-5" />
-                    <span>Create new group</span>
+                    <span>{initialData ? 'Edit talent pool' : 'Create new group'}</span>
                 </div>
             }
             width={500}

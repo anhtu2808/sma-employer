@@ -9,17 +9,13 @@ import { useGetTalentPoolItemsQuery } from '@/apis/talentPoolApi';
 const PoolColumn = ({
     pool,
     globalSearchTerm,
-    onRename,
+    onEdit,
     onDelete,
-    onChangeColor,
     onRemoveCandidate,
     onAddCandidate,
 }) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [editName, setEditName] = useState(pool.name);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [localSearch, setLocalSearch] = useState('');
-    const inputRef = useRef(null);
     const searchRef = useRef(null);
 
     const { data: itemsResponse, isLoading } = useGetTalentPoolItemsQuery({ groupId: pool.id, page: 0, size: 100 });
@@ -32,44 +28,10 @@ const PoolColumn = ({
     });
 
     useEffect(() => {
-        if (isEditing && inputRef.current) {
-            inputRef.current.focus();
-            inputRef.current.select();
-        }
-    }, [isEditing]);
-
-    useEffect(() => {
         if (isSearchOpen && searchRef.current) {
             searchRef.current.focus();
         }
     }, [isSearchOpen]);
-
-    const handleRename = () => {
-        const trimmed = editName.trim();
-        if (trimmed && trimmed !== pool.name) {
-            onRename(pool.id, trimmed);
-        } else {
-            setEditName(pool.name);
-        }
-        setIsEditing(false);
-    };
-
-    const colorSubmenu = POOL_COLORS.map((c) => ({
-        key: c.value,
-        label: (
-            <div className="flex items-center gap-2.5">
-                <span
-                    className="w-4 h-4 rounded-full border border-black/10 shrink-0"
-                    style={{ backgroundColor: c.value }}
-                />
-                <span className="text-sm">{c.name}</span>
-                {pool.color === c.value && (
-                    <span className="ml-auto text-primary text-xs font-bold">✓</span>
-                )}
-            </div>
-        ),
-        onClick: () => onChangeColor(pool.id, c.value),
-    }));
 
     const menuItems = [
         {
@@ -79,16 +41,10 @@ const PoolColumn = ({
             onClick: () => onAddCandidate(pool.id),
         },
         {
-            key: 'rename',
-            label: 'Rename',
+            key: 'edit',
+            label: 'Edit Configuration',
             icon: <Edit3 size={14} />,
-            onClick: () => setIsEditing(true),
-        },
-        {
-            key: 'color',
-            label: 'Change Color',
-            icon: <Palette size={14} />,
-            children: colorSubmenu,
+            onClick: () => onEdit(pool),
         },
         { type: 'divider' },
         {
@@ -109,29 +65,11 @@ const PoolColumn = ({
                         className="w-2.5 h-2.5 rounded-full shrink-0"
                         style={{ backgroundColor: pool.color }}
                     />
-                    {isEditing ? (
-                        <input
-                            ref={inputRef}
-                            value={editName}
-                            onChange={(e) => setEditName(e.target.value)}
-                            onBlur={handleRename}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleRename();
-                                if (e.key === 'Escape') {
-                                    setEditName(pool.name);
-                                    setIsEditing(false);
-                                }
-                            }}
-                            className="text-base font-bold text-gray-900 dark:text-white bg-neutral-50 dark:bg-gray-700 border border-primary/50 rounded-lg px-2.5 py-0.5 outline-none focus:ring-2 focus:ring-primary/20 min-w-[160px]"
-                        />
-                    ) : (
-                        <h3
-                            className="text-base font-bold text-gray-900 dark:text-white truncate cursor-pointer hover:text-primary transition-colors"
-                            onDoubleClick={() => setIsEditing(true)}
-                        >
-                            {pool.name}
-                        </h3>
-                    )}
+                    <h3
+                        className="text-base font-bold text-gray-900 dark:text-white truncate"
+                    >
+                        {pool.name}
+                    </h3>
                     <span className="text-xs text-primary font-medium ml-1">
                         {candidates.length} <span className="text-gray-400 dark:text-gray-500 font-normal">Candidates</span>
                     </span>

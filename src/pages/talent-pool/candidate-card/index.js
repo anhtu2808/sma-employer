@@ -1,7 +1,7 @@
 import React from 'react';
 import { Draggable } from '@hello-pangea/dnd';
-import { Mail, MapPin, Briefcase, X } from 'lucide-react';
-import { Tooltip } from 'antd';
+import { Mail, MapPin, Briefcase, X, Calendar } from 'lucide-react';
+import { Tooltip, Modal } from 'antd';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,6 +17,21 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
 
     const scoreValue = candidate.aiOverallScore;
     const dragId = `${candidate.id}_${candidate.applicationId}`;
+
+    const handleRemoveClick = (e) => {
+        e.stopPropagation();
+        Modal.confirm({
+            title: 'Remove Candidate',
+            content: `Are you sure you want to remove ${candidate.candidateName} from this talent pool?`,
+            okText: 'Remove',
+            okButtonProps: { danger: true },
+            cancelText: 'Cancel',
+            centered: true,
+            onOk: () => {
+                onRemove(candidate.id);
+            }
+        });
+    };
 
     return (
         <Draggable
@@ -38,10 +53,7 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
                         {/* Remove button */}
                         <Tooltip title="Remove from pool">
                             <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onRemove(candidate.id);
-                                }}
+                                onClick={handleRemoveClick}
                                 className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-300 hover:text-red-500 transition-all z-10"
                             >
                                 <X size={12} />
@@ -58,7 +70,7 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
                                     >
                                         {candidate.candidateName}
                                     </h4>
-                                    <p className="text-xs text-primary/80 truncate mt-0.5">
+                                    <p className="text-xs text-gray-400 truncate mt-0.5">
                                         {candidate.candidateEmail || 'N/A'}
                                     </p>
                                 </div>
@@ -81,14 +93,9 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
                                     <span className="truncate font-medium">{candidate.originalJobTitle}</span>
                                 </div>
                             )}
-                            {candidate.location && (
-                                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                                    <MapPin size={12} className="shrink-0 text-gray-400" />
-                                    <span className="truncate">{candidate.location}</span>
-                                </div>
-                            )}
-                            <p className="text-[11px] text-primary/60 mt-1">
-                                Added at {candidate.addedAt ? moment(candidate.addedAt).format('MMM DD, YYYY') : 'N/A'}
+                            <p className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
+                                <Calendar size={12} className="shrink-0 text-gray-400" />
+                                {candidate.addedAt ? moment(candidate.addedAt).format('MMM DD, YYYY') : 'N/A'}
                             </p>
                         </div>
                     </div>
