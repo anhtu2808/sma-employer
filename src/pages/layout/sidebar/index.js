@@ -76,7 +76,6 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
     { icon: faBriefcase, label: 'Jobs', path: '/jobs' },
     { icon: faClipboard, label: 'Applications', path: '/applications' },
     { icon: faEnvelopeRegular, label: 'Invitations', path: '/invitations' },
-    { icon: faClipboardCheck, label: 'Scoring Criteria', path: '/scoring-criteria' },
     { icon: faFolderOpen, label: 'Talent Pool', path: '/talent-pool' },
   ];
 
@@ -93,6 +92,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
 
   // 4. Configuration / Settings
   const configItemsRaw = [
+    { icon: faClipboardCheck, label: 'Scoring Criteria', path: '/scoring-criteria' },
     { icon: faPaintbrush, label: 'Career Page', path: '/career-builder' },
     { icon: faLink, label: 'Webhooks', path: '/webhooks' },
     { icon: faKey, label: 'API Management', path: '/api-management', requireRootOrAdmin: true },

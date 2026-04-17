@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faCircleCheck, faCircleExclamation, faQrcode, faRotate, faXmark } from '../../../../utils/icons';
 import formatCurrency from "@/utils/formatCurrency";
 
-const PaymentModal = ({ isOpen, onClose, plan, selectedDuration }) => {
+const PaymentModal = ({ isOpen, onClose, plan, selectedDuration, onSuccess }) => {
     const [createSubscription, { isLoading: isApiLoading }] = useCreateSubscriptionMutation();
     const [previewSubscription] = usePreviewSubscriptionMutation();
     const [qrCodeUrl, setQrCodeUrl] = useState(null);
@@ -112,7 +112,7 @@ const PaymentModal = ({ isOpen, onClose, plan, selectedDuration }) => {
                         </div>
                         <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h2>
                         <p className="text-gray-500 mb-8">Your subscription to {planName} has been activated.</p>
-                        <Button mode="primary" onClick={handleClose} className="px-8">
+                        <Button mode="primary" onClick={() => { handleClose(); if (onSuccess) onSuccess(); }} className="px-8">
                             Continue
                         </Button>
                     </div>
