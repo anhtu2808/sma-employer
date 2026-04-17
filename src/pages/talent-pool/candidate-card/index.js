@@ -46,7 +46,7 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
                     style={{ ...provided.draggableProps.style }}
                 >
                     <div
-                        className="w-[240px] bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm transition-all hover:shadow-md cursor-grab active:cursor-grabbing group relative overflow-hidden"
+                        className="w-[260px] bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm transition-all hover:shadow-md cursor-grab active:cursor-grabbing group relative overflow-hidden"
                         style={{ borderLeft: `3px solid ${poolColor || '#9CA3AF'}` }}
                     >
                         {/* Remove button */}
@@ -61,11 +61,12 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
 
                         {/* Top section: Name + Email + Score */}
                         <div className="px-4 pt-3.5 pb-3">
-                            <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-start justify-between gap-3">
                                 <div className="min-w-0 flex-1">
                                     <h4
                                         className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors truncate cursor-pointer hover:underline uppercase tracking-wide"
                                         onClick={() => navigate(`/applications/${candidate.applicationId}`)}
+                                        title={candidate.candidateName}
                                     >
                                         {candidate.candidateName}
                                     </h4>
@@ -74,8 +75,8 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
                                     </p>
                                 </div>
                                 {scoreValue != null && (
-                                    <span className={`text-base font-bold shrink-0 mr-4 ${getScoreColor(scoreValue)}`}>
-                                        {(scoreValue / 10).toFixed(1)}
+                                    <span className={`text-sm font-bold shrink-0 ${getScoreColor(scoreValue)}`}>
+                                        {Math.round(scoreValue)}%
                                     </span>
                                 )}
                             </div>

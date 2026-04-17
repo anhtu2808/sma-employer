@@ -3,7 +3,7 @@ import { Droppable } from '@hello-pangea/dnd';
 import { MoreVertical, Edit3, Trash2, Palette, Search, UserPlus, Plus, X, Star } from 'lucide-react';
 import { Dropdown, Tooltip, Spin } from 'antd';
 import CandidateCard from '../candidate-card';
-import { POOL_COLORS } from '../constants';
+
 import { useGetTalentPoolItemsQuery } from '@/apis/talentPoolApi';
 
 const PoolColumn = ({
