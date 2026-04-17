@@ -54,7 +54,7 @@ export const talentPoolApi = api.injectEndpoints({
                 method: "POST",
                 body: data, // { applicationId, groupId }
             }),
-            invalidatesTags: (result, error, { groupId }) => [{ type: "TalentPools", id: `Items-${groupId}` }, "TalentPools"], // Also invalidate general list maybe for counts
+            invalidatesTags: (result, error, { groupId }) => [{ type: "TalentPools", id: `Items-${groupId}` }, "TalentPools"],
         }),
 
         deleteTalentPool: builder.mutation({

@@ -59,6 +59,7 @@ const normalizeApplicationDetail = (payload) => {
         reviewedAt: info.reviewedAt,
         reviewedByEmail: info.reviewedByEmail,
         isRejectedByAi: info.isRejectedByAi,
+        isInTalentPool: !!info.isInTalentPool,
     };
 };
 
@@ -71,7 +72,7 @@ const TAB_KEYS = {
 const ApplicationDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { data: appResponse, isLoading } = useGetApplicationDetailQuery(id, { skip: !id });
+    const { data: appResponse, isLoading, refetch } = useGetApplicationDetailQuery(id, { skip: !id });
     const [updateStatus, { isLoading: isUpdating }] = useUpdateApplicationStatusMutation();
     const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
     const [blockReason, setBlockReason] = useState('');
@@ -81,7 +82,7 @@ const ApplicationDetail = () => {
     const [rejectReason, setRejectReason] = useState('');
     const [showToCandidate, setShowToCandidate] = useState(false);
     const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
-    
+
     // Talent Pool Logic
     const [isPoolModalOpen, setIsPoolModalOpen] = useState(false);
     const [isCreatePoolOpen, setIsCreatePoolOpen] = useState(false);
@@ -162,6 +163,7 @@ const ApplicationDetail = () => {
             await addTalentPoolItem({ applicationId: id, groupId: poolId }).unwrap();
             toastMessage.success('Candidate added to talent pool');
             setIsPoolModalOpen(false);
+            refetch();
         } catch (error) {
             toastMessage.error(error?.data?.message || 'Failed to add to talent pool');
         }
@@ -215,8 +217,8 @@ const ApplicationDetail = () => {
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
                                 className={`flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-150 ${activeTab === tab.key
-                                        ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200'
+                                    ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white'
+                                    : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200'
                                     }`}
                             >
                                 {tab.lucideIcon ? <tab.lucideIcon size={14} /> : <FontAwesomeIcon icon={tab.icon} className="text-sm" />}
@@ -417,7 +419,7 @@ const ApplicationDetail = () => {
                             </button>
                         ))
                     )}
-                    
+
                     <button
                         onClick={() => setIsCreatePoolOpen(true)}
                         className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-neutral-900 border border-dashed border-gray-300 dark:border-gray-600 hover:border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-gray-500 hover:text-orange-600 rounded-xl transition-all"
