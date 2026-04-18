@@ -36,10 +36,13 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
     };
 
     const handleCardClick = () => {
-        if (isProposed && candidate.jobId) {
-            navigate(`/jobs/${candidate.jobId}/proposed-cvs?proposedResumeId=${proposedId}`);
-        } else if (candidate.applicationId) {
+        if (candidate.applicationId) {
             navigate(`/applications/${candidate.applicationId}`);
+        } else if (candidate.resumeId) {
+            navigate(`/talent-pool/cv/${candidate.resumeId}`);
+        } else if (candidate.jobId && isProposed) {
+            // Fallback for job-specific proposed CVs if they exist in a different context
+            navigate(`/jobs/${candidate.jobId}/proposed-cvs?proposedResumeId=${proposedId}`);
         }
     };
 
