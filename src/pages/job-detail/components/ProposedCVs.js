@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { InputNumber } from 'antd';
+import { InputNumber, Modal } from 'antd';
 import {
   useGetProposedCvsQuery,
   useRefreshProposedCvsMutation,
   useRemoveProposedCvMutation,
   useUnlockProposedCvMutation,
+  jobApi,
 } from '../../../apis/jobApi';
 import { useGetJobDetailQuery } from '@/apis/apis';
 import Loading from '@/components/Loading';
@@ -13,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRocket, faWandMagicSparkles } from '../../../utils/icons';
 import toastMessage from '@/utils/toastMessage';
+import { useDispatch } from 'react-redux';
 
 const POLLING_INTERVAL = 5000;
 const DEFAULT_MIN_MATCH_RATE = 30;
@@ -21,6 +23,7 @@ const MAX_MATCH_RATE = 100;
 
 const ProposedCVs = ({ jobId }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isJobPolling, setIsJobPolling] = useState(false);
   const [isEvaluationPolling, setIsEvaluationPolling] = useState(false);
   const previousRefreshPendingRef = useRef(false);
@@ -72,7 +75,7 @@ const ProposedCVs = ({ jobId }) => {
   const isBusyRefreshing = isRefreshingRequest;
   const isMutatingProposal = isUnlocking || isRemoving;
   const isPendingThresholdUpdate = isRefreshPending && requestedMinMatchRate !== appliedMinMatchRate;
-  const canSubmitRefresh = !isRefreshingRequest && (!isRefreshPending || draftMinMatchRate !== requestedMinMatchRate);
+  const canSubmitRefresh = !isRefreshingRequest && (!isRefreshPending || normalizeMinMatchRate(draftMinMatchRate) !== requestedMinMatchRate);
 
   useEffect(() => {
     setIsJobPolling(isRefreshPending);
@@ -82,11 +85,11 @@ const ProposedCVs = ({ jobId }) => {
     const wasRefreshPending = previousRefreshPendingRef.current;
 
     if (wasRefreshPending && !isRefreshPending) {
-      refetchProposedCvs();
+      dispatch(jobApi.util.invalidateTags([{ type: 'Jobs', id: `PROPOSED_${jobId}` }]));
     }
 
     previousRefreshPendingRef.current = isRefreshPending;
-  }, [isRefreshPending, refetchProposedCvs]);
+  }, [isRefreshPending, dispatch, jobId]);
 
   useEffect(() => {
     setIsEvaluationPolling(hasEvaluationInProgress);
@@ -126,6 +129,11 @@ const ProposedCVs = ({ jobId }) => {
   };
 
   const handleDraftMinMatchRateChange = (value) => {
+    if (value === null || value === '') {
+      setDraftMinMatchRate(null);
+      setIsDraftDirty(null !== requestedMinMatchRate);
+      return;
+    }
     const normalizedValue = normalizeMinMatchRate(value);
     setDraftMinMatchRate(normalizedValue);
     setIsDraftDirty(normalizedValue !== requestedMinMatchRate);
@@ -150,23 +158,31 @@ const ProposedCVs = ({ jobId }) => {
     }
   };
 
-  const handleRemoveProposal = async (proposal) => {
+  const handleRemoveProposal = (proposal) => {
     if (!proposal?.proposedResumeId) return;
 
-    const confirmed = window.confirm('Remove this proposed CV from the current recommendation list?');
-    if (!confirmed) return;
-
-    try {
-      await removeProposedCv({ proposedResumeId: proposal.proposedResumeId }).unwrap();
-      toastMessage.success('Proposed CV removed successfully.');
-      if (applications.length === 1 && params.page > 0) {
-        setParams((prev) => ({ ...prev, page: prev.page - 1 }));
-      } else {
-        await refetchProposedCvs();
+    Modal.confirm({
+      title: 'Remove Proposed CV',
+      content: 'Remove this proposed CV from the current recommendation list?',
+      okText: 'Yes, Remove',
+      okButtonProps: { danger: true },
+      cancelText: 'Cancel',
+      centered: true,
+      onOk: async () => {
+        try {
+          await removeProposedCv({ proposedResumeId: proposal.proposedResumeId }).unwrap();
+          toastMessage.success('Proposed CV removed successfully.');
+          
+          if (applications.length === 1 && params.page > 0) {
+            setParams((prev) => ({ ...prev, page: prev.page - 1 }));
+          }
+          
+          dispatch(jobApi.util.invalidateTags([{ type: 'Jobs', id: `PROPOSED_${jobId}` }]));
+        } catch (error) {
+          toastMessage.error(error?.data?.message || 'Failed to remove proposed CV');
+        }
       }
-    } catch (error) {
-      toastMessage.error(error?.data?.message || 'Failed to remove proposed CV');
-    }
+    });
   };
 
   if (isUnpublished) {
@@ -227,7 +243,7 @@ const ProposedCVs = ({ jobId }) => {
               ? `Current results still reflect the previous ${appliedMinMatchRate}% minimum while a new refresh is running with ${requestedMinMatchRate}%.`
               : `A refresh is running with the current ${requestedMinMatchRate}% minimum. The list will update automatically when it finishes.`
             : isDraftDirty
-              ? `Current results are based on ${appliedMinMatchRate}%. Refresh to apply the new ${draftMinMatchRate}% minimum.`
+              ? `Refresh to apply the new ${normalizeMinMatchRate(draftMinMatchRate)}% minimum.`
               : `Only candidates with match rate at or above ${appliedMinMatchRate}% will be kept in the proposed list after refresh.`}
         </p>
       </div>
@@ -338,11 +354,10 @@ const ProposedCVs = ({ jobId }) => {
                         <td className="px-6 py-4">
                           <div className="rounded-xl border border-orange-100 bg-orange-50/70 px-3 py-2">
                             <div className="flex items-start gap-2">
-                              <div className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full ${
-                                isEvaluationPendingStatus(app.evaluationStatus)
-                                  ? 'border-2 border-orange-200 border-t-orange-500 animate-spin'
-                                  : 'bg-orange-100 text-orange-500'
-                              }`}>
+                              <div className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full ${isEvaluationPendingStatus(app.evaluationStatus)
+                                ? 'border-2 border-orange-200 border-t-orange-500 animate-spin'
+                                : 'bg-orange-100 text-orange-500'
+                                }`}>
                                 {!isEvaluationPendingStatus(app.evaluationStatus) && (
                                   <FontAwesomeIcon icon={faWandMagicSparkles} className="text-[10px]" />
                                 )}

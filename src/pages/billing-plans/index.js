@@ -7,17 +7,17 @@ import Loading from "@/components/Loading";
 import PaymentModal from "@/pages/checkout/components/PaymentModal";
 
 const BillingPlans = () => {
-  const { data: plans = [], isLoading: isPlansLoading } = useGetPlansQuery({
+  const { data: plans = [], isLoading: isPlansLoading, refetch: refetchPlans } = useGetPlansQuery({
     planType: PLAN_TYPES.MAIN,
     planTarget: PLAN_TARGETS.COMPANY,
 
   });
 
-  const { data: addons = [], isLoading: isAddonsLoading } = useGetPlansQuery({
+  const { data: addons = [], isLoading: isAddonsLoading, refetch: refetchAddons } = useGetPlansQuery({
     planType: PLAN_TYPES.ADDONS_QUOTA,
     planTarget: PLAN_TARGETS.COMPANY,
   });
-  const { data: addonsFeature = [], isLoading: isAddonsFeatureLoading } = useGetPlansQuery({
+  const { data: addonsFeature = [], isLoading: isAddonsFeatureLoading, refetch: refetchAddonsFeature } = useGetPlansQuery({
     planType: PLAN_TYPES.ADDONS_FEATURE,
     planTarget: PLAN_TARGETS.COMPANY,
   });
@@ -36,6 +36,12 @@ const BillingPlans = () => {
     setIsPaymentModalOpen(false);
     setSelectedPlanForPayment(null);
     setSelectedDurationForPayment(null);
+  };
+
+  const handlePaymentSuccess = () => {
+    refetchPlans();
+    refetchAddons();
+    refetchAddonsFeature();
   };
 
   const currentPlan = useMemo(() => {
@@ -68,6 +74,7 @@ const BillingPlans = () => {
         onClose={handleClosePaymentModal}
         plan={selectedPlanForPayment}
         selectedDuration={selectedDurationForPayment}
+        onSuccess={handlePaymentSuccess}
       />
     </div>
   );

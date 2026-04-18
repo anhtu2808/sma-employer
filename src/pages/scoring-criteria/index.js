@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input as AntInput, InputNumber, ConfigProvider, Tabs } from 'antd';
+import { Modal, Form, Input as AntInput, InputNumber, ConfigProvider, Tabs, Switch } from 'antd';
 import toastMessage from '@/utils/toastMessage';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
@@ -12,6 +12,7 @@ import {
   useCreateCriteriaMutation,
   useUpdateCriteriaMutation,
   useDeleteCriteriaMutation,
+  useToggleCriteriaStatusMutation,
 } from '@/apis/jobApi';
 
 const STATUS_TABS = [
@@ -52,6 +53,7 @@ const ScoringCriteria = () => {
   const [createCriteria, { isLoading: isCreating }] = useCreateCriteriaMutation();
   const [updateCriteria, { isLoading: isUpdating }] = useUpdateCriteriaMutation();
   const [deleteCriteria] = useDeleteCriteriaMutation();
+  const [toggleCriteriaStatus] = useToggleCriteriaStatusMutation();
 
   const criteriaList = criteriaData?.data?.content || [];
   const totalPages = criteriaData?.data?.totalPages || 0;
@@ -72,6 +74,17 @@ const ScoringCriteria = () => {
     setIsModalOpen(true);
   };
 
+  const handleToggleStatus = async (criteria) => {
+    try {
+      await toggleCriteriaStatus(criteria.id).unwrap();
+      toastMessage.success(
+        `Criteria ${criteria.active ? 'deactivated' : 'activated'} successfully`
+      );
+    } catch {
+      toastMessage.error('Failed to update criteria status');
+    }
+  };
+
   const handleDelete = (criteria) => {
     Modal.confirm({
       title: 'Delete Criteria',
@@ -79,6 +92,7 @@ const ScoringCriteria = () => {
       okText: 'Yes, Delete',
       okButtonProps: { danger: true },
       cancelText: 'Cancel',
+      centered: true,
       onOk: async () => {
         try {
           await deleteCriteria(criteria.id).unwrap();
@@ -230,6 +244,13 @@ const ScoringCriteria = () => {
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
+                    <ConfigProvider theme={{ token: { colorPrimary: '#f97316' } }}>
+                      <Switch
+                        checked={criteria.active !== false}
+                        onChange={() => handleToggleStatus(criteria)}
+                        size="small"
+                      />
+                    </ConfigProvider>
                     <Button
                       mode="secondary"
                       btnIcon

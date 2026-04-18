@@ -2,11 +2,11 @@ import React from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faBuilding, faClipboardCheck, faBoxArchive, faGear,
+  faBuilding, faClipboardCheck, faGear,
   faCreditCard, faClockRotateLeft, faTableCells, faUsers,
   faBriefcase, faClipboard, faEnvelopeRegular, faBan,
   faBell, faStar, faRightFromBracket, faChevronLeft, faChevronRight,
-  faPaintbrush, faLink, faKey
+  faPaintbrush, faLink, faKey, faFolderOpen
 } from '@/utils/icons';
 import Logo from '@/components/Logo';
 import Button from '@/components/Button';
@@ -74,10 +74,9 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
   // 2. Recruitment
   const recruitmentItems = [
     { icon: faBriefcase, label: 'Jobs', path: '/jobs' },
-    { icon: faBoxArchive, label: 'Archived Jobs', path: '/jobs/archived' },
     { icon: faClipboard, label: 'Applications', path: '/applications' },
     { icon: faEnvelopeRegular, label: 'Invitations', path: '/invitations' },
-    { icon: faClipboardCheck, label: 'Scoring Criteria', path: '/scoring-criteria' },
+    { icon: faFolderOpen, label: 'Talent Pool', path: '/talent-pool' },
   ];
 
   // 3. Management (role-filtered)
@@ -93,6 +92,7 @@ const Sidebar = ({ collapsed = false, onToggle, onMobileClose, isMobile = false 
 
   // 4. Configuration / Settings
   const configItemsRaw = [
+    { icon: faClipboardCheck, label: 'Scoring Criteria', path: '/scoring-criteria' },
     { icon: faPaintbrush, label: 'Career Page', path: '/career-builder' },
     { icon: faLink, label: 'Webhooks', path: '/webhooks' },
     { icon: faKey, label: 'API Management', path: '/api-management', requireRootOrAdmin: true },

@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faWandMagicSparkles } from '../../utils/icons';
 import { Lock, ShieldCheck, Sparkles } from 'lucide-react';
 
-const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false }) => {
+const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, refetch }) => {
     const { jobId } = useParams();
     const [inviteCandidate, { isLoading: isInviting }] = useInviteCandidateMutation();
     const proposalStatusLabel = getProposalStatusBadgeLabel(proposal?.proposalStatus, proposal?.isUnlocked);
@@ -26,6 +26,7 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false })
                 proposedResumeId: Number(proposedResumeId),
             }).unwrap();
             toastMessage.success('Candidate invited successfully!');
+            if (refetch) refetch();
         } catch (error) {
             toastMessage.error(error?.data?.message || 'Failed to invite candidate');
         }

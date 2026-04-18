@@ -4,8 +4,11 @@ import { useGetInvitationByIdQuery } from '@/apis/invitationApi';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import Loading from '@/components/Loading';
 import Button from '@/components/Button';
-import { ArrowLeft, Building2, MapPin, Briefcase, Mail, Calendar, User, DollarSign } from 'lucide-react';
+import { ArrowLeft, Briefcase, Mail, Calendar, User, DollarSign, FileX, Download } from 'lucide-react';
 import { Tag } from 'antd';
+import PdfViewer from '../../application/detail/pdf-viewer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFilePdf, faDownload } from '../../../utils/icons';
 
 const STATUS_CONFIG = {
     INVITED: { color: 'blue', label: 'Invited' },
@@ -31,7 +34,7 @@ const InvitationDetail = () => {
         </div>
     );
 
-    const { company, candidate, job, status, content } = invitation;
+    const { candidate, job, status } = invitation;
     const statusConfig = STATUS_CONFIG[status] || { color: 'default', label: status };
 
     const formatSalary = (start, end, currency) => {
@@ -41,162 +44,111 @@ const InvitationDetail = () => {
     };
 
     return (
-        <div className="max-w-4xl space-y-6 animate-fadeIn pb-10">
-            {/* Header / Actions */}
-            <div className="flex items-center justify-between">
-                <Button
-                    mode="secondary"
+        <div className="w-full space-y-4">
+            {/* Action Bar */}
+            <div className="flex items-center gap-3">
+                <button
                     onClick={() => navigate('/invitations')}
-                    iconLeft={<ArrowLeft size={18} />}
-                    className="!bg-white dark:!bg-gray-800"
+                    className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors group"
                 >
-                    Back to List
-                </Button>
-                <Tag color={statusConfig.color} className="!text-sm !font-semibold !px-3 !py-1 !rounded-full !border-0 m-0">
-                    {statusConfig.label}
-                </Tag>
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                    <span className="font-medium">Back to List</span>
+                </button>
             </div>
 
-            {/* Main Content Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                {/* Left Column: Job & Company */}
-                <div className="md:col-span-2 space-y-6">
-                    {/* Message Card */}
-                    {content && (
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Message from Company</h3>
-                            <div className="p-4 bg-orange-50/50 dark:bg-orange-900/10 rounded-xl border border-orange-100 dark:border-orange-500/20 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                                “{content}”
-                            </div>
+            {/* Unified Card */}
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-sm overflow-clip" style={{ height: 'calc(100vh - 20px)' }}>
+                {/* Tabs Bar & Status */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-neutral-800">
+                    <div className="flex gap-1 bg-gray-100 dark:bg-neutral-800 rounded-full p-1">
+                        <button className="flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-150 bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm">
+                            <User size={14} className="text-gray-500" />
+                            <span className="hidden sm:inline">Basic Information</span>
+                        </button>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <div className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-bold border ${status === 'ACCEPTED' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                            status === 'DECLINED' ? 'bg-red-50 text-red-600 border-red-200' :
+                                status === 'RECEIVED' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                    'bg-blue-50 text-blue-700 border-blue-200'
+                            }`}>
+                            <span className={`w-2 h-2 rounded-full ${status === 'ACCEPTED' ? 'bg-emerald-500' :
+                                status === 'DECLINED' ? 'bg-red-500' :
+                                    status === 'RECEIVED' ? 'bg-amber-500' :
+                                        'bg-blue-500'
+                                }`} />
+                            {statusConfig.label}
                         </div>
-                    )}
-
-                    {/* Job Details Card */}
-                    {job && (
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-700 pb-3 flex items-center gap-2">
-                                <Briefcase className="text-primary" size={20} />
-                                Job Position
-                            </h3>
-                            <div className="space-y-4">
-                                <div>
-                                    <div className="text-xl font-semibold text-gray-900 dark:text-white">{job.name}</div>
-                                </div>
-                                
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-700/50">
-                                            <Briefcase className="text-gray-500" size={18} />
-                                        </div>
-                                        <div>
-                                            <div className="text-xs text-gray-500">Level</div>
-                                            <div className="font-medium text-gray-900 dark:text-gray-100">{job.jobLevel || 'N/A'}</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-700/50">
-                                            <MapPin className="text-gray-500" size={18} />
-                                        </div>
-                                        <div>
-                                            <div className="text-xs text-gray-500">Working Model</div>
-                                            <div className="font-medium text-gray-900 dark:text-gray-100">{job.workingModel || 'N/A'}</div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-700/50">
-                                            <DollarSign className="text-gray-500" size={18} />
-                                        </div>
-                                        <div>
-                                            <div className="text-xs text-gray-500">Salary</div>
-                                            <div className="font-medium text-gray-900 dark:text-gray-100">{formatSalary(job.salaryStart, job.salaryEnd, job.currency)}</div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-700/50">
-                                            <Calendar className="text-gray-500" size={18} />
-                                        </div>
-                                        <div>
-                                            <div className="text-xs text-gray-500">Experience</div>
-                                            <div className="font-medium text-gray-900 dark:text-gray-100">{job.experienceTime || 0} years</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    </div>
                 </div>
 
-                {/* Right Column: Company & Candidate */}
-                <div className="space-y-6">
-                    {/* Candidate Info */}
-                    {candidate && (
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm overflow-hidden relative">
-                            <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-r from-primary/10 to-orange-200/50 dark:from-primary/20 dark:to-orange-900/20"></div>
-                            <div className="relative mt-8 flex flex-col items-center">
-                                <div className="w-20 h-20 rounded-full border-4 border-white dark:border-gray-800 bg-gray-100 overflow-hidden flex items-center justify-center shadow-md">
-                                    {candidate.user?.avatar ? (
-                                        <img src={candidate.user.avatar} alt="Avatar" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <User className="text-gray-400" size={32} />
-                                    )}
-                                </div>
-                                <h3 className="mt-3 text-lg font-bold text-gray-900 dark:text-white text-center">
-                                    {candidate.user?.fullName || 'Candidate Menu'}
-                                </h3>
-                                
-                                <div className="w-full mt-6 space-y-4">
-                                    <div className="flex items-center gap-3 text-sm">
-                                        <Mail className="text-gray-400 shrink-0" size={16} />
-                                        <span className="text-gray-600 dark:text-gray-300 truncate" title={candidate.user?.email}>{candidate.user?.email || 'N/A'}</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 text-sm">
-                                        <Calendar className="text-gray-400 shrink-0" size={16} />
-                                        <span className="text-gray-600 dark:text-gray-300">{candidate.user?.dateOfBirth ? new Date(candidate.user.dateOfBirth).toLocaleDateString() : 'N/A'}</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 text-sm">
-                                        <User className="text-gray-400 shrink-0" size={16} />
-                                        <span className="text-gray-600 dark:text-gray-300 capitalize">{candidate.user?.gender?.toLowerCase() || 'N/A'}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                {/* Content: Left info + Right PDF */}
+                <div className="flex flex-col lg:flex-row h-[calc(100%-60px)]">
 
-                    {/* Company Info */}
-                    {company && (
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-                            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-700 pb-3 flex items-center gap-2">
-                                <Building2 className="text-gray-400" size={18} />
-                                Company Info
-                            </h3>
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 dark:border-gray-600 overflow-hidden flex items-center justify-center shrink-0">
-                                    {company.logo ? (
-                                        <img src={company.logo} alt="Logo" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <Building2 className="text-gray-400" size={20} />
-                                    )}
+                    {/* Left: Tab Content */}
+                    <div className="w-full lg:w-1/2 lg:border-r border-gray-200 dark:border-neutral-800 overflow-y-auto overflow-x-hidden scrollbar-thin">
+                        <div className="p-5">
+
+                            {/* Candidate Info + Contact */}
+                            <div className="bg-gray-50 dark:bg-neutral-800/30 rounded-xl p-6 space-y-5">
+                                {/* Candidate Name & Contact Info */}
+                                <div className="space-y-5">
+                                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+                                        {candidate?.user?.fullName || 'Candidate'}
+                                    </h2>
+
+                                    <div className="space-y-4">
+                                        <div className="flex flex-col gap-3.5">
+                                            <div className="flex items-center gap-3">
+                                                <Mail className="w-4 h-4 text-gray-400" />
+                                                <span className="text-base font-medium text-gray-800 dark:text-neutral-200 truncate">{candidate?.user?.email || 'N/A'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="min-w-0">
-                                    <div className="font-semibold text-gray-900 dark:text-white truncate">{company.name}</div>
-                                    <div className="text-xs text-gray-500 truncate">{company.industry}</div>
-                                </div>
+
+                                {/* Divider */}
+                                <div className="border-t border-gray-200 dark:border-neutral-700" />
+
+                                {/* Job Position Info */}
+                                {job && (
+                                    <div className="space-y-4">
+                                        <h4 className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-widest">
+                                            Job Position
+                                        </h4>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-2.5 text-base text-gray-800 dark:text-neutral-200">
+                                                <Briefcase className="w-[18px] text-gray-500 dark:text-neutral-400" />
+                                                <span className="font-medium">{job.name} ({job.jobLevel || 'N/A'}{job.workingModel ? `, ${job.workingModel}` : ''})</span>
+                                            </div>
+                                            <div className="flex items-center gap-2.5 text-base text-gray-800 dark:text-neutral-200">
+                                                <DollarSign className="w-[18px] text-gray-500 dark:text-neutral-400" />
+                                                <span className="font-medium">{formatSalary(job.salaryStart, job.salaryEnd, job.currency)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                            
-                            <div className="space-y-3 pt-2">
-                                <div className="flex items-start gap-3 text-sm">
-                                    <Mail className="text-gray-400 shrink-0 mt-0.5" size={16} />
-                                    <span className="text-gray-600 dark:text-gray-300 break-all">{company.email || 'N/A'}</span>
-                                </div>
-                            </div>
+
                         </div>
-                    )}
+                    </div>
+
+                    {/* Right: PDF Viewer */}
+                    <div className="w-full lg:w-1/2 bg-neutral-50 dark:bg-neutral-950 overflow-hidden relative">
+                        {candidate?.resumeUrl ? (
+                            <PdfViewer resumeUrl={candidate.resumeUrl} />
+                        ) : (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center bg-gray-50/50 dark:bg-gray-800/20">
+                                <FileX className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
+                                <h3 className="text-gray-900 dark:text-gray-100 font-semibold mb-2">No CV attached</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    The candidate didn't have any resume url to attach.
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
-                
             </div>
         </div>
     );

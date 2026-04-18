@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, InputNumber, Radio, Form } from 'antd';
+import { Input, InputNumber, Radio, Form, Select } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase } from '../../../../utils/icons';
 
@@ -43,7 +43,9 @@ const RoleDetails = () => {
                         </div>
                     </div>
                     <Form.Item name="jobLevel" label="Job Level" className="mb-0">
-                        <Select placeholder="Select level" className="w-full h-10" options={[{ value: 'INTERN', label: 'Intern' }, { value: 'FRESHER', label: 'Fresher' }, { value: 'JUNIOR', label: 'Junior' }, { value: 'MIDDLE', label: 'Middle' }, { value: 'SENIOR', label: 'Senior' }, { value: 'LEAD', label: 'Lead' }, { value: 'MANAGER', label: 'Manager' }, { value: 'DIRECTOR', label: 'Director' }]} />
+                        <Select placeholder="Select level" className="w-full h-10" options={[{ value: 'INTERN', label: 'Intern' }, { value: 'FRESHER', label: 'Fresher' }, { value: 'JUNIOR', label: 'Junior' }, { value: 'MIDDLE', label: 'Middle' }, { value: 'SENIOR', label: 'Senior' }, { value: 'LEAD', label: 'Lead' }, { value: 'MANAGER', label: 'Manager' }
+                            // , { value: 'DIRECTOR', label: 'Director' }
+                        ]} />
                     </Form.Item>
                 </div>
 
