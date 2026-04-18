@@ -8,7 +8,7 @@ import {
 } from '../../../apis/jobApi';
 import { useGetJobDetailQuery } from '@/apis/apis';
 import Loading from '@/components/Loading';
-import { ChevronLeft, ChevronRight, ExternalLink, Lock, RefreshCw, Trash2, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink, Lock, Mail, Phone, RefreshCw, Trash2, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRocket, faWandMagicSparkles } from '../../../utils/icons';
@@ -214,10 +214,10 @@ const ProposedCVs = ({ jobId }) => {
                   ? 'cursor-not-allowed bg-orange-50 text-orange-300 border border-orange-100'
                   : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
               }`}
-              title={isRefreshPending ? 'Update the refresh threshold for the current background run' : 'Refresh proposed CVs'}
+              title={isRefreshPending ? 'Update the refresh threshold for the current background run' : 'Get propose CVs'}
             >
               <RefreshCw size={15} className={isRefreshingRequest ? 'animate-spin' : ''} />
-              {isRefreshPending ? 'Update Refresh' : 'Refresh'}
+              {isRefreshPending ? 'Update Refresh' : 'Get Propose CV'}
             </button>
           </div>
         </div>
@@ -282,15 +282,16 @@ const ProposedCVs = ({ jobId }) => {
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto custom-scrollbar">
-              <table className="w-full text-left border-collapse table-fixed">
+            <div className="flex-1 overflow-auto custom-scrollbar">
+              <table className="w-full min-w-[1180px] text-left border-collapse table-fixed">
                 <thead className="sticky top-0 z-20 bg-gray-50 dark:bg-neutral-900 shadow-sm">
                   <tr>
-                    <th className="px-6 py-4 w-[24%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
-                    <th className="px-6 py-4 w-[28%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
-                    <th className="px-6 py-4 w-[23%] text-sm font-semibold text-gray-500 tracking-wide">Strengths</th>
-                    <th className="px-6 py-4 w-[15%] text-sm font-semibold text-gray-500 tracking-wide text-center">Match Rate</th>
-                    <th className="px-6 py-4 w-[14%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
+                    <th className="px-6 py-4 w-[18%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
+                    <th className="px-6 py-4 w-[18%] text-sm font-semibold text-gray-500 tracking-wide">Contact</th>
+                    <th className="px-6 py-4 w-[26%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
+                    <th className="px-6 py-4 w-[20%] text-sm font-semibold text-gray-500 tracking-wide">Strengths</th>
+                    <th className="px-6 py-4 w-[11%] text-sm font-semibold text-gray-500 tracking-wide text-center">Match Rate</th>
+                    <th className="px-6 py-4 w-[10%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-neutral-800">
@@ -305,6 +306,34 @@ const ProposedCVs = ({ jobId }) => {
                               {app.fullName || 'Unknown Candidate'}
                             </p>
                           </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {app.email || app.phone ? (
+                            <div className="min-w-0 space-y-1.5">
+                              {app.email && (
+                                <a
+                                  href={`mailto:${app.email}`}
+                                  className="flex min-w-0 items-center gap-2 text-xs font-medium text-gray-600 hover:text-orange-500"
+                                  title={app.email}
+                                >
+                                  <Mail size={13} className="flex-shrink-0 text-gray-400" />
+                                  <span className="truncate">{app.email}</span>
+                                </a>
+                              )}
+                              {app.phone && (
+                                <a
+                                  href={`tel:${app.phone}`}
+                                  className="flex min-w-0 items-center gap-2 text-xs font-medium text-gray-600 hover:text-orange-500"
+                                  title={app.phone}
+                                >
+                                  <Phone size={13} className="flex-shrink-0 text-gray-400" />
+                                  <span className="truncate">{app.phone}</span>
+                                </a>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-xs text-gray-400">--</span>
+                          )}
                         </td>
                         <td className="px-6 py-4">
                           <div className="rounded-xl border border-orange-100 bg-orange-50/70 px-3 py-2">
@@ -475,6 +504,8 @@ const normalizeProposal = (proposal = {}) => ({
   candidateId: proposal.identity?.candidateId ?? proposal.candidateId ?? null,
   jobId: proposal.identity?.jobId ?? proposal.jobId ?? null,
   fullName: proposal.candidate?.fullName ?? proposal.fullName ?? null,
+  email: proposal.candidate?.email ?? proposal.email ?? null,
+  phone: proposal.candidate?.phone ?? proposal.phone ?? null,
   jobTitle: proposal.candidate?.jobTitle ?? proposal.jobTitle ?? null,
   address: proposal.candidate?.address ?? proposal.address ?? null,
   isUnlocked: proposal.access?.unlocked ?? proposal.isUnlocked ?? false,
