@@ -17,9 +17,9 @@ import toastMessage from '@/utils/toastMessage';
 import { useDispatch } from 'react-redux';
 
 const POLLING_INTERVAL = 5000;
-const DEFAULT_MIN_MATCH_RATE = 30;
-const MIN_MATCH_RATE = 0;
-const MAX_MATCH_RATE = 100;
+const DEFAULT_MIN_AI_SCORE = 30;
+const MIN_AI_SCORE = 0;
+const MAX_AI_SCORE = 100;
 
 const ProposedCVs = ({ jobId }) => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const ProposedCVs = ({ jobId }) => {
   const [isJobPolling, setIsJobPolling] = useState(false);
   const [isEvaluationPolling, setIsEvaluationPolling] = useState(false);
   const previousRefreshPendingRef = useRef(false);
-  const [draftMinMatchRate, setDraftMinMatchRate] = useState(DEFAULT_MIN_MATCH_RATE);
+  const [draftMinAiScore, setDraftMinAiScore] = useState(DEFAULT_MIN_AI_SCORE);
   const [isDraftDirty, setIsDraftDirty] = useState(false);
 
   const {
@@ -39,15 +39,15 @@ const ProposedCVs = ({ jobId }) => {
     refetchOnMountOrArgChange: true,
   });
   const jobStatus = jobData?.data?.status;
-  const persistedAppliedMinMatchRate = jobData?.data?.proposeRefreshMinMatchRate;
-  const persistedTargetMinMatchRate = jobData?.data?.proposeRefreshTargetMinMatchRate;
+  const persistedAppliedMinAiScore = jobData?.data?.proposeRefreshMinAiScore;
+  const persistedTargetMinAiScore = jobData?.data?.proposeRefreshTargetMinAiScore;
   const isUnpublished = jobStatus === 'DRAFT' || jobStatus === 'PENDING_REVIEW';
   const isRefreshPending = Boolean(jobData?.data?.proposeRefreshPending);
-  const appliedMinMatchRate = normalizeMinMatchRate(persistedAppliedMinMatchRate);
-  const pendingTargetMinMatchRate = normalizeMinMatchRate(
-    persistedTargetMinMatchRate ?? persistedAppliedMinMatchRate
+  const appliedMinAiScore = normalizeMinAiScore(persistedAppliedMinAiScore);
+  const pendingTargetMinAiScore = normalizeMinAiScore(
+    persistedTargetMinAiScore ?? persistedAppliedMinAiScore
   );
-  const requestedMinMatchRate = isRefreshPending ? pendingTargetMinMatchRate : appliedMinMatchRate;
+  const requestedMinAiScore = isRefreshPending ? pendingTargetMinAiScore : appliedMinAiScore;
 
   const [params, setParams] = useState({ page: 0, size: 10 });
   const {
@@ -70,12 +70,12 @@ const ProposedCVs = ({ jobId }) => {
   const applications = data.content;
   const normalizedApplications = applications.map(normalizeProposal);
   const hasEvaluationInProgress = normalizedApplications.some((proposal) => isEvaluationPendingStatus(proposal.evaluationStatus));
+  const hasUnscoredProposal = normalizedApplications.some((proposal) => !isProposalScored(proposal));
   const totalElements = data.totalElements;
   const totalPages = data.totalPages;
   const isBusyRefreshing = isRefreshingRequest;
   const isMutatingProposal = isUnlocking || isRemoving;
-  const isPendingThresholdUpdate = isRefreshPending && requestedMinMatchRate !== appliedMinMatchRate;
-  const canSubmitRefresh = !isRefreshingRequest && (!isRefreshPending || normalizeMinMatchRate(draftMinMatchRate) !== requestedMinMatchRate);
+  const canSubmitRefresh = !isRefreshingRequest && !isRefreshPending && !hasUnscoredProposal;
 
   useEffect(() => {
     setIsJobPolling(isRefreshPending);
@@ -101,24 +101,24 @@ const ProposedCVs = ({ jobId }) => {
 
   useEffect(() => {
     if (!isDraftDirty) {
-      setDraftMinMatchRate(requestedMinMatchRate);
+      setDraftMinAiScore(requestedMinAiScore);
     }
-  }, [isDraftDirty, jobId, requestedMinMatchRate]);
+  }, [isDraftDirty, jobId, requestedMinAiScore]);
 
   useEffect(() => {
-    if (draftMinMatchRate === requestedMinMatchRate) {
+    if (draftMinAiScore === requestedMinAiScore) {
       setIsDraftDirty(false);
     }
-  }, [draftMinMatchRate, requestedMinMatchRate]);
+  }, [draftMinAiScore, requestedMinAiScore]);
 
   const handleRefreshProposedCvs = async () => {
     if (!jobId) return;
 
     try {
-      const normalizedMinMatchRate = normalizeMinMatchRate(draftMinMatchRate);
+      const normalizedMinAiScore = normalizeMinAiScore(draftMinAiScore);
       const result = await refreshProposedCvs({
         id: jobId,
-        minMatchRate: normalizedMinMatchRate,
+        minAiScore: normalizedMinAiScore,
       }).unwrap();
       setIsDraftDirty(false);
       toastMessage.success(result?.message || 'Refreshing proposed CVs in the background.');
@@ -128,15 +128,15 @@ const ProposedCVs = ({ jobId }) => {
     }
   };
 
-  const handleDraftMinMatchRateChange = (value) => {
+  const handleDraftMinAiScoreChange = (value) => {
     if (value === null || value === '') {
-      setDraftMinMatchRate(null);
-      setIsDraftDirty(null !== requestedMinMatchRate);
+      setDraftMinAiScore(null);
+      setIsDraftDirty(null !== requestedMinAiScore);
       return;
     }
-    const normalizedValue = normalizeMinMatchRate(value);
-    setDraftMinMatchRate(normalizedValue);
-    setIsDraftDirty(normalizedValue !== requestedMinMatchRate);
+    const normalizedValue = normalizeMinAiScore(value);
+    setDraftMinAiScore(normalizedValue);
+    setIsDraftDirty(normalizedValue !== requestedMinAiScore);
   };
 
   const openProposalDetail = (proposal) => {
@@ -205,13 +205,13 @@ const ProposedCVs = ({ jobId }) => {
           </div>
           <div className="flex flex-col sm:flex-row sm:items-end gap-3 w-full sm:w-auto">
             <div className="w-full sm:w-[240px]">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Minimum match rate</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Minimum AI score</p>
               <div className="mt-1 flex h-[42px] items-stretch overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-colors focus-within:border-orange-400">
                 <InputNumber
-                  min={MIN_MATCH_RATE}
-                  max={MAX_MATCH_RATE}
-                  value={draftMinMatchRate}
-                  onChange={handleDraftMinMatchRateChange}
+                  min={MIN_AI_SCORE}
+                  max={MAX_AI_SCORE}
+                  value={draftMinAiScore}
+                  onChange={handleDraftMinAiScoreChange}
                   disabled={isBusyRefreshing}
                   controls={false}
                   className="h-full w-full !border-0 !shadow-none [&_.ant-input-number-input-wrap]:h-full [&_.ant-input-number-input]:h-full [&_.ant-input-number-input]:px-4 [&_.ant-input-number-input]:text-sm [&_.ant-input-number-input]:font-semibold"
@@ -230,21 +230,21 @@ const ProposedCVs = ({ jobId }) => {
                   ? 'cursor-not-allowed bg-orange-50 text-orange-300 border border-orange-100'
                   : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
               }`}
-              title={isRefreshPending ? 'Update the refresh threshold for the current background run' : 'Get propose CVs'}
+              title={getRefreshButtonTitle({ isRefreshPending, hasUnscoredProposal })}
             >
               <RefreshCw size={15} className={isRefreshingRequest ? 'animate-spin' : ''} />
-              {isRefreshPending ? 'Update Refresh' : 'Get Propose CV'}
+              Get Propose CV
             </button>
           </div>
         </div>
         <p className="mt-3 text-xs text-neutral-400">
           {isRefreshPending
-            ? isPendingThresholdUpdate
-              ? `Current results still reflect the previous ${appliedMinMatchRate}% minimum while a new refresh is running with ${requestedMinMatchRate}%.`
-              : `A refresh is running with the current ${requestedMinMatchRate}% minimum. The list will update automatically when it finishes.`
+            ? `A refresh is running with the current ${requestedMinAiScore}% minimum AI score. The list will update automatically when it finishes.`
+            : hasUnscoredProposal
+              ? 'Refresh will be available after every proposed candidate has finished AI scoring.'
             : isDraftDirty
-              ? `Refresh to apply the new ${normalizeMinMatchRate(draftMinMatchRate)}% minimum.`
-              : `Only candidates with match rate at or above ${appliedMinMatchRate}% will be kept in the proposed list after refresh.`}
+              ? `Refresh to apply the new ${normalizeMinAiScore(draftMinAiScore)}% minimum AI score.`
+              : `Only candidates with AI score at or above ${appliedMinAiScore}% will stay visible after scoring.`}
         </p>
       </div>
 
@@ -254,9 +254,7 @@ const ProposedCVs = ({ jobId }) => {
           <div>
             <p className="text-sm font-semibold">Refreshing proposed CVs</p>
             <p className="text-xs text-amber-700 mt-1">
-              {isPendingThresholdUpdate
-                ? `AI is processing the latest ${requestedMinMatchRate}% minimum in the background. We&apos;ll keep the current ${appliedMinMatchRate}% list visible until the new results are ready.`
-                : `AI is processing this job in the background with the current ${requestedMinMatchRate}% minimum. We&apos;ll keep the current list visible until the new results are ready.`}
+              {`AI is processing this job in the background with the current ${requestedMinAiScore}% minimum AI score. We'll keep the current list visible until the new results are ready.`}
             </p>
           </div>
         </div>
@@ -305,7 +303,7 @@ const ProposedCVs = ({ jobId }) => {
                     <th className="px-6 py-4 w-[22%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
                     <th className="px-6 py-4 w-[34%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
                     <th className="px-6 py-4 w-[26%] text-sm font-semibold text-gray-500 tracking-wide">Strengths</th>
-                    <th className="px-6 py-4 w-[10%] text-sm font-semibold text-gray-500 tracking-wide text-center">Match Rate</th>
+                    <th className="px-6 py-4 w-[10%] text-sm font-semibold text-gray-500 tracking-wide text-center">AI Score</th>
                     <th className="px-6 py-4 w-[8%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
                   </tr>
                 </thead>
@@ -397,8 +395,8 @@ const ProposedCVs = ({ jobId }) => {
                         </td>
                         <td className="px-6 py-4 text-center">
                           <div className="flex flex-col items-center gap-1">
-                            <span className={`text-sm font-semibold ${getScoreColor(app.matchRate)}`}>
-                              {app.matchRate != null ? `${getDisplayRate(app.matchRate)}%` : '--'}
+                            <span className={`text-sm font-semibold ${getScoreColor(app.aiScore)}`}>
+                              {app.aiScore != null ? `${getDisplayRate(app.aiScore)}%` : '--'}
                             </span>
                             {isEvaluationPendingStatus(app.evaluationStatus) && (
                               <span className="inline-flex items-center gap-1 text-[11px] font-medium text-orange-500">
@@ -532,6 +530,23 @@ const normalizeProposal = (proposal = {}) => ({
 
 const isEvaluationPendingStatus = (status) => status === 'WAITING' || status === 'PARTIAL';
 
+const isProposalScored = (proposal) => {
+  if (!proposal) return true;
+  if (isEvaluationPendingStatus(proposal.evaluationStatus)) return false;
+  if (proposal.evaluationStatus === 'FAIL') return true;
+  return proposal.aiScore != null;
+};
+
+const getRefreshButtonTitle = ({ isRefreshPending, hasUnscoredProposal }) => {
+  if (isRefreshPending) {
+    return 'Refresh is already running';
+  }
+  if (hasUnscoredProposal) {
+    return 'Wait until all proposed candidates finish AI scoring';
+  }
+  return 'Get propose CVs';
+};
+
 const getOverviewText = (proposal) => {
   if (isEvaluationPendingStatus(proposal?.evaluationStatus)) {
     return 'AI is evaluating how this resume matches the current job. Overview will appear automatically when scoring is complete.';
@@ -614,11 +629,11 @@ const getScoreColor = (score) => {
   return 'text-red-500';
 };
 
-const normalizeMinMatchRate = (value) => {
-  if (value == null || value === '') return DEFAULT_MIN_MATCH_RATE;
+const normalizeMinAiScore = (value) => {
+  if (value == null || value === '') return DEFAULT_MIN_AI_SCORE;
   const numericValue = Number(value);
-  if (Number.isNaN(numericValue)) return DEFAULT_MIN_MATCH_RATE;
-  return Math.min(MAX_MATCH_RATE, Math.max(MIN_MATCH_RATE, Math.round(numericValue)));
+  if (Number.isNaN(numericValue)) return DEFAULT_MIN_AI_SCORE;
+  return Math.min(MAX_AI_SCORE, Math.max(MIN_AI_SCORE, Math.round(numericValue)));
 };
 
 export default ProposedCVs;
