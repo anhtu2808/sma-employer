@@ -313,22 +313,25 @@ const JobCreate = () => {
 
   const blocker = useBlocker(isDirty && !isSubmitting);
 
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      Modal.confirm({
+        title: "Unsaved changes",
+        content: "You have unsaved changes. Are you sure you want to leave? Your changes will be lost.",
+        okText: "Leave",
+        cancelText: "Stay",
+        okButtonProps: { danger: true },
+        centered: true,
+        onOk: () => blocker.proceed?.(),
+        onCancel: () => blocker.reset?.(),
+      });
+    }
+  }, [blocker.state, blocker.proceed, blocker.reset]);
+
   return (
     <>
       <Preloader isLoading={isSubmitting || (isEditMode && isJobLoading)} />
 
-      <Modal
-        open={blocker.state === 'blocked'}
-        title="Unsaved changes"
-        okText="Leave"
-        cancelText="Stay"
-        okButtonProps={{ danger: true }}
-        onOk={() => blocker.proceed?.()}
-        onCancel={() => blocker.reset?.()}
-        closable={false}
-      >
-        <p>You have unsaved changes. Are you sure you want to leave? Your changes will be lost.</p>
-      </Modal>
     <div className="space-y-4">
       <Form form={form} onFinish={onFinish} onFinishFailed={() => toastMessage.error("Please fill in all required fields before publishing.")} onValuesChange={() => setIsDirty(true)} layout="vertical" className="block">
         {/* Top Bar */}

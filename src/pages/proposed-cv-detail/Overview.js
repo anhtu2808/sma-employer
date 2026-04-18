@@ -6,7 +6,7 @@ import toastMessage from '@/utils/toastMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faWandMagicSparkles } from '../../utils/icons';
 import { Lock, ShieldCheck, Sparkles, FolderPlus } from 'lucide-react';
-import { Tooltip, Modal } from 'antd';
+import { Tooltip, Modal, ConfigProvider } from 'antd';
 import Input from '@/components/Input';
 
 const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, refetch, onOpenAddToPool }) => {
@@ -130,38 +130,40 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
                 </div>
             </div>
 
-            <Modal
-                title="Confirm Candidate Invitation"
-                open={isInviteModalOpen}
-                onOk={handleInvite}
-                onCancel={closeInviteModal}
-                okText="Send Invite"
-                cancelText="Cancel"
-                confirmLoading={isInviting}
-                centered
-            >
-                <div className="space-y-4 pt-1">
-                    <div className="rounded-xl border border-orange-100 bg-orange-50 px-4 py-3">
-                        <p className="text-sm font-semibold text-gray-900">
-                            {proposal?.candidateName || 'Unknown Candidate'}
-                        </p>
-                        {proposal?.jobTitle && (
-                            <p className="mt-1 text-xs font-medium text-orange-700">
-                                {proposal.jobTitle}
+            <ConfigProvider theme={{ token: { colorPrimary: '#f97316', colorBorderHover: '#f97316' } }}>
+                <Modal
+                    title="Confirm Candidate Invitation"
+                    open={isInviteModalOpen}
+                    onOk={handleInvite}
+                    onCancel={closeInviteModal}
+                    okText="Send Invite"
+                    cancelText="Cancel"
+                    confirmLoading={isInviting}
+                    centered
+                >
+                    <div className="space-y-4 pt-1 pb-6">
+                        <div className="rounded-xl border border-orange-100 bg-orange-50 px-4 py-3">
+                            <p className="text-sm font-semibold text-gray-900">
+                                {proposal?.candidateName || 'Unknown Candidate'}
                             </p>
-                        )}
+                            {proposal?.jobTitle && (
+                                <p className="mt-1 text-xs font-medium text-orange-700">
+                                    {proposal.jobTitle}
+                                </p>
+                            )}
+                        </div>
+                        <Input.TextArea
+                            label="Invitation message"
+                            value={invitationMessage}
+                            onChange={(event) => setInvitationMessage(event.target.value)}
+                            placeholder="Add a short note for this candidate. Leave blank to use the default invitation message."
+                            autoSize={{ minRows: 4, maxRows: 6 }}
+                            maxLength={1000}
+                            showCount
+                        />
                     </div>
-                    <Input.TextArea
-                        label="Invitation message"
-                        value={invitationMessage}
-                        onChange={(event) => setInvitationMessage(event.target.value)}
-                        placeholder="Add a short note for this candidate. Leave blank to use the default invitation message."
-                        autoSize={{ minRows: 4, maxRows: 6 }}
-                        maxLength={1000}
-                        showCount
-                    />
-                </div>
-            </Modal>
+                </Modal>
+            </ConfigProvider>
         </>
     );
 };
