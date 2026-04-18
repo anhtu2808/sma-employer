@@ -299,15 +299,14 @@ const ProposedCVs = ({ jobId }) => {
         ) : (
           <>
             <div className="flex-1 overflow-auto custom-scrollbar">
-              <table className="w-full min-w-[1180px] text-left border-collapse table-fixed">
+              <table className="w-full min-w-[1040px] text-left border-collapse table-fixed">
                 <thead className="sticky top-0 z-20 bg-gray-50 dark:bg-neutral-900 shadow-sm">
                   <tr>
-                    <th className="px-6 py-4 w-[18%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
-                    <th className="px-6 py-4 w-[18%] text-sm font-semibold text-gray-500 tracking-wide">Contact</th>
-                    <th className="px-6 py-4 w-[26%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
-                    <th className="px-6 py-4 w-[20%] text-sm font-semibold text-gray-500 tracking-wide">Strengths</th>
-                    <th className="px-6 py-4 w-[11%] text-sm font-semibold text-gray-500 tracking-wide text-center">Match Rate</th>
-                    <th className="px-6 py-4 w-[10%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
+                    <th className="px-6 py-4 w-[22%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
+                    <th className="px-6 py-4 w-[34%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
+                    <th className="px-6 py-4 w-[26%] text-sm font-semibold text-gray-500 tracking-wide">Strengths</th>
+                    <th className="px-6 py-4 w-[10%] text-sm font-semibold text-gray-500 tracking-wide text-center">Match Rate</th>
+                    <th className="px-6 py-4 w-[8%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-neutral-800">
@@ -317,15 +316,12 @@ const ProposedCVs = ({ jobId }) => {
                     return (
                       <tr key={app.proposedResumeId ?? app.resumeId} className="hover:bg-gray-50/50 dark:hover:bg-neutral-800/50 transition-colors group">
                         <td className="px-6 py-4">
-                          <div className="min-w-0">
+                          <div className="min-w-0 space-y-2">
                             <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                               {app.fullName || 'Unknown Candidate'}
                             </p>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          {app.email || app.phone ? (
-                            <div className="min-w-0 space-y-1.5">
+                            {app.email || app.phone ? (
+                              <div className="min-w-0 space-y-1.5">
                               {app.email && (
                                 <a
                                   href={`mailto:${app.email}`}
@@ -346,10 +342,11 @@ const ProposedCVs = ({ jobId }) => {
                                   <span className="truncate">{app.phone}</span>
                                 </a>
                               )}
-                            </div>
-                          ) : (
-                            <span className="text-xs text-gray-400">--</span>
-                          )}
+                              </div>
+                            ) : (
+                              <span className="text-xs text-gray-400">No contact available</span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="rounded-xl border border-orange-100 bg-orange-50/70 px-3 py-2">

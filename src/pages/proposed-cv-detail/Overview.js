@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@/components/Button';
 import { useParams } from 'react-router-dom';
 import { useInviteCandidateMutation } from '@/apis/jobApi';
@@ -6,25 +6,41 @@ import toastMessage from '@/utils/toastMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faWandMagicSparkles } from '../../utils/icons';
 import { Lock, ShieldCheck, Sparkles } from 'lucide-react';
+import { Modal } from 'antd';
+import Input from '@/components/Input';
 
 const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, refetch }) => {
     const { jobId } = useParams();
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+    const [invitationMessage, setInvitationMessage] = useState('');
     const [inviteCandidate, { isLoading: isInviting }] = useInviteCandidateMutation();
     const proposalStatusLabel = getProposalStatusBadgeLabel(proposal?.proposalStatus, proposal?.isUnlocked);
     const canInviteCandidate = Boolean(proposal?.isUnlocked) && canInvite(proposal?.proposalStatus);
 
-    const handleInvite = async () => {
+    const openInviteModal = () => {
         if (!proposal?.candidateId || !Number.isInteger(Number(proposedResumeId))) {
             toastMessage.error('This proposed CV is missing invitation data. Please reopen it from the proposal list.');
             return;
         }
 
+        setIsInviteModalOpen(true);
+    };
+
+    const closeInviteModal = () => {
+        if (isInviting) return;
+        setIsInviteModalOpen(false);
+    };
+
+    const handleInvite = async () => {
         try {
             await inviteCandidate({
                 candidateId: proposal.candidateId,
                 jobId: Number(jobId),
                 proposedResumeId: Number(proposedResumeId),
+                message: invitationMessage,
             }).unwrap();
+            setIsInviteModalOpen(false);
+            setInvitationMessage('');
             toastMessage.success('Candidate invited successfully!');
             if (refetch) refetch();
         } catch (error) {
@@ -33,7 +49,8 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
     };
 
     return (
-        <div className="px-5 py-5 md:px-6 md:py-6 space-y-4">
+        <>
+            <div className="px-5 py-5 md:px-6 md:py-6 space-y-4">
             {!proposal?.isUnlocked && (
                 <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-amber-900 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-start gap-3">
@@ -93,14 +110,48 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
                             size="md"
                             shape="rounded"
                             loading={isInviting}
-                            onClick={handleInvite}
+                            onClick={openInviteModal}
                         >
                             Invite Candidate
                         </Button>
                     )}
                 </div>
             </div>
-        </div>
+            </div>
+
+            <Modal
+                title="Confirm Candidate Invitation"
+                open={isInviteModalOpen}
+                onOk={handleInvite}
+                onCancel={closeInviteModal}
+                okText="Send Invite"
+                cancelText="Cancel"
+                confirmLoading={isInviting}
+                centered
+            >
+                <div className="space-y-4 pt-1">
+                    <div className="rounded-xl border border-orange-100 bg-orange-50 px-4 py-3">
+                        <p className="text-sm font-semibold text-gray-900">
+                            {proposal?.candidateName || 'Unknown Candidate'}
+                        </p>
+                        {proposal?.jobTitle && (
+                            <p className="mt-1 text-xs font-medium text-orange-700">
+                                {proposal.jobTitle}
+                            </p>
+                        )}
+                    </div>
+                    <Input.TextArea
+                        label="Invitation message"
+                        value={invitationMessage}
+                        onChange={(event) => setInvitationMessage(event.target.value)}
+                        placeholder="Add a short note for this candidate. Leave blank to use the default invitation message."
+                        autoSize={{ minRows: 4, maxRows: 6 }}
+                        maxLength={1000}
+                        showCount
+                    />
+                </div>
+            </Modal>
+        </>
     );
 };
 
