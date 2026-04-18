@@ -85,7 +85,7 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
 
                 <div className="flex flex-col items-start xl:items-end gap-3">
                     <div className="flex items-center gap-3 flex-wrap">
-                        {proposal?.isUnlocked && (
+                        {proposal?.isUnlocked && !proposal?.isSaved && (
                             <Tooltip title="Add to Talent Pool">
                                 <button
                                     type="button"

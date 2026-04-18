@@ -317,6 +317,7 @@ const normalizeProposedCvDetail = (payload) => {
         proposedAt: payload.proposed_at || null,
         matchRate,
         isUnlocked,
+        isSaved: payload.is_saved ?? payload.isSaved ?? false,
     };
 };
 
