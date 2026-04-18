@@ -16,7 +16,9 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
     };
 
     const scoreValue = candidate.aiOverallScore;
-    const dragId = `${candidate.id}_${candidate.applicationId}`;
+    const proposedId = candidate.proposedId || candidate.proposedResumeId || candidate.proposed_id;
+    const isProposed = !!proposedId;
+    const dragId = `${candidate.id}_${candidate.applicationId || ''}_${proposedId || ''}`;
 
     const handleRemoveClick = (e) => {
         e.stopPropagation();
@@ -31,6 +33,14 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
                 onRemove(candidate.id);
             }
         });
+    };
+
+    const handleCardClick = () => {
+        if (isProposed && candidate.jobId) {
+            navigate(`/jobs/${candidate.jobId}/proposed-cvs?proposedResumeId=${proposedId}`);
+        } else if (candidate.applicationId) {
+            navigate(`/applications/${candidate.applicationId}`);
+        }
     };
 
     return (
@@ -65,7 +75,7 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
                                 <div className="min-w-0 flex-1">
                                     <h4
                                         className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors truncate cursor-pointer hover:underline uppercase tracking-wide"
-                                        onClick={() => navigate(`/applications/${candidate.applicationId}`)}
+                                        onClick={handleCardClick}
                                         title={candidate.candidateName}
                                     >
                                         {candidate.candidateName}

@@ -57,6 +57,15 @@ export const talentPoolApi = api.injectEndpoints({
             invalidatesTags: (result, error, { groupId }) => [{ type: "TalentPools", id: `Items-${groupId}` }, "TalentPools"],
         }),
 
+        addTalentPoolItemProposed: builder.mutation({
+            query: (data) => ({
+                url: `${API_VERSION}/talent-pools/items/proposed`,
+                method: "POST",
+                body: data, // { proposedId, groupId }
+            }),
+            invalidatesTags: (result, error, { groupId }) => [{ type: "TalentPools", id: `Items-${groupId}` }, "TalentPools"],
+        }),
+
         deleteTalentPool: builder.mutation({
             query: (id) => ({
                 url: `${API_VERSION}/talent-pools/${id}`,
@@ -70,7 +79,16 @@ export const talentPoolApi = api.injectEndpoints({
                 url: `${API_VERSION}/talent-pools/items/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: ["TalentPools"], // Hard to know which groupId it belonged to unless passed, so invalidate all to be safe, or we can pass groupId in args
+            invalidatesTags: ["TalentPools"],
+        }),
+
+        moveTalentPoolItem: builder.mutation({
+            query: ({ id, groupId }) => ({
+                url: `${API_VERSION}/talent-pools/items/${id}`,
+                method: "PATCH",
+                body: { groupId },
+            }),
+            invalidatesTags: ["TalentPools"],
         }),
     }),
 });
@@ -83,5 +101,7 @@ export const {
     useUpdateTalentPoolMutation,
     useDeleteTalentPoolMutation,
     useAddTalentPoolItemMutation,
+    useAddTalentPoolItemProposedMutation,
     useDeleteTalentPoolItemMutation,
+    useMoveTalentPoolItemMutation,
 } = talentPoolApi;

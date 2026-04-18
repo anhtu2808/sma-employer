@@ -172,11 +172,11 @@ const ProposedCVs = ({ jobId }) => {
         try {
           await removeProposedCv({ proposedResumeId: proposal.proposedResumeId }).unwrap();
           toastMessage.success('Proposed CV removed successfully.');
-          
+
           if (applications.length === 1 && params.page > 0) {
             setParams((prev) => ({ ...prev, page: prev.page - 1 }));
           }
-          
+
           dispatch(jobApi.util.invalidateTags([{ type: 'Jobs', id: `PROPOSED_${jobId}` }]));
         } catch (error) {
           toastMessage.error(error?.data?.message || 'Failed to remove proposed CV');
@@ -254,8 +254,8 @@ const ProposedCVs = ({ jobId }) => {
             <p className="text-sm font-semibold">Refreshing proposed CVs</p>
             <p className="text-xs text-amber-700 mt-1">
               {isPendingThresholdUpdate
-                ? `AI is processing the latest ${requestedMinMatchRate}% minimum in the background. We&apos;ll keep the current ${appliedMinMatchRate}% list visible until the new results are ready.`
-                : `AI is processing this job in the background with the current ${requestedMinMatchRate}% minimum. We&apos;ll keep the current list visible until the new results are ready.`}
+                ? `AI is processing the latest ${requestedMinMatchRate}% minimum in the background. We will keep the current ${appliedMinMatchRate}% list visible until the new results are ready.`
+                : `AI is processing this job in the background with the current ${requestedMinMatchRate}% minimum. We will keep the current list visible until the new results are ready.`}
             </p>
           </div>
         </div>

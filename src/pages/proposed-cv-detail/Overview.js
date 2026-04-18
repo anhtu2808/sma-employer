@@ -5,9 +5,10 @@ import { useInviteCandidateMutation } from '@/apis/jobApi';
 import toastMessage from '@/utils/toastMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faWandMagicSparkles } from '../../utils/icons';
-import { Lock, ShieldCheck, Sparkles } from 'lucide-react';
+import { Lock, ShieldCheck, Sparkles, FolderPlus } from 'lucide-react';
+import { Tooltip } from 'antd';
 
-const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, refetch }) => {
+const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, refetch, onOpenAddToPool }) => {
     const { jobId } = useParams();
     const [inviteCandidate, { isLoading: isInviting }] = useInviteCandidateMutation();
     const proposalStatusLabel = getProposalStatusBadgeLabel(proposal?.proposalStatus, proposal?.isUnlocked);
@@ -84,6 +85,17 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
 
                 <div className="flex flex-col items-start xl:items-end gap-3">
                     <div className="flex items-center gap-3 flex-wrap">
+                        {proposal?.isUnlocked && (
+                            <Tooltip title="Add to Talent Pool">
+                                <button
+                                    type="button"
+                                    onClick={onOpenAddToPool}
+                                    className="flex items-center justify-center w-9 h-9 rounded-full border border-orange-200 bg-orange-50 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300 dark:border-orange-900/50 dark:bg-orange-900/20"
+                                >
+                                    <FolderPlus size={18} />
+                                </button>
+                            </Tooltip>
+                        )}
                         <InfoPill icon={<ShieldCheck size={14} />} label={proposalStatusLabel} />
                         <InfoPill icon={<Sparkles size={14} />} label={`AI ${formatPercent(proposal?.aiScore)}`} accent />
                     </div>
