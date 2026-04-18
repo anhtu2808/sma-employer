@@ -16,15 +16,17 @@ const CandidateHeader = ({ app, onOpenBlock, onOpenAddToPool, compact = false })
                         </Tag>
                     </Tooltip>
                 )}
-                <Tooltip title="Add to Talent Pool">
-                    <button
-                        type="button"
-                        onClick={onOpenAddToPool}
-                        className="flex items-center justify-center w-6 h-6 rounded-full border border-orange-200 bg-orange-50 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300 dark:border-orange-900/50 dark:bg-orange-900/20"
-                    >
-                        <FolderPlus size={11} strokeWidth={2.5} />
-                    </button>
-                </Tooltip>
+                {!app.isInTalentPool && (
+                    <Tooltip title="Add to Talent Pool">
+                        <button
+                            type="button"
+                            onClick={onOpenAddToPool}
+                            className="flex items-center justify-center w-6 h-6 rounded-full border border-orange-200 bg-orange-50 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300 dark:border-orange-900/50 dark:bg-orange-900/20"
+                        >
+                            <FolderPlus size={11} strokeWidth={2.5} />
+                        </button>
+                    </Tooltip>
+                )}
                 <Tooltip title="Blacklist this candidate">
                     <button
                         type="button"
@@ -57,15 +59,17 @@ const CandidateHeader = ({ app, onOpenBlock, onOpenAddToPool, compact = false })
                 <p className="text-sm text-orange-500 font-medium">{app.jobTitle}</p>
             </div>
             <div className="flex items-center gap-2">
-                <Tooltip title="Add to Talent Pool">
-                    <button
-                        type="button"
-                        onClick={onOpenAddToPool}
-                        className="flex items-center justify-center w-9 h-9 rounded-full border border-orange-200 bg-orange-50 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300 dark:border-orange-900/50 dark:bg-orange-900/20"
-                    >
-                        <FolderPlus size={18} />
-                    </button>
-                </Tooltip>
+                {!app.isInTalentPool && (
+                    <Tooltip title="Add to Talent Pool">
+                        <button
+                            type="button"
+                            onClick={onOpenAddToPool}
+                            className="flex items-center justify-center w-9 h-9 rounded-full border border-orange-200 bg-orange-50 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300 dark:border-orange-900/50 dark:bg-orange-900/20"
+                        >
+                            <FolderPlus size={18} />
+                        </button>
+                    </Tooltip>
+                )}
                 <Tooltip title="Blacklist this candidate">
                     <button
                         type="button"
