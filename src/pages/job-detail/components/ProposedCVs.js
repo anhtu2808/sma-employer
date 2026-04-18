@@ -17,9 +17,9 @@ import toastMessage from '@/utils/toastMessage';
 import { useDispatch } from 'react-redux';
 
 const POLLING_INTERVAL = 5000;
-const DEFAULT_MIN_AI_SCORE = 30;
-const MIN_AI_SCORE = 0;
-const MAX_AI_SCORE = 100;
+const DEFAULT_MIN_SCORE = 30;
+const MIN_SCORE = 0;
+const MAX_SCORE = 100;
 
 const ProposedCVs = ({ jobId }) => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const ProposedCVs = ({ jobId }) => {
   const [isJobPolling, setIsJobPolling] = useState(false);
   const [isEvaluationPolling, setIsEvaluationPolling] = useState(false);
   const previousRefreshPendingRef = useRef(false);
-  const [draftMinAiScore, setDraftMinAiScore] = useState(DEFAULT_MIN_AI_SCORE);
+  const [draftMinScore, setDraftMinScore] = useState(DEFAULT_MIN_SCORE);
   const [isDraftDirty, setIsDraftDirty] = useState(false);
 
   const {
@@ -43,11 +43,11 @@ const ProposedCVs = ({ jobId }) => {
   const persistedTargetMinAiScore = jobData?.data?.proposeRefreshTargetMinAiScore;
   const isUnpublished = jobStatus === 'DRAFT' || jobStatus === 'PENDING_REVIEW';
   const isRefreshPending = Boolean(jobData?.data?.proposeRefreshPending);
-  const appliedMinAiScore = normalizeMinAiScore(persistedAppliedMinAiScore);
-  const pendingTargetMinAiScore = normalizeMinAiScore(
+  const appliedMinScore = normalizeMinScore(persistedAppliedMinAiScore);
+  const pendingTargetMinScore = normalizeMinScore(
     persistedTargetMinAiScore ?? persistedAppliedMinAiScore
   );
-  const requestedMinAiScore = isRefreshPending ? pendingTargetMinAiScore : appliedMinAiScore;
+  const requestedMinScore = isRefreshPending ? pendingTargetMinScore : appliedMinScore;
 
   const [params, setParams] = useState({ page: 0, size: 10 });
   const {
@@ -101,24 +101,25 @@ const ProposedCVs = ({ jobId }) => {
 
   useEffect(() => {
     if (!isDraftDirty) {
-      setDraftMinAiScore(requestedMinAiScore);
+      setDraftMinScore(requestedMinScore);
     }
-  }, [isDraftDirty, jobId, requestedMinAiScore]);
+  }, [isDraftDirty, jobId, requestedMinScore]);
 
   useEffect(() => {
-    if (draftMinAiScore === requestedMinAiScore) {
+    if (draftMinScore === requestedMinScore) {
       setIsDraftDirty(false);
     }
-  }, [draftMinAiScore, requestedMinAiScore]);
+  }, [draftMinScore, requestedMinScore]);
 
   const handleRefreshProposedCvs = async () => {
     if (!jobId) return;
 
     try {
-      const normalizedMinAiScore = normalizeMinAiScore(draftMinAiScore);
+      const normalizedMinScore = normalizeMinScore(draftMinScore);
       const result = await refreshProposedCvs({
         id: jobId,
-        minAiScore: normalizedMinAiScore,
+        minAiScore: normalizedMinScore,
+        minMatchRate: normalizedMinScore,
       }).unwrap();
       setIsDraftDirty(false);
       toastMessage.success(result?.message || 'Refreshing proposed CVs in the background.');
@@ -128,15 +129,15 @@ const ProposedCVs = ({ jobId }) => {
     }
   };
 
-  const handleDraftMinAiScoreChange = (value) => {
+  const handleDraftMinScoreChange = (value) => {
     if (value === null || value === '') {
-      setDraftMinAiScore(null);
-      setIsDraftDirty(null !== requestedMinAiScore);
+      setDraftMinScore(null);
+      setIsDraftDirty(null !== requestedMinScore);
       return;
     }
-    const normalizedValue = normalizeMinAiScore(value);
-    setDraftMinAiScore(normalizedValue);
-    setIsDraftDirty(normalizedValue !== requestedMinAiScore);
+    const normalizedValue = normalizeMinScore(value);
+    setDraftMinScore(normalizedValue);
+    setIsDraftDirty(normalizedValue !== requestedMinScore);
   };
 
   const openProposalDetail = (proposal) => {
@@ -205,13 +206,13 @@ const ProposedCVs = ({ jobId }) => {
           </div>
           <div className="flex flex-col sm:flex-row sm:items-end gap-3 w-full sm:w-auto">
             <div className="w-full sm:w-[240px]">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Minimum AI score</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Minimum score</p>
               <div className="mt-1 flex h-[42px] items-stretch overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-colors focus-within:border-orange-400">
                 <InputNumber
-                  min={MIN_AI_SCORE}
-                  max={MAX_AI_SCORE}
-                  value={draftMinAiScore}
-                  onChange={handleDraftMinAiScoreChange}
+                  min={MIN_SCORE}
+                  max={MAX_SCORE}
+                  value={draftMinScore}
+                  onChange={handleDraftMinScoreChange}
                   disabled={isBusyRefreshing}
                   controls={false}
                   className="h-full w-full !border-0 !shadow-none [&_.ant-input-number-input-wrap]:h-full [&_.ant-input-number-input]:h-full [&_.ant-input-number-input]:px-4 [&_.ant-input-number-input]:text-sm [&_.ant-input-number-input]:font-semibold"
@@ -226,8 +227,8 @@ const ProposedCVs = ({ jobId }) => {
               onClick={handleRefreshProposedCvs}
               disabled={!canSubmitRefresh}
               className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${!canSubmitRefresh
-                  ? 'cursor-not-allowed bg-orange-50 text-orange-300 border border-orange-100'
-                  : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
+                ? 'cursor-not-allowed bg-orange-50 text-orange-300 border border-orange-100'
+                : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
                 }`}
               title={getRefreshButtonTitle({ isRefreshPending, hasUnscoredProposal })}
             >
@@ -238,12 +239,12 @@ const ProposedCVs = ({ jobId }) => {
         </div>
         <p className="mt-3 text-xs text-neutral-400">
           {isRefreshPending
-            ? `A refresh is running with the current ${requestedMinAiScore}% minimum AI score. The list will update automatically when it finishes.`
+            ? `A refresh is running with the current ${requestedMinScore}% minimum score for AI score and match rate. The list will update automatically when it finishes.`
             : hasUnscoredProposal
               ? 'Refresh will be available after every proposed candidate has finished AI scoring.'
               : isDraftDirty
-                ? `Refresh to apply the new ${normalizeMinAiScore(draftMinAiScore)}% minimum AI score.`
-                : `Only candidates with AI score at or above ${appliedMinAiScore}% will stay visible after scoring.`}
+                ? `Refresh to apply the new ${normalizeMinScore(draftMinScore)}% minimum score for AI score and match rate.`
+                : `Only candidates meeting the ${appliedMinScore}% match-rate threshold and AI score threshold will stay visible after scoring.`}
         </p>
       </div>
 
@@ -253,7 +254,7 @@ const ProposedCVs = ({ jobId }) => {
           <div>
             <p className="text-sm font-semibold">Refreshing proposed CVs</p>
             <p className="text-xs text-amber-700 mt-1">
-              {`AI is processing this job in the background with the current ${requestedMinAiScore}% minimum AI score. We'll keep the current list visible until the new results are ready.`}
+              {`AI is processing this job in the background with the current ${requestedMinScore}% minimum score for AI score and match rate. We'll keep the current list visible until the new results are ready.`}
             </p>
           </div>
         </div>
@@ -628,11 +629,11 @@ const getScoreColor = (score) => {
   return 'text-red-500';
 };
 
-const normalizeMinAiScore = (value) => {
-  if (value == null || value === '') return DEFAULT_MIN_AI_SCORE;
+const normalizeMinScore = (value) => {
+  if (value == null || value === '') return DEFAULT_MIN_SCORE;
   const numericValue = Number(value);
-  if (Number.isNaN(numericValue)) return DEFAULT_MIN_AI_SCORE;
-  return Math.min(MAX_AI_SCORE, Math.max(MIN_AI_SCORE, Math.round(numericValue)));
+  if (Number.isNaN(numericValue)) return DEFAULT_MIN_SCORE;
+  return Math.min(MAX_SCORE, Math.max(MIN_SCORE, Math.round(numericValue)));
 };
 
 export default ProposedCVs;
