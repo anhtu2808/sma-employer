@@ -125,6 +125,13 @@ export const jobApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Criteria"],
     }),
+    toggleCriteriaStatus: builder.mutation({
+      query: (id) => ({
+        url: `${API_VERSION}/criteria/${id}/toggle-status`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Criteria"],
+    }),
     getProposedCvs: builder.query({
       query: ({ id, page, size }) => ({
         url: `${API_VERSION}/jobs/${id}/proposed-cv`,
@@ -134,10 +141,10 @@ export const jobApi = api.injectEndpoints({
       providesTags: (result, error, { id }) => [{ type: "Jobs", id: `PROPOSED_${id}` }],
     }),
     refreshProposedCvs: builder.mutation({
-      query: ({ id, minMatchRate }) => ({
+      query: ({ id, minAiScore }) => ({
         url: `${API_VERSION}/jobs/${id}/proposed-cv/refresh`,
         method: "POST",
-        body: { minMatchRate },
+        body: { minAiScore },
       }),
     }),
     unlockProposedCv: builder.mutation({
@@ -245,6 +252,7 @@ export const {
   useCreateCriteriaMutation,
   useUpdateCriteriaMutation,
   useDeleteCriteriaMutation,
+  useToggleCriteriaStatusMutation,
   useGetProposedCvsQuery,
   useRefreshProposedCvsMutation,
   useUnlockProposedCvMutation,
