@@ -208,9 +208,9 @@ const ApplicationDetail = () => {
     return (
         <div className="w-full space-y-4">
             {/* Unified Card */}
-            <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-sm overflow-clip" style={{ height: 'calc(100vh - 20px)' }}>
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-sm overflow-clip flex flex-col" style={{ height: 'calc(100vh - 20px)' }}>
                 {/* Tabs Bar — full width at top */}
-                <div className="flex items-center justify-between px-4 py-3">
+                <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-neutral-800">
                     <div className="flex gap-1 bg-gray-100 dark:bg-neutral-800 rounded-full p-1">
                         {tabs.map((tab) => (
                             <button
@@ -261,7 +261,7 @@ const ApplicationDetail = () => {
                 </div>
 
                 {/* Content: Left info + Right PDF */}
-                <div className="flex flex-col lg:flex-row h-[calc(100%-42px)]">
+                <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
                     {/* Left: Tab Content */}
                     <div className="w-full lg:w-1/2 lg:border-r border-gray-200 dark:border-neutral-800 overflow-y-auto overflow-x-hidden scrollbar-thin">
                         <div className="p-5">
