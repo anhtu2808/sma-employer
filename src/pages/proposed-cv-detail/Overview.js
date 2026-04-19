@@ -122,12 +122,31 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
             <Modal
                 title="Confirm Candidate Invitation"
                 open={isInviteModalOpen}
-                onOk={handleInvite}
                 onCancel={closeInviteModal}
-                okText="Send Invite"
-                cancelText="Cancel"
-                confirmLoading={isInviting}
                 centered
+                footer={(
+                    <div className="flex justify-end gap-3">
+                        <Button
+                            mode="secondary"
+                            size="md"
+                            shape="rounded"
+                            disabled={isInviting}
+                            onClick={closeInviteModal}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            mode="primary"
+                            size="md"
+                            shape="rounded"
+                            disabled={isInviting}
+                            loading={isInviting}
+                            onClick={handleInvite}
+                        >
+                            {isInviting ? 'Sending...' : 'Send Invite'}
+                        </Button>
+                    </div>
+                )}
             >
                 <div className="space-y-4 pt-1">
                     <div className="rounded-xl border border-orange-100 bg-orange-50 px-4 py-3">

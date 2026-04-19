@@ -76,6 +76,7 @@ const ProposedCVs = ({ jobId }) => {
   const isBusyRefreshing = isRefreshingRequest;
   const isMutatingProposal = isUnlocking || isRemoving;
   const canSubmitRefresh = !isRefreshingRequest && !isRefreshPending && !hasUnscoredProposal;
+  const hasNoProposedCvs = !isLoading && !isRefreshPending && applications.length === 0;
 
   useEffect(() => {
     setIsJobPolling(isRefreshPending);
@@ -273,6 +274,20 @@ const ProposedCVs = ({ jobId }) => {
         </div>
       )}
 
+      {hasNoProposedCvs && (
+        <div className="bg-orange-50 border border-orange-200 text-orange-800 rounded-2xl px-4 py-3 flex items-start gap-3">
+          <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-500">
+            <Users size={14} />
+          </div>
+          <div>
+            <p className="text-sm font-semibold">No resumes were proposed for this job</p>
+            <p className="text-xs text-orange-700 mt-1">
+              No resumes matched the current proposal criteria. Try refreshing proposed CVs or lowering the minimum score to find more candidates.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Table */}
       <div className="bg-white dark:bg-surface-dark shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-2xl overflow-hidden flex flex-col" style={{ minHeight: 320 }}>
         {isLoading ? (
@@ -287,12 +302,12 @@ const ProposedCVs = ({ jobId }) => {
               )}
             </div>
             <p className="text-sm font-semibold text-neutral-500">
-              {isRefreshPending ? 'Refreshing proposed CVs' : 'No proposed CVs yet'}
+              {isRefreshPending ? 'Refreshing proposed CVs' : 'No resumes were proposed'}
             </p>
             <p className="text-xs text-neutral-400">
               {isRefreshPending
                 ? 'We are generating recommendations for this job. New results will appear here soon.'
-                : 'Recommended candidates will appear here.'}
+                : 'Try refreshing proposed CVs or lowering the minimum score to find more candidates.'}
             </p>
           </div>
         ) : (
