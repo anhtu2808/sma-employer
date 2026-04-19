@@ -17,9 +17,9 @@ import toastMessage from '@/utils/toastMessage';
 import { useDispatch } from 'react-redux';
 
 const POLLING_INTERVAL = 5000;
-const DEFAULT_MIN_MATCH_RATE = 30;
-const MIN_MATCH_RATE = 0;
-const MAX_MATCH_RATE = 100;
+const DEFAULT_MIN_SCORE = 30;
+const MIN_SCORE = 0;
+const MAX_SCORE = 100;
 
 const ProposedCVs = ({ jobId }) => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const ProposedCVs = ({ jobId }) => {
   const [isJobPolling, setIsJobPolling] = useState(false);
   const [isEvaluationPolling, setIsEvaluationPolling] = useState(false);
   const previousRefreshPendingRef = useRef(false);
-  const [draftMinMatchRate, setDraftMinMatchRate] = useState(DEFAULT_MIN_MATCH_RATE);
+  const [draftMinScore, setDraftMinScore] = useState(DEFAULT_MIN_SCORE);
   const [isDraftDirty, setIsDraftDirty] = useState(false);
 
   const {
@@ -39,15 +39,15 @@ const ProposedCVs = ({ jobId }) => {
     refetchOnMountOrArgChange: true,
   });
   const jobStatus = jobData?.data?.status;
-  const persistedAppliedMinMatchRate = jobData?.data?.proposeRefreshMinMatchRate;
-  const persistedTargetMinMatchRate = jobData?.data?.proposeRefreshTargetMinMatchRate;
+  const persistedAppliedMinAiScore = jobData?.data?.proposeRefreshMinAiScore;
+  const persistedTargetMinAiScore = jobData?.data?.proposeRefreshTargetMinAiScore;
   const isUnpublished = jobStatus === 'DRAFT' || jobStatus === 'PENDING_REVIEW';
   const isRefreshPending = Boolean(jobData?.data?.proposeRefreshPending);
-  const appliedMinMatchRate = normalizeMinMatchRate(persistedAppliedMinMatchRate);
-  const pendingTargetMinMatchRate = normalizeMinMatchRate(
-    persistedTargetMinMatchRate ?? persistedAppliedMinMatchRate
+  const appliedMinScore = normalizeMinScore(persistedAppliedMinAiScore);
+  const pendingTargetMinScore = normalizeMinScore(
+    persistedTargetMinAiScore ?? persistedAppliedMinAiScore
   );
-  const requestedMinMatchRate = isRefreshPending ? pendingTargetMinMatchRate : appliedMinMatchRate;
+  const requestedMinScore = isRefreshPending ? pendingTargetMinScore : appliedMinScore;
 
   const [params, setParams] = useState({ page: 0, size: 10 });
   const {
@@ -70,12 +70,13 @@ const ProposedCVs = ({ jobId }) => {
   const applications = data.content;
   const normalizedApplications = applications.map(normalizeProposal);
   const hasEvaluationInProgress = normalizedApplications.some((proposal) => isEvaluationPendingStatus(proposal.evaluationStatus));
+  const hasUnscoredProposal = normalizedApplications.some((proposal) => !isProposalScored(proposal));
   const totalElements = data.totalElements;
   const totalPages = data.totalPages;
   const isBusyRefreshing = isRefreshingRequest;
   const isMutatingProposal = isUnlocking || isRemoving;
-  const isPendingThresholdUpdate = isRefreshPending && requestedMinMatchRate !== appliedMinMatchRate;
-  const canSubmitRefresh = !isRefreshingRequest && (!isRefreshPending || normalizeMinMatchRate(draftMinMatchRate) !== requestedMinMatchRate);
+  const canSubmitRefresh = !isRefreshingRequest && !isRefreshPending && !hasUnscoredProposal;
+  const hasNoProposedCvs = !isLoading && !isRefreshPending && applications.length === 0;
 
   useEffect(() => {
     setIsJobPolling(isRefreshPending);
@@ -101,24 +102,25 @@ const ProposedCVs = ({ jobId }) => {
 
   useEffect(() => {
     if (!isDraftDirty) {
-      setDraftMinMatchRate(requestedMinMatchRate);
+      setDraftMinScore(requestedMinScore);
     }
-  }, [isDraftDirty, jobId, requestedMinMatchRate]);
+  }, [isDraftDirty, jobId, requestedMinScore]);
 
   useEffect(() => {
-    if (draftMinMatchRate === requestedMinMatchRate) {
+    if (draftMinScore === requestedMinScore) {
       setIsDraftDirty(false);
     }
-  }, [draftMinMatchRate, requestedMinMatchRate]);
+  }, [draftMinScore, requestedMinScore]);
 
   const handleRefreshProposedCvs = async () => {
     if (!jobId) return;
 
     try {
-      const normalizedMinMatchRate = normalizeMinMatchRate(draftMinMatchRate);
+      const normalizedMinScore = normalizeMinScore(draftMinScore);
       const result = await refreshProposedCvs({
         id: jobId,
-        minMatchRate: normalizedMinMatchRate,
+        minAiScore: normalizedMinScore,
+        minMatchRate: normalizedMinScore,
       }).unwrap();
       setIsDraftDirty(false);
       toastMessage.success(result?.message || 'Refreshing proposed CVs in the background.');
@@ -128,15 +130,15 @@ const ProposedCVs = ({ jobId }) => {
     }
   };
 
-  const handleDraftMinMatchRateChange = (value) => {
+  const handleDraftMinScoreChange = (value) => {
     if (value === null || value === '') {
-      setDraftMinMatchRate(null);
-      setIsDraftDirty(null !== requestedMinMatchRate);
+      setDraftMinScore(null);
+      setIsDraftDirty(null !== requestedMinScore);
       return;
     }
-    const normalizedValue = normalizeMinMatchRate(value);
-    setDraftMinMatchRate(normalizedValue);
-    setIsDraftDirty(normalizedValue !== requestedMinMatchRate);
+    const normalizedValue = normalizeMinScore(value);
+    setDraftMinScore(normalizedValue);
+    setIsDraftDirty(normalizedValue !== requestedMinScore);
   };
 
   const openProposalDetail = (proposal) => {
@@ -172,11 +174,11 @@ const ProposedCVs = ({ jobId }) => {
         try {
           await removeProposedCv({ proposedResumeId: proposal.proposedResumeId }).unwrap();
           toastMessage.success('Proposed CV removed successfully.');
-          
+
           if (applications.length === 1 && params.page > 0) {
             setParams((prev) => ({ ...prev, page: prev.page - 1 }));
           }
-          
+
           dispatch(jobApi.util.invalidateTags([{ type: 'Jobs', id: `PROPOSED_${jobId}` }]));
         } catch (error) {
           toastMessage.error(error?.data?.message || 'Failed to remove proposed CV');
@@ -205,13 +207,13 @@ const ProposedCVs = ({ jobId }) => {
           </div>
           <div className="flex flex-col sm:flex-row sm:items-end gap-3 w-full sm:w-auto">
             <div className="w-full sm:w-[240px]">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Minimum match rate</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Minimum score</p>
               <div className="mt-1 flex h-[42px] items-stretch overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-colors focus-within:border-orange-400">
                 <InputNumber
-                  min={MIN_MATCH_RATE}
-                  max={MAX_MATCH_RATE}
-                  value={draftMinMatchRate}
-                  onChange={handleDraftMinMatchRateChange}
+                  min={MIN_SCORE}
+                  max={MAX_SCORE}
+                  value={draftMinScore}
+                  onChange={handleDraftMinScoreChange}
                   disabled={isBusyRefreshing}
                   controls={false}
                   className="h-full w-full !border-0 !shadow-none [&_.ant-input-number-input-wrap]:h-full [&_.ant-input-number-input]:h-full [&_.ant-input-number-input]:px-4 [&_.ant-input-number-input]:text-sm [&_.ant-input-number-input]:font-semibold"
@@ -225,26 +227,25 @@ const ProposedCVs = ({ jobId }) => {
               type="button"
               onClick={handleRefreshProposedCvs}
               disabled={!canSubmitRefresh}
-              className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                !canSubmitRefresh
-                  ? 'cursor-not-allowed bg-orange-50 text-orange-300 border border-orange-100'
-                  : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
-              }`}
-              title={isRefreshPending ? 'Update the refresh threshold for the current background run' : 'Get propose CVs'}
+              className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${!canSubmitRefresh
+                ? 'cursor-not-allowed bg-orange-50 text-orange-300 border border-orange-100'
+                : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
+                }`}
+              title={getRefreshButtonTitle({ isRefreshPending, hasUnscoredProposal })}
             >
               <RefreshCw size={15} className={isRefreshingRequest ? 'animate-spin' : ''} />
-              {isRefreshPending ? 'Update Refresh' : 'Get Propose CV'}
+              Get Propose CV
             </button>
           </div>
         </div>
         <p className="mt-3 text-xs text-neutral-400">
           {isRefreshPending
-            ? isPendingThresholdUpdate
-              ? `Current results still reflect the previous ${appliedMinMatchRate}% minimum while a new refresh is running with ${requestedMinMatchRate}%.`
-              : `A refresh is running with the current ${requestedMinMatchRate}% minimum. The list will update automatically when it finishes.`
-            : isDraftDirty
-              ? `Refresh to apply the new ${normalizeMinMatchRate(draftMinMatchRate)}% minimum.`
-              : `Only candidates with match rate at or above ${appliedMinMatchRate}% will be kept in the proposed list after refresh.`}
+            ? `A refresh is running with the current ${requestedMinScore}% minimum score for AI score and match rate. The list will update automatically when it finishes.`
+            : hasUnscoredProposal
+              ? 'Refresh will be available after every proposed candidate has finished AI scoring.'
+              : isDraftDirty
+                ? `Refresh to apply the new ${normalizeMinScore(draftMinScore)}% minimum score for AI score and match rate.`
+                : `Only candidates meeting the ${appliedMinScore}% match-rate threshold and AI score threshold will stay visible after scoring.`}
         </p>
       </div>
 
@@ -254,9 +255,7 @@ const ProposedCVs = ({ jobId }) => {
           <div>
             <p className="text-sm font-semibold">Refreshing proposed CVs</p>
             <p className="text-xs text-amber-700 mt-1">
-              {isPendingThresholdUpdate
-                ? `AI is processing the latest ${requestedMinMatchRate}% minimum in the background. We&apos;ll keep the current ${appliedMinMatchRate}% list visible until the new results are ready.`
-                : `AI is processing this job in the background with the current ${requestedMinMatchRate}% minimum. We&apos;ll keep the current list visible until the new results are ready.`}
+              {`AI is processing this job in the background with the current ${requestedMinScore}% minimum score for AI score and match rate. We'll keep the current list visible until the new results are ready.`}
             </p>
           </div>
         </div>
@@ -269,6 +268,20 @@ const ProposedCVs = ({ jobId }) => {
             <p className="text-sm font-semibold">AI scoring is still running</p>
             <p className="text-xs text-sky-700 mt-1">
               We&apos;re polling this list for fresh AI overviews and scores. You can keep reviewing candidates while new results stream in.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {hasNoProposedCvs && (
+        <div className="bg-orange-50 border border-orange-200 text-orange-800 rounded-2xl px-4 py-3 flex items-start gap-3">
+          <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-500">
+            <Users size={14} />
+          </div>
+          <div>
+            <p className="text-sm font-semibold">No resumes were proposed for this job</p>
+            <p className="text-xs text-orange-700 mt-1">
+              No resumes matched the current proposal criteria. Try refreshing proposed CVs or lowering the minimum score to find more candidates.
             </p>
           </div>
         </div>
@@ -288,12 +301,12 @@ const ProposedCVs = ({ jobId }) => {
               )}
             </div>
             <p className="text-sm font-semibold text-neutral-500">
-              {isRefreshPending ? 'Refreshing proposed CVs' : 'No proposed CVs yet'}
+              {isRefreshPending ? 'Refreshing proposed CVs' : 'No resumes were proposed'}
             </p>
             <p className="text-xs text-neutral-400">
               {isRefreshPending
                 ? 'We are generating recommendations for this job. New results will appear here soon.'
-                : 'Recommended candidates will appear here.'}
+                : 'Try refreshing proposed CVs or lowering the minimum score to find more candidates.'}
             </p>
           </div>
         ) : (
@@ -305,7 +318,7 @@ const ProposedCVs = ({ jobId }) => {
                     <th className="px-6 py-4 w-[22%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
                     <th className="px-6 py-4 w-[34%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
                     <th className="px-6 py-4 w-[26%] text-sm font-semibold text-gray-500 tracking-wide">Strengths</th>
-                    <th className="px-6 py-4 w-[10%] text-sm font-semibold text-gray-500 tracking-wide text-center">Match Rate</th>
+                    <th className="px-6 py-4 w-[10%] text-sm font-semibold text-gray-500 tracking-wide text-center">AI Score</th>
                     <th className="px-6 py-4 w-[8%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
                   </tr>
                 </thead>
@@ -322,26 +335,26 @@ const ProposedCVs = ({ jobId }) => {
                             </p>
                             {app.email || app.phone ? (
                               <div className="min-w-0 space-y-1.5">
-                              {app.email && (
-                                <a
-                                  href={`mailto:${app.email}`}
-                                  className="flex min-w-0 items-center gap-2 text-xs font-medium text-gray-600 hover:text-orange-500"
-                                  title={app.email}
-                                >
-                                  <Mail size={13} className="flex-shrink-0 text-gray-400" />
-                                  <span className="truncate">{app.email}</span>
-                                </a>
-                              )}
-                              {app.phone && (
-                                <a
-                                  href={`tel:${app.phone}`}
-                                  className="flex min-w-0 items-center gap-2 text-xs font-medium text-gray-600 hover:text-orange-500"
-                                  title={app.phone}
-                                >
-                                  <Phone size={13} className="flex-shrink-0 text-gray-400" />
-                                  <span className="truncate">{app.phone}</span>
-                                </a>
-                              )}
+                                {app.email && (
+                                  <a
+                                    href={`mailto:${app.email}`}
+                                    className="flex min-w-0 items-center gap-2 text-xs font-medium text-gray-600 hover:text-orange-500"
+                                    title={app.email}
+                                  >
+                                    <Mail size={13} className="flex-shrink-0 text-gray-400" />
+                                    <span className="truncate">{app.email}</span>
+                                  </a>
+                                )}
+                                {app.phone && (
+                                  <a
+                                    href={`tel:${app.phone}`}
+                                    className="flex min-w-0 items-center gap-2 text-xs font-medium text-gray-600 hover:text-orange-500"
+                                    title={app.phone}
+                                  >
+                                    <Phone size={13} className="flex-shrink-0 text-gray-400" />
+                                    <span className="truncate">{app.phone}</span>
+                                  </a>
+                                )}
                               </div>
                             ) : (
                               <span className="text-xs text-gray-400">No contact available</span>
@@ -397,8 +410,8 @@ const ProposedCVs = ({ jobId }) => {
                         </td>
                         <td className="px-6 py-4 text-center">
                           <div className="flex flex-col items-center gap-1">
-                            <span className={`text-sm font-semibold ${getScoreColor(app.matchRate)}`}>
-                              {app.matchRate != null ? `${getDisplayRate(app.matchRate)}%` : '--'}
+                            <span className={`text-sm font-semibold ${getScoreColor(app.aiScore)}`}>
+                              {app.aiScore != null ? `${getDisplayRate(app.aiScore)}%` : '--'}
                             </span>
                             {isEvaluationPendingStatus(app.evaluationStatus) && (
                               <span className="inline-flex items-center gap-1 text-[11px] font-medium text-orange-500">
@@ -532,6 +545,23 @@ const normalizeProposal = (proposal = {}) => ({
 
 const isEvaluationPendingStatus = (status) => status === 'WAITING' || status === 'PARTIAL';
 
+const isProposalScored = (proposal) => {
+  if (!proposal) return true;
+  if (isEvaluationPendingStatus(proposal.evaluationStatus)) return false;
+  if (proposal.evaluationStatus === 'FAIL') return true;
+  return proposal.aiScore != null;
+};
+
+const getRefreshButtonTitle = ({ isRefreshPending, hasUnscoredProposal }) => {
+  if (isRefreshPending) {
+    return 'Refresh is already running';
+  }
+  if (hasUnscoredProposal) {
+    return 'Wait until all proposed candidates finish AI scoring';
+  }
+  return 'Get propose CVs';
+};
+
 const getOverviewText = (proposal) => {
   if (isEvaluationPendingStatus(proposal?.evaluationStatus)) {
     return 'AI is evaluating how this resume matches the current job. Overview will appear automatically when scoring is complete.';
@@ -614,11 +644,11 @@ const getScoreColor = (score) => {
   return 'text-red-500';
 };
 
-const normalizeMinMatchRate = (value) => {
-  if (value == null || value === '') return DEFAULT_MIN_MATCH_RATE;
+const normalizeMinScore = (value) => {
+  if (value == null || value === '') return DEFAULT_MIN_SCORE;
   const numericValue = Number(value);
-  if (Number.isNaN(numericValue)) return DEFAULT_MIN_MATCH_RATE;
-  return Math.min(MAX_MATCH_RATE, Math.max(MIN_MATCH_RATE, Math.round(numericValue)));
+  if (Number.isNaN(numericValue)) return DEFAULT_MIN_SCORE;
+  return Math.min(MAX_SCORE, Math.max(MIN_SCORE, Math.round(numericValue)));
 };
 
 export default ProposedCVs;

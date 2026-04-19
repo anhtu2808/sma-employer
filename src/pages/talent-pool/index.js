@@ -6,7 +6,7 @@ import toastMessage from '@/utils/toastMessage';
 import TalentPoolHeader from './header';
 import PoolColumn from './pool-column';
 import CreatePoolModal from './create-pool-modal';
-import { useGetTalentPoolsQuery, useCreateTalentPoolMutation, useDeleteTalentPoolItemMutation, useAddTalentPoolItemMutation, useUpdateTalentPoolMutation, useDeleteTalentPoolMutation } from '@/apis/talentPoolApi';
+import { useGetTalentPoolsQuery, useCreateTalentPoolMutation, useDeleteTalentPoolItemMutation, useAddTalentPoolItemMutation, useAddTalentPoolItemProposedMutation, useMoveTalentPoolItemMutation, useUpdateTalentPoolMutation, useDeleteTalentPoolMutation } from '@/apis/talentPoolApi';
 
 const TalentPool = () => {
     usePageHeader('Talent Pool', 'Organize and manage your potential candidates');
@@ -30,6 +30,8 @@ const TalentPool = () => {
     const [deleteTalentPool] = useDeleteTalentPoolMutation();
     const [deleteItem] = useDeleteTalentPoolItemMutation();
     const [addItem] = useAddTalentPoolItemMutation();
+    const [addItemProposed] = useAddTalentPoolItemProposedMutation();
+    const [moveItem] = useMoveTalentPoolItemMutation();
 
     // --- Pool CRUD ---
     const handleCreatePool = () => {
@@ -101,16 +103,13 @@ const TalentPool = () => {
         const { destination, source, draggableId } = result;
 
         if (!destination) return;
-        if (destination.droppableId === source.droppableId) return; // Ignore reordering in same list for now
+        if (destination.droppableId === source.droppableId) return;
 
-        // Extract itemId and applicationId from draggableId
-        const [itemId, appId] = draggableId.split('_');
+        // Format: itemId_applicationId_proposedId
+        const [itemId, appId, proposedId] = draggableId.split('_');
 
         try {
-            // Delete from old pool
-            await deleteItem(itemId).unwrap();
-            // Add to new pool
-            await addItem({ applicationId: appId, groupId: destination.droppableId }).unwrap();
+            await moveItem({ id: itemId, groupId: destination.droppableId }).unwrap();
         } catch (error) {
             console.error("Drag and drop failed:", error);
             toastMessage.error('Failed to move candidate');

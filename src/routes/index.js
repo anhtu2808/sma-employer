@@ -32,6 +32,7 @@ import WebhookPage from "@/pages/webhook";
 import LegalPage from '@/pages/legal';
 import ApiManagementPage from '@/pages/api-management';
 import TalentPool from '@/pages/talent-pool';
+import TalentPoolCvDetail from '@/pages/talent-pool/cv-detail';
 
 export const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -63,6 +64,7 @@ export const routes = createBrowserRouter(
                 <Route path="webhooks" element={<WebhookPage />} />
                 <Route path="api-management" element={<ApiManagementPage />} />
                 <Route path="talent-pool" element={<TalentPool />} />
+                <Route path="talent-pool/cv/:resumeId" element={<TalentPoolCvDetail />} />
             </Route>
             <Route path="cv-preview/:id" element={<CvPreview />} />
             <Route path="career-builder" element={<CareerPageBuilder />} />

@@ -5,11 +5,11 @@ import { useInviteCandidateMutation } from '@/apis/jobApi';
 import toastMessage from '@/utils/toastMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faWandMagicSparkles } from '../../utils/icons';
-import { Lock, ShieldCheck, Sparkles } from 'lucide-react';
-import { Modal } from 'antd';
+import { Lock, ShieldCheck, Sparkles, FolderPlus } from 'lucide-react';
+import { Tooltip, Modal, ConfigProvider } from 'antd';
 import Input from '@/components/Input';
 
-const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, refetch }) => {
+const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, refetch, onOpenAddToPool }) => {
     const { jobId } = useParams();
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [invitationMessage, setInvitationMessage] = useState('');
@@ -51,106 +51,138 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
     return (
         <>
             <div className="px-5 py-5 md:px-6 md:py-6 space-y-4">
-            {!proposal?.isUnlocked && (
-                <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-amber-900 md:flex-row md:items-center md:justify-between">
-                    <div className="flex items-start gap-3">
-                        <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-600">
-                            <Lock size={18} />
+                {!proposal?.isUnlocked && (
+                    <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-amber-900 md:flex-row md:items-center md:justify-between">
+                        <div className="flex items-start gap-3">
+                            <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                                <Lock size={18} />
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold">Unlock to reveal candidate identity and CV</p>
+                                <p className="mt-1 text-xs text-amber-800">
+                                    AI analysis stays visible, but candidate contact details, social links, and resume preview stay hidden until this proposal is unlocked.
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-sm font-semibold">Unlock to reveal candidate identity and CV</p>
-                            <p className="mt-1 text-xs text-amber-800">
-                                AI analysis stays visible, but candidate contact details, social links, and resume preview stay hidden until this proposal is unlocked.
-                            </p>
-                        </div>
-                    </div>
-                    <Button
-                        mode="primary"
-                        size="md"
-                        shape="rounded"
-                        loading={isUnlocking}
-                        onClick={onUnlock}
-                    >
-                        Unlock Candidate
-                    </Button>
-                </div>
-            )}
-
-            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
-                <div className="min-w-0 space-y-3">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-orange-600">
-                        <FontAwesomeIcon icon={faWandMagicSparkles} className="text-sm" />
-                        Proposed Candidate
-                    </div>
-
-                    <div className="space-y-2 min-w-0">
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white break-words">
-                            {proposal?.candidateName || 'Unknown Candidate'}
-                        </h1>
-
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
-                            {proposal?.jobTitle && (
-                                <span className="flex items-center gap-1.5">
-                                    <FontAwesomeIcon icon={faBriefcase} className="text-sm" />
-                                    {proposal.jobTitle}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex flex-col items-start xl:items-end gap-3">
-                    <div className="flex items-center gap-3 flex-wrap">
-                        <InfoPill icon={<ShieldCheck size={14} />} label={proposalStatusLabel} />
-                        <InfoPill icon={<Sparkles size={14} />} label={`AI ${formatPercent(proposal?.aiScore)}`} accent />
-                    </div>
-                    {canInviteCandidate && (
                         <Button
                             mode="primary"
                             size="md"
                             shape="rounded"
-                            loading={isInviting}
-                            onClick={openInviteModal}
+                            loading={isUnlocking}
+                            onClick={onUnlock}
                         >
-                            Invite Candidate
+                            Unlock Candidate
                         </Button>
-                    )}
-                </div>
-            </div>
-            </div>
+                    </div>
+                )}
 
-            <Modal
-                title="Confirm Candidate Invitation"
-                open={isInviteModalOpen}
-                onOk={handleInvite}
-                onCancel={closeInviteModal}
-                okText="Send Invite"
-                cancelText="Cancel"
-                confirmLoading={isInviting}
-                centered
-            >
-                <div className="space-y-4 pt-1">
-                    <div className="rounded-xl border border-orange-100 bg-orange-50 px-4 py-3">
-                        <p className="text-sm font-semibold text-gray-900">
-                            {proposal?.candidateName || 'Unknown Candidate'}
-                        </p>
-                        {proposal?.jobTitle && (
-                            <p className="mt-1 text-xs font-medium text-orange-700">
-                                {proposal.jobTitle}
-                            </p>
+                <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
+                    <div className="min-w-0 space-y-3">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-orange-600">
+                            <FontAwesomeIcon icon={faWandMagicSparkles} className="text-sm" />
+                            Proposed Candidate
+                        </div>
+
+                        <div className="space-y-2 min-w-0">
+                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white break-words">
+                                {proposal?.candidateName || 'Unknown Candidate'}
+                            </h1>
+
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
+                                {proposal?.jobTitle && (
+                                    <span className="flex items-center gap-1.5">
+                                        <FontAwesomeIcon icon={faBriefcase} className="text-sm" />
+                                        {proposal.jobTitle}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col items-start xl:items-end gap-3">
+                        <div className="flex items-center gap-3 flex-wrap">
+                            {proposal?.isUnlocked && !proposal?.isSaved && (
+                                <Tooltip title="Add to Talent Pool">
+                                    <button
+                                        type="button"
+                                        onClick={onOpenAddToPool}
+                                        className="flex items-center justify-center w-9 h-9 rounded-full border border-orange-200 bg-orange-50 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300 dark:border-orange-900/50 dark:bg-orange-900/20"
+                                    >
+                                        <FolderPlus size={18} />
+                                    </button>
+                                </Tooltip>
+                            )}
+                            <InfoPill icon={<ShieldCheck size={14} />} label={proposalStatusLabel} />
+                            <InfoPill icon={<Sparkles size={14} />} label={`AI ${formatPercent(proposal?.aiScore)}`} accent />
+                        </div>
+                        {canInviteCandidate && (
+                            <Button
+                                mode="primary"
+                                size="md"
+                                shape="rounded"
+                                loading={isInviting}
+                                onClick={openInviteModal}
+                            >
+                                Invite Candidate
+                            </Button>
                         )}
                     </div>
-                    <Input.TextArea
-                        label="Invitation message"
-                        value={invitationMessage}
-                        onChange={(event) => setInvitationMessage(event.target.value)}
-                        placeholder="Add a short note for this candidate. Leave blank to use the default invitation message."
-                        autoSize={{ minRows: 4, maxRows: 6 }}
-                        maxLength={1000}
-                        showCount
-                    />
                 </div>
-            </Modal>
+            </div>
+
+            <ConfigProvider theme={{ token: { colorPrimary: '#f97316', colorBorderHover: '#f97316' } }}>
+                <Modal
+                    title="Confirm Candidate Invitation"
+                    open={isInviteModalOpen}
+                    onCancel={closeInviteModal}
+                    centered
+                    footer={(
+                        <div className="flex justify-end gap-3">
+                            <Button
+                                mode="secondary"
+                                size="md"
+                                shape="rounded"
+                                disabled={isInviting}
+                                onClick={closeInviteModal}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                mode="primary"
+                                size="md"
+                                shape="rounded"
+                                disabled={isInviting}
+                                loading={isInviting}
+                                onClick={handleInvite}
+                            >
+                                {isInviting ? 'Sending...' : 'Send Invite'}
+                            </Button>
+                        </div>
+                    )}
+                >
+                    <div className="space-y-4 pt-1 pb-6">
+                        <div className="rounded-xl border border-orange-100 bg-orange-50 px-4 py-3">
+                            <p className="text-sm font-semibold text-gray-900">
+                                {proposal?.candidateName || 'Unknown Candidate'}
+                            </p>
+                            {proposal?.jobTitle && (
+                                <p className="mt-1 text-xs font-medium text-orange-700">
+                                    {proposal.jobTitle}
+                                </p>
+                            )}
+                        </div>
+                        <Input.TextArea
+                            label="Invitation message"
+                            value={invitationMessage}
+                            onChange={(event) => setInvitationMessage(event.target.value)}
+                            placeholder="Add a short note for this candidate. Leave blank to use the default invitation message."
+                            autoSize={{ minRows: 4, maxRows: 6 }}
+                            maxLength={1000}
+                            showCount
+                        />
+                    </div>
+                </Modal>
+            </ConfigProvider>
         </>
     );
 };

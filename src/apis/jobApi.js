@@ -141,10 +141,10 @@ export const jobApi = api.injectEndpoints({
       providesTags: (result, error, { id }) => [{ type: "Jobs", id: `PROPOSED_${id}` }],
     }),
     refreshProposedCvs: builder.mutation({
-      query: ({ id, minMatchRate }) => ({
+      query: ({ id, minAiScore, minMatchRate }) => ({
         url: `${API_VERSION}/jobs/${id}/proposed-cv/refresh`,
         method: "POST",
-        body: { minMatchRate },
+        body: { minAiScore, minMatchRate },
       }),
     }),
     unlockProposedCv: builder.mutation({

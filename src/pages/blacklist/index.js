@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGetBlacklistQuery, useUnblockCandidateMutation } from '@/apis/companyApi';
-import { Popconfirm } from 'antd';
+import { Modal } from 'antd';
 import toastMessage from '@/utils/toastMessage';
 import dayjs from 'dayjs';
 import Loading from '@/components/Loading';
@@ -113,20 +113,24 @@ const CompanyBlacklist = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right">
-                                            <Popconfirm
-                                                title="Unblock candidate?"
-                                                description="They will be allowed to apply again."
-                                                onConfirm={() => handleUnblock(item.candidateId)}
-                                                okText="Unblock"
-                                                cancelText="Cancel"
-                                                okButtonProps={{ danger: true, className: "rounded-lg" }}
-                                                cancelButtonProps={{ className: "rounded-lg" }}
+                                            <button
+                                                onClick={() => {
+                                                    Modal.confirm({
+                                                        title: 'Unblock candidate?',
+                                                        content: 'They will be allowed to apply again.',
+                                                        okText: 'Unblock',
+                                                        cancelText: 'Cancel',
+                                                        centered: true,
+                                                        okButtonProps: { danger: true, className: "rounded-lg" },
+                                                        cancelButtonProps: { className: "rounded-lg" },
+                                                        onOk: () => handleUnblock(item.candidateId),
+                                                    });
+                                                }}
+                                                className="inline-flex items-center gap-1.5 text-primary hover:text-primary-dark font-bold text-xs bg-orange-50 hover:bg-orange-100 px-3 py-2 rounded-lg transition-all group ml-auto"
                                             >
-                                                <button className="inline-flex items-center gap-1.5 text-primary hover:text-primary-dark font-bold text-xs bg-orange-50 hover:bg-orange-100 px-3 py-2 rounded-lg transition-all group ml-auto">
-                                                    <FontAwesomeIcon icon={faArrowsRotate} className="text-[16px] group-hover:rotate-180 transition-transform duration-500" />
-                                                    Unblock
-                                                </button>
-                                            </Popconfirm>
+                                                <FontAwesomeIcon icon={faArrowsRotate} className="text-[16px] group-hover:rotate-180 transition-transform duration-500" />
+                                                Unblock
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
