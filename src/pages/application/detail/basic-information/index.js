@@ -64,7 +64,7 @@ const InsightSection = ({ section }) => (
         </div>
         <div
             className="prose max-w-none text-gray-800 dark:text-neutral-200 leading-relaxed [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_li]:text-base [&_li]:list-disc [&_li]:text-gray-800 dark:[&_li]:text-neutral-200"
-            dangerouslySetInnerHTML={{ __html: section.content }}
+            dangerouslySetInnerHTML={{ __html: formatHtmlList(section.content) }}
         />
     </div>
 );
@@ -74,6 +74,20 @@ const LockedSocialPill = ({ label }) => (
         {label}
     </span>
 );
+
+const normalizeUrl = (url) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `https://${url}`;
+};
+
+const formatHtmlList = (html) => {
+    if (!html) return html;
+    if (html.includes('<li') && !html.includes('<ul') && !html.includes('<ol')) {
+        return `<ul>${html}</ul>`;
+    }
+    return html;
+};
 
 const BasicInformation = ({
     app,
@@ -158,7 +172,7 @@ const BasicInformation = ({
             children: (
                 <div
                     className="prose max-w-none text-gray-800 dark:text-neutral-200 leading-relaxed [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_li]:text-base [&_li]:list-disc [&_li]:text-gray-800 dark:[&_li]:text-neutral-200"
-                    dangerouslySetInnerHTML={{ __html: app.aiEvaluation.summary }}
+                    dangerouslySetInnerHTML={{ __html: formatHtmlList(app.aiEvaluation.summary) }}
                 />
             ),
         },
@@ -173,7 +187,7 @@ const BasicInformation = ({
             children: (
                 <div
                     className="prose max-w-none text-gray-800 dark:text-neutral-200 leading-relaxed [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_li]:text-base [&_li]:list-disc [&_li]:text-gray-800 dark:[&_li]:text-neutral-200"
-                    dangerouslySetInnerHTML={{ __html: app.aiEvaluation.strengths }}
+                    dangerouslySetInnerHTML={{ __html: formatHtmlList(app.aiEvaluation.strengths) }}
                 />
             ),
         },
@@ -188,7 +202,7 @@ const BasicInformation = ({
             children: (
                 <div
                     className="prose max-w-none text-gray-800 dark:text-neutral-200 leading-relaxed [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_li]:text-base [&_li]:list-disc [&_li]:text-gray-800 dark:[&_li]:text-neutral-200"
-                    dangerouslySetInnerHTML={{ __html: app.aiEvaluation.weakness }}
+                    dangerouslySetInnerHTML={{ __html: formatHtmlList(app.aiEvaluation.weakness) }}
                 />
             ),
         },
@@ -293,7 +307,7 @@ const BasicInformation = ({
                     <div className="flex flex-wrap gap-2">
                         {app.linkedinLink && (
                             <a
-                                href={app.linkedinLink}
+                                href={normalizeUrl(app.linkedinLink)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg bg-[#0A66C2]/10 text-[#0A66C2] hover:bg-[#0A66C2]/20 transition-colors"
@@ -304,7 +318,7 @@ const BasicInformation = ({
                         )}
                         {app.githubLink && (
                             <a
-                                href={app.githubLink}
+                                href={normalizeUrl(app.githubLink)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 dark:bg-neutral-800 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
@@ -315,7 +329,7 @@ const BasicInformation = ({
                         )}
                         {app.portfolioLink && (
                             <a
-                                href={app.portfolioLink}
+                                href={normalizeUrl(app.portfolioLink)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400 hover:bg-orange-100 transition-colors"

@@ -174,11 +174,11 @@ const ProposedCVs = ({ jobId }) => {
         try {
           await removeProposedCv({ proposedResumeId: proposal.proposedResumeId }).unwrap();
           toastMessage.success('Proposed CV removed successfully.');
-          
+
           if (applications.length === 1 && params.page > 0) {
             setParams((prev) => ({ ...prev, page: prev.page - 1 }));
           }
-          
+
           dispatch(jobApi.util.invalidateTags([{ type: 'Jobs', id: `PROPOSED_${jobId}` }]));
         } catch (error) {
           toastMessage.error(error?.data?.message || 'Failed to remove proposed CV');
@@ -227,11 +227,10 @@ const ProposedCVs = ({ jobId }) => {
               type="button"
               onClick={handleRefreshProposedCvs}
               disabled={!canSubmitRefresh}
-              className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                !canSubmitRefresh
-                  ? 'cursor-not-allowed bg-orange-50 text-orange-300 border border-orange-100'
-                  : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
-              }`}
+              className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${!canSubmitRefresh
+                ? 'cursor-not-allowed bg-orange-50 text-orange-300 border border-orange-100'
+                : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
+                }`}
               title={getRefreshButtonTitle({ isRefreshPending, hasUnscoredProposal })}
             >
               <RefreshCw size={15} className={isRefreshingRequest ? 'animate-spin' : ''} />
@@ -244,9 +243,9 @@ const ProposedCVs = ({ jobId }) => {
             ? `A refresh is running with the current ${requestedMinScore}% minimum score for AI score and match rate. The list will update automatically when it finishes.`
             : hasUnscoredProposal
               ? 'Refresh will be available after every proposed candidate has finished AI scoring.'
-            : isDraftDirty
-              ? `Refresh to apply the new ${normalizeMinScore(draftMinScore)}% minimum score for AI score and match rate.`
-              : `Only candidates meeting the ${appliedMinScore}% match-rate threshold and AI score threshold will stay visible after scoring.`}
+              : isDraftDirty
+                ? `Refresh to apply the new ${normalizeMinScore(draftMinScore)}% minimum score for AI score and match rate.`
+                : `Only candidates meeting the ${appliedMinScore}% match-rate threshold and AI score threshold will stay visible after scoring.`}
         </p>
       </div>
 
@@ -336,26 +335,26 @@ const ProposedCVs = ({ jobId }) => {
                             </p>
                             {app.email || app.phone ? (
                               <div className="min-w-0 space-y-1.5">
-                              {app.email && (
-                                <a
-                                  href={`mailto:${app.email}`}
-                                  className="flex min-w-0 items-center gap-2 text-xs font-medium text-gray-600 hover:text-orange-500"
-                                  title={app.email}
-                                >
-                                  <Mail size={13} className="flex-shrink-0 text-gray-400" />
-                                  <span className="truncate">{app.email}</span>
-                                </a>
-                              )}
-                              {app.phone && (
-                                <a
-                                  href={`tel:${app.phone}`}
-                                  className="flex min-w-0 items-center gap-2 text-xs font-medium text-gray-600 hover:text-orange-500"
-                                  title={app.phone}
-                                >
-                                  <Phone size={13} className="flex-shrink-0 text-gray-400" />
-                                  <span className="truncate">{app.phone}</span>
-                                </a>
-                              )}
+                                {app.email && (
+                                  <a
+                                    href={`mailto:${app.email}`}
+                                    className="flex min-w-0 items-center gap-2 text-xs font-medium text-gray-600 hover:text-orange-500"
+                                    title={app.email}
+                                  >
+                                    <Mail size={13} className="flex-shrink-0 text-gray-400" />
+                                    <span className="truncate">{app.email}</span>
+                                  </a>
+                                )}
+                                {app.phone && (
+                                  <a
+                                    href={`tel:${app.phone}`}
+                                    className="flex min-w-0 items-center gap-2 text-xs font-medium text-gray-600 hover:text-orange-500"
+                                    title={app.phone}
+                                  >
+                                    <Phone size={13} className="flex-shrink-0 text-gray-400" />
+                                    <span className="truncate">{app.phone}</span>
+                                  </a>
+                                )}
                               </div>
                             ) : (
                               <span className="text-xs text-gray-400">No contact available</span>

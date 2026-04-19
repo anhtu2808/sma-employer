@@ -59,6 +59,7 @@ const normalizeApplicationDetail = (payload) => {
         reviewedAt: info.reviewedAt,
         reviewedByEmail: info.reviewedByEmail,
         isRejectedByAi: info.isRejectedByAi,
+        isInTalentPool: !!info.isInTalentPool,
     };
 };
 
@@ -71,7 +72,7 @@ const TAB_KEYS = {
 const ApplicationDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { data: appResponse, isLoading } = useGetApplicationDetailQuery(id, { skip: !id });
+    const { data: appResponse, isLoading, refetch } = useGetApplicationDetailQuery(id, { skip: !id });
     const [updateStatus, { isLoading: isUpdating }] = useUpdateApplicationStatusMutation();
     const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
     const [blockReason, setBlockReason] = useState('');
@@ -81,7 +82,7 @@ const ApplicationDetail = () => {
     const [rejectReason, setRejectReason] = useState('');
     const [showToCandidate, setShowToCandidate] = useState(false);
     const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
-    
+
     // Talent Pool Logic
     const [isPoolModalOpen, setIsPoolModalOpen] = useState(false);
     const [isCreatePoolOpen, setIsCreatePoolOpen] = useState(false);
@@ -162,6 +163,7 @@ const ApplicationDetail = () => {
             await addTalentPoolItem({ applicationId: id, groupId: poolId }).unwrap();
             toastMessage.success('Candidate added to talent pool');
             setIsPoolModalOpen(false);
+            refetch();
         } catch (error) {
             toastMessage.error(error?.data?.message || 'Failed to add to talent pool');
         }
@@ -206,17 +208,17 @@ const ApplicationDetail = () => {
     return (
         <div className="w-full space-y-4">
             {/* Unified Card */}
-            <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-sm overflow-clip" style={{ height: 'calc(100vh - 20px)' }}>
+            <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-sm overflow-clip flex flex-col" style={{ height: 'calc(100vh - 20px)' }}>
                 {/* Tabs Bar — full width at top */}
-                <div className="flex items-center justify-between px-4 py-3">
+                <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-neutral-800">
                     <div className="flex gap-1 bg-gray-100 dark:bg-neutral-800 rounded-full p-1">
                         {tabs.map((tab) => (
                             <button
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
                                 className={`flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-150 ${activeTab === tab.key
-                                        ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200'
+                                    ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white'
+                                    : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200'
                                     }`}
                             >
                                 {tab.lucideIcon ? <tab.lucideIcon size={14} /> : <FontAwesomeIcon icon={tab.icon} className="text-sm" />}
@@ -259,7 +261,7 @@ const ApplicationDetail = () => {
                 </div>
 
                 {/* Content: Left info + Right PDF */}
-                <div className="flex flex-col lg:flex-row h-[calc(100%-42px)]">
+                <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
                     {/* Left: Tab Content */}
                     <div className="w-full lg:w-1/2 lg:border-r border-gray-200 dark:border-neutral-800 overflow-y-auto overflow-x-hidden scrollbar-thin">
                         <div className="p-5">
@@ -417,7 +419,7 @@ const ApplicationDetail = () => {
                             </button>
                         ))
                     )}
-                    
+
                     <button
                         onClick={() => setIsCreatePoolOpen(true)}
                         className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-neutral-900 border border-dashed border-gray-300 dark:border-gray-600 hover:border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-gray-500 hover:text-orange-600 rounded-xl transition-all"
