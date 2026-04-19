@@ -52,6 +52,8 @@ const normalizeApplicationDetail = (payload) => {
             answer: a.answerContent,
         })),
         aiScore: ai.aiOverallScore,
+        recruiterScore: ai.recruiterOverallScore,
+        evaluationId: ai.id,
         aiEvaluation: payload.aiEvaluation || null,
         source: payload.source,
         rejectReason: info.rejectReason,

@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '../../../utils/icons';
 import { useRetryMatchingMutation } from '@/apis/applicationApi';
 import toastMessage from '@/utils/toastMessage';
+import ManualScorePopover, { getEffectiveScore, isManualScored, ManualScoreBadge } from '../ManualScorePopover';
 
 const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPage, onPageChange, onStatusUpdate }) => {
     const navigate = useNavigate();
@@ -125,6 +126,8 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                 }
 
                 const aiScore = evaluation?.aiScore;
+                const effectiveScore = getEffectiveScore(evaluation);
+                const manual = isManualScored(evaluation);
                 const criteriaScores = evaluation?.criteriaScores || [];
 
                 // Case 2: scoring finished — show full breakdown
@@ -132,9 +135,12 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                     return (
                         <div className="flex items-start gap-5">
                             <div className="flex-shrink-0">
-                                <span className={`text-2xl font-bold ${getScoreColor(aiScore)}`}>
-                                    {aiScore != null ? `${Math.round(aiScore)}%` : '--'}
-                                </span>
+                                <ManualScorePopover evaluation={evaluation} applicationId={app.applicationId}>
+                                    <span className={`text-2xl font-bold ${getScoreColor(effectiveScore)}`}>
+                                        {effectiveScore != null ? `${Math.round(effectiveScore)}%` : '--'}
+                                    </span>
+                                </ManualScorePopover>
+                                {manual && <div className="mt-1"><ManualScoreBadge evaluation={evaluation} /></div>}
                             </div>
                             <div className="flex-1 min-w-0">
                                 {criteriaScores.length > 0 && (

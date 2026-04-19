@@ -6,6 +6,7 @@ import { getApplicationStatusConfig } from '@/constrant/application';
 import { Tooltip } from 'antd';
 
 import { useNavigate } from 'react-router-dom';
+import ManualScorePopover, { getEffectiveScore, isManualScored, ManualScoreBadge } from '../ManualScorePopover';
 
 const KanbanBoard = ({
     statusColumns,
@@ -125,8 +126,9 @@ const KanbanBoard = ({
                                                     // REJECTED cards that are NOT AI-rejected also can't be dragged (nowhere valid to go)
                                                     const isNotDraggable = app.status === 'APPLIED' || app.status === 'APPROVED'
                                                         || (app.status === 'REJECTED' && app.isRejectedByAi !== true);
-                                                    const scoreValue = app.evaluation?.aiScore;
+                                                    const scoreValue = getEffectiveScore(app.evaluation);
                                                     const matchTag = getAIMatchTag(scoreValue);
+                                                    const manualScored = isManualScored(app.evaluation);
 
                                                     return (
                                                         <Draggable
@@ -158,15 +160,18 @@ const KanbanBoard = ({
                                                                                 )}
                                                                             </div>
 
-                                                                            {/* AI SCORE */}
-                                                                            {app.evaluation?.aiScore != null && (
-                                                                                <div className="shrink-0">
-                                                                                    <span className={`text-sm font-bold ${app.evaluation.aiScore >= 80 ? 'text-emerald-600' :
-                                                                                        app.evaluation.aiScore >= 50 ? 'text-orange-500' :
-                                                                                            'text-red-500'
-                                                                                        }`}>
-                                                                                        {Math.round(app.evaluation.aiScore)}%
-                                                                                    </span>
+                                                                            {/* SCORE (manual prioritized) */}
+                                                                            {scoreValue != null && (
+                                                                                <div className="shrink-0 flex flex-col items-end gap-1">
+                                                                                    <ManualScorePopover evaluation={app.evaluation} applicationId={app.applicationId} placement="bottomRight">
+                                                                                        <span className={`text-sm font-bold ${scoreValue >= 80 ? 'text-emerald-600' :
+                                                                                            scoreValue >= 50 ? 'text-orange-500' :
+                                                                                                'text-red-500'
+                                                                                            }`}>
+                                                                                            {Math.round(scoreValue)}%
+                                                                                        </span>
+                                                                                    </ManualScorePopover>
+                                                                                    {manualScored && <ManualScoreBadge evaluation={app.evaluation} />}
                                                                                 </div>
                                                                             )}
 
