@@ -94,6 +94,22 @@ const ApplicationManagement = () => {
 
     const showAiSort = selectedJob?.enableAiScoring === true;
 
+    const activeFiltersCount = (
+        (filter.locationId ? 1 : 0) +
+        (filter.matchLevel ? 1 : 0) +
+        (filter.language ? 1 : 0) +
+        (filter.appliedFrom || filter.appliedTo ? 1 : 0) +
+        (filter.skills?.length ? 1 : 0)
+    );
+
+    const handleMinScoreChange = (val) => {
+        setFilter(prev => ({
+            ...prev,
+            minScore: val > 0 ? val : undefined,
+            page: 0,
+        }));
+    };
+
     const { data: appData, isLoading: isAppLoading } = useGetApplicationsQuery(
         { ...filter, jobId: selectedJob?.id, sortBy: showAiSort ? sortBy : undefined },
         { skip: !selectedJob?.id }
@@ -244,6 +260,9 @@ const ApplicationManagement = () => {
                 sortBy={sortBy}
                 onSortChange={setSortBy}
                 showAiSort={showAiSort}
+                minScore={filter.minScore ?? 0}
+                onMinScoreChange={handleMinScoreChange}
+                activeFiltersCount={activeFiltersCount}
                 onArchiveJob={(job) => {
                     AntModal.confirm({
                         title: 'Archive Job',
@@ -369,6 +388,7 @@ const ApplicationManagement = () => {
             >
                 <FilterSidebar
                     currentFilters={filter}
+                    onClose={() => setIsFilterOpen(false)}
                     onApply={(newFilters) => {
                         setFilter(prev => ({
                             ...prev,
@@ -377,7 +397,6 @@ const ApplicationManagement = () => {
                         }));
                         setIsFilterOpen(false);
                     }}
-                    onReset={(resetState) => setFilter({ ...resetState, jobId: selectedJob?.id, page: 0, size: viewMode === 'kanban' ? 1000 : 10 })}
                 />
             </Drawer>
         </div>
