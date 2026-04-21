@@ -10,6 +10,16 @@ import {
     faCircleXmark, faGear, faRightLeft, faThumbsDown, faThumbsUp,
 } from '../../../../utils/icons';
 
+const CANDIDATE_LEVEL_BADGE = {
+    INTERN: 'bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-300',
+    FRESHER: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400',
+    JUNIOR: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+    MIDDLE: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+    SENIOR: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
+    LEAD: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+    MANAGER: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
+};
+
 const getTransferabilityConfig = (level) => {
     switch (level) {
         case 'HIGH': return { label: 'High Transferability', cls: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' };
@@ -129,8 +139,12 @@ const AiAnalysis = ({ aiEvaluation }) => {
         isTrueLevel,
         hasRelatedExperience,
         transferabilityToRole,
-        criteriaScores = [],
+        candidateLevel,
+        criteriaScores: rawCriteriaScores = [],
     } = aiEvaluation;
+
+    const criteriaScores = [...rawCriteriaScores]
+        .sort((a, b) => (a.criteriaName || '').localeCompare(b.criteriaName || ''));
 
     const transferConfig = getTransferabilityConfig(transferabilityToRole);
 
@@ -157,6 +171,12 @@ const AiAnalysis = ({ aiEvaluation }) => {
                     )}
                     {/* Meta badges */}
                     <div className="flex flex-wrap gap-2 mt-3">
+                        {candidateLevel && (
+                            <span className={`inline-flex items-center gap-1 text-sm font-semibold px-2.5 py-1 rounded-full ${CANDIDATE_LEVEL_BADGE[candidateLevel] || 'bg-gray-100 text-gray-700'}`}>
+                                <FontAwesomeIcon icon={faBriefcase} className="text-[13px]" />
+                                {candidateLevel}
+                            </span>
+                        )}
                         {isTrueLevel != null && (
                             <span className={`inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full ${isTrueLevel
                                     ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'

@@ -6,13 +6,13 @@ import FilterSidebar from '@/pages/application/filterSidebar';
 import Loading from '@/components/Loading';
 import Button from '@/components/Button';
 import Modal from '@/components/Modal';
-import { Drawer, Table, Select, ConfigProvider, Modal as AntModal } from 'antd';
+import { Drawer, Table, Select, ConfigProvider, Modal as AntModal, Badge, Popover, Slider } from 'antd';
 import toastMessage from '@/utils/toastMessage';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRocket, faUser } from '../../../utils/icons';
 import {
-    Search, Filter, Plus,
+    Search, Filter, Plus, Zap,
     ExternalLink, Mail, Calendar, MapPin,
     Eye, Users, Brain, Briefcase
 } from 'lucide-react';
@@ -97,8 +97,26 @@ const JobApplicants = ({ jobId }) => {
     };
 
     // Active filter count for badge
-    const activeFilterCount = [filter.status, filter.location, filter.matchLevel, filter.minScore, filter.skills?.length > 0]
-        .filter(Boolean).length;
+    const activeFilterCount = [
+        filter.locationId,
+        filter.matchLevel,
+        filter.candidateLevels?.length > 0,
+        filter.minScore,
+        filter.language,
+        filter.appliedFrom || filter.appliedTo,
+        filter.skills?.length > 0,
+    ].filter(Boolean).length;
+
+    const handleMinScoreChange = (val) => {
+        setFilter(prev => ({
+            ...prev,
+            minScore: val > 0 ? val : undefined,
+            page: 0,
+        }));
+    };
+
+    const [draftMinScore, setDraftMinScore] = useState(filter.minScore ?? 0);
+    useEffect(() => { setDraftMinScore(filter.minScore ?? 0); }, [filter.minScore]);
 
     const columns = [
         {
@@ -159,15 +177,17 @@ const JobApplicants = ({ jobId }) => {
             width: '55%',
             render: (evaluation, app) => {
                 const aiScore = evaluation?.aiScore;
-                const criteriaScores = evaluation?.criteriaScores || [];
+                const criteriaScores = [...(evaluation?.criteriaScores || [])]
+                    .sort((a, b) => (a.criteriaName || '').localeCompare(b.criteriaName || ''));
 
                 if (evaluation && evaluation.status === 'FINISH') {
                     return (
                         <div className="flex items-start gap-5">
-                            <div className="flex-shrink-0">
+                            <div className="flex-shrink-0 flex flex-col items-center gap-1">
                                 <span className={`text-2xl font-bold ${getScoreColor(aiScore)}`}>
                                     {aiScore != null ? `${Math.round(aiScore)}%` : '--'}
                                 </span>
+                                <CandidateLevelBadge level={evaluation.candidateLevel} />
                             </div>
                             <div className="flex-1 min-w-0">
                                 {criteriaScores.length > 0 && (
@@ -280,7 +300,7 @@ const JobApplicants = ({ jobId }) => {
                                 placeholder="Search candidates..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 pr-4 py-2 bg-neutral-50 dark:bg-gray-900 border border-neutral-100 dark:border-neutral-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-neutral-400/60 dark:text-white shadow-sm w-64"
+                                className="h-9 pl-10 pr-4 bg-neutral-50 dark:bg-gray-900 border border-neutral-100 dark:border-neutral-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-neutral-400/60 dark:text-white shadow-sm w-64"
                             />
                             {searchTerm && (
                                 <button
@@ -295,21 +315,71 @@ const JobApplicants = ({ jobId }) => {
                             <Select
                                 value={sortBy}
                                 onChange={setSortBy}
-                                className="min-w-[160px]"
+                                className="min-w-[160px] h-9"
                                 options={[
                                     { value: 'AI_SCORE', label: 'By Score' },
                                     { value: 'DATE', label: 'By Date' },
                                 ]}
                             />
                         )}
-                        <Button
-                            mode="secondary"
-                            shape="round"
-                            iconLeft={<Filter size={16} />}
-                            onClick={() => setIsFilterOpen(true)}
-                        >
-                            Filters{activeFilterCount > 0 && ` (${activeFilterCount})`}
-                        </Button>
+                        {showAiSort && (
+                            <Popover
+                                trigger="click"
+                                placement="bottomRight"
+                                content={(
+                                    <div className="w-64 px-1 py-2">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-200">
+                                                Minimum AI Score
+                                            </span>
+                                            {draftMinScore > 0 && (
+                                                <button
+                                                    type="button"
+                                                    className="text-xs font-medium text-primary hover:underline"
+                                                    onClick={() => { setDraftMinScore(0); handleMinScoreChange(0); }}
+                                                >
+                                                    Clear
+                                                </button>
+                                            )}
+                                        </div>
+                                        <Slider
+                                            min={0}
+                                            max={100}
+                                            value={draftMinScore}
+                                            onChange={setDraftMinScore}
+                                            onChangeComplete={handleMinScoreChange}
+                                            tooltip={{ formatter: (v) => `${v}%` }}
+                                            trackStyle={{ backgroundColor: '#FF6B35' }}
+                                            handleStyle={{ borderColor: '#FF6B35' }}
+                                        />
+                                        <div className="flex justify-between text-[11px] text-neutral-400 mt-1">
+                                            <span>0%</span>
+                                            <span className="font-semibold text-orange-500">{draftMinScore}%</span>
+                                            <span>100%</span>
+                                        </div>
+                                    </div>
+                                )}
+                            >
+                                <Button
+                                    mode="secondary"
+                                    shape="round"
+                                    size="sm"
+                                    iconLeft={<Zap size={16} className={filter.minScore > 0 ? 'text-orange-500' : ''} />}
+                                >
+                                    Min Score{filter.minScore > 0 ? `: ${filter.minScore}%` : ''}
+                                </Button>
+                            </Popover>
+                        )}
+                        <Badge count={activeFilterCount} color="#ef4444" size="small" offset={[-4, 4]}>
+                            <button
+                                type="button"
+                                aria-label="Filters"
+                                onClick={() => setIsFilterOpen(true)}
+                                className="h-9 w-9 flex items-center justify-center rounded-full border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-200 hover:border-primary hover:text-primary transition-colors bg-white dark:bg-surface-dark"
+                            >
+                                <Filter size={16} />
+                            </button>
+                        </Badge>
                     </div>
                 </div>
             </div>
@@ -400,7 +470,8 @@ const JobApplicants = ({ jobId }) => {
                 title={<span className="font-semibold">AI Evaluation — {evalModal.candidateName}</span>}
                 onCancel={() => setEvalModal({ open: false, evaluation: null, candidateName: '' })}
                 footer={null}
-                width={900}
+                width={1200}
+                centered
             >
                 {evalModal.evaluation && (
                     <div className="space-y-4 pt-2">
@@ -408,9 +479,12 @@ const JobApplicants = ({ jobId }) => {
                             <span className={`text-3xl font-bold ${getScoreColor(evalModal.evaluation.aiScore)}`}>
                                 {evalModal.evaluation.aiScore != null ? `${Math.round(evalModal.evaluation.aiScore)}%` : '--'}
                             </span>
+                            <CandidateLevelBadge level={evalModal.evaluation.candidateLevel} size="sm" />
                             {(evalModal.evaluation.criteriaScores || []).length > 0 && (
                                 <div className="flex flex-wrap gap-x-4 gap-y-1">
-                                    {evalModal.evaluation.criteriaScores.map((cs, idx) => (
+                                    {[...evalModal.evaluation.criteriaScores]
+                                        .sort((a, b) => (a.criteriaName || '').localeCompare(b.criteriaName || ''))
+                                        .map((cs, idx) => (
                                         <span key={idx} className="text-sm text-gray-700 dark:text-gray-400">
                                             <span className="text-gray-400 mr-0.5">&bull;</span>
                                             {cs.criteriaName}
@@ -494,6 +568,28 @@ const StatusTag = ({ status }) => {
         <span className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-2 w-fit tracking-wide ${config.color}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
             {config.label}
+        </span>
+    );
+};
+
+const CANDIDATE_LEVEL_STYLE = {
+    INTERN: 'bg-slate-100 text-slate-600 border-slate-200',
+    FRESHER: 'bg-sky-50 text-sky-700 border-sky-200',
+    JUNIOR: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    MIDDLE: 'bg-amber-50 text-amber-700 border-amber-200',
+    SENIOR: 'bg-violet-50 text-violet-700 border-violet-200',
+    LEAD: 'bg-orange-50 text-orange-700 border-orange-200',
+    MANAGER: 'bg-rose-50 text-rose-700 border-rose-200',
+};
+
+const CandidateLevelBadge = ({ level, size = 'xs' }) => {
+    if (!level) return null;
+    const cls = CANDIDATE_LEVEL_STYLE[level] || 'bg-gray-50 text-gray-600 border-gray-200';
+    const text = size === 'sm' ? 'text-sm' : 'text-[10px]';
+    return (
+        <span className={`inline-flex items-center gap-1 ${text} font-bold tracking-wide px-2 py-0.5 rounded-md border ${cls}`}>
+            <Brain size={size === 'sm' ? 12 : 10} className="flex-shrink-0" />
+            {level}
         </span>
     );
 };

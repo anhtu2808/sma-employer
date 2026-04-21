@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '../../../utils/icons';
 import { useRetryMatchingMutation } from '@/apis/applicationApi';
 import toastMessage from '@/utils/toastMessage';
+import ManualScorePopover, { getEffectiveScore, isManualScored, ManualScoreBadge } from '../ManualScorePopover';
 
 const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPage, onPageChange, onStatusUpdate }) => {
     const navigate = useNavigate();
@@ -125,16 +126,22 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                 }
 
                 const aiScore = evaluation?.aiScore;
-                const criteriaScores = evaluation?.criteriaScores || [];
+                const effectiveScore = getEffectiveScore(evaluation);
+                const manual = isManualScored(evaluation);
+                const criteriaScores = [...(evaluation?.criteriaScores || [])]
+                    .sort((a, b) => (a.criteriaName || '').localeCompare(b.criteriaName || ''));
 
                 // Case 2: scoring finished — show full breakdown
                 if (evaluation && evaluation.status === 'FINISH') {
                     return (
                         <div className="flex items-start gap-5">
                             <div className="flex-shrink-0">
-                                <span className={`text-2xl font-bold ${getScoreColor(aiScore)}`}>
-                                    {aiScore != null ? `${Math.round(aiScore)}%` : '--'}
-                                </span>
+                                <ManualScorePopover evaluation={evaluation} applicationId={app.applicationId}>
+                                    <span className={`text-2xl font-bold ${getScoreColor(effectiveScore)}`}>
+                                        {effectiveScore != null ? `${Math.round(effectiveScore)}%` : '--'}
+                                    </span>
+                                </ManualScorePopover>
+                                {manual && <div className="mt-1"><ManualScoreBadge evaluation={evaluation} /></div>}
                             </div>
                             <div className="flex-1 min-w-0">
                                 {criteriaScores.length > 0 && (
@@ -332,7 +339,8 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                 title={<span className="font-semibold">AI Evaluation — {evalModal.candidateName}</span>}
                 onCancel={() => setEvalModal({ open: false, evaluation: null, candidateName: '' })}
                 footer={null}
-                width={1000}
+                width={1200}
+                centered
             >
                 {evalModal.evaluation && (
                     <div className="space-y-4 pt-2">
@@ -342,7 +350,9 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                             </span>
                             {(evalModal.evaluation.criteriaScores || []).length > 0 && (
                                 <div className="flex flex-wrap gap-x-4 gap-y-1">
-                                    {evalModal.evaluation.criteriaScores.map((cs, idx) => (
+                                    {[...evalModal.evaluation.criteriaScores]
+                                        .sort((a, b) => (a.criteriaName || '').localeCompare(b.criteriaName || ''))
+                                        .map((cs, idx) => (
                                         <span key={idx} className="text-base text-gray-700 dark:text-gray-400">
                                             <span className="text-gray-400 mr-0.5">&bull;</span>
                                             {cs.criteriaName}
