@@ -28,7 +28,7 @@ const CTAFooterSection = ({ theme, sectionProps = {}, settings = {} }) => {
       }} />
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <h2 style={{ fontSize: `${32 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: '#fff', marginBottom: '12px' }}>
+        <h2 style={{ fontSize: `${32 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: settings.textColorOverride || (settings.backgroundColorOverride === '#FFFFFF' ? theme.textColor : '#fff'), marginBottom: '12px' }}>
           {headline}
         </h2>
         {ctaText && (

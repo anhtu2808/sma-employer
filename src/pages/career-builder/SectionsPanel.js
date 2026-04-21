@@ -392,6 +392,18 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
         value={section.settings?.backgroundColorOverride || ''}
         onChange={(v) => updateSetting('backgroundColorOverride', v)}
       />
+      <ColorField
+        label="Text Color Override"
+        value={section.settings?.textColorOverride || ''}
+        onChange={(v) => updateSetting('textColorOverride', v)}
+      />
+      {section.type === 'EVP' && (
+        <ColorField
+          label="Background Pattern Color"
+          value={section.settings?.patternColorOverride || ''}
+          onChange={(v) => updateSetting('patternColorOverride', v)}
+        />
+      )}
     </>
   );
 
@@ -494,11 +506,6 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
           <StringField label="Button Text" value={props.ctaText} onChange={(v) => updateProp('ctaText', v)} />
           <StringField label="Button Link" value={props.ctaLink} onChange={(v) => updateProp('ctaLink', v)} />
           {commonSettings}
-          <ColorField
-            label="Text Color Override"
-            value={section.settings?.textColorOverride || ''}
-            onChange={(v) => updateSetting('textColorOverride', v)}
-          />
           <SliderField
             label="Height (px)"
             value={section.settings?.height}
