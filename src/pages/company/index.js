@@ -110,7 +110,7 @@ const CompanyProfile = () => {
                     <Classification />
                     <ContactInfo />
                     <Location form={form} isEditing={isEditing} />
-                    <LegalInfo isEditing={isEditing} />
+                    <LegalInfo form={form} isEditing={isEditing} />
                     <CompanyImages form={form} isEditing={isEditing} />
 
                     <div className="flex justify-start gap-3 pt-4">
