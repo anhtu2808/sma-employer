@@ -58,7 +58,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
     if (selectedSkill?.length > 0) jobs = jobs.filter(j => selectedSkill.every(ss => j.tags.some(t => t.toLowerCase() === ss.toLowerCase())));
     if (selectedExpertise?.length > 0) jobs = jobs.filter(j => selectedExpertise.some(se => j.rawExpertise.toLowerCase() === se.toLowerCase()));
     if (selectedDomain?.length > 0) jobs = jobs.filter(j => selectedDomain.some(sd => j.rawDomains.some(d => d.toLowerCase() === sd.toLowerCase())));
-    
+
     if (salaryRange[0] > 0 || salaryRange[1] < 100) {
       jobs = jobs.filter(j => {
         if (j.rawSalaryStart == null && j.rawSalaryEnd == null) return false;
@@ -130,9 +130,64 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
     <div style={{
       background: sectionBg,
       padding: `${settings.paddingTop || 64}px 40px ${settings.paddingBottom || 64}px`,
+      position: 'relative',
+      overflow: 'hidden',
     }}>
+      {/* Scattered IT background icons */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+        {/* Code brackets */}
+        <svg style={{ position: 'absolute', top: '5%', left: '5%', opacity: 0.15, transform: 'rotate(-12deg)' }} width="90" height="90" viewBox="0 0 24 24" fill="none" stroke={primaryColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+        {/* Monitor */}
+        <svg style={{ position: 'absolute', top: '3%', left: '30%', opacity: 0.12, transform: 'rotate(8deg)' }} width="85" height="85" viewBox="0 0 24 24" fill="none" stroke={primaryColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        {/* Cloud */}
+        <svg style={{ position: 'absolute', top: '6%', left: '58%', opacity: 0.15, transform: 'rotate(-5deg)' }} width="80" height="80" viewBox="0 0 24 24" fill="none" stroke={primaryColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+        </svg>
+        {/* Briefcase */}
+        <svg style={{ position: 'absolute', top: '4%', right: '8%', opacity: 0.15, transform: 'rotate(15deg)' }} width="80" height="80" viewBox="0 0 24 24" fill="none" stroke={primaryColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+        </svg>
+        {/* CPU */}
+        <svg style={{ position: 'absolute', top: '28%', left: '3%', opacity: 0.12, transform: 'rotate(20deg)' }} width="95" height="95" viewBox="0 0 24 24" fill="none" stroke={primaryColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>
+        </svg>
+        {/* Database */}
+        <svg style={{ position: 'absolute', top: '25%', right: '5%', opacity: 0.15, transform: 'rotate(-10deg)' }} width="80" height="80" viewBox="0 0 24 24" fill="none" stroke={primaryColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+        </svg>
+        {/* Wifi */}
+        <svg style={{ position: 'absolute', top: '50%', left: '8%', opacity: 0.12, transform: 'rotate(5deg)' }} width="75" height="75" viewBox="0 0 24 24" fill="none" stroke={primaryColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>
+        </svg>
+        {/* Terminal */}
+        <svg style={{ position: 'absolute', top: '48%', right: '12%', opacity: 0.12, transform: 'rotate(6deg)' }} width="85" height="85" viewBox="0 0 24 24" fill="none" stroke={primaryColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
+        </svg>
+        {/* Laptop */}
+        <svg style={{ position: 'absolute', bottom: '12%', left: '6%', opacity: 0.15, transform: 'rotate(-7deg)' }} width="90" height="90" viewBox="0 0 24 24" fill="none" stroke={primaryColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="4" width="18" height="12" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/>
+        </svg>
+        {/* Git Branch */}
+        <svg style={{ position: 'absolute', bottom: '8%', left: '28%', opacity: 0.12, transform: 'rotate(12deg)' }} width="75" height="75" viewBox="0 0 24 24" fill="none" stroke={primaryColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>
+        </svg>
+        {/* Shield */}
+        <svg style={{ position: 'absolute', bottom: '10%', right: '8%', opacity: 0.15, transform: 'rotate(8deg)' }} width="85" height="85" viewBox="0 0 24 24" fill="none" stroke={primaryColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        {/* Settings */}
+        <svg style={{ position: 'absolute', bottom: '30%', right: '3%', opacity: 0.12, transform: 'rotate(-15deg)' }} width="80" height="80" viewBox="0 0 24 24" fill="none" stroke={primaryColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </div>
+
+      <div style={{ position: 'relative', zIndex: 1 }}>
       <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-        <h2 style={{ fontSize: `${32 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, marginBottom: '8px' }}>{headline}</h2>
+        <h2 style={{ fontSize: `${40 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: settings.textColorOverride || textColor, marginBottom: '8px' }}>{headline}</h2>
       </div>
 
       <div style={{ display: 'flex', gap: '28px', maxWidth: '1280px', margin: '0 auto', alignItems: 'flex-start' }}>
@@ -165,8 +220,16 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           {/* Job Level */}
           <div style={fieldGap}>
             <label style={labelStyle}>Job Level</label>
-            <ConfigProvider theme={{ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }}>
-              <Select 
+            <ConfigProvider theme={useMemo(() => ({ 
+              components: { 
+                Select: { 
+                  borderRadius: borderRadius, 
+                  activeBorderColor: primaryColor, 
+                  hoverBorderColor: primaryColor 
+                } 
+              } 
+            }), [borderRadius, primaryColor])}>
+              <Select
                 showSearch
                 allowClear
                 style={{ width: '100%' }}
@@ -191,8 +254,8 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           {/* Working Model */}
           <div style={fieldGap}>
             <label style={labelStyle}>Working Model</label>
-            <ConfigProvider theme={{ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }}>
-              <Select 
+            <ConfigProvider theme={useMemo(() => ({ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }), [borderRadius, primaryColor])}>
+              <Select
                 showSearch
                 allowClear
                 style={{ width: '100%' }}
@@ -213,8 +276,8 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           {/* Skills */}
           <div style={fieldGap}>
             <label style={labelStyle}>Skills</label>
-            <ConfigProvider theme={{ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }}>
-              <Select 
+            <ConfigProvider theme={useMemo(() => ({ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }), [borderRadius, primaryColor])}>
+              <Select
                 mode="multiple"
                 showSearch
                 allowClear
@@ -256,8 +319,8 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           {/* Expertise */}
           <div style={fieldGap}>
             <label style={labelStyle}>Expertise</label>
-            <ConfigProvider theme={{ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }}>
-              <Select 
+            <ConfigProvider theme={useMemo(() => ({ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }), [borderRadius, primaryColor])}>
+              <Select
                 mode="multiple"
                 showSearch
                 allowClear
@@ -275,8 +338,8 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
           {/* Domain */}
           <div style={{ marginBottom: 0 }}>
             <label style={labelStyle}>Domain</label>
-            <ConfigProvider theme={{ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }}>
-              <Select 
+            <ConfigProvider theme={useMemo(() => ({ components: { Select: { borderRadius: borderRadius, activeBorderColor: primaryColor, hoverBorderColor: primaryColor } } }), [borderRadius, primaryColor])}>
+              <Select
                 mode="multiple"
                 showSearch
                 allowClear
@@ -442,6 +505,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

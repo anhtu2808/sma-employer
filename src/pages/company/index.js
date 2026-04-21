@@ -27,6 +27,9 @@ const CompanyProfile = () => {
             form.setFieldsValue({
                 ...data,
                 companyIndustry: data.companyIndustry || data.companyindustry,
+                companyType: data.companyType || data.companytype,
+                link: data.link || data.companyLink,
+                email: data.email || data.companyEmail,
                 logo: data.logo || "",
             });
         }
@@ -41,6 +44,7 @@ const CompanyProfile = () => {
                 link,
                 images,
                 companyIndustry,
+                companyType,
                 locations,
                 logo,
                 ...rest
@@ -66,6 +70,7 @@ const CompanyProfile = () => {
                 minSize: rest.minSize ? Number(rest.minSize) : 0,
                 maxSize: rest.maxSize ? Number(rest.maxSize) : 0,
                 companyindustry: companyIndustry,
+                companytype: companyType,
                 taxIdentificationNumber: taxIdentificationNumber !== undefined ? taxIdentificationNumber : companyData.data?.taxIdentificationNumber,
                 erc: erc !== undefined ? erc : companyData.data?.erc,
                 companyEmail: email,
@@ -110,7 +115,7 @@ const CompanyProfile = () => {
                     <Classification />
                     <ContactInfo />
                     <Location form={form} isEditing={isEditing} />
-                    <LegalInfo isEditing={isEditing} />
+                    <LegalInfo form={form} isEditing={isEditing} />
                     <CompanyImages form={form} isEditing={isEditing} />
 
                     <div className="flex justify-start gap-3 pt-4">
