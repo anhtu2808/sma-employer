@@ -23,6 +23,7 @@ const ApiKeyFormFields = ({
     formState,
     formErrors,
     onChange,
+    featureEntitlements = {},
 }) => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
@@ -42,11 +43,14 @@ const ApiKeyFormFields = ({
                 className={selectClassName(!!fieldErrorMessage(formErrors, 'feature'))}
             >
                 <option value="">Select a feature scope</option>
-                {FEATURE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
+                {FEATURE_OPTIONS.map((option) => {
+                    const disabled = featureEntitlements[option.value] === false;
+                    return (
+                    <option key={option.value} value={option.value} disabled={disabled}>
+                        {disabled ? `${option.label} - upgrade required` : option.label}
                     </option>
-                ))}
+                    );
+                })}
             </select>
             {fieldErrorMessage(formErrors, 'feature') && (
                 <p className="mt-1 text-xs text-red-500">{fieldErrorMessage(formErrors, 'feature')}</p>

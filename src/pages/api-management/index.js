@@ -7,10 +7,11 @@ import {
     useUpdateCompanyApiKeyMutation,
 } from '@/apis/companyApiKeyApi';
 import { useGetCompaniesQuery, useGetCompanyProfileQuery } from '@/apis/companyApi';
+import { useGetFeatureUsageQuery } from '@/apis/featureUsageApi';
 import { useGetMyRecruiterInfoQuery } from '@/apis/recruiterApi';
 import Loading from '@/components/Loading';
 import toastMessage from '@/utils/toastMessage';
-import { createInitialFormState } from './constants';
+import { FEATURE_REQUIRED_KEYS, createInitialFormState } from './constants';
 import { decodeJwtPayload, getRoleFromPayload, isValidHttpUrl } from './utils';
 import ApiKeyCredentialsModal from './components/ApiKeyCredentialsModal';
 import ApiKeyDeleteModal from './components/ApiKeyDeleteModal';
@@ -36,6 +37,9 @@ const ApiManagementPage = () => {
         || myCompanyProfileData?.data?.name
         || 'Your company';
     const hasPermission = isAdmin || isRootRecruiter;
+    const { data: featureUsage = [], isLoading: isFeatureUsageLoading } = useGetFeatureUsageQuery(undefined, {
+        skip: isAdmin || !hasPermission,
+    });
 
     const { data: companiesData, isLoading: isCompaniesLoading, isError: isCompaniesError } = useGetCompaniesQuery({
         page: 0,
@@ -78,6 +82,21 @@ const ApiManagementPage = () => {
     const apiKeysData = apiKeysResponse?.data;
     const apiKeys = useMemo(() => (Array.isArray(apiKeysData) ? apiKeysData : []), [apiKeysData]);
     const selectedDetail = detailResponse?.data || apiKeys.find((item) => item.id === detailId) || null;
+    const availableFeatureKeys = useMemo(() => new Set(
+        (Array.isArray(featureUsage) ? featureUsage : [])
+            .map((item) => item?.featureKey)
+            .filter(Boolean)
+    ), [featureUsage]);
+    const featureEntitlements = useMemo(() => {
+        if (isAdmin || isFeatureUsageLoading) return {};
+        return Object.fromEntries(
+            Object.entries(FEATURE_REQUIRED_KEYS).map(([feature, requiredKeys]) => [
+                feature,
+                requiredKeys.every((featureKey) => availableFeatureKeys.has(featureKey)),
+            ])
+        );
+    }, [availableFeatureKeys, isAdmin, isFeatureUsageLoading]);
+    const hasAnyApiFeatureEntitlement = isAdmin || isFeatureUsageLoading || Object.values(featureEntitlements).some(Boolean);
 
     useEffect(() => {
         if (recruiterCompanyId && !isAdmin) {
@@ -149,6 +168,9 @@ const ApiManagementPage = () => {
 
         if (!formState.name.trim()) nextErrors.name = 'API key name is required';
         if (!formState.feature) nextErrors.feature = 'API feature is required';
+        if (!isAdmin && formState.feature && featureEntitlements[formState.feature] === false) {
+            nextErrors.feature = 'Upgrade your plan to create an API key for this feature';
+        }
         if (isAdmin && !String(formState.companyId || '').trim()) nextErrors.companyId = 'Company is required';
         if (formState.defaultWebhookUrl && !isValidHttpUrl(formState.defaultWebhookUrl)) {
             nextErrors.defaultWebhookUrl = 'Please enter a valid http(s) URL';
@@ -168,6 +190,10 @@ const ApiManagementPage = () => {
     });
 
     const handleOpenCreate = () => {
+        if (!hasAnyApiFeatureEntitlement) {
+            toastMessage.error('Upgrade your plan to create API keys for integration features');
+            return;
+        }
         resetForm();
         setEditingItem(null);
         setIsCreateOpen(true);
@@ -257,7 +283,11 @@ const ApiManagementPage = () => {
 
     return (
         <div className="space-y-6">
-            <ApiManagementHero hasPermission={hasPermission} onOpenCreate={handleOpenCreate} />
+            <ApiManagementHero
+                hasPermission={hasPermission}
+                hasApiFeatureEntitlement={hasAnyApiFeatureEntitlement}
+                onOpenCreate={handleOpenCreate}
+            />
 
             <ApiKeysSection
                 showPermissionState={showPermissionState}
@@ -280,6 +310,7 @@ const ApiManagementPage = () => {
                 onEdit={handleOpenEdit}
                 onDelete={setDeleteTarget}
                 onCopy={handleCopy}
+                createDisabled={!hasAnyApiFeatureEntitlement}
             />
 
             <ApiKeyFormModal
@@ -299,6 +330,7 @@ const ApiManagementPage = () => {
                 formState={formState}
                 formErrors={formErrors}
                 onFormChange={handleFormChange}
+                featureEntitlements={featureEntitlements}
             />
 
             <ApiKeyFormModal
@@ -319,6 +351,7 @@ const ApiManagementPage = () => {
                 formState={formState}
                 formErrors={formErrors}
                 onFormChange={handleFormChange}
+                featureEntitlements={featureEntitlements}
             />
 
             <ApiKeyDeleteModal

@@ -1,9 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleInfo, faFileLines, faKey, faPlus, faTriangleExclamation } from '@/utils/icons';
 import Button from '@/components/Button';
 
-const ApiManagementHero = ({ hasPermission, onOpenCreate }) => (
+const ApiManagementHero = ({ hasPermission, hasApiFeatureEntitlement, onOpenCreate }) => (
     <section className="rounded-3xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
         <div className="p-6 sm:p-8 flex flex-col xl:flex-row xl:items-start xl:justify-between gap-6">
             <div className="max-w-3xl">
@@ -25,7 +26,7 @@ const ApiManagementHero = ({ hasPermission, onOpenCreate }) => (
                     <FontAwesomeIcon icon={faFileLines} />
                     Docs
                 </a>
-                <Button mode="primary" onClick={onOpenCreate} disabled={!hasPermission}>
+                <Button mode="primary" onClick={onOpenCreate} disabled={!hasPermission || !hasApiFeatureEntitlement}>
                     <FontAwesomeIcon icon={faPlus} className="mr-2" />
                     Create API Key
                 </Button>
@@ -45,6 +46,19 @@ const ApiManagementHero = ({ hasPermission, onOpenCreate }) => (
                         </div>
                     </div>
                 </div>
+                {hasPermission && !hasApiFeatureEntitlement && (
+                    <div className="mt-4 rounded-2xl border border-red-200 bg-red-50/80 dark:bg-red-900/10 dark:border-red-800 px-4 py-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white">Upgrade your plan to create integration API keys.</p>
+                            <Link
+                                to="/billing-plans"
+                                className="inline-flex items-center justify-center rounded-xl bg-primary px-4 h-10 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+                            >
+                                View plans
+                            </Link>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className="p-6 sm:p-8">

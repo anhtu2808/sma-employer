@@ -4,6 +4,12 @@ export const FEATURE_OPTIONS = [
     { value: 'PARSING_AND_MATCHING', label: 'Parsing + Matching' },
 ];
 
+export const FEATURE_REQUIRED_KEYS = {
+    PARSING: ['API_PARSING'],
+    MATCHING: ['API_SCORING'],
+    PARSING_AND_MATCHING: ['API_PARSING', 'API_SCORING'],
+};
+
 export const FEATURE_ENDPOINTS = {
     PARSING: ['POST /v1/integration/parsing-jobs'],
     MATCHING: ['POST /v1/integration/matching-jobs'],
