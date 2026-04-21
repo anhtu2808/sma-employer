@@ -70,6 +70,18 @@ export const applicationApi = api.injectEndpoints({
             }),
             invalidatesTags: [{ type: "Applications", id: "LIST" }],
         }),
+
+        scoreManual: builder.mutation({
+            query: ({ evaluationId, manualScore }) => ({
+                url: `${API_VERSION}/resume-evaluations/${evaluationId}/score-manual`,
+                method: "PUT",
+                body: { manualScore, scoreCriteriaRequests: [] },
+            }),
+            invalidatesTags: (result, error, { applicationId }) => [
+                { type: "Applications", id: "LIST" },
+                ...(applicationId ? [{ type: "Applications", id: applicationId }] : []),
+            ],
+        }),
     }),
 });
 
@@ -80,5 +92,6 @@ export const {
     useUpdateApplicationStatusMutation,
     useLazyGetShortlistedExportQuery,
     useLazyDownloadResumesZipQuery,
-    useRetryMatchingMutation
+    useRetryMatchingMutation,
+    useScoreManualMutation,
 } = applicationApi;

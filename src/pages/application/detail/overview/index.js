@@ -7,6 +7,7 @@ import {
     faCircleXmark, faCircleCheck,
 } from '../../../../utils/icons';
 import { APPLICATION_STATUS, getApplicationStatusConfig, getAllowedNextStatuses } from '@/constrant/application';
+import ManualScorePopover, { ManualScoreBadge } from '../../ManualScorePopover';
 
 const CopyableField = ({ icon, value, href }) => {
     const handleCopy = () => {
@@ -102,18 +103,36 @@ const Overview = ({ app, onSwitchToAiTab, onStatusChange, isUpdating, isRejected
                             <span className="text-sm font-medium text-gray-700 dark:text-neutral-300">{app.source}</span>
                         </div>
                     )}
-                    {app.aiScore != null && (
-                        <button
-                            onClick={onSwitchToAiTab}
-                            className="flex flex-col gap-1 p-3 bg-orange-50 dark:bg-orange-900/10 rounded-xl text-left hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors group"
-                        >
-                            <span className="text-xs text-orange-400">AI Score</span>
-                            <span className="text-sm font-bold text-orange-500 group-hover:text-orange-600">
-                                {app.aiScore}%
-                                <FontAwesomeIcon icon={faArrowRight} className="text-[13px] ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </span>
-                        </button>
-                    )}
+                    {(app.aiScore != null || app.recruiterScore != null) && (() => {
+                        const isManual = app.recruiterScore != null;
+                        const effective = app.recruiterScore ?? app.aiScore;
+                        const evaluation = {
+                            id: app.evaluationId,
+                            aiScore: app.aiScore,
+                            recruiterScore: app.recruiterScore,
+                        };
+                        return (
+                            <div className="flex flex-col gap-1 p-3 bg-orange-50 dark:bg-orange-900/10 rounded-xl">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs text-orange-400">{isManual ? 'Score (Manual)' : 'AI Score'}</span>
+                                    {isManual && <ManualScoreBadge evaluation={evaluation} />}
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <ManualScorePopover evaluation={evaluation}>
+                                        <span className="text-sm font-bold text-orange-500">
+                                            {Math.round(effective)}%
+                                        </span>
+                                    </ManualScorePopover>
+                                    <button
+                                        onClick={onSwitchToAiTab}
+                                        className="text-xs text-orange-500 hover:text-orange-600 inline-flex items-center gap-1"
+                                    >
+                                        Details <FontAwesomeIcon icon={faArrowRight} className="text-[11px]" />
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })()}
                 </div>
             </div>
 

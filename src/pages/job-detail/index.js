@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useGetJobDetailQuery } from '@/apis/apis';
 import { useUpdateJobStatusMutation, useUpdateExpiredDateMutation, useGetProposedCvsQuery, usePublishJobMutation } from '@/apis/jobApi';
 import { useGetFeatureUsageQuery } from '@/apis/featureUsageApi';
@@ -56,7 +56,17 @@ const JobDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { setHeaderConfig } = useContext(PageHeaderContext);
-    const [activeTab, setActiveTab] = useState('details');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const VALID_TABS = ['1', '2', '3'];
+    const urlTab = searchParams.get('tab');
+    const activeTab = VALID_TABS.includes(urlTab) ? urlTab : '1';
+    const handleTabChange = (key) => {
+        setSearchParams(prev => {
+            const next = new URLSearchParams(prev);
+            next.set('tab', key);
+            return next;
+        }, { replace: true });
+    };
     const { data: jobData, isLoading, error } = useGetJobDetailQuery(id);
     const job = jobData?.data;
 
@@ -343,7 +353,7 @@ const JobDetail = () => {
                         },
                     }}
                 >
-                    <Tabs defaultActiveKey="1" items={tabItems} className="custom-tabs" />
+                    <Tabs activeKey={activeTab} onChange={handleTabChange} items={tabItems} className="custom-tabs" />
                 </ConfigProvider>
             ) : (
                 <div className="space-y-6 mt-4">

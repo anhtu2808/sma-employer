@@ -6,6 +6,17 @@ import { getApplicationStatusConfig } from '@/constrant/application';
 import { Tooltip } from 'antd';
 
 import { useNavigate } from 'react-router-dom';
+import ManualScorePopover, { getEffectiveScore, isManualScored, ManualScoreBadge } from '../ManualScorePopover';
+
+const KANBAN_LEVEL_STYLE = {
+    INTERN: 'bg-slate-50 text-slate-600 border-slate-200',
+    FRESHER: 'bg-sky-50 text-sky-700 border-sky-200',
+    JUNIOR: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    MIDDLE: 'bg-amber-50 text-amber-700 border-amber-200',
+    SENIOR: 'bg-violet-50 text-violet-700 border-violet-200',
+    LEAD: 'bg-orange-50 text-orange-700 border-orange-200',
+    MANAGER: 'bg-rose-50 text-rose-700 border-rose-200',
+};
 
 const KanbanBoard = ({
     statusColumns,
@@ -125,8 +136,9 @@ const KanbanBoard = ({
                                                     // REJECTED cards that are NOT AI-rejected also can't be dragged (nowhere valid to go)
                                                     const isNotDraggable = app.status === 'APPLIED' || app.status === 'APPROVED'
                                                         || (app.status === 'REJECTED' && app.isRejectedByAi !== true);
-                                                    const scoreValue = app.evaluation?.aiScore;
+                                                    const scoreValue = getEffectiveScore(app.evaluation);
                                                     const matchTag = getAIMatchTag(scoreValue);
+                                                    const manualScored = isManualScored(app.evaluation);
 
                                                     return (
                                                         <Draggable
@@ -150,6 +162,12 @@ const KanbanBoard = ({
                                                                                 <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${matchTag.bg} ${matchTag.text}`}>
                                                                                     {matchTag.label}
                                                                                 </span>
+                                                                                {app.evaluation?.candidateLevel && (
+                                                                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${KANBAN_LEVEL_STYLE[app.evaluation.candidateLevel] || 'bg-gray-50 text-gray-600 border-gray-200'}`}>
+                                                                                        <Brain size={10} />
+                                                                                        {app.evaluation.candidateLevel}
+                                                                                    </span>
+                                                                                )}
                                                                                 {app.isRejectedByAi && (
                                                                                     <span className="text-[10px] font-bold tracking-wide text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-1.5 py-0.5 rounded flex items-center gap-1 border border-red-100 dark:border-red-800">
                                                                                         <Brain size={10} />
@@ -158,15 +176,18 @@ const KanbanBoard = ({
                                                                                 )}
                                                                             </div>
 
-                                                                            {/* AI SCORE */}
-                                                                            {app.evaluation?.aiScore != null && (
-                                                                                <div className="shrink-0">
-                                                                                    <span className={`text-sm font-bold ${app.evaluation.aiScore >= 80 ? 'text-emerald-600' :
-                                                                                        app.evaluation.aiScore >= 50 ? 'text-orange-500' :
-                                                                                            'text-red-500'
-                                                                                        }`}>
-                                                                                        {Math.round(app.evaluation.aiScore)}%
-                                                                                    </span>
+                                                                            {/* SCORE (manual prioritized) */}
+                                                                            {scoreValue != null && (
+                                                                                <div className="shrink-0 flex flex-col items-end gap-1">
+                                                                                    <ManualScorePopover evaluation={app.evaluation} applicationId={app.applicationId} placement="bottomRight">
+                                                                                        <span className={`text-sm font-bold ${scoreValue >= 80 ? 'text-emerald-600' :
+                                                                                            scoreValue >= 50 ? 'text-orange-500' :
+                                                                                                'text-red-500'
+                                                                                            }`}>
+                                                                                            {Math.round(scoreValue)}%
+                                                                                        </span>
+                                                                                    </ManualScorePopover>
+                                                                                    {manualScored && <ManualScoreBadge evaluation={app.evaluation} />}
                                                                                 </div>
                                                                             )}
 

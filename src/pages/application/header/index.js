@@ -1,6 +1,6 @@
-import React from 'react';
-import { Select, Tabs, ConfigProvider } from 'antd';
-import { Search, Filter, Plus, LayoutGrid, List as ListIcon, Download, Archive, FileArchive } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Select, Tabs, ConfigProvider, Popover, Slider, Badge } from 'antd';
+import { Search, Filter, Plus, LayoutGrid, List as ListIcon, Download, Archive, FileArchive, Zap } from 'lucide-react';
 import Button from '@/components/Button';
 import { getJobStatusConfig } from '@/constrant/application';
 import { Dropdown } from 'antd';
@@ -37,9 +37,15 @@ const ApplicationHeader = ({
     sortBy,
     onSortChange,
     showAiSort,
+    minScore,
+    onMinScoreChange,
+    activeFiltersCount = 0,
     recruiteeConfig,
     onConnectRecruitee,
 }) => {
+
+    const [draftMinScore, setDraftMinScore] = useState(minScore ?? 0);
+    useEffect(() => { setDraftMinScore(minScore ?? 0); }, [minScore]);
 
     const exportMenuItems = [
         {
@@ -187,7 +193,7 @@ const ApplicationHeader = ({
                             placeholder="Search candidates by name or email..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-11 pr-4 py-2 bg-neutral-50 dark:bg-gray-900 border border-neutral-100 dark:border-neutral-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-neutral-400/60 dark:text-white shadow-sm"
+                            className="w-full h-9 pl-11 pr-4 bg-neutral-50 dark:bg-gray-900 border border-neutral-100 dark:border-neutral-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-neutral-400/60 dark:text-white shadow-sm"
                         />
                         {searchTerm && (
                             <button
@@ -204,7 +210,7 @@ const ApplicationHeader = ({
                             <Select
                                 value={sortBy}
                                 onChange={onSortChange}
-                                className="min-w-[160px]"
+                                className="min-w-[160px] h-9"
                                 options={[
                                     { value: 'AI_SCORE', label: 'By Score' },
                                     { value: 'DATE', label: 'By Date' },
@@ -212,19 +218,60 @@ const ApplicationHeader = ({
                             />
                         )}
 
-                        <Button
-                            mode="secondary"
-                            className=""
-                            shape="round"
-                            iconLeft={<Filter size={16} />}
-                            onClick={() => setIsFilterOpen(true)}
-                        >
-                            Filters
-                        </Button>
+                        {showAiSort && (
+                            <Popover
+                                trigger="click"
+                                placement="bottomRight"
+                                content={(
+                                    <div className="w-64 px-1 py-2">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-200">
+                                                Minimum AI Score
+                                            </span>
+                                            {draftMinScore > 0 && (
+                                                <button
+                                                    type="button"
+                                                    className="text-xs font-medium text-primary hover:underline"
+                                                    onClick={() => { setDraftMinScore(0); onMinScoreChange(0); }}
+                                                >
+                                                    Clear
+                                                </button>
+                                            )}
+                                        </div>
+                                        <Slider
+                                            min={0}
+                                            max={100}
+                                            value={draftMinScore}
+                                            onChange={setDraftMinScore}
+                                            onChangeComplete={onMinScoreChange}
+                                            tooltip={{ formatter: (v) => `${v}%` }}
+                                            trackStyle={{ backgroundColor: '#FF6B35' }}
+                                            handleStyle={{ borderColor: '#FF6B35' }}
+                                        />
+                                        <div className="flex justify-between text-[11px] text-neutral-400 mt-1">
+                                            <span>0%</span>
+                                            <span className="font-semibold text-orange-500">{draftMinScore}%</span>
+                                            <span>100%</span>
+                                        </div>
+                                    </div>
+                                )}
+                            >
+                                <Button
+                                    mode="secondary"
+                                    shape="round"
+                                    size="sm"
+                                    iconLeft={<Zap size={16} className={minScore > 0 ? 'text-orange-500' : ''} />}
+                                >
+                                    Min Score{minScore > 0 ? `: ${minScore}%` : ''}
+                                </Button>
+                            </Popover>
+                        )}
+
                         <Dropdown menu={{ items: exportMenuItems }} trigger={['click']} disabled={isExporting || isDownloadingZip}>
                             <Button
                                 mode="secondary"
                                 shape="round"
+                                size="sm"
                                 loading={isExporting || isDownloadingZip}
                                 iconLeft={<Download size={16} />}
                             >
@@ -235,6 +282,16 @@ const ApplicationHeader = ({
                             config={recruiteeConfig}
                             onConnectRecruitee={onConnectRecruitee}
                         />
+                        <Badge count={activeFiltersCount} color="#ef4444" size="small" offset={[-4, 4]}>
+                            <button
+                                type="button"
+                                aria-label="Filters"
+                                onClick={() => setIsFilterOpen(true)}
+                                className="h-9 w-9 flex items-center justify-center rounded-full border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-200 hover:border-primary hover:text-primary transition-colors bg-white dark:bg-surface-dark"
+                            >
+                                <Filter size={16} />
+                            </button>
+                        </Badge>
                     </div>
                 </div>
 
