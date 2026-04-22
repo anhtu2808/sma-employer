@@ -28,7 +28,7 @@ const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
         display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
         maxWidth: '1100px', margin: '0 auto 40px',
       }}>
-        <h2 style={{ fontSize: `${32 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor, margin: 0 }}>
+        <h2 style={{ fontSize: `${40 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: settings.textColorOverride || textColor, margin: 0 }}>
           {headline}
         </h2>
         {navLink.isVisible !== false && navLink.text && (

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import HeaderSection from './sections/HeaderSection';
 import HeroSection from './sections/HeroSection';
 import AboutSection from './sections/AboutSection';
@@ -90,7 +90,7 @@ const CanvasPreview = ({
         )}
 
         {/* Layout sections */}
-        {visibleSections.map((section) => {
+        {useMemo(() => visibleSections.map((section) => {
           const Component = SECTION_COMPONENTS[section.type];
           if (!Component) return null;
 
@@ -123,7 +123,7 @@ const CanvasPreview = ({
               )}
             </div>
           );
-        })}
+        }), [visibleSections, activeSection, spacingPad, theme])}
 
         {/* Footer */}
         {showFooter && (

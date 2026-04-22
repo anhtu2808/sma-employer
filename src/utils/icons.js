@@ -121,7 +121,7 @@ import {
   faClock as _faClock,
   faArrowRotateLeft as _faArrowRotateLeft,
   faChevronUp as _faChevronUp,
-
+  faHeart as _faHeart,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -254,6 +254,7 @@ export const faFileImage = _faFileImage;
 export const faClock = _faClock;
 export const faArrowRotateLeft = _faArrowRotateLeft;
 export const faChevronUp = _faChevronUp;
+export const faHeart = _faHeart;
 export const faBookmarkRegular = _faBookmarkRegular;
 export const faClockRegular = _faClockRegular;
 export const faEnvelopeRegular = _faEnvelopeRegular;
@@ -351,8 +352,10 @@ export const materialToFA = {
   groups: faPeopleGroup,
 
   // H
+  heart: faHeart,
   help_outline: faCircleQuestion,
   history: faClockRotateLeft,
+  home: faCity,
   hub: faDiagramProject,
 
   // I
@@ -375,6 +378,7 @@ export const materialToFA = {
   mail: faEnvelope,
   mail_outline: faEnvelopeRegular,
   map: faMap,
+  medal: faMedal,
   memory: faMicrochip,
   menu: faBars,
   more_vert: faEllipsisVertical,
