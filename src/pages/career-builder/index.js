@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { Modal } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { Modal, Button, ConfigProvider } from 'antd';
 import toastMessage from '@/utils/toastMessage';
 import { useCreateCareerPageMutation, useGetCareerPageManageQuery, useArchiveCareerPageMutation } from '@/apis/careerPageApi';
 import CareerBuilderToolbar from './CareerBuilderToolbar';
@@ -209,6 +210,8 @@ const CareerPageBuilder = () => {
   const [status, setStatus] = useState(SAMPLE_DATA.status.toLowerCase());
   const [dataLoaded, setDataLoaded] = useState(false);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const [createCareerPage, { isLoading: isSaving }] = useCreateCareerPageMutation();
   const [archiveCareerPageApi, { isLoading: isArchiving }] = useArchiveCareerPageMutation();
@@ -333,7 +336,11 @@ const CareerPageBuilder = () => {
       window.open(deployedUrl, '_blank');
     } catch (err) {
       console.error('Publish (Unarchive) failed:', err);
-      toastMessage.error(err?.message || 'Failed to publish/unarchive. Please try again.');
+      if (err?.status === 403 && err?.data?.message === 'Feature is not included in active subscription') {
+        setUpgradeModalOpen(true);
+      } else {
+        toastMessage.error(err?.data?.message || err?.message || 'Failed to publish/unarchive. Please try again.');
+      }
     }
   }, [buildPayload, createCareerPage, status, slug]);
 
@@ -412,6 +419,42 @@ const CareerPageBuilder = () => {
           />
         )}
       </div>
+
+      {/* Upgrade Modal */}
+      <ConfigProvider theme={{ token: { colorPrimary: '#f97316' } }}>
+        <Modal
+          title={
+            <div className="flex items-center gap-2 text-orange-600">
+              <span className="text-lg">Premium Feature</span>
+            </div>
+          }
+          open={upgradeModalOpen}
+          onCancel={() => setUpgradeModalOpen(false)}
+          footer={[
+            <Button key="cancel" onClick={() => setUpgradeModalOpen(false)}>
+              Cancel
+            </Button>,
+            <Button
+              key="upgrade"
+              type="primary"
+              onClick={() => {
+                setUpgradeModalOpen(false);
+                navigate('/billing-plans');
+              }}
+            >
+              Upgrade Plan
+            </Button>,
+          ]}
+          centered
+        >
+          <p className="text-gray-600 mt-4 mb-2">
+            Publishing a custom Career Page requires an active subscription that includes the <strong>Career Page</strong> addon.
+          </p>
+          <p className="text-gray-600">
+            Please upgrade your plan to unlock this feature and showcase your company culture to candidates.
+          </p>
+        </Modal>
+      </ConfigProvider>
     </div>
   );
 };
