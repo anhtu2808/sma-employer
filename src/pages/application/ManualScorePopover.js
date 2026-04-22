@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Popover, InputNumber, Button, Tooltip } from 'antd';
+import { Popover, InputNumber, Button, Tooltip, ConfigProvider } from 'antd';
 import { Pencil } from 'lucide-react';
 import { useScoreManualMutation } from '@/apis/applicationApi';
 import toastMessage from '@/utils/toastMessage';
@@ -74,9 +74,11 @@ const ManualScorePopover = ({ evaluation, applicationId, children, disabled, pla
             )}
             <div className="flex justify-end gap-2 pt-1">
                 <Button size="small" onClick={() => setOpen(false)}>Cancel</Button>
-                <Button size="small" type="primary" loading={isLoading} onClick={handleSubmit}>
-                    Save
-                </Button>
+                <ConfigProvider theme={{ token: { colorPrimary: '#f97316' } }}>
+                    <Button size="small" type="primary" loading={isLoading} onClick={handleSubmit}>
+                        Save
+                    </Button>
+                </ConfigProvider>
             </div>
         </div>
     );
