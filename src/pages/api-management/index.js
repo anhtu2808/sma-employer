@@ -2,16 +2,16 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
     useCreateCompanyApiKeyMutation,
     useDeleteCompanyApiKeyMutation,
+    useGetCompanyApiKeyAllowedFeaturesQuery,
     useGetCompanyApiKeyQuery,
     useGetCompanyApiKeysQuery,
     useUpdateCompanyApiKeyMutation,
 } from '@/apis/companyApiKeyApi';
 import { useGetCompaniesQuery, useGetCompanyProfileQuery } from '@/apis/companyApi';
-import { useGetFeatureUsageQuery } from '@/apis/featureUsageApi';
 import { useGetMyRecruiterInfoQuery } from '@/apis/recruiterApi';
 import Loading from '@/components/Loading';
 import toastMessage from '@/utils/toastMessage';
-import { FEATURE_REQUIRED_KEYS, createInitialFormState } from './constants';
+import { createInitialFormState } from './constants';
 import { decodeJwtPayload, getRoleFromPayload, isValidHttpUrl } from './utils';
 import ApiKeyCredentialsModal from './components/ApiKeyCredentialsModal';
 import ApiKeyDeleteModal from './components/ApiKeyDeleteModal';
@@ -37,10 +37,6 @@ const ApiManagementPage = () => {
         || myCompanyProfileData?.data?.name
         || 'Your company';
     const hasPermission = isAdmin || isRootRecruiter;
-    const { data: featureUsage = [], isLoading: isFeatureUsageLoading } = useGetFeatureUsageQuery(undefined, {
-        skip: isAdmin || !hasPermission,
-    });
-
     const { data: companiesData, isLoading: isCompaniesLoading, isError: isCompaniesError } = useGetCompaniesQuery({
         page: 0,
         size: 500,
@@ -77,26 +73,34 @@ const ApiManagementPage = () => {
     const { data: detailResponse, isFetching: isDetailFetching, error: detailError } = useGetCompanyApiKeyQuery(detailId, {
         skip: !detailId || !hasPermission,
     });
+    const selectedAllowedFeaturesCompanyId = isAdmin
+        ? (String(formState.companyId || '').trim() || undefined)
+        : undefined;
+    const { data: allowedFeaturesResponse, isLoading: isAllowedFeaturesLoading } = useGetCompanyApiKeyAllowedFeaturesQuery(
+        selectedAllowedFeaturesCompanyId,
+        {
+            skip: !hasPermission || (isAdmin && !selectedAllowedFeaturesCompanyId),
+        }
+    );
 
     const companies = Array.isArray(companiesData) ? companiesData : [];
     const apiKeysData = apiKeysResponse?.data;
     const apiKeys = useMemo(() => (Array.isArray(apiKeysData) ? apiKeysData : []), [apiKeysData]);
     const selectedDetail = detailResponse?.data || apiKeys.find((item) => item.id === detailId) || null;
-    const availableFeatureKeys = useMemo(() => new Set(
-        (Array.isArray(featureUsage) ? featureUsage : [])
-            .map((item) => item?.featureKey)
-            .filter(Boolean)
-    ), [featureUsage]);
+    const allowedFeatures = useMemo(() => {
+        const items = allowedFeaturesResponse?.data;
+        return Array.isArray(items) ? items : [];
+    }, [allowedFeaturesResponse]);
     const featureEntitlements = useMemo(() => {
-        if (isAdmin || isFeatureUsageLoading) return {};
-        return Object.fromEntries(
-            Object.entries(FEATURE_REQUIRED_KEYS).map(([feature, requiredKeys]) => [
-                feature,
-                requiredKeys.every((featureKey) => availableFeatureKeys.has(featureKey)),
-            ])
-        );
-    }, [availableFeatureKeys, isAdmin, isFeatureUsageLoading]);
-    const hasAnyApiFeatureEntitlement = isAdmin || isFeatureUsageLoading || Object.values(featureEntitlements).some(Boolean);
+        if (isAllowedFeaturesLoading) return {};
+        const allowedSet = new Set(allowedFeatures);
+        return {
+            PARSING: allowedSet.has('PARSING'),
+            MATCHING: allowedSet.has('MATCHING'),
+            PARSING_AND_MATCHING: allowedSet.has('PARSING_AND_MATCHING'),
+        };
+    }, [allowedFeatures, isAllowedFeaturesLoading]);
+    const hasAnyApiFeatureEntitlement = isAdmin || isAllowedFeaturesLoading || allowedFeatures.length > 0;
 
     useEffect(() => {
         if (recruiterCompanyId && !isAdmin) {
@@ -170,6 +174,9 @@ const ApiManagementPage = () => {
         if (!formState.feature) nextErrors.feature = 'API feature is required';
         if (!isAdmin && formState.feature && featureEntitlements[formState.feature] === false) {
             nextErrors.feature = 'Upgrade your plan to create an API key for this feature';
+        }
+        if (isAdmin && formState.feature && featureEntitlements[formState.feature] === false) {
+            nextErrors.feature = 'The selected company does not have an active package for this API key scope';
         }
         if (isAdmin && !String(formState.companyId || '').trim()) nextErrors.companyId = 'Company is required';
         if (formState.defaultWebhookUrl && !isValidHttpUrl(formState.defaultWebhookUrl)) {

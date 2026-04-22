@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useCreateSubscriptionMutation, usePreviewSubscriptionMutation } from "@/apis/subscriptionApi";
 import { useGetPaymentStatusQuery } from "@/apis/paymentApi";
-import Loading from "@/components/Loading";
+import { api } from "@/apis/baseApi";
 import Button from "@/components/Button";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faCircleCheck, faCircleExclamation, faQrcode, faRotate, faXmark } from '../../../../utils/icons';
 import formatCurrency from "@/utils/formatCurrency";
+import { useDispatch } from "react-redux";
 
 const PaymentModal = ({ isOpen, onClose, plan, selectedDuration, onSuccess }) => {
+    const dispatch = useDispatch();
     const [createSubscription, { isLoading: isApiLoading }] = useCreateSubscriptionMutation();
     const [previewSubscription] = usePreviewSubscriptionMutation();
     const [qrCodeUrl, setQrCodeUrl] = useState(null);
@@ -25,11 +27,16 @@ const PaymentModal = ({ isOpen, onClose, plan, selectedDuration, onSuccess }) =>
             const status = statusRes.data.toUpperCase();
             if (status === "SUCCESS") {
                 setPaymentStatus("SUCCESS");
+                dispatch(api.util.invalidateTags([
+                    "Plans",
+                    "FeatureUsage",
+                    { type: "CompanyApiKeys", id: "ALLOWED_FEATURES_CURRENT" },
+                ]));
             } else if (status === "FAILED") {
                 setPaymentStatus("FAILED");
             }
         }
-    }, [statusRes]);
+    }, [dispatch, statusRes]);
 
     const generateSubscription = async () => {
         if (!plan) return;

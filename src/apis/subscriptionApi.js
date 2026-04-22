@@ -8,7 +8,11 @@ export const subscriptionApi = api.injectEndpoints({
                 method: "POST",
                 body,
             }),
-            invalidatesTags: ["Plans"], // Assuming subscribing might affect current plan status
+            invalidatesTags: [
+                "Plans",
+                "FeatureUsage",
+                { type: "CompanyApiKeys", id: "ALLOWED_FEATURES_CURRENT" },
+            ],
         }),
         previewSubscription: builder.mutation({
             query: (body) => ({
