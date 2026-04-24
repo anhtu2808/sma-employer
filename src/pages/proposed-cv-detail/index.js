@@ -21,7 +21,7 @@ const TAB_KEYS = {
 
 const ProposedCVDetail = () => {
     const { jobId } = useParams();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(TAB_KEYS.BASIC);
     const proposedResumeIdParam = searchParams.get('proposedResumeId');
@@ -40,7 +40,6 @@ const ProposedCVDetail = () => {
     const [addTalentPoolItemProposed, { isLoading: isAddingToPool }] = useAddTalentPoolItemProposedMutation();
     const [moveTalentPoolItem, { isLoading: isMovingToPool }] = useMoveTalentPoolItemMutation();
     const [createTalentPool, { isLoading: isCreatingPool }] = useCreateTalentPoolMutation();
-    const isAddingToPool = isAdding || isMoving;
 
     const cvData = response?.data;
     const proposedCv = normalizeProposedCvDetail(cvData);

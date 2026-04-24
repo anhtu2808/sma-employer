@@ -5,7 +5,7 @@ import { Tooltip, Modal } from 'antd';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 
-const CandidateCard = ({ candidate, index, onRemove, poolColor, poolId }) => {
+const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
     const navigate = useNavigate();
 
     const getScoreColor = (score) => {
@@ -36,14 +36,6 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor, poolId }) => {
     };
 
     const handleCardClick = () => {
-        const queryParams = new URLSearchParams();
-        if (candidate.id) queryParams.set('itemId', candidate.id);
-        if (poolId) queryParams.set('groupId', poolId);
-        if (candidate.applicationId) queryParams.set('applicationId', candidate.applicationId);
-        if (proposedId) queryParams.set('proposedId', proposedId);
-        
-        const queryStr = queryParams.toString();
-
         if (candidate.applicationId) {
             navigate(`/applications/${candidate.applicationId}`);
             return;
