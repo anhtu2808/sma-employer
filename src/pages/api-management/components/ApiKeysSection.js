@@ -32,6 +32,7 @@ const ApiKeysSection = ({
     onEdit,
     onDelete,
     onCopy,
+    createDisabled,
 }) => {
     if (showPermissionState) {
         return (
@@ -113,7 +114,7 @@ const ApiKeysSection = ({
                     <h3 className="mt-4 text-xl font-semibold text-gray-900 dark:text-white">No API keys yet</h3>
                     <p className="mt-2 max-w-2xl mx-auto text-sm text-gray-600 dark:text-gray-300">You have no API keys yet. Create one to start integrating with Smart Recruit parsing and matching APIs.</p>
                     <div className="mt-6 flex justify-center">
-                        <Button mode="primary" onClick={onOpenCreate}>Create first API Key</Button>
+                        <Button mode="primary" onClick={onOpenCreate} disabled={createDisabled}>Create first API Key</Button>
                     </div>
                 </div>
             ) : filteredApiKeys.length === 0 ? (

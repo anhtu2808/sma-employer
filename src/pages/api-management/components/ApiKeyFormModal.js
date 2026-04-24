@@ -31,6 +31,7 @@ const ApiKeyFormModal = ({
     formState,
     formErrors,
     onFormChange,
+    featureEntitlements,
 }) => {
     const copy = FORM_COPY[mode];
 
@@ -57,6 +58,7 @@ const ApiKeyFormModal = ({
                     formState={formState}
                     formErrors={formErrors}
                     onChange={onFormChange}
+                    featureEntitlements={featureEntitlements}
                 />
             </div>
         </Modal>

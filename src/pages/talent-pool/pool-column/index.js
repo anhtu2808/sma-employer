@@ -150,6 +150,7 @@ const PoolColumn = ({
                                     key={candidate.id}
                                     candidate={candidate}
                                     index={index}
+                                    poolId={pool.id}
                                     poolColor={pool.color}
                                     onRemove={(id) => onRemoveCandidate(pool.id, id)}
                                 />

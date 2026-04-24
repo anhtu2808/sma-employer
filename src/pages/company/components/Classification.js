@@ -7,19 +7,29 @@ const { Option } = Select;
 
 const INDUSTRIES = [
     { value: 'INFORMATION_TECHNOLOGY', label: 'Information Technology' },
-    { value: 'FINANCE', label: 'Finance' },
-    { value: 'MARKETING', label: 'Marketing' },
-    { value: 'CONSTRUCTION', label: 'Construction' },
-    { value: 'EDUCATION', label: 'Education' },
+    { value: 'FINTECH', label: 'Fintech' },
+    { value: 'ECOMMERCE', label: 'Ecommerce' },
     { value: 'HEALTHCARE', label: 'Healthcare' },
-    { value: 'OTHER', label: 'Other' },
+    { value: 'EDUCATION', label: 'Education' },
+    { value: 'LOGISTICS', label: 'Logistics' },
+    { value: 'MANUFACTURING', label: 'Manufacturing' },
+    { value: 'REAL_ESTATE', label: 'Real Estate' },
+    { value: 'GAMING', label: 'Gaming' },
+    { value: 'TELECOMMUNICATION', label: 'Telecommunication' },
+    { value: 'ARTIFICIAL_INTELLIGENCE', label: 'Artificial Intelligence' },
+    { value: 'CYBER_SECURITY', label: 'Cyber Security' },
+    { value: 'BLOCKCHAIN', label: 'Blockchain' },
+    { value: 'IOT', label: 'IoT' },
 ];
 
 const COMPANY_TYPES = [
     { value: 'PRODUCT', label: 'Product' },
     { value: 'OUTSOURCING', label: 'Outsourcing' },
     { value: 'CONSULTING', label: 'Consulting' },
-    { value: 'OTHER', label: 'Other' },
+    { value: 'SERVICE', label: 'Service' },
+    { value: 'SOLUTION', label: 'Solution' },
+    { value: 'SYSTEM_INTEGRATOR', label: 'System Integrator' },
+    { value: 'AGENCY', label: 'Agency' },
 ];
 
 const Classification = () => {

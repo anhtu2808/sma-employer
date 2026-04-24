@@ -22,6 +22,19 @@ export const companyApiKeyApi = api.injectEndpoints({
             }),
             providesTags: (_, __, id) => [{ type: "CompanyApiKeys", id }],
         }),
+        getCompanyApiKeyAllowedFeatures: builder.query({
+            query: (companyId) => ({
+                url: `${API_VERSION}/company-api-keys/allowed-features`,
+                method: "GET",
+                params: companyId ? { companyId } : undefined,
+            }),
+            providesTags: (_, __, companyId) => [
+                {
+                    type: "CompanyApiKeys",
+                    id: companyId ? `ALLOWED_FEATURES_${companyId}` : "ALLOWED_FEATURES_CURRENT",
+                },
+            ],
+        }),
         createCompanyApiKey: builder.mutation({
             query: (data) => ({
                 url: `${API_VERSION}/company-api-keys`,
@@ -57,6 +70,7 @@ export const companyApiKeyApi = api.injectEndpoints({
 export const {
     useGetCompanyApiKeysQuery,
     useGetCompanyApiKeyQuery,
+    useGetCompanyApiKeyAllowedFeaturesQuery,
     useCreateCompanyApiKeyMutation,
     useUpdateCompanyApiKeyMutation,
     useDeleteCompanyApiKeyMutation,
