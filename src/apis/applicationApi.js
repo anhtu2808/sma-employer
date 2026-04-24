@@ -73,7 +73,7 @@ export const applicationApi = api.injectEndpoints({
 
         scoreManual: builder.mutation({
             query: ({ evaluationId, manualScore }) => ({
-                url: `${API_VERSION}/resume-evaluations/${evaluationId}/score-manual`,
+                url: `${API_VERSION}/matching/${evaluationId}/score-manual`,
                 method: "PUT",
                 body: { manualScore, scoreCriteriaRequests: [] },
             }),

@@ -6,8 +6,8 @@ import {
 import ScoreCard from '../score-card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faBriefcase, faCertificate, faChevronDown, faCircleCheck,
-    faCircleXmark, faGear, faRightLeft, faThumbsDown, faThumbsUp,
+    faBriefcase, faChevronDown, faCircleCheck,
+    faCircleXmark, faGear, faThumbsDown, faThumbsUp,
 } from '../../../../utils/icons';
 
 const CANDIDATE_LEVEL_BADGE = {
@@ -18,15 +18,6 @@ const CANDIDATE_LEVEL_BADGE = {
     SENIOR: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
     LEAD: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
     MANAGER: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
-};
-
-const getTransferabilityConfig = (level) => {
-    switch (level) {
-        case 'HIGH': return { label: 'High Transferability', cls: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' };
-        case 'MEDIUM': return { label: 'Medium Transferability', cls: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' };
-        case 'LOW': return { label: 'Low Transferability', cls: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' };
-        default: return null;
-    }
 };
 
 const CustomRadarTooltip = ({ active, payload }) => {
@@ -136,17 +127,12 @@ const AiAnalysis = ({ aiEvaluation }) => {
         summary,
         strengths,
         weakness,
-        isTrueLevel,
-        hasRelatedExperience,
-        transferabilityToRole,
         candidateLevel,
         criteriaScores: rawCriteriaScores = [],
     } = aiEvaluation;
 
     const criteriaScores = [...rawCriteriaScores]
         .sort((a, b) => (a.criteriaName || '').localeCompare(b.criteriaName || ''));
-
-    const transferConfig = getTransferabilityConfig(transferabilityToRole);
 
     // Radar chart data
     const radarData = criteriaScores
@@ -175,27 +161,6 @@ const AiAnalysis = ({ aiEvaluation }) => {
                             <span className={`inline-flex items-center gap-1 text-sm font-semibold px-2.5 py-1 rounded-full ${CANDIDATE_LEVEL_BADGE[candidateLevel] || 'bg-gray-100 text-gray-700'}`}>
                                 <FontAwesomeIcon icon={faBriefcase} className="text-[13px]" />
                                 {candidateLevel}
-                            </span>
-                        )}
-                        {isTrueLevel != null && (
-                            <span className={`inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full ${isTrueLevel
-                                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                                    : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                                }`}>
-                                <FontAwesomeIcon icon={isTrueLevel ? faCertificate : faCircleXmark} className="text-[13px]" />
-                                {isTrueLevel ? 'Match' : 'Not Match'}
-                            </span>
-                        )}
-                        {hasRelatedExperience && (
-                            <span className="inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                                <FontAwesomeIcon icon={faBriefcase} className="text-[13px]" />
-                                Related Experience
-                            </span>
-                        )}
-                        {transferConfig && (
-                            <span className={`inline-flex items-center gap-1 text-sm font-medium px-2.5 py-1 rounded-full ${transferConfig.cls}`}>
-                                <FontAwesomeIcon icon={faRightLeft} className="text-[13px]" />
-                                {transferConfig.label}
                             </span>
                         )}
                     </div>
