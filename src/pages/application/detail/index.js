@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Input, Checkbox } from 'antd';
 import toastMessage from '@/utils/toastMessage';
 import { useGetApplicationDetailQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
@@ -74,6 +74,7 @@ const TAB_KEYS = {
 
 const ApplicationDetail = () => {
     const { id } = useParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const { data: appResponse, isLoading, refetch } = useGetApplicationDetailQuery(id, { skip: !id });
     const [updateStatus, { isLoading: isUpdating }] = useUpdateApplicationStatusMutation();
@@ -94,6 +95,7 @@ const ApplicationDetail = () => {
     const [addTalentPoolItem, { isLoading: isAddingToPool }] = useAddTalentPoolItemMutation();
     const [moveTalentPoolItem, { isLoading: isMovingToPool }] = useMoveTalentPoolItemMutation();
     const [createTalentPool, { isLoading: isCreatingPool }] = useCreateTalentPoolMutation();
+    const isAddingToPool = isAdding || isMoving;
 
     const candidateId = appResponse?.data?.resumeDetail?.candidateId;
 

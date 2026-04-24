@@ -21,7 +21,7 @@ const TAB_KEYS = {
 
 const ProposedCVDetail = () => {
     const { jobId } = useParams();
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(TAB_KEYS.BASIC);
     const proposedResumeIdParam = searchParams.get('proposedResumeId');
@@ -40,6 +40,7 @@ const ProposedCVDetail = () => {
     const [addTalentPoolItemProposed, { isLoading: isAddingToPool }] = useAddTalentPoolItemProposedMutation();
     const [moveTalentPoolItem, { isLoading: isMovingToPool }] = useMoveTalentPoolItemMutation();
     const [createTalentPool, { isLoading: isCreatingPool }] = useCreateTalentPoolMutation();
+    const isAddingToPool = isAdding || isMoving;
 
     const cvData = response?.data;
     const proposedCv = normalizeProposedCvDetail(cvData);
@@ -191,11 +192,10 @@ const ProposedCVDetail = () => {
                             <button
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
-                                className={`flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-150 ${
-                                    activeTab === tab.key
-                                        ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200'
-                                }`}
+                                className={`flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-150 ${activeTab === tab.key
+                                    ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white'
+                                    : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-200'
+                                    }`}
                             >
                                 {tab.icon ? <tab.icon size={14} /> : null}
                                 <span>{tab.label}</span>

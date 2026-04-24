@@ -19,11 +19,17 @@ const RecruiterRegister = () => {
     const taxIdRef = useRef(null);
     const passwordRef = useRef(null);
     const generalErrorRef = useRef(null);
+    const phoneRef = useRef(null);
+    const companyNameRef = useRef(null);
+    const addressRef = useRef(null);
     const [ercFile, setErcFile] = useState(null);
     const [errors, setErrors] = useState({
         recruiterEmail: "",
         taxIdentificationNumber: "",
         password: "",
+        phone: "",
+        companyName: "",
+        address: "",
         general: ""
     });
 
@@ -124,7 +130,6 @@ const RecruiterRegister = () => {
 
         } catch (err) {
             console.error("Registration Error:", err);
-
             const apiMessage = err.data?.message;
             const fieldErrors = err.data?.data;
 
@@ -133,24 +138,32 @@ const RecruiterRegister = () => {
                     ...prev,
                     ...fieldErrors
                 }));
-
-                if (fieldErrors.recruiterEmail) setTimeout(() => scrollToElement(emailRef), 100);
-                else if (fieldErrors.password) setTimeout(() => scrollToElement(passwordRef), 100);
-                else if (fieldErrors.taxIdentificationNumber) setTimeout(() => scrollToElement(taxIdRef), 100);
-                else setTimeout(() => scrollToElement(generalErrorRef), 100);
+                if (fieldErrors.recruiterEmail) scrollToElement(emailRef);
+                else if (fieldErrors.password) scrollToElement(passwordRef);
+                else if (fieldErrors.taxIdentificationNumber) scrollToElement(taxIdRef);
+                else if (fieldErrors.companyName) scrollToElement(companyNameRef);
+                else if (fieldErrors.phone) scrollToElement(phoneRef);
+                else if (fieldErrors.address) scrollToElement(addressRef);
+                else scrollToElement(generalErrorRef);
 
                 return;
             }
 
             if (apiMessage === "Email already exists") {
                 setErrors(prev => ({ ...prev, recruiterEmail: "This email is already in use." }));
-                setTimeout(() => scrollToElement(emailRef), 100);
+                scrollToElement(emailRef);
             } else if (apiMessage === "Company already registered") {
                 setErrors(prev => ({ ...prev, taxIdentificationNumber: "This Tax ID has already been registered." }));
-                setTimeout(() => scrollToElement(taxIdRef), 100);
+                scrollToElement(taxIdRef);
+            } else if (apiMessage === "Invalid tax code") {
+                setErrors(prev => ({ ...prev, taxIdentificationNumber: "Mã số thuế không hợp lệ hoặc không tồn tại." }));
+                scrollToElement(taxIdRef);
+            } else if (apiMessage === "Company name mismatch") {
+                setErrors(prev => ({ ...prev, general: "Tên công ty không khớp với đăng ký kinh doanh." }));
+                scrollToElement(generalErrorRef);
             } else {
                 setErrors(prev => ({ ...prev, general: apiMessage || "An unexpected error occurred." }));
-                setTimeout(() => scrollToElement(generalErrorRef), 100);
+                scrollToElement(generalErrorRef);
             }
         }
     };
@@ -217,7 +230,6 @@ const RecruiterRegister = () => {
                                 <h3 className="text-lg font-bold text-neutral-900">Company Profile</h3>
                             </div>
                             <Input label={<>Company Name <span className="text-red-500">*</span></>} name="companyName" required onChange={handleChange} />
-                            {/* Thay thế đoạn grid chứa Industry cũ bằng đoạn này */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Industry Dropdown */}
                                 <div className="space-y-2">
@@ -324,7 +336,10 @@ const RecruiterRegister = () => {
                                 />
                             </div>
                             <Input label={<>Company Email <span className="text-red-500">*</span></>} name="companyEmail" type="email" required onChange={handleChange} />
-                            <Input label={<>Phone Number <span className="text-red-500">*</span></>} name="phone" required onChange={handleChange} />
+                            <Input label={<>Phone Number <span className="text-red-500">*</span></>} name="phone" required onChange={handleChange}
+                                error={!!errors.phone}
+                                helperText={errors.phone}
+                            />
 
                             <div className="col-span-full">
                                 <Input.TextArea
