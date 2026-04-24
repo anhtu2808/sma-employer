@@ -54,7 +54,12 @@ export const talentPoolApi = api.injectEndpoints({
                 method: "POST",
                 body: data, // { applicationId, groupId }
             }),
-            invalidatesTags: (result, error, { groupId }) => [{ type: "TalentPools", id: `Items-${groupId}` }, "TalentPools"],
+            invalidatesTags: (result, error, { groupId }) => [
+                { type: "TalentPools", id: `Items-${groupId}` },
+                "TalentPools",
+                "Applications",
+                "Jobs",
+            ],
         }),
 
         addTalentPoolItemProposed: builder.mutation({
@@ -63,7 +68,12 @@ export const talentPoolApi = api.injectEndpoints({
                 method: "POST",
                 body: data, // { proposedId, groupId }
             }),
-            invalidatesTags: (result, error, { groupId }) => [{ type: "TalentPools", id: `Items-${groupId}` }, "TalentPools"],
+            invalidatesTags: (result, error, { groupId }) => [
+                { type: "TalentPools", id: `Items-${groupId}` },
+                "TalentPools",
+                "Applications",
+                "Jobs",
+            ],
         }),
 
         deleteTalentPool: builder.mutation({
@@ -71,7 +81,7 @@ export const talentPoolApi = api.injectEndpoints({
                 url: `${API_VERSION}/talent-pools/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: ["TalentPools"],
+            invalidatesTags: ["TalentPools", "Applications", "Jobs"],
         }),
 
         deleteTalentPoolItem: builder.mutation({
@@ -79,7 +89,7 @@ export const talentPoolApi = api.injectEndpoints({
                 url: `${API_VERSION}/talent-pools/items/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: ["TalentPools"],
+            invalidatesTags: ["TalentPools", "Applications", "Jobs"],
         }),
 
         moveTalentPoolItem: builder.mutation({
@@ -88,7 +98,7 @@ export const talentPoolApi = api.injectEndpoints({
                 method: "PATCH",
                 body: { groupId },
             }),
-            invalidatesTags: ["TalentPools"],
+            invalidatesTags: ["TalentPools", "Applications", "Jobs"],
         }),
     }),
 });

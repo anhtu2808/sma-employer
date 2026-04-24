@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useGetProposedCvDetailQuery, useGetResumeDetailQuery, useUnlockProposedCvMutation } from '@/apis/jobApi';
-import { useGetTalentPoolsQuery, useAddTalentPoolItemProposedMutation, useCreateTalentPoolMutation } from '@/apis/talentPoolApi';
+import { useGetTalentPoolsQuery, useAddTalentPoolItemProposedMutation, useCreateTalentPoolMutation, useMoveTalentPoolItemMutation } from '@/apis/talentPoolApi';
 import Loading from '@/components/Loading';
-import Modal from '@/components/Modal';
 import Overview from './Overview';
 import BasicInformation from '@/pages/application/detail/basic-information';
 import AiAnalysis from '@/pages/application/detail/ai-analysis';
 import CreatePoolModal from '../talent-pool/create-pool-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '../../utils/icons';
-import { Lock, Sparkles, Plus } from 'lucide-react';
+import { Lock, Sparkles } from 'lucide-react';
 import toastMessage from '@/utils/toastMessage';
 import ResumePreviewPanel from './ResumePreviewPanel';
+import PoolSelectorModal from '../talent-pool/pool-selector-modal';
 
 const TAB_KEYS = {
     BASIC: 'basic',
@@ -38,6 +38,7 @@ const ProposedCVDetail = () => {
     const { data: poolsResponse } = useGetTalentPoolsQuery();
     const pools = poolsResponse?.data || [];
     const [addTalentPoolItemProposed, { isLoading: isAddingToPool }] = useAddTalentPoolItemProposedMutation();
+    const [moveTalentPoolItem, { isLoading: isMovingToPool }] = useMoveTalentPoolItemMutation();
     const [createTalentPool, { isLoading: isCreatingPool }] = useCreateTalentPoolMutation();
 
     const cvData = response?.data;
@@ -108,13 +109,23 @@ const ProposedCVDetail = () => {
     };
 
     const handleAddToPool = async (poolId) => {
+        if (proposedCv?.poolInfo?.id === poolId) {
+            toastMessage.info(`Candidate is already in "${proposedCv.poolInfo.name}"`);
+            return;
+        }
+
         try {
-            await addTalentPoolItemProposed({ proposedId: numericProposedResumeId, groupId: poolId }).unwrap();
-            toastMessage.success('Candidate added to talent pool');
+            if (proposedCv?.poolInfo?.poolItemId) {
+                await moveTalentPoolItem({ id: proposedCv.poolInfo.poolItemId, groupId: poolId }).unwrap();
+                toastMessage.success('Candidate moved to talent pool successfully');
+            } else {
+                await addTalentPoolItemProposed({ proposedId: numericProposedResumeId, groupId: poolId }).unwrap();
+                toastMessage.success('Candidate added to talent pool');
+            }
             setIsPoolModalOpen(false);
-            refetch();
+            await refetch();
         } catch (error) {
-            toastMessage.error(error?.data?.message || 'Failed to add to talent pool');
+            toastMessage.error(error?.data?.message || 'Failed to update talent pool');
         }
     };
 
@@ -227,44 +238,15 @@ const ProposedCVDetail = () => {
             </div>
 
             {/* Add to Talent Pool Modal */}
-            <Modal
+            <PoolSelectorModal
                 open={isPoolModalOpen}
-                title="Add to Talent Pool"
                 onCancel={() => setIsPoolModalOpen(false)}
-                submitText="null"
-                footer={null}
-                width={400}
-            >
-                <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-2 pb-2">
-                    {pools.length === 0 ? (
-                        <div className="text-center py-6 bg-neutral-50 dark:bg-neutral-800 rounded-xl space-y-3">
-                            <p className="text-gray-500 text-sm">No talent pools found.</p>
-                        </div>
-                    ) : (
-                        pools.map(pool => (
-                            <button
-                                key={pool.id}
-                                onClick={() => handleAddToPool(pool.id)}
-                                disabled={isAddingToPool}
-                                className="w-full text-left px-4 py-3 bg-neutral-50 dark:bg-neutral-800/80 border border-neutral-100 dark:border-neutral-700 rounded-xl hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:border-orange-200 dark:hover:border-orange-500/30 transition-all flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="w-3.5 h-3.5 rounded-full ring-2 ring-white dark:ring-neutral-900 shadow-sm" style={{ backgroundColor: pool.color || '#ccc' }}></div>
-                                    <span className="font-medium text-sm text-neutral-800 dark:text-neutral-200 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">{pool.name}</span>
-                                </div>
-                            </button>
-                        ))
-                    )}
-
-                    <button
-                        onClick={() => setIsCreatePoolOpen(true)}
-                        className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-neutral-900 border border-dashed border-gray-300 dark:border-gray-600 hover:border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-gray-500 hover:text-orange-600 rounded-xl transition-all"
-                    >
-                        <Plus size={16} />
-                        <span className="text-sm font-medium">Create new pool</span>
-                    </button>
-                </div>
-            </Modal>
+                pools={pools}
+                currentPoolInfo={proposedCv.poolInfo}
+                onSelectPool={handleAddToPool}
+                onOpenCreatePool={() => setIsCreatePoolOpen(true)}
+                isSubmitting={isAddingToPool || isMovingToPool}
+            />
 
             {/* Create Pool Modal */}
             <CreatePoolModal
@@ -317,7 +299,8 @@ const normalizeProposedCvDetail = (payload) => {
         proposedAt: payload.proposed_at || null,
         matchRate,
         isUnlocked,
-        isSaved: payload.is_saved ?? payload.isSaved ?? false,
+        poolInfo: payload.pool_info || payload.poolInfo || null,
+        isSaved: Boolean(payload.pool_info || payload.poolInfo || payload.is_saved || payload.isSaved),
     };
 };
 

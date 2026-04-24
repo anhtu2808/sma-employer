@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
 import { Modal as AntModal } from 'antd';
 import { usePageHeader } from '@/hooks/usePageHeader';
@@ -6,7 +6,7 @@ import toastMessage from '@/utils/toastMessage';
 import TalentPoolHeader from './header';
 import PoolColumn from './pool-column';
 import CreatePoolModal from './create-pool-modal';
-import { useGetTalentPoolsQuery, useCreateTalentPoolMutation, useDeleteTalentPoolItemMutation, useAddTalentPoolItemMutation, useAddTalentPoolItemProposedMutation, useMoveTalentPoolItemMutation, useUpdateTalentPoolMutation, useDeleteTalentPoolMutation } from '@/apis/talentPoolApi';
+import { useGetTalentPoolsQuery, useCreateTalentPoolMutation, useDeleteTalentPoolItemMutation, useMoveTalentPoolItemMutation, useUpdateTalentPoolMutation, useDeleteTalentPoolMutation } from '@/apis/talentPoolApi';
 
 const TalentPool = () => {
     usePageHeader('Talent Pool', 'Organize and manage your potential candidates');
@@ -29,8 +29,6 @@ const TalentPool = () => {
     const [updateTalentPool, { isLoading: isUpdating }] = useUpdateTalentPoolMutation();
     const [deleteTalentPool] = useDeleteTalentPoolMutation();
     const [deleteItem] = useDeleteTalentPoolItemMutation();
-    const [addItem] = useAddTalentPoolItemMutation();
-    const [addItemProposed] = useAddTalentPoolItemProposedMutation();
     const [moveItem] = useMoveTalentPoolItemMutation();
 
     // --- Pool CRUD ---
@@ -106,7 +104,7 @@ const TalentPool = () => {
         if (destination.droppableId === source.droppableId) return;
 
         // Format: itemId_applicationId_proposedId
-        const [itemId, appId, proposedId] = draggableId.split('_');
+        const [itemId] = draggableId.split('_');
 
         try {
             await moveItem({ id: itemId, groupId: destination.droppableId }).unwrap();

@@ -16,6 +16,9 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
     const [inviteCandidate, { isLoading: isInviting }] = useInviteCandidateMutation();
     const proposalStatusLabel = getProposalStatusBadgeLabel(proposal?.proposalStatus, proposal?.isUnlocked);
     const canInviteCandidate = Boolean(proposal?.isUnlocked) && canInvite(proposal?.proposalStatus);
+    const currentPool = proposal?.poolInfo || null;
+    const canManagePool = Boolean(proposal?.isUnlocked);
+    const poolActionTitle = currentPool ? 'Move to another pool' : 'Add to Talent Pool';
 
     const openInviteModal = () => {
         if (!proposal?.candidateId || !Number.isInteger(Number(proposedResumeId))) {
@@ -101,8 +104,14 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
 
                     <div className="flex flex-col items-start xl:items-end gap-3">
                         <div className="flex items-center gap-3 flex-wrap">
-                            {proposal?.isUnlocked && !proposal?.isSaved && (
-                                <Tooltip title="Add to Talent Pool">
+                            {currentPool && (
+                                <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3.5 py-2 text-sm font-semibold text-orange-600">
+                                    <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: currentPool.color || '#f97316' }} />
+                                    <span className="max-w-[200px] truncate">In {currentPool.name}</span>
+                                </div>
+                            )}
+                            {canManagePool && (
+                                <Tooltip title={poolActionTitle}>
                                     <button
                                         type="button"
                                         onClick={onOpenAddToPool}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Draggable } from '@hello-pangea/dnd';
-import { Mail, MapPin, Briefcase, X, Calendar } from 'lucide-react';
+import { Briefcase, X, Calendar } from 'lucide-react';
 import { Tooltip, Modal } from 'antd';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
@@ -38,11 +38,17 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
     const handleCardClick = () => {
         if (candidate.applicationId) {
             navigate(`/applications/${candidate.applicationId}`);
-        } else if (candidate.resumeId) {
+            return;
+        }
+
+        if (candidate.jobId && isProposed) {
+            const routeResumeId = candidate.resumeId ?? `proposal-${proposedId}`;
+            navigate(`/jobs/${candidate.jobId}/proposed-cvs/${routeResumeId}?proposedResumeId=${proposedId}`);
+            return;
+        }
+
+        if (candidate.resumeId) {
             navigate(`/talent-pool/cv/${candidate.resumeId}`);
-        } else if (candidate.jobId && isProposed) {
-            // Fallback for job-specific proposed CVs if they exist in a different context
-            navigate(`/jobs/${candidate.jobId}/proposed-cvs?proposedResumeId=${proposedId}`);
         }
     };
 

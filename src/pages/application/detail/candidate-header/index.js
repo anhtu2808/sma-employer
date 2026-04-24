@@ -5,6 +5,10 @@ import { faBan, faClockRotateLeft } from '../../../../utils/icons';
 import { FolderPlus } from 'lucide-react';
 
 const CandidateHeader = ({ app, onOpenBlock, onOpenAddToPool, compact = false }) => {
+    const currentPool = app.poolInfo || null;
+    const isInTalentPool = Boolean(currentPool || app.isInTalentPool);
+    const poolActionTitle = isInTalentPool ? 'Move to another pool' : 'Add to Talent Pool';
+
     if (compact) {
         return (
             <div className="flex items-center gap-2">
@@ -16,8 +20,14 @@ const CandidateHeader = ({ app, onOpenBlock, onOpenAddToPool, compact = false })
                         </Tag>
                     </Tooltip>
                 )}
-                {!app.isInTalentPool && (
-                    <Tooltip title="Add to Talent Pool">
+                {currentPool && (
+                    <div className="inline-flex items-center gap-1.5 rounded-full border border-orange-100 bg-orange-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-orange-600">
+                        <span className="h-2 w-2 rounded-full" style={{ backgroundColor: currentPool.color || '#f97316' }} />
+                        <span className="max-w-[110px] truncate">{currentPool.name}</span>
+                    </div>
+                )}
+                {onOpenAddToPool && (
+                    <Tooltip title={poolActionTitle}>
                         <button
                             type="button"
                             onClick={onOpenAddToPool}
@@ -57,10 +67,16 @@ const CandidateHeader = ({ app, onOpenBlock, onOpenAddToPool, compact = false })
                     )}
                 </div>
                 <p className="text-sm text-orange-500 font-medium">{app.jobTitle}</p>
+                {currentPool && (
+                    <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-3 py-1.5 text-xs font-semibold text-orange-600">
+                        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: currentPool.color || '#f97316' }} />
+                        <span className="truncate max-w-[220px]">In {currentPool.name}</span>
+                    </div>
+                )}
             </div>
             <div className="flex items-center gap-2">
-                {!app.isInTalentPool && (
-                    <Tooltip title="Add to Talent Pool">
+                {onOpenAddToPool && (
+                    <Tooltip title={poolActionTitle}>
                         <button
                             type="button"
                             onClick={onOpenAddToPool}
