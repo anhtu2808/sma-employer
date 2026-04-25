@@ -1,11 +1,11 @@
 import React from 'react';
 import { Draggable } from '@hello-pangea/dnd';
-import { Mail, MapPin, Briefcase, X, Calendar } from 'lucide-react';
+import { Briefcase, X, Calendar } from 'lucide-react';
 import { Tooltip, Modal } from 'antd';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 
-const CandidateCard = ({ candidate, index, onRemove, poolColor, poolId }) => {
+const CandidateCard = ({ candidate, index, onRemove, poolColor }) => {
     const navigate = useNavigate();
 
     const getScoreColor = (score) => {
@@ -36,21 +36,19 @@ const CandidateCard = ({ candidate, index, onRemove, poolColor, poolId }) => {
     };
 
     const handleCardClick = () => {
-        const queryParams = new URLSearchParams();
-        if (candidate.id) queryParams.set('itemId', candidate.id);
-        if (poolId) queryParams.set('groupId', poolId);
-        if (candidate.applicationId) queryParams.set('applicationId', candidate.applicationId);
-        if (proposedId) queryParams.set('proposedId', proposedId);
-        
-        const queryStr = queryParams.toString();
-
         if (candidate.applicationId) {
-            navigate(`/applications/${candidate.applicationId}${queryStr ? `?${queryStr}` : ''}`);
-        } else if (candidate.resumeId) {
-            navigate(`/talent-pool/cv/${candidate.resumeId}${queryStr ? `?${queryStr}` : ''}`);
-        } else if (candidate.jobId && isProposed) {
-            // Fallback for job-specific proposed CVs if they exist in a different context
-            navigate(`/jobs/${candidate.jobId}/proposed-cvs?${queryStr}`);
+            navigate(`/applications/${candidate.applicationId}`);
+            return;
+        }
+
+        if (candidate.jobId && isProposed) {
+            const routeResumeId = candidate.resumeId ?? `proposal-${proposedId}`;
+            navigate(`/jobs/${candidate.jobId}/proposed-cvs/${routeResumeId}?proposedResumeId=${proposedId}`);
+            return;
+        }
+
+        if (candidate.resumeId) {
+            navigate(`/talent-pool/cv/${candidate.resumeId}`);
         }
     };
 

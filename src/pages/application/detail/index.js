@@ -13,7 +13,7 @@ import {
     faUser, faNewspaper,
     faTriangleExclamation, faCircleCheck,
 } from '../../../utils/icons';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Plus } from 'lucide-react';
 import { Select, ConfigProvider } from 'antd';
 import { getAllowedNextStatuses } from '@/constrant/application';
 import CandidateHeader from './candidate-header';
@@ -22,7 +22,7 @@ import AiAnalysis from './ai-analysis';
 import CoverLetter from './cover-letter';
 import PdfViewer from './pdf-viewer';
 import CreatePoolModal from '../../talent-pool/create-pool-modal';
-import { Plus } from 'lucide-react';
+import PoolSelectorModal from '../../talent-pool/pool-selector-modal';
 
 const normalizeApplicationDetail = (payload) => {
     if (!payload) return null;
@@ -91,10 +91,9 @@ const ApplicationDetail = () => {
     const [isCreatePoolOpen, setIsCreatePoolOpen] = useState(false);
     const { data: poolsResponse } = useGetTalentPoolsQuery();
     const pools = poolsResponse?.data || [];
-    const [addTalentPoolItem, { isLoading: isAdding }] = useAddTalentPoolItemMutation();
-    const [moveTalentPoolItem, { isLoading: isMoving }] = useMoveTalentPoolItemMutation();
+    const [addTalentPoolItem, { isLoading: isAddingToPool }] = useAddTalentPoolItemMutation();
+    const [moveTalentPoolItem, { isLoading: isMovingToPool }] = useMoveTalentPoolItemMutation();
     const [createTalentPool, { isLoading: isCreatingPool }] = useCreateTalentPoolMutation();
-    const isAddingToPool = isAdding || isMoving;
 
     const candidateId = appResponse?.data?.resumeDetail?.candidateId;
 
@@ -174,9 +173,8 @@ const ApplicationDetail = () => {
                 await addTalentPoolItem({ applicationId: id, groupId: poolId }).unwrap();
                 toastMessage.success('Candidate added to talent pool');
             }
-
             setIsPoolModalOpen(false);
-            refetch();
+            await refetch();
         } catch (error) {
             toastMessage.error(error?.data?.message || 'Failed to update talent pool');
         }

@@ -13,6 +13,7 @@ import { faArrowLeft } from '../../utils/icons';
 import { Lock, Sparkles, Plus } from 'lucide-react';
 import toastMessage from '@/utils/toastMessage';
 import ResumePreviewPanel from './ResumePreviewPanel';
+import PoolSelectorModal from '../talent-pool/pool-selector-modal';
 
 const TAB_KEYS = {
     BASIC: 'basic',
@@ -37,10 +38,9 @@ const ProposedCVDetail = () => {
     const [isCreatePoolOpen, setIsCreatePoolOpen] = useState(false);
     const { data: poolsResponse } = useGetTalentPoolsQuery();
     const pools = poolsResponse?.data || [];
-    const [addTalentPoolItemProposed, { isLoading: isAdding }] = useAddTalentPoolItemProposedMutation();
-    const [moveTalentPoolItem, { isLoading: isMoving }] = useMoveTalentPoolItemMutation();
+    const [addTalentPoolItemProposed, { isLoading: isAddingToPool }] = useAddTalentPoolItemProposedMutation();
+    const [moveTalentPoolItem, { isLoading: isMovingToPool }] = useMoveTalentPoolItemMutation();
     const [createTalentPool, { isLoading: isCreatingPool }] = useCreateTalentPoolMutation();
-    const isAddingToPool = isAdding || isMoving;
 
     const cvData = response?.data;
     const proposedCv = normalizeProposedCvDetail(cvData);
@@ -120,9 +120,8 @@ const ProposedCVDetail = () => {
                 await addTalentPoolItemProposed({ proposedId: numericProposedResumeId, groupId: poolId }).unwrap();
                 toastMessage.success('Candidate added to talent pool');
             }
-
             setIsPoolModalOpen(false);
-            refetch();
+            await refetch();
         } catch (error) {
             toastMessage.error(error?.data?.message || 'Failed to update talent pool');
         }
