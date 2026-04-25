@@ -19,8 +19,14 @@ const SideDecorator = () => {
                 <FontAwesomeIcon icon={faCloudArrowUp} className="text-9xl absolute -bottom-10 right-20 transform -rotate-6" />
                 <FontAwesomeIcon icon={faShieldHalved} className="text-6xl absolute top-1/2 left-1/2 transform translate-x-10 translate-y-20 rotate-12" />
             </div>
-            <Logo className="relative z-10" iconColor="white" />
-            
+            <Logo
+                className="relative z-10"
+                iconColor="white"
+                textColor="text-white"
+                showHover={false}
+                size="large"
+            />
+
             <div className="flex-1 flex flex-col items-center justify-center text-center relative z-10">
                 <div className="w-40 h-40 bg-white/20 rounded-[2.5rem] flex items-center justify-center mb-10 shadow-lg backdrop-blur-sm border border-white/20">
                     <svg width="84" height="84" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

@@ -20,7 +20,13 @@ const SideDecorator = () => {
                 <FontAwesomeIcon icon={faShieldHalved} className="text-6xl absolute top-1/2 left-1/2 transform translate-x-10 translate-y-20 rotate-12" />
             </div>
 
-            <Logo className="relative z-10" iconColor="white" />
+            <Logo
+                className="relative z-10"
+                iconColor="white"
+                textColor="text-white"
+                showHover={false}
+                size="large"
+            />
 
             <div className="relative z-10 max-w-md">
                 <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-6">
