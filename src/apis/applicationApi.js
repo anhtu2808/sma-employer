@@ -88,6 +88,7 @@ export const applicationApi = api.injectEndpoints({
 export const {
     useGetApplicationsQuery,
     useGetApplicationDetailQuery,
+    useLazyGetApplicationDetailQuery,
     useGetApplicationStatusSummaryQuery,
     useUpdateApplicationStatusMutation,
     useLazyGetShortlistedExportQuery,
