@@ -12,13 +12,13 @@ const Header = () => {
             Monitor your feature consumption and activity logs.
           </p>
         </div>
-        <Button
+        {/* <Button
           type="button"
           mode="secondary"
           iconLeft={<FontAwesomeIcon icon={faDownload} className="text-[18px]" />}
         >
           Export CSV
-        </Button>
+        </Button> */}
       </div>
     </section>
   );
