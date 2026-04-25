@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { useGetApplicationsQuery, useUpdateApplicationStatusMutation, useLazyGetShortlistedExportQuery, useLazyDownloadResumesZipQuery } from '@/apis/applicationApi';
+import { useGetApplicationsQuery, useUpdateApplicationStatusMutation, useLazyGetShortlistedExportQuery, useLazyDownloadResumesZipQuery, useLazyGetApplicationDetailQuery } from '@/apis/applicationApi';
 import { useGetJobsQuery, useUpdateJobStatusMutation } from '@/apis/jobApi';
+import { useGetTalentPoolsQuery, useAddTalentPoolItemMutation, useCreateTalentPoolMutation, useMoveTalentPoolItemMutation } from '@/apis/talentPoolApi';
 
 import { Drawer, Modal as AntModal } from 'antd';
 import FilterSidebar from './filterSidebar';
@@ -16,6 +17,8 @@ import { Checkbox } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 import RecruiteeConfigModal from './recruitee';
 import { useGetRecruiteeConfigQuery } from '@/apis/recruiteeApi';
+import CreatePoolModal from '../talent-pool/create-pool-modal';
+import { Plus } from 'lucide-react';
 
 const STATUS_COLUMNS = [
     { id: 'APPLIED', title: 'Applied', color: '#01afffff' },
@@ -66,6 +69,20 @@ const ApplicationManagement = () => {
     const [triggerDownloadZip, { isFetching: isDownloadingZip }] = useLazyDownloadResumesZipQuery();
     const [isRecruiteeModalOpen, setIsRecruiteeModalOpen] = useState(false);
     const { data: recruiteeConfig } = useGetRecruiteeConfigQuery();
+
+    // Talent Pool
+    const { data: poolsResponse } = useGetTalentPoolsQuery();
+    const pools = poolsResponse?.data || [];
+    const [addTalentPoolItem, { isLoading: isAddingToPool }] = useAddTalentPoolItemMutation();
+    const [moveTalentPoolItem, { isLoading: isMovingPool }] = useMoveTalentPoolItemMutation();
+    const [createTalentPool, { isLoading: isCreatingPool }] = useCreateTalentPoolMutation();
+    const [triggerGetDetail, { isFetching: isFetchingDetail }] = useLazyGetApplicationDetailQuery();
+    const [isPoolModalOpen, setIsPoolModalOpen] = useState(false);
+    const [isCreatePoolOpen, setIsCreatePoolOpen] = useState(false);
+    const [poolTargetAppId, setPoolTargetAppId] = useState(null);
+    const [currentPoolInfo, setCurrentPoolInfo] = useState(null);
+    const isPoolBusy = isAddingToPool || isMovingPool;
+
     usePageHeader('Application Management', 'Track and manage candidate applications for your jobs');
 
     useEffect(() => {
@@ -311,6 +328,18 @@ const ApplicationManagement = () => {
                         statusColumns={STATUS_COLUMNS}
                         getCandidatesByStatus={getCandidatesByStatus}
                         onDragEnd={onDragEnd}
+                        onDropToPool={async (applicationId) => {
+                            setPoolTargetAppId(applicationId);
+                            setCurrentPoolInfo(null);
+                            setIsPoolModalOpen(true);
+                            try {
+                                const result = await triggerGetDetail(applicationId).unwrap();
+                                const poolInfo = result?.data?.applicationInfo?.poolInfo || null;
+                                setCurrentPoolInfo(poolInfo);
+                            } catch (e) {
+                                console.error('Failed to fetch application detail for pool info', e);
+                            }
+                        }}
                     />
                 ) : (
                     <ApplicationList
@@ -399,6 +428,91 @@ const ApplicationManagement = () => {
                     }}
                 />
             </Drawer>
+
+            {/* Add to Talent Pool Modal */}
+            <Modal
+                open={isPoolModalOpen}
+                title="Add to Talent Pool"
+                onCancel={() => { setIsPoolModalOpen(false); setPoolTargetAppId(null); setCurrentPoolInfo(null); }}
+                submitText="null"
+                footer={null}
+                width={400}
+            >
+                {isFetchingDetail ? (
+                    <div className="flex items-center justify-center py-10">
+                        <Loading size={48} inline />
+                    </div>
+                ) : (
+                    <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-3.5 pb-2 p-1">
+                        {pools.length === 0 ? (
+                            <div className="text-center py-6 bg-neutral-50 dark:bg-neutral-800 rounded-xl space-y-3">
+                                <p className="text-gray-500 text-sm">No talent pools found.</p>
+                            </div>
+                        ) : (
+                            pools.map(pool => {
+                                const isCurrent = currentPoolInfo?.id != null && String(pool.id) === String(currentPoolInfo.id);
+                                return (
+                                    <button
+                                        key={pool.id}
+                                        onClick={async () => {
+                                            if (!poolTargetAppId) return;
+                                            try {
+                                                if (currentPoolInfo?.poolItemId && currentPoolInfo?.id && String(currentPoolInfo.id) !== String(pool.id)) {
+                                                    await moveTalentPoolItem({ id: currentPoolInfo.poolItemId, groupId: pool.id }).unwrap();
+                                                    toastMessage.success('Candidate moved to new talent pool!');
+                                                } else {
+                                                    await addTalentPoolItem({ applicationId: Number(poolTargetAppId), groupId: pool.id }).unwrap();
+                                                    toastMessage.success('Candidate added to talent pool!');
+                                                }
+                                                setIsPoolModalOpen(false);
+                                                setPoolTargetAppId(null);
+                                                setCurrentPoolInfo(null);
+                                            } catch (err) {
+                                                toastMessage.error(err?.data?.message || 'Failed to update talent pool');
+                                            }
+                                        }}
+                                        disabled={isPoolBusy || isCurrent}
+                                        className={`w-full text-left px-4 py-3 bg-neutral-50 dark:bg-neutral-800/80 border border-neutral-100 dark:border-neutral-700 rounded-xl hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:border-orange-200 dark:hover:border-orange-500/30 transition-all flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed ${isCurrent ? 'ring-2 ring-inset ring-orange-500/50' : ''}`}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-3.5 h-3.5 rounded-full ring-2 ring-white dark:ring-neutral-900 shadow-sm" style={{ backgroundColor: pool.color || '#ccc' }}></div>
+                                            <span className="font-medium text-sm text-neutral-800 dark:text-neutral-200 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                                                {pool.name}
+                                                {isCurrent && <span className="ml-2 text-[10px] font-bold uppercase tracking-wider text-orange-500">(Current)</span>}
+                                            </span>
+                                        </div>
+                                        {isCurrent && <div className="w-2 h-2 rounded-full bg-orange-500" />}
+                                    </button>
+                                );
+                            })
+                        )}
+
+                        <button
+                            onClick={() => setIsCreatePoolOpen(true)}
+                            className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-neutral-900 border border-dashed border-gray-300 dark:border-gray-600 hover:border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-gray-500 hover:text-orange-600 rounded-xl transition-all"
+                        >
+                            <Plus size={16} />
+                            <span className="text-sm font-medium">Create new pool</span>
+                        </button>
+                    </div>
+                )}
+            </Modal>
+
+            {/* Create Pool Modal */}
+            <CreatePoolModal
+                open={isCreatePoolOpen}
+                onCancel={() => setIsCreatePoolOpen(false)}
+                onCreate={async (name, color) => {
+                    try {
+                        await createTalentPool({ name, color }).unwrap();
+                        toastMessage.success('Talent pool created successfully');
+                        setIsCreatePoolOpen(false);
+                    } catch (err) {
+                        toastMessage.error(err?.data?.message || 'Failed to create talent pool');
+                    }
+                }}
+                isCreating={isCreatingPool}
+            />
         </div>
     );
 };

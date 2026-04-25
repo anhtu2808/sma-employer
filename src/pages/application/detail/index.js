@@ -13,7 +13,7 @@ import {
     faUser, faNewspaper,
     faTriangleExclamation, faCircleCheck,
 } from '../../../utils/icons';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Plus } from 'lucide-react';
 import { Select, ConfigProvider } from 'antd';
 import { getAllowedNextStatuses } from '@/constrant/application';
 import CandidateHeader from './candidate-header';
@@ -61,8 +61,8 @@ const normalizeApplicationDetail = (payload) => {
         reviewedAt: info.reviewedAt,
         reviewedByEmail: info.reviewedByEmail,
         isRejectedByAi: info.isRejectedByAi,
-        poolInfo: info.poolInfo || info.pool_info || null,
-        isInTalentPool: Boolean(info.poolInfo || info.pool_info || info.isInTalentPool),
+        isInTalentPool: !!info.isInTalentPool,
+        poolInfo: info.poolInfo || null,
     };
 };
 
@@ -162,16 +162,13 @@ const ApplicationDetail = () => {
         }
     };
 
-    const handleAddToPool = async (poolId) => {
-        if (app?.poolInfo?.id === poolId) {
-            toastMessage.info(`Candidate is already in "${app.poolInfo.name}"`);
-            return;
-        }
+    const currentPoolInfo = app?.poolInfo;
 
+    const handleAddToPool = async (poolId) => {
         try {
-            if (app?.poolInfo?.poolItemId) {
-                await moveTalentPoolItem({ id: app.poolInfo.poolItemId, groupId: poolId }).unwrap();
-                toastMessage.success('Candidate moved to talent pool successfully');
+            if (currentPoolInfo?.poolItemId && currentPoolInfo?.id && String(currentPoolInfo.id) !== String(poolId)) {
+                await moveTalentPoolItem({ id: currentPoolInfo.poolItemId, groupId: poolId }).unwrap();
+                toastMessage.success('Candidate moved to new talent pool');
             } else {
                 await addTalentPoolItem({ applicationId: id, groupId: poolId }).unwrap();
                 toastMessage.success('Candidate added to talent pool');
@@ -405,15 +402,51 @@ const ApplicationDetail = () => {
             </Modal>
 
             {/* Add to Talent Pool Modal */}
-            <PoolSelectorModal
+            <Modal
                 open={isPoolModalOpen}
+                title="Add to Talent Pool"
                 onCancel={() => setIsPoolModalOpen(false)}
-                pools={pools}
-                currentPoolInfo={app.poolInfo}
-                onSelectPool={handleAddToPool}
-                onOpenCreatePool={() => setIsCreatePoolOpen(true)}
-                isSubmitting={isAddingToPool || isMovingToPool}
-            />
+                submitText="null"
+                footer={null}
+                width={400}
+            >
+                <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-3.5 pb-2 p-1">
+                    {pools.length === 0 ? (
+                        <div className="text-center py-6 bg-neutral-50 dark:bg-neutral-800 rounded-xl space-y-3">
+                            <p className="text-gray-500 text-sm">No talent pools found.</p>
+                        </div>
+                    ) : (
+                        pools.map(pool => {
+                            const isCurrent = currentPoolInfo?.id != null && String(pool.id) === String(currentPoolInfo.id);
+                            return (
+                                <button
+                                    key={pool.id}
+                                    onClick={() => handleAddToPool(pool.id)}
+                                    disabled={isAddingToPool || isCurrent}
+                                    className={`w-full text-left px-4 py-3 bg-neutral-50 dark:bg-neutral-800/80 border border-neutral-100 dark:border-neutral-700 rounded-xl hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:border-orange-200 dark:hover:border-orange-500/30 transition-all flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed ${isCurrent ? 'ring-2 ring-inset ring-orange-500/50' : ''}`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-3.5 h-3.5 rounded-full ring-2 ring-white dark:ring-neutral-900 shadow-sm" style={{ backgroundColor: pool.color || '#ccc' }}></div>
+                                        <span className="font-medium text-sm text-neutral-800 dark:text-neutral-200 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                                            {pool.name}
+                                            {isCurrent && <span className="ml-2 text-[10px] font-bold uppercase tracking-wider text-orange-500">(Current)</span>}
+                                        </span>
+                                    </div>
+                                    {isCurrent && <div className="w-2 h-2 rounded-full bg-orange-500" />}
+                                </button>
+                            );
+                        })
+                    )}
+
+                    <button
+                        onClick={() => setIsCreatePoolOpen(true)}
+                        className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-neutral-900 border border-dashed border-gray-300 dark:border-gray-600 hover:border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-gray-500 hover:text-orange-600 rounded-xl transition-all"
+                    >
+                        <Plus size={16} />
+                        <span className="text-sm font-medium">Create new pool</span>
+                    </button>
+                </div>
+            </Modal>
 
             {/* Create Pool Modal */}
             <CreatePoolModal

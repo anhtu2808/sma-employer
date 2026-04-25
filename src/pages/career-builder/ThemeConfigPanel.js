@@ -1,10 +1,31 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 
 const FONT_OPTIONS = [
   'Inter', 'Roboto', 'Poppins', 'Manrope', 'DM Sans', 'Outfit', 'Plus Jakarta Sans',
   'Montserrat', 'Lato', 'Open Sans', 'Nunito', 'Raleway', 'Rubik', 'Work Sans',
   'Oswald', 'Playfair Display', 'Lora', 'Merriweather'
 ];
+
+const DebouncedColorInput = ({ value, onChange, className }) => {
+  const timerRef = useRef(null);
+
+  const handleChange = useCallback((e) => {
+    const newValue = e.target.value;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      onChange(newValue);
+    }, 50);
+  }, [onChange]);
+
+  return (
+    <input
+      type="color"
+      defaultValue={value}
+      onChange={handleChange}
+      className={className}
+    />
+  );
+};
 
 const ThemeConfigPanel = ({ theme, onThemeChange }) => {
   const update = (key, value) => onThemeChange({ ...theme, [key]: value });
@@ -32,10 +53,9 @@ const ThemeConfigPanel = ({ theme, onThemeChange }) => {
             <div className="cb-color-row" key={key}>
               <span className="cb-color-label">{label}</span>
               <div className="cb-color-picker-wrap">
-                <input
-                  type="color"
+                <DebouncedColorInput
                   value={theme[key]}
-                  onChange={(e) => update(key, e.target.value)}
+                  onChange={(val) => update(key, val)}
                   className="cb-color-input"
                 />
                 <span className="cb-color-hex">{theme[key]}</span>
