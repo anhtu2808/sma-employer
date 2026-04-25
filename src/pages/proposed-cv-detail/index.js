@@ -8,8 +8,7 @@ import Overview from './Overview';
 import BasicInformation from '@/pages/application/detail/basic-information';
 import AiAnalysis from '@/pages/application/detail/ai-analysis';
 import CreatePoolModal from '../talent-pool/create-pool-modal';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '../../utils/icons';
+
 import { Lock, Sparkles, Plus } from 'lucide-react';
 import toastMessage from '@/utils/toastMessage';
 import ResumePreviewPanel from './ResumePreviewPanel';
@@ -160,14 +159,6 @@ const ProposedCVDetail = () => {
 
     return (
         <div className="w-full space-y-4">
-            <button
-                onClick={() => navigate(`/jobs/${jobId}`)}
-                className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors group"
-            >
-                <FontAwesomeIcon icon={faArrowLeft} className="text-lg group-hover:-translate-x-1 transition-transform" />
-                <span className="font-medium">Back to Job pipeline</span>
-            </button>
-
             <div
                 className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-sm overflow-hidden flex flex-col"
                 style={{ height: 'calc(100vh - 20px)' }}
