@@ -21,7 +21,7 @@ const TAB_KEYS = {
 
 const ProposedCVDetail = () => {
     const { jobId } = useParams();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(TAB_KEYS.BASIC);
     const proposedResumeIdParam = searchParams.get('proposedResumeId');
@@ -109,24 +109,17 @@ const ProposedCVDetail = () => {
         }
     };
 
-    const handleAddToPool = async (poolId) => {
-        const urlItemId = searchParams.get('itemId');
-        const urlCurrentGroupId = searchParams.get('groupId');
+    const currentPoolInfo = proposedCv?.poolInfo;
 
+    const handleAddToPool = async (poolId) => {
         try {
-            if (urlItemId && urlCurrentGroupId && String(urlCurrentGroupId) !== String(poolId)) {
-                await moveTalentPoolItem({ id: urlItemId, groupId: poolId }).unwrap();
+            if (currentPoolInfo?.poolItemId && currentPoolInfo?.id && String(currentPoolInfo.id) !== String(poolId)) {
+                await moveTalentPoolItem({ id: currentPoolInfo.poolItemId, groupId: poolId }).unwrap();
                 toastMessage.success('Candidate moved to new talent pool');
             } else {
                 await addTalentPoolItemProposed({ proposedId: numericProposedResumeId, groupId: poolId }).unwrap();
                 toastMessage.success('Candidate added to talent pool');
             }
-
-            // Sync URL with new pool
-            setSearchParams(prev => {
-                prev.set('groupId', poolId);
-                return prev;
-            });
 
             setIsPoolModalOpen(false);
             refetch();
@@ -258,7 +251,7 @@ const ProposedCVDetail = () => {
                         </div>
                     ) : (
                         pools.map(pool => {
-                            const isCurrent = String(pool.id) === String(searchParams.get('groupId'));
+                            const isCurrent = currentPoolInfo?.id != null && String(pool.id) === String(currentPoolInfo.id);
                             return (
                                 <button
                                     key={pool.id}
@@ -342,6 +335,7 @@ const normalizeProposedCvDetail = (payload) => {
         isUnlocked,
         isSaved: payload.is_saved ?? payload.isSaved ?? false,
         isInTalentPool: payload.is_saved ?? payload.isSaved ?? false,
+        poolInfo: payload.pool_info || null,
     };
 };
 

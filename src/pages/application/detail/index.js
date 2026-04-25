@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Input, Checkbox } from 'antd';
 import toastMessage from '@/utils/toastMessage';
 import { useGetApplicationDetailQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
@@ -62,6 +62,7 @@ const normalizeApplicationDetail = (payload) => {
         reviewedByEmail: info.reviewedByEmail,
         isRejectedByAi: info.isRejectedByAi,
         isInTalentPool: !!info.isInTalentPool,
+        poolInfo: info.poolInfo || null,
     };
 };
 
@@ -73,7 +74,6 @@ const TAB_KEYS = {
 
 const ApplicationDetail = () => {
     const { id } = useParams();
-    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const { data: appResponse, isLoading, refetch } = useGetApplicationDetailQuery(id, { skip: !id });
     const [updateStatus, { isLoading: isUpdating }] = useUpdateApplicationStatusMutation();
@@ -163,24 +163,17 @@ const ApplicationDetail = () => {
         }
     };
 
-    const handleAddToPool = async (poolId) => {
-        const urlItemId = searchParams.get('itemId');
-        const urlCurrentGroupId = searchParams.get('groupId');
+    const currentPoolInfo = app?.poolInfo;
 
+    const handleAddToPool = async (poolId) => {
         try {
-            if (urlItemId && urlCurrentGroupId && String(urlCurrentGroupId) !== String(poolId)) {
-                await moveTalentPoolItem({ id: urlItemId, groupId: poolId }).unwrap();
+            if (currentPoolInfo?.poolItemId && currentPoolInfo?.id && String(currentPoolInfo.id) !== String(poolId)) {
+                await moveTalentPoolItem({ id: currentPoolInfo.poolItemId, groupId: poolId }).unwrap();
                 toastMessage.success('Candidate moved to new talent pool');
             } else {
                 await addTalentPoolItem({ applicationId: id, groupId: poolId }).unwrap();
                 toastMessage.success('Candidate added to talent pool');
             }
-
-            // Sync URL with new pool
-            setSearchParams(prev => {
-                prev.set('groupId', poolId);
-                return prev;
-            });
 
             setIsPoolModalOpen(false);
             refetch();
@@ -426,7 +419,7 @@ const ApplicationDetail = () => {
                         </div>
                     ) : (
                         pools.map(pool => {
-                            const isCurrent = String(pool.id) === String(searchParams.get('groupId'));
+                            const isCurrent = currentPoolInfo?.id != null && String(pool.id) === String(currentPoolInfo.id);
                             return (
                                 <button
                                     key={pool.id}
