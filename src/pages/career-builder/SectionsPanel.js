@@ -117,6 +117,16 @@ const ImageField = ({ label, value, onChange, accept = 'image/*' }) => {
 };
 
 const ColorField = ({ label, value, onChange }) => {
+  const timerRef = useRef(null);
+
+  const handleColorChange = useCallback((e) => {
+    const newValue = e.target.value;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      onChange(newValue);
+    }, 50);
+  }, [onChange]);
+
   return (
     <div className="cb-field">
       <label className="cb-field-label">{label}</label>
@@ -125,8 +135,8 @@ const ColorField = ({ label, value, onChange }) => {
         <div className="cb-color-picker-wrap">
           <input
             type="color"
-            value={value || '#ffffff'}
-            onChange={(e) => onChange(e.target.value)}
+            defaultValue={value || '#ffffff'}
+            onChange={handleColorChange}
             className="cb-color-input"
           />
           <span className="cb-color-hex">{value || '#ffffff'}</span>
@@ -639,7 +649,6 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
       return (
         <div className="cb-section-children">
           <StringField label="Headline" value={props.headline} onChange={(v) => updateProp('headline', v)} />
-          <VisibilityToggle label="Show Filters" isVisible={props.showFilter} onChange={(v) => updateProp('showFilter', v)} />
           {commonSettings}
         </div>
       );
