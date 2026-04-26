@@ -138,7 +138,7 @@ const ProposedCVDetail = () => {
     const renderTabContent = () => {
         switch (activeTab) {
             case TAB_KEYS.AI:
-                return hasAi ? <AiAnalysis aiEvaluation={proposedCv.aiEvaluation} /> : null;
+                return hasAi ? <AiAnalysis aiEvaluation={proposedCv.aiEvaluation} hideOverviewSections /> : null;
             case TAB_KEYS.BASIC:
             default:
                 return (

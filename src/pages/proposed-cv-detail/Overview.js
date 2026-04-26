@@ -3,6 +3,7 @@ import Button from '@/components/Button';
 import { useParams } from 'react-router-dom';
 import { useInviteCandidateMutation } from '@/apis/jobApi';
 import toastMessage from '@/utils/toastMessage';
+import { getCandidateLevelBadgeClasses } from '@/utils/candidateLevel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faWandMagicSparkles } from '../../utils/icons';
 import { Lock, ShieldCheck, Sparkles, FolderPlus } from 'lucide-react';
@@ -123,6 +124,13 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
                             )}
                             <InfoPill icon={<ShieldCheck size={14} />} label={proposalStatusLabel} />
                             <InfoPill icon={<Sparkles size={14} />} label={`AI ${formatPercent(proposal?.aiScore)}`} accent />
+                            {proposal?.aiEvaluation?.candidateLevel && (
+                                <InfoPill
+                                    icon={<FontAwesomeIcon icon={faBriefcase} className="text-[13px]" />}
+                                    label={proposal.aiEvaluation.candidateLevel}
+                                    className={getCandidateLevelBadgeClasses(proposal.aiEvaluation.candidateLevel, 'outlined')}
+                                />
+                            )}
                         </div>
                         {canInviteCandidate && (
                             <Button
@@ -196,10 +204,10 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
     );
 };
 
-const InfoPill = ({ icon, label, accent = false }) => (
+const InfoPill = ({ icon, label, accent = false, className = '' }) => (
     <div className={`inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-semibold border ${accent
         ? 'border-orange-200 bg-orange-50 text-orange-600'
-        : 'border-gray-200 bg-gray-50 text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300'
+        : className || 'border-gray-200 bg-gray-50 text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300'
         }`}>
         {icon}
         <span>{label}</span>
