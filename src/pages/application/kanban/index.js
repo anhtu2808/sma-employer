@@ -57,6 +57,9 @@ const KanbanBoard = ({
     const isValidDrop = (sourceId, targetId) => {
         if (!draggingColumn) return true;
         if (sourceId === targetId) return true;
+        if (sourceId === 'APPLIED') {
+            return ['VIEWED'].includes(targetId);
+        }
         if (sourceId === 'VIEWED') {
             return ['SHORTLISTED', 'APPROVED', 'REJECTED'].includes(targetId);
         }
@@ -187,8 +190,7 @@ const KanbanBoard = ({
                                                     `}
                                                 >
                                                     {candidates.map((app, index) => {
-                                                        const isNotDraggable = app.status === 'APPLIED'
-                                                            || (app.status === 'REJECTED' && app.isRejectedByAi !== true);
+                                                        const isNotDraggable = (app.status === 'REJECTED' && app.isRejectedByAi !== true);
                                                         const scoreValue = getEffectiveScore(app.evaluation);
                                                         const matchTag = getAIMatchTag(scoreValue);
                                                         const manualScored = isManualScored(app.evaluation);
