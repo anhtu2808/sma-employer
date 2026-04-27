@@ -26,6 +26,7 @@ const ProposedCVs = ({ jobId }) => {
   const dispatch = useDispatch();
   const [isJobPolling, setIsJobPolling] = useState(false);
   const [isEvaluationPolling, setIsEvaluationPolling] = useState(false);
+  const [selectedInsightsProposal, setSelectedInsightsProposal] = useState(null);
   const previousRefreshPendingRef = useRef(false);
   const [draftMinScore, setDraftMinScore] = useState(DEFAULT_MIN_SCORE);
   const [isDraftDirty, setIsDraftDirty] = useState(false);
@@ -187,6 +188,15 @@ const ProposedCVs = ({ jobId }) => {
     });
   };
 
+  const openInsightsModal = (proposal) => {
+    if (!proposal) return;
+    setSelectedInsightsProposal(proposal);
+  };
+
+  const closeInsightsModal = () => {
+    setSelectedInsightsProposal(null);
+  };
+
   if (isUnpublished) {
     return (
       <PublishFirstPlaceholder
@@ -333,6 +343,14 @@ const ProposedCVs = ({ jobId }) => {
                             <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                               {app.fullName || 'Unknown Candidate'}
                             </p>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <ProposalStatusBadge status={app.status} />
+                              {app.matchRate != null && (
+                                <span className="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-semibold text-sky-700">
+                                  Match {getDisplayRate(app.matchRate)}%
+                                </span>
+                              )}
+                            </div>
                             {app.email || app.phone ? (
                               <div className="min-w-0 space-y-1.5">
                                 {app.email && (
@@ -362,7 +380,22 @@ const ProposedCVs = ({ jobId }) => {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="rounded-xl border border-orange-100 bg-orange-50/70 px-3 py-2">
+                          <div
+                            className={`rounded-xl border border-orange-100 bg-orange-50/70 px-3 py-2 transition-colors ${canOpenInsightsModal(app)
+                              ? 'cursor-pointer hover:border-orange-200 hover:bg-orange-50'
+                              : ''
+                              }`}
+                            role={canOpenInsightsModal(app) ? 'button' : undefined}
+                            tabIndex={canOpenInsightsModal(app) ? 0 : undefined}
+                            onClick={() => canOpenInsightsModal(app) && openInsightsModal(app)}
+                            onKeyDown={(event) => {
+                              if (!canOpenInsightsModal(app)) return;
+                              if (event.key === 'Enter' || event.key === ' ') {
+                                event.preventDefault();
+                                openInsightsModal(app);
+                              }
+                            }}
+                          >
                             <div className="flex items-start gap-2">
                               <div className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full ${isEvaluationPendingStatus(app.evaluationStatus)
                                 ? 'border-2 border-orange-200 border-t-orange-500 animate-spin'
@@ -377,18 +410,31 @@ const ProposedCVs = ({ jobId }) => {
                                   {isEvaluationPendingStatus(app.evaluationStatus) ? 'AI overview is updating' : 'AI overview'}
                                 </p>
                                 <p
-                                  className="mt-1 text-xs leading-relaxed text-gray-600 line-clamp-3"
+                                  className="mt-1 whitespace-pre-line text-xs leading-relaxed text-gray-600 line-clamp-3"
                                   title={getOverviewTitle(app)}
                                 >
                                   {getOverviewText(app)}
                                 </p>
+                                {canOpenInsightsModal(app) && (
+                                  <button
+                                    type="button"
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      openInsightsModal(app);
+                                    }}
+                                    className="mt-2 text-[11px] font-semibold text-orange-600 transition-colors hover:text-orange-500"
+                                  >
+                                    View full insights
+                                  </button>
+                                )}
                               </div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           {strengthItems.length > 0 ? (
-                            <ul
+                            <div>
+                              <ul
                               className="space-y-1.5"
                               title={strengthItems.join('\n')}
                             >
@@ -402,6 +448,16 @@ const ProposedCVs = ({ jobId }) => {
                                 </li>
                               ))}
                             </ul>
+                              {canOpenInsightsModal(app) && hasMoreStrengthItems(app) && (
+                                <button
+                                  type="button"
+                                  onClick={() => openInsightsModal(app)}
+                                  className="mt-2 text-[11px] font-semibold text-orange-600 transition-colors hover:text-orange-500"
+                                >
+                                  View all strengths
+                                </button>
+                              )}
+                            </div>
                           ) : (
                             <p className="text-xs text-gray-400 italic">
                               {getStrengthFallbackText(app)}
@@ -508,6 +564,76 @@ const ProposedCVs = ({ jobId }) => {
           </>
         )}
       </div>
+
+      <Modal
+        open={Boolean(selectedInsightsProposal)}
+        onCancel={closeInsightsModal}
+        footer={null}
+        width={720}
+        centered
+        title="AI Insights"
+      >
+        {selectedInsightsProposal && (
+          <div className="space-y-5 pt-2">
+            <div className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-orange-100 bg-orange-50/60 px-4 py-4">
+              <div className="space-y-2">
+                <p className="text-lg font-semibold text-gray-900">
+                  {selectedInsightsProposal.fullName || 'Unknown Candidate'}
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <ProposalStatusBadge status={selectedInsightsProposal.status} />
+                  {selectedInsightsProposal.aiScore != null && (
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${getScorePillClassName(selectedInsightsProposal.aiScore)}`}>
+                      AI Score {getDisplayRate(selectedInsightsProposal.aiScore)}%
+                    </span>
+                  )}
+                  {selectedInsightsProposal.matchRate != null && (
+                    <span className="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-semibold text-sky-700">
+                      Match Rate {getDisplayRate(selectedInsightsProposal.matchRate)}%
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <section className="space-y-2">
+              <h4 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                AI Overview
+              </h4>
+              <div className="rounded-2xl border border-gray-100 bg-white px-4 py-3">
+                <p className="whitespace-pre-line text-sm leading-7 text-gray-700">
+                  {getOverviewText(selectedInsightsProposal)}
+                </p>
+              </div>
+            </section>
+
+            <section className="space-y-2">
+              <h4 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                Strengths
+              </h4>
+              <div className="rounded-2xl border border-emerald-100 bg-emerald-50/40 px-4 py-3">
+                {getFullStrengthItems(selectedInsightsProposal).length > 0 ? (
+                  <ul className="space-y-2">
+                    {getFullStrengthItems(selectedInsightsProposal).map((strength, index) => (
+                      <li
+                        key={`${selectedInsightsProposal.proposedResumeId ?? selectedInsightsProposal.resumeId}-full-strength-${index}`}
+                        className="flex items-start gap-2 text-sm leading-6 text-emerald-900"
+                      >
+                        <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-500" />
+                        <span>{strength}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm italic text-emerald-800">
+                    {getStrengthFallbackText(selectedInsightsProposal)}
+                  </p>
+                )}
+              </div>
+            </section>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
@@ -580,8 +706,13 @@ const normalizeOverview = (overview) => {
     .replace(/<li>/gi, '- ')
     .replace(/<\/li>/gi, '\n')
     .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
     .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/\r/g, '')
+    .split('\n')
+    .map((line) => line.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+    .join('\n')
     .trim();
 };
 
@@ -615,18 +746,34 @@ const extractInsightItems = (content, { splitComma = false } = {}) => {
 };
 
 const getStrengthItems = (proposal) => {
+  return getFullStrengthItems(proposal).slice(0, 3);
+};
+
+const getFullStrengthItems = (proposal) => {
   if (isEvaluationPendingStatus(proposal?.evaluationStatus)) {
     return ['AI is still identifying the strongest signals in this resume.'];
   }
 
-  const strengths = extractInsightItems(proposal?.strengths, { splitComma: true });
-  return strengths.slice(0, 3);
+  return extractInsightItems(proposal?.strengths, { splitComma: true });
 };
 
 const getStrengthFallbackText = (proposal) => (
   isEvaluationPendingStatus(proposal?.evaluationStatus)
     ? 'Strengths are being generated...'
     : 'No strengths available yet.'
+);
+
+const hasMoreStrengthItems = (proposal) => getFullStrengthItems(proposal).length > 3;
+
+const canOpenInsightsModal = (proposal) => (
+  Boolean(
+    proposal
+    && (
+      isEvaluationPendingStatus(proposal.evaluationStatus)
+      || normalizeOverview(proposal.overview)
+      || getFullStrengthItems(proposal).length > 0
+    )
+  )
 );
 
 const getDisplayRate = (rate) => {
@@ -642,6 +789,64 @@ const getScoreColor = (score) => {
   if (percent >= 80) return 'text-emerald-500';
   if (percent >= 60) return 'text-orange-500';
   return 'text-red-500';
+};
+
+const getScorePillClassName = (score) => {
+  const percent = getDisplayRate(score);
+  if (percent >= 80) return 'bg-emerald-50 text-emerald-700';
+  if (percent >= 60) return 'bg-orange-50 text-orange-700';
+  return 'bg-red-50 text-red-700';
+};
+
+const ProposalStatusBadge = ({ status }) => {
+  const config = getProposalStatusConfig(status);
+
+  return (
+    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${config.className}`}>
+      {config.label}
+    </span>
+  );
+};
+
+const getProposalStatusConfig = (status) => {
+  const normalizedStatus = String(status || 'NO_ACTION').trim().toUpperCase();
+
+  switch (normalizedStatus) {
+    case 'INVITED':
+      return {
+        label: 'Invited',
+        className: 'bg-blue-50 text-blue-700',
+      };
+    case 'NO_ACTION':
+      return {
+        label: 'No Action',
+        className: 'bg-amber-50 text-amber-700',
+      };
+    case 'REMOVED':
+      return {
+        label: 'Removed',
+        className: 'bg-red-50 text-red-700',
+      };
+    case 'FINISHED':
+      return {
+        label: 'Finished',
+        className: 'bg-emerald-50 text-emerald-700',
+      };
+    case 'FAILED':
+      return {
+        label: 'Failed',
+        className: 'bg-red-50 text-red-700',
+      };
+    default:
+      return {
+        label: normalizedStatus
+          .toLowerCase()
+          .split('_')
+          .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
+          .join(' '),
+        className: 'bg-gray-100 text-gray-700',
+      };
+  }
 };
 
 const normalizeMinScore = (value) => {

@@ -9,16 +9,7 @@ import {
     faBriefcase, faChevronDown, faCircleCheck,
     faCircleXmark, faGear, faThumbsDown, faThumbsUp,
 } from '../../../../utils/icons';
-
-const CANDIDATE_LEVEL_BADGE = {
-    INTERN: 'bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-300',
-    FRESHER: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400',
-    JUNIOR: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-    MIDDLE: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-    SENIOR: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
-    LEAD: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-    MANAGER: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
-};
+import { getCandidateLevelBadgeClasses } from '@/utils/candidateLevel';
 
 const CustomRadarTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -116,7 +107,7 @@ const CriteriaItem = ({ criteria, isOpen, onToggle }) => {
     );
 };
 
-const AiAnalysis = ({ aiEvaluation }) => {
+const AiAnalysis = ({ aiEvaluation, hideOverviewSections = false }) => {
     const [openCriteriaId, setOpenCriteriaId] = useState(null);
 
     if (!aiEvaluation) return null;
@@ -142,29 +133,36 @@ const AiAnalysis = ({ aiEvaluation }) => {
             fullName: cs.criteriaName,
             score: typeof cs.aiScore === 'number' ? cs.aiScore : 0,
         }));
+    const showSummary = !hideOverviewSections && Boolean(summary);
+    const showCandidateLevel = !hideOverviewSections && Boolean(candidateLevel);
+    const showStrengths = !hideOverviewSections && Boolean(strengths);
+    const showWeakness = !hideOverviewSections && Boolean(weakness);
+    const showHeaderContent = showSummary || showCandidateLevel;
 
     return (
         <div className="space-y-5">
             {/* Header: Score + Summary */}
-            <div className="flex items-start gap-5">
+            <div className={`items-start gap-5 ${showHeaderContent ? 'flex' : 'inline-flex'}`}>
                 <ScoreCard score={aiOverallScore} size={88} matchLevel={matchLevel} />
-                <div className="flex-1 min-w-0 pt-1">
-                    {summary && (
-                        <ul
-                            className="space-y-1.5 mt-0.5 list-disc pl-4 text-base text-gray-700 dark:text-neutral-300 leading-relaxed"
-                            dangerouslySetInnerHTML={{ __html: summary }}
-                        />
-                    )}
-                    {/* Meta badges */}
-                    <div className="flex flex-wrap gap-2 mt-3">
-                        {candidateLevel && (
-                            <span className={`inline-flex items-center gap-1 text-sm font-semibold px-2.5 py-1 rounded-full ${CANDIDATE_LEVEL_BADGE[candidateLevel] || 'bg-gray-100 text-gray-700'}`}>
-                                <FontAwesomeIcon icon={faBriefcase} className="text-[13px]" />
-                                {candidateLevel}
-                            </span>
+                {showHeaderContent && (
+                    <div className="flex-1 min-w-0 pt-1">
+                        {showSummary && (
+                            <ul
+                                className="space-y-1.5 mt-0.5 list-disc pl-4 text-base text-gray-700 dark:text-neutral-300 leading-relaxed"
+                                dangerouslySetInnerHTML={{ __html: summary }}
+                            />
+                        )}
+                        {/* Meta badges */}
+                        {showCandidateLevel && (
+                            <div className="flex flex-wrap gap-2 mt-3">
+                                <span className={`inline-flex items-center gap-1 text-sm font-semibold px-2.5 py-1 rounded-full ${getCandidateLevelBadgeClasses(candidateLevel, 'soft')}`}>
+                                    <FontAwesomeIcon icon={faBriefcase} className="text-[13px]" />
+                                    {candidateLevel}
+                                </span>
+                            </div>
                         )}
                     </div>
-                </div>
+                )}
             </div>
             <div className="flex items-start gap-3 p-3 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-xl">
                 <div className="text-amber-500 mt-0.5">
@@ -175,7 +173,7 @@ const AiAnalysis = ({ aiEvaluation }) => {
                 </p>
             </div>
             {/* Strengths — full width */}
-            {strengths && (
+            {showStrengths && (
                 <div className="p-4 rounded-xl bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30">
                     <div className="flex items-center gap-2 mb-2">
                         <FontAwesomeIcon icon={faThumbsUp} className="text-emerald-600 text-lg" />
@@ -189,9 +187,9 @@ const AiAnalysis = ({ aiEvaluation }) => {
             )}
 
             {/* Weaknesses + Radar Chart — side by side */}
-            {(weakness || radarData.length >= 3) && (
+            {(showWeakness || radarData.length >= 3) && (
                 <div className="flex flex-col lg:flex-row gap-4">
-                    {weakness && (
+                    {showWeakness && (
                         <div className="flex-1 p-4 rounded-xl bg-red-50/50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30">
                             <div className="flex items-center gap-2 mb-2">
                                 <FontAwesomeIcon icon={faThumbsDown} className="text-red-500 text-lg" />

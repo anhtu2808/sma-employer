@@ -12,7 +12,6 @@ import CreatePoolModal from '../talent-pool/create-pool-modal';
 import { Lock, Sparkles, Plus } from 'lucide-react';
 import toastMessage from '@/utils/toastMessage';
 import ResumePreviewPanel from './ResumePreviewPanel';
-import PoolSelectorModal from '../talent-pool/pool-selector-modal';
 
 const TAB_KEYS = {
     BASIC: 'basic',
@@ -38,7 +37,7 @@ const ProposedCVDetail = () => {
     const { data: poolsResponse } = useGetTalentPoolsQuery();
     const pools = poolsResponse?.data || [];
     const [addTalentPoolItemProposed, { isLoading: isAddingToPool }] = useAddTalentPoolItemProposedMutation();
-    const [moveTalentPoolItem, { isLoading: isMovingToPool }] = useMoveTalentPoolItemMutation();
+    const [moveTalentPoolItem] = useMoveTalentPoolItemMutation();
     const [createTalentPool, { isLoading: isCreatingPool }] = useCreateTalentPoolMutation();
 
     const cvData = response?.data;
@@ -139,7 +138,7 @@ const ProposedCVDetail = () => {
     const renderTabContent = () => {
         switch (activeTab) {
             case TAB_KEYS.AI:
-                return hasAi ? <AiAnalysis aiEvaluation={proposedCv.aiEvaluation} /> : null;
+                return hasAi ? <AiAnalysis aiEvaluation={proposedCv.aiEvaluation} hideOverviewSections /> : null;
             case TAB_KEYS.BASIC:
             default:
                 return (
@@ -287,9 +286,11 @@ const normalizeProposedCvDetail = (payload) => {
     if (!payload) return null;
 
     const isUnlocked = Boolean(payload.unlocked);
-    const aiScore = normalizePercentNumber(payload.ai_overall_score);
+    const aiEvaluation = normalizeProposedAiEvaluation(payload.ai_evaluation || payload.aiEvaluation, payload);
+    const aiScore = normalizePercentNumber(
+        aiEvaluation?.aiOverallScore ?? payload.ai_overall_score ?? payload.aiOverallScore
+    );
     const matchRate = normalizePercentNumber(payload.match_rate);
-    const hasAi = aiScore != null || payload.summary || payload.strengths || payload.weakness;
 
     return {
         candidateId: payload.candidate_id || null,
@@ -307,15 +308,7 @@ const normalizeProposedCvDetail = (payload) => {
         resumeType: payload.resume_type || null,
         answers: [],
         aiScore,
-        aiEvaluation: hasAi
-            ? {
-                aiOverallScore: aiScore ?? 0,
-                summary: payload.summary || null,
-                strengths: payload.strengths || null,
-                weakness: payload.weakness || null,
-                criteriaScores: [],
-            }
-            : null,
+        aiEvaluation,
         resumeUrl: payload.resume_url || null,
         resumeName: isUnlocked ? (payload.file_name || payload.resume_name || payload.full_name || 'Resume') : null,
         proposalStatus: payload.status || null,
@@ -326,6 +319,66 @@ const normalizeProposedCvDetail = (payload) => {
         isSaved: payload.is_saved ?? payload.isSaved ?? false,
         isInTalentPool: payload.is_saved ?? payload.isSaved ?? false,
         poolInfo: payload.pool_info || null,
+    };
+};
+
+const normalizeProposedAiEvaluation = (evaluation, legacyPayload = {}) => {
+    const criteriaScoresRaw = evaluation?.criteriaScores || evaluation?.criteria_scores || [];
+    const normalizedEvaluation = {
+        id: evaluation?.id ?? null,
+        aiOverallScore: normalizePercentNumber(
+            evaluation?.aiOverallScore ?? evaluation?.ai_overall_score ?? legacyPayload.ai_overall_score ?? legacyPayload.aiOverallScore
+        ),
+        recruiterOverallScore: normalizePercentNumber(
+            evaluation?.recruiterOverallScore ?? evaluation?.recruiter_overall_score
+        ),
+        matchLevel: evaluation?.matchLevel ?? evaluation?.match_level ?? null,
+        summary: evaluation?.summary ?? legacyPayload.summary ?? null,
+        strengths: evaluation?.strengths ?? legacyPayload.strengths ?? null,
+        weakness: evaluation?.weakness ?? legacyPayload.weakness ?? null,
+        candidateLevel: evaluation?.candidateLevel ?? evaluation?.candidate_level ?? null,
+        evaluationStatus: evaluation?.evaluationStatus ?? evaluation?.evaluation_status ?? null,
+        criteriaScores: Array.isArray(criteriaScoresRaw)
+            ? criteriaScoresRaw.map(normalizeCriteriaScore).filter(Boolean)
+            : [],
+    };
+
+    return hasAiEvaluation(normalizedEvaluation) ? normalizedEvaluation : null;
+};
+
+const normalizeCriteriaScore = (criteria) => {
+    if (!criteria) return null;
+
+    const details = Array.isArray(criteria.details)
+        ? criteria.details.map(normalizeCriteriaDetail).filter(Boolean)
+        : [];
+
+    return {
+        id: criteria.id ?? null,
+        scoringCriteriaId: criteria.scoringCriteriaId ?? criteria.scoring_criteria_id ?? null,
+        scoringCriteriaContext: criteria.scoringCriteriaContext ?? criteria.scoring_criteria_context ?? null,
+        criteriaName: criteria.criteriaName ?? criteria.criteria_name ?? null,
+        scoringCriteriaWeight: criteria.scoringCriteriaWeight ?? criteria.scoring_criteria_weight ?? null,
+        aiScore: normalizePercentNumber(criteria.aiScore ?? criteria.ai_score),
+        manualScore: normalizePercentNumber(criteria.manualScore ?? criteria.manual_score),
+        weightedScore: normalizePercentNumber(criteria.weightedScore ?? criteria.weighted_score),
+        aiExplanation: criteria.aiExplanation ?? criteria.ai_explanation ?? null,
+        manualExplanation: criteria.manualExplanation ?? criteria.manual_explanation ?? null,
+        details,
+    };
+};
+
+const normalizeCriteriaDetail = (detail) => {
+    if (!detail) return null;
+
+    return {
+        id: detail.id ?? null,
+        label: detail.label ?? null,
+        description: detail.description ?? null,
+        context: detail.context ?? null,
+        status: detail.status ?? null,
+        fixed: detail.fixed ?? detail.isFixed ?? detail.is_fixed ?? null,
+        suggestionId: detail.suggestionId ?? detail.suggestion_id ?? null,
     };
 };
 

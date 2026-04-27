@@ -229,7 +229,25 @@ const RecruiterRegister = () => {
                                 <div className="w-1 h-6 bg-primary rounded-full" />
                                 <h3 className="text-lg font-bold text-neutral-900">Company Profile</h3>
                             </div>
-                            <Input label={<>Company Name <span className="text-red-500">*</span></>} name="companyName" required onChange={handleChange} />
+                            <Input
+                                label={
+                                    <>
+                                        Company Name <span className="text-red-500">*</span>
+                                        <div className="group relative inline-block ml-1">
+                                            <span className="cursor-pointer text-primary font-bold">ⓘ</span>
+
+                                            <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-72 p-3 bg-white/90 backdrop-blur-xl text-neutral-700 text-xs leading-relaxed rounded-xl shadow-xl border border-neutral-200 z-50">
+                                                Please enter the official company name as it appears on your Tax ID/Business License.
+
+                                                <div className="absolute top-full left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-r border-b border-neutral-200 rotate-45"></div>
+                                            </div>
+                                        </div>
+                                    </>
+                                }
+                                name="companyName"
+                                required
+                                onChange={handleChange}
+                            />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Industry Dropdown */}
                                 <div className="space-y-2">
