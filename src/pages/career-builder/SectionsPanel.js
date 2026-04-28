@@ -663,7 +663,6 @@ const SectionsPanel = ({ sections, onSectionsChange, onUpdateSection, activeSect
   const [expanded, setExpanded] = useState(new Set());
 
   const toggleExpand = (id, e) => {
-    e.stopPropagation();
     setExpanded(prev => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
