@@ -33,6 +33,7 @@ import LegalPage from '@/pages/legal';
 import ApiManagementPage from '@/pages/api-management';
 import TalentPool from '@/pages/talent-pool';
 import TalentPoolCvDetail from '@/pages/talent-pool/cv-detail';
+import NotFound from '@/pages/not-found';
 
 export const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -77,6 +78,7 @@ export const routes = createBrowserRouter(
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="reset-password" element={<ResetPassword />} />
             <Route path="legal/:type" element={<LegalPage />} />
+            <Route path="*" element={<NotFound />} />
         </Route>
     )
 );
