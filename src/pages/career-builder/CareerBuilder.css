@@ -476,10 +476,13 @@
 }
 .cb-section-item.cb-dragging {
   opacity: 0.4;
+  transition: none !important;
 }
 .cb-section-item.cb-drag-over {
   border-color: #FF6B35;
   background: rgba(255, 107, 53, 0.06);
+  transition: none !important;
+  z-index: 10;
 }
 
 .cb-section-item-left {

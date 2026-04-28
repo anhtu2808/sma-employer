@@ -68,7 +68,7 @@ const EVPSection = ({ theme, sectionProps = {}, settings = {} }) => {
         </div>
 
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '32px',
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px',
           maxWidth: '1440px', margin: '0 auto',
         }}>
           {displayItems.filter(b => b.isVisible !== false).map((b, i) => (

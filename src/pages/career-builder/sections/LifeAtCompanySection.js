@@ -25,7 +25,7 @@ const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
       textAlign: 'center',
     }}>
       <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '16px',
         maxWidth: '1100px', margin: '0 auto 40px',
       }}>
         <h2 style={{ fontSize: `${40 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: settings.textColorOverride || textColor, margin: 0 }}>
@@ -56,7 +56,7 @@ const LifeAtCompanySection = ({ theme, sectionProps = {}, settings = {} }) => {
       </div>
 
       <div style={{
-        display: 'grid', gridTemplateColumns: `repeat(${Math.min(defaultNews.length, 3)}, 1fr)`,
+        display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(300px, 1fr))`,
         gap: '28px', maxWidth: '1280px', margin: '0 auto',
       }}>
         {defaultNews.filter(item => item.isVisible !== false).map((item, i) => {
