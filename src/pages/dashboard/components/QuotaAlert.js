@@ -31,7 +31,7 @@ const QuotaAlert = ({ quotas }) => {
         </div>
       </div>
       <Link
-        to="/settings/billing"
+        to="/billing-plans"
         className="text-xs font-medium text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 whitespace-nowrap flex-shrink-0"
       >
         Upgrade
