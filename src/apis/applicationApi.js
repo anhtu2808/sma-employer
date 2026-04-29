@@ -32,6 +32,42 @@ export const applicationApi = api.injectEndpoints({
                     showToCandidate
                 },
             }),
+            // Optimistic update: immediately move the card in the cache
+            // so the Kanban board doesn't snap back while waiting for API
+            async onQueryStarted({ id, status }, { dispatch, queryFulfilled, getState }) {
+                // Find the active getApplications cache entry and patch it
+                const patchResults = [];
+                const state = getState();
+                const cacheEntries = state.api?.queries || {};
+
+                for (const key of Object.keys(cacheEntries)) {
+                    if (!key.startsWith('getApplications(')) continue;
+                    const entry = cacheEntries[key];
+                    if (!entry?.data?.data?.content) continue;
+
+                    // Extract the original args from the cache entry
+                    const originalArgs = entry.originalArgs;
+
+                    const patchResult = dispatch(
+                        applicationApi.util.updateQueryData('getApplications', originalArgs, (draft) => {
+                            const app = draft.data.content.find(
+                                (a) => String(a.applicationId) === String(id) || String(a.id) === String(id)
+                            );
+                            if (app) {
+                                app.status = status;
+                            }
+                        })
+                    );
+                    patchResults.push(patchResult);
+                }
+
+                try {
+                    await queryFulfilled;
+                } catch {
+                    // Revert all optimistic patches on failure
+                    patchResults.forEach((p) => p.undo());
+                }
+            },
             invalidatesTags: (result, error, { id }) => [
                 { type: "Applications", id },
                 { type: "Applications", id: "LIST" },
