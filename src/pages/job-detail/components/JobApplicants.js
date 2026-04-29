@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useGetApplicationsQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
 import { useGetJobDetailQuery } from '@/apis/apis';
 import { getApplicationStatusConfig, getAllowedNextStatuses, APPLICATION_STATUS } from '@/constrant/application';
@@ -14,7 +14,7 @@ import { faRocket, faUser } from '../../../utils/icons';
 import {
     Search, Filter, Plus, Zap,
     ExternalLink, Mail, Calendar, MapPin,
-    Eye, Users, Brain, Briefcase
+    Eye, Users, Brain, Briefcase, GitCompareArrows
 } from 'lucide-react';
 
 const JobApplicants = ({ jobId }) => {
@@ -35,6 +35,7 @@ const JobApplicants = ({ jobId }) => {
     const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
     const [approveData, setApproveData] = useState({ id: null });
     const [evalModal, setEvalModal] = useState({ open: false, evaluation: null, candidateName: '' });
+    const [selectedCompareIds, setSelectedCompareIds] = useState([]);
 
     const [updateStatus] = useUpdateApplicationStatusMutation();
 
@@ -45,12 +46,16 @@ const JobApplicants = ({ jobId }) => {
         { skip: !jobId }
     );
 
-    const applications = appData?.data?.content || [];
+    const applications = useMemo(() => appData?.data?.content || [], [appData]);
     const totalElements = appData?.data?.totalElements || 0;
 
     useEffect(() => {
         setFilter(prev => ({ ...prev, page }));
     }, [page]);
+
+    useEffect(() => {
+        setSelectedCompareIds([]);
+    }, [applications, page, jobId]);
 
     // Debounced search
     useEffect(() => {
@@ -283,6 +288,16 @@ const JobApplicants = ({ jobId }) => {
         );
     }
 
+    const rowSelection = {
+        selectedRowKeys: selectedCompareIds,
+        onChange: (selectedRowKeys) => {
+            setSelectedCompareIds(selectedRowKeys.slice(-2));
+        },
+        getCheckboxProps: (record) => ({
+            disabled: selectedCompareIds.length >= 2 && !selectedCompareIds.includes(record.applicationId),
+        }),
+    };
+
     return (
         <div className="flex flex-col gap-4 animate-fadeIn">
             {/* Header bar: search + filter */}
@@ -293,6 +308,15 @@ const JobApplicants = ({ jobId }) => {
                         <span className="font-semibold text-neutral-800 dark:text-white">{totalElements}</span> applicants found
                     </div>
                     <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            disabled={selectedCompareIds.length !== 2}
+                            onClick={() => navigate(`/applications/compare?left=${selectedCompareIds[0]}&right=${selectedCompareIds[1]}`)}
+                            className="inline-flex h-9 items-center gap-2 rounded-xl border border-orange-200 px-4 text-sm font-medium text-orange-600 transition-colors hover:bg-orange-50 disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-400 disabled:hover:bg-transparent"
+                        >
+                            <GitCompareArrows size={16} />
+                            Compare
+                        </button>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400/80" />
                             <input
@@ -391,6 +415,7 @@ const JobApplicants = ({ jobId }) => {
                         columns={columns}
                         dataSource={applications}
                         rowKey="applicationId"
+                        rowSelection={rowSelection}
                         loading={isLoading}
                         locale={{
                             emptyText: (
