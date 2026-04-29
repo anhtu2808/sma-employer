@@ -11,7 +11,7 @@ const toMonths = (duration, unit) => {
   return unit === "YEAR" ? duration * 12 : duration;
 };
 
-const mapPlanToCard = (plan, currentPlanId) => {
+const mapPlanToCard = (plan, currentPlanId, currentLevel) => {
   const planPrices = Array.isArray(plan?.planPrices) ? plan.planPrices : [];
   const lifetimePrice = planPrices.find(
     (price) => price?.isActive !== false && isLifetimeUnit(price?.unit)
@@ -23,7 +23,7 @@ const mapPlanToCard = (plan, currentPlanId) => {
   const description = plan?.description || "";
   const detailsHtml = typeof plan?.planDetails === "string" ? plan.planDetails.trim() : "";
   const isPopular = Boolean(plan?.isPopular);
-
+  const isDowngrade = !isCurrent && plan?.planLevel > currentLevel;
   if (lifetimePrice) {
     const total = Number(lifetimePrice.salePrice ?? lifetimePrice.originalPrice ?? 0);
     const currency = "VND";
@@ -35,6 +35,7 @@ const mapPlanToCard = (plan, currentPlanId) => {
       name,
       description,
       current: isCurrent,
+      isDowngrade,
       popular: isPopular,
       basePriceLabel: priceLabel,
       baseUnit: "",
@@ -122,11 +123,23 @@ const Plans = ({ plans = [], currentPlanId = null, onOpenPaymentModal }) => {
       return String(a?.name || "").localeCompare(String(b?.name || ""));
     });
   }, [plans]);
-
+  const currentLevel = useMemo(() => {
+    const currentPlan = plans.find(p => p.isCurrent === true || p.id === currentPlanId);
+    return currentPlan?.planLevel ?? 0;
+  }, [plans, currentPlanId]);
   const mappedPlans = useMemo(() => {
-    if (!Array.isArray(sortedPlans)) return [];
-    return sortedPlans.map((plan) => mapPlanToCard(plan, currentPlanId));
-  }, [sortedPlans, currentPlanId]);
+    return sortedPlans.map((plan) => {
+      const cardData = mapPlanToCard(plan, currentPlanId);
+      const isCurrent = plan.isCurrent || plan.id === currentPlanId;
+      const isDowngrade = !isCurrent && plan.planLevel > currentLevel;
+
+      return {
+        ...cardData,
+        isDowngrade: isDowngrade,
+        cta: isCurrent ? "Current Plan" : isDowngrade ? `${plan.name}` : cardData.cta
+      };
+    });
+  }, [sortedPlans, currentPlanId, currentLevel]);
 
   useEffect(() => {
     if (mappedPlans.length === 0) return;

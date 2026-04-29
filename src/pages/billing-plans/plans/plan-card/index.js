@@ -16,9 +16,11 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
   const isCurrent = plan.current;
   const hasDurations = plan.durations && plan.durations.length > 0;
   const canExpand = !isCurrent && hasDurations;
-
+  const isDowngrade = plan.isDowngrade;
+  const isDisabled = plan.current || plan.isDowngrade;
   const handleAction = () => {
     if (isCurrent) return;
+    if (isDisabled) return;
     if (hasDurations) {
       onExpand();
     } else {
@@ -47,11 +49,12 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
           <div className="mb-6">
             <div className="flex justify-between items-start mb-2">
               <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
-              {isCurrent ? (
-                <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">
+              {isCurrent && (
+                <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">
                   Current
                 </span>
-              ) : null}
+              )}
+
             </div>
             <p
               className="text-sm text-gray-500 leading-relaxed line-clamp-2 min-h-[42px]"
@@ -71,16 +74,18 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
 
           <button
             type="button"
-            disabled={isCurrent}
+            disabled={isDisabled}
             onClick={(e) => {
               e.stopPropagation();
               handleAction();
             }}
             className={`w-full py-3 px-4 rounded-lg font-semibold transition-all mb-8 ${isCurrent
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : plan.popular
-                ? "bg-primary hover:bg-primary-dark text-white shadow-md"
-                : "bg-white border border-gray-300 hover:border-primary hover:text-primary text-gray-700"
+              : isDowngrade
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed "
+                : plan.popular
+                  ? "bg-primary hover:bg-primary-dark text-white shadow-md"
+                  : "bg-white border border-gray-300 hover:border-primary hover:text-primary text-gray-700"
               }`}
           >
             {plan.cta}
@@ -157,6 +162,7 @@ const PlanCard = ({ plan, isExpanded, onExpand, onClose, selectedDuration, onSel
             mode="primary"
             shape="rounded"
             fullWidth
+            disabled={isDisabled}
             onClick={(e) => {
               e.stopPropagation();
               const duration = !selectedDuration && plan.durations.length > 0
