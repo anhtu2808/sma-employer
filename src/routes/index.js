@@ -17,6 +17,7 @@ import BillingPlans from '@/pages/billing-plans';
 import PaymentHistory from '@/pages/payment-history';
 import Checkout from '@/pages/checkout';
 import ApplicationDetail from "@/pages/application/detail";
+import ApplicationCompare from "@/pages/application/compare";
 import Usage from "@/pages/usage";
 import NotificationList from "../pages/notification";
 import CompanyBlacklist from "@/pages/blacklist";
@@ -50,6 +51,7 @@ export const routes = createBrowserRouter(
                 <Route path="jobs/:jobId/proposed-cvs/:resumeId" element={<ProposedCVDetail />} />
                 <Route path="company" element={<CompanyProfile />} />
                 <Route path="applications" element={<ApplicationManagement />} />
+                <Route path="applications/compare" element={<ApplicationCompare />} />
                 <Route path="applications/:id" element={<ApplicationDetail />} />
                 <Route path="reports" element={<Dashboard />} />
                 <Route path="settings" element={<Settings />} />

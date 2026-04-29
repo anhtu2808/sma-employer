@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Input, Checkbox } from 'antd';
 import toastMessage from '@/utils/toastMessage';
-import { useGetApplicationDetailQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
+import { useGetApplicationDetailQuery, useGetApplicationsQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
 import { useGetTalentPoolsQuery, useAddTalentPoolItemMutation, useCreateTalentPoolMutation, useMoveTalentPoolItemMutation } from '@/apis/talentPoolApi';
 import { APPLICATION_STATUS } from '@/constrant/application';
 import Loading from '@/components/Loading';
@@ -22,49 +22,7 @@ import AiAnalysis from './ai-analysis';
 import CoverLetter from './cover-letter';
 import PdfViewer from './pdf-viewer';
 import CreatePoolModal from '../../talent-pool/create-pool-modal';
-import PoolSelectorModal from '../../talent-pool/pool-selector-modal';
-
-const normalizeApplicationDetail = (payload) => {
-    if (!payload) return null;
-
-    const info = payload.applicationInfo || {};
-    const resume = payload.resumeDetail || {};
-    const ai = payload.aiEvaluation || {};
-
-    return {
-        status: info.status,
-        attempt: info.attempt,
-        candidateName: info.fullName,
-        candidateEmail: info.email,
-        candidatePhone: info.phone,
-        jobTitle: info.jobTitle,
-        coverLetter: info.coverLetter,
-        appliedAt: info.appliedAt,
-        resumeId: resume.id,
-        resumeUrl: resume.resumeUrl,
-        resumeName: info.resumeName,
-        location: resume.addressInResume,
-        githubLink: resume.githubLink,
-        linkedinLink: resume.linkedinLink,
-        portfolioLink: resume.portfolioLink,
-        answers: (info.answers || []).map((a) => ({
-            question: a.questionText,
-            answer: a.answerContent,
-        })),
-        aiScore: ai.aiOverallScore,
-        recruiterScore: ai.recruiterOverallScore,
-        evaluationId: ai.id,
-        aiEvaluation: payload.aiEvaluation || null,
-        source: payload.source,
-        rejectReason: info.rejectReason,
-        showRejectReason: info.showRejectReason,
-        reviewedAt: info.reviewedAt,
-        reviewedByEmail: info.reviewedByEmail,
-        isRejectedByAi: info.isRejectedByAi,
-        isInTalentPool: !!info.isInTalentPool,
-        poolInfo: info.poolInfo || null,
-    };
-};
+import { normalizeApplicationDetail } from './utils';
 
 const TAB_KEYS = {
     BASIC: 'basic',
@@ -92,12 +50,22 @@ const ApplicationDetail = () => {
     const { data: poolsResponse } = useGetTalentPoolsQuery();
     const pools = poolsResponse?.data || [];
     const [addTalentPoolItem, { isLoading: isAddingToPool }] = useAddTalentPoolItemMutation();
-    const [moveTalentPoolItem, { isLoading: isMovingToPool }] = useMoveTalentPoolItemMutation();
+    const [moveTalentPoolItem] = useMoveTalentPoolItemMutation();
     const [createTalentPool, { isLoading: isCreatingPool }] = useCreateTalentPoolMutation();
 
     const candidateId = appResponse?.data?.resumeDetail?.candidateId;
 
     const app = normalizeApplicationDetail(appResponse?.data);
+    const { data: compareCandidatesResponse, isLoading: isCompareCandidatesLoading } = useGetApplicationsQuery(
+        { jobId: app?.jobId, page: 0, size: 500 },
+        { skip: !app?.jobId }
+    );
+    const compareOptions = (compareCandidatesResponse?.data?.content || [])
+        .filter((application) => application.applicationId !== app?.applicationId)
+        .map((application) => ({
+            value: application.applicationId,
+            label: `${application.candidateName} (${application.candidateEmail})`,
+        }));
 
     useEffect(() => {
         if (app?.status === 'APPLIED') {
@@ -238,6 +206,20 @@ const ApplicationDetail = () => {
                         ))}
                     </div>
                     <div className="flex items-center gap-3">
+                        <Select
+                            allowClear
+                            showSearch
+                            placeholder="Compare with..."
+                            optionFilterProp="label"
+                            loading={isCompareCandidatesLoading}
+                            className="w-64 h-8"
+                            options={compareOptions}
+                            size="small"
+                            onChange={(applicationId) => {
+                                if (!applicationId || !app?.applicationId) return;
+                                navigate(`/applications/compare?left=${app.applicationId}&right=${applicationId}`);
+                            }}
+                        />
                         {(() => {
                             const allowedStatuses = getAllowedNextStatuses(app.status, app.isRejectedByAi);
                             if (allowedStatuses.length === 0) return null;
