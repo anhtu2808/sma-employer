@@ -12,7 +12,7 @@ import Location from './components/Location';
 import LegalInfo from './components/LegalInfo';
 import CompanyImages from './components/CompanyImages';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare } from '../../utils/icons';
+import { faPenToSquare, faCircleExclamation } from '../../utils/icons';
 
 const CompanyProfile = () => {
     const { data: companyData, isLoading, refetch } = useGetCompanyProfileQuery();
@@ -37,6 +37,19 @@ const CompanyProfile = () => {
 
     const onFinish = async (values) => {
         try {
+            const originalData = companyData?.data || {};
+            const hasNameChange = values.name && values.name !== originalData.name;
+            const hasErcChange = values.erc && values.erc !== originalData.erc;
+
+            let newLogoUrl = "";
+            if (Array.isArray(values.logo) && values.logo.length > 0) {
+                newLogoUrl = values.logo[0].url || values.logo[0].thumbUrl || "";
+            } else if (typeof values.logo === 'string') {
+                newLogoUrl = values.logo;
+            }
+            const hasLogoChange = newLogoUrl !== "" && newLogoUrl !== originalData.logo;
+
+            const isSensitiveChange = hasNameChange || hasErcChange || hasLogoChange;
             const {
                 taxIdentificationNumber,
                 erc,
@@ -89,7 +102,11 @@ const CompanyProfile = () => {
 
             await updateCompany({ id: companyData.data.id, data: updateData }).unwrap();
 
-            toastMessage.success('Company profile updated successfully');
+            if (isSensitiveChange) {
+                toastMessage.success('Changes saved! Critical info is pending Admin approval. Your profile will reflect the updates once approved.');
+            } else {
+                toastMessage.success('Company profile updated successfully');
+            }
             setIsEditing(false);
             refetch();
         } catch (error) {
@@ -109,7 +126,16 @@ const CompanyProfile = () => {
 
     return (
         <div className="space-y-4">
+
             <Card className="p-6">
+                {companyData?.data?.isUpdatePending && (
+                    <div className="mb-4 p-4 bg-orange-50 border border-orange-200 rounded-xl flex items-center gap-3 text-orange-700 shadow-sm ">
+                        <FontAwesomeIcon icon={faCircleExclamation} />
+                        <span className="text-sm font-medium">
+                            Some of your information (Name, Logo, or ERC) is currently under review by an administrator.
+                        </span>
+                    </div>
+                )}
                 <Form form={form} onFinish={onFinish} className="space-y-6" disabled={!isEditing}>
                     <GeneralInfo form={form} isEditing={isEditing} />
                     <Classification />
