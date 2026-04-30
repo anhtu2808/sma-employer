@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRegisterRecruiterMutation, useUploadFileMutation } from '@/apis/apis';
-
+import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
 import Card from '@/components/Card';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
@@ -24,6 +24,7 @@ const RecruiterRegister = () => {
     const addressRef = useRef(null);
     const [ercFile, setErcFile] = useState(null);
     const [errors, setErrors] = useState({
+        fullName: "",
         recruiterEmail: "",
         taxIdentificationNumber: "",
         password: "",
@@ -61,6 +62,7 @@ const RecruiterRegister = () => {
     ];
 
     const [formData, setFormData] = useState({
+        fullName: "",
         recruiterEmail: "",
         password: "",
         companyName: "",
@@ -96,10 +98,53 @@ const RecruiterRegister = () => {
             ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     };
+    const {
+        ready,
+        value,
+        suggestions: { status, data },
+        setValue,
+        clearSuggestions,
+    } = usePlacesAutocomplete({
+        requestOptions: { componentRestrictions: { country: "vn" } },
+        debounce: 300,
+    });
 
+    const handleSelectAddress = async (description) => {
+        setValue(description, false);
+        clearSuggestions();
+
+        try {
+            const results = await getGeocode({ address: description });
+            const addressComponents = results[0].address_components;
+            let city = "";
+            let district = "";
+
+            addressComponents.forEach(component => {
+                if (component.types.includes("administrative_area_level_1")) {
+                    city = component.long_name;
+                }
+                if (component.types.includes("administrative_area_level_2")) {
+                    district = component.long_name;
+                }
+            });
+
+            setFormData(prev => ({
+                ...prev,
+                address: description,
+                city: city,
+                district: district
+            }));
+        } catch (error) {
+            console.error("Error: ", error);
+        }
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrors({ recruiterEmail: "", taxIdentificationNumber: "", password: "", general: "" });
+        setErrors({ fullName: "", recruiterEmail: "", taxIdentificationNumber: "", password: "", general: "" });
+        if (!formData.fullName.trim()) {
+            setErrors(prev => ({ ...prev, fullName: "Full name is required" }));
+            return;
+        }
         if (formData.password.length < 6) {
             setErrors(prev => ({ ...prev, password: "Password must be between 6 and 100 characters" }));
             setTimeout(() => scrollToElement(passwordRef), 100);
@@ -198,6 +243,18 @@ const RecruiterRegister = () => {
                                 <div className="w-1 h-6 bg-primary rounded-full" />
                                 <h3 className="text-lg font-bold text-neutral-900">Account Access</h3>
                             </div>
+                            <div className="col-span-full">
+                                <Input
+                                    label={<>Full Name <span className="text-red-500">*</span></>}
+                                    name="fullName"
+                                    placeholder="Enter your full name"
+                                    required
+                                    value={formData.fullName}
+                                    onChange={handleChange}
+                                    error={!!errors.fullName}
+                                    helperText={errors.fullName}
+                                />
+                            </div>
                             <div ref={emailRef}>
                                 <Input
                                     label={<>Recruiter Email <span className="text-red-500">*</span></>}
@@ -216,7 +273,6 @@ const RecruiterRegister = () => {
                                     placeholder="At least 6 characters"
                                     required
                                     onChange={handleChange}
-                                    // Hiển thị lỗi nếu có
                                     error={!!errors.password}
                                     helperText={errors.password}
                                     className="!rounded-xl"
@@ -229,7 +285,25 @@ const RecruiterRegister = () => {
                                 <div className="w-1 h-6 bg-primary rounded-full" />
                                 <h3 className="text-lg font-bold text-neutral-900">Company Profile</h3>
                             </div>
-                            <Input label={<>Company Name <span className="text-red-500">*</span></>} name="companyName" required onChange={handleChange} />
+                            <Input
+                                label={
+                                    <>
+                                        Company Name <span className="text-red-500">*</span>
+                                        <div className="group relative inline-block ml-1">
+                                            <span className="cursor-pointer text-primary font-bold">ⓘ</span>
+
+                                            <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-72 p-3 bg-white/90 backdrop-blur-xl text-neutral-700 text-xs leading-relaxed rounded-xl shadow-xl border border-neutral-200 z-50">
+                                                Please enter the official company name as it appears on your Tax ID/Business License.
+
+                                                <div className="absolute top-full left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-r border-b border-neutral-200 rotate-45"></div>
+                                            </div>
+                                        </div>
+                                    </>
+                                }
+                                name="companyName"
+                                required
+                                onChange={handleChange}
+                            />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Industry Dropdown */}
                                 <div className="space-y-2">
@@ -352,29 +426,46 @@ const RecruiterRegister = () => {
                                 />
                             </div>
 
-                            <div className="col-span-full">
+                            <div className="col-span-full relative">
                                 <Input
                                     label={<>Office Address <span className="text-red-500">*</span></>}
                                     name="address"
+                                    value={value}
                                     required
-                                    onChange={handleChange}
-                                    placeholder="e.g. 123 Nguyen Hue Street"
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        setValue(e.target.value);
+                                    }}
+                                    placeholder="Start typing your office address..."
                                 />
+                                {status === "OK" && (
+                                    <ul className="absolute z-50 w-full bg-white border border-neutral-200 rounded-2xl mt-1 shadow-2xl animate-in fade-in zoom-in duration-150">
+                                        {data.map(({ place_id, description }) => (
+                                            <li
+                                                key={place_id}
+                                                onClick={() => handleSelectAddress(description)}
+                                                className="p-4 hover:bg-primary/5 cursor-pointer text-sm font-medium text-neutral-700 transition-colors first:rounded-t-2xl last:rounded-b-2xl"
+                                            >
+                                                {description}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <Input
                                     label={<>District <span className="text-red-500">*</span></>}
                                     name="district"
-                                    placeholder="e.g. District 1"
-                                    required
+                                    value={formData.district}
+                                    // readOnly
                                     onChange={handleChange}
                                 />
                                 <Input
                                     label={<>City <span className="text-red-500">*</span></>}
                                     name="city"
-                                    placeholder="e.g. Ho Chi Minh City"
-                                    required
+                                    value={formData.city}
+                                    // readOnly
                                     onChange={handleChange}
                                 />
                             </div>

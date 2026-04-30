@@ -7,7 +7,6 @@ import ActionChips from './components/ActionChips';
 import JobsAttention from './components/JobsAttention';
 import QuotaAlert from './components/QuotaAlert';
 import ApplicationPipeline from './components/ApplicationPipeline';
-import TopCandidates from './components/TopCandidates';
 import JobPerformance from './components/JobPerformance';
 
 const Dashboard = () => {
@@ -52,14 +51,9 @@ const Dashboard = () => {
       {/* Quota Alert - only shown when quotas > 80% */}
       <QuotaAlert quotas={quotas} />
 
-      {/* Application Pipeline + Top Candidates */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <ApplicationPipeline statusSummary={statusSummary} isLoading={isSummaryLoading} />
-        </div>
-        <div className="lg:col-span-1">
-          <TopCandidates applications={applications} isLoading={isAppsLoading} />
-        </div>
+      {/* Application Pipeline */}
+      <div className="w-full">
+        <ApplicationPipeline statusSummary={statusSummary} isLoading={isSummaryLoading} />
       </div>
 
       {/* Job Performance Table */}

@@ -1,0 +1,324 @@
+/* ─── Container ─── */
+.emp-notfound-container {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: linear-gradient(160deg, #0C0F1A 0%, #111827 35%, #151C2E 70%, #0F172A 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ─── Canvas ─── */
+.emp-notfound-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* ─── Gradient Overlay ─── */
+.emp-notfound-gradient-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+        radial-gradient(ellipse at 50% 50%, rgba(255, 107, 53, 0.05) 0%, transparent 60%),
+        radial-gradient(ellipse at 20% 80%, rgba(255, 107, 53, 0.03) 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 20%, rgba(249, 115, 22, 0.03) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+/* ─── Content ─── */
+.emp-notfound-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    max-width: 560px;
+    animation: empFadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes empFadeIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+/* ─── Alert Badge ─── */
+.emp-notfound-alert-badge {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.emp-notfound-alert-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 107, 53, 0.2);
+    animation: ringPulse 2.5s ease-out infinite;
+}
+
+@keyframes ringPulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.emp-notfound-alert-icon {
+    font-size: 1.5rem;
+    color: #FF6B35;
+    filter: drop-shadow(0 0 10px rgba(255, 107, 53, 0.4));
+    animation: alertPulse 2s ease-in-out infinite;
+}
+
+@keyframes alertPulse {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* ─── 404 Code with Glitch ─── */
+.emp-notfound-code-wrapper {
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.emp-notfound-code {
+    font-size: 7.5rem;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, #FF6B35 0%, #F97316 40%, #FF8C5A 80%, #FDBA74 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    display: inline-block;
+    animation: codeShimmer 4s ease-in-out infinite;
+}
+
+.emp-notfound-code::before,
+.emp-notfound-code::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.emp-notfound-code::before {
+    animation: glitch1 5s infinite;
+    clip-path: inset(0 0 60% 0);
+}
+
+.emp-notfound-code::after {
+    animation: glitch2 5s infinite;
+    clip-path: inset(40% 0 0 0);
+}
+
+@keyframes glitch1 {
+    0%, 92%, 100% { transform: translate(0); }
+    93% { transform: translate(-3px, 2px); }
+    95% { transform: translate(3px, -1px); }
+    97% { transform: translate(-2px, 0); }
+}
+
+@keyframes glitch2 {
+    0%, 90%, 100% { transform: translate(0); }
+    91% { transform: translate(3px, 1px); }
+    93% { transform: translate(-2px, -2px); }
+    96% { transform: translate(2px, 1px); }
+}
+
+@keyframes codeShimmer {
+    0%, 100% {
+        background-position: 0% 50%;
+        filter: brightness(1);
+    }
+    50% {
+        background-position: 100% 50%;
+        filter: brightness(1.15);
+    }
+}
+
+/* ─── Compass Decoration ─── */
+.emp-notfound-compass-decoration {
+    margin-bottom: 1.5rem;
+}
+
+.emp-notfound-compass-icon {
+    font-size: 2rem;
+    color: rgba(255, 107, 53, 0.25);
+    animation: compassSpin 8s linear infinite;
+}
+
+@keyframes compassSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ─── Text ─── */
+.emp-notfound-title {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #E2E8F0;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.02em;
+}
+
+.emp-notfound-description {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #64748B;
+    margin: 0 0 2rem;
+    max-width: 440px;
+}
+
+/* ─── Buttons ─── */
+.emp-notfound-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+}
+
+.emp-notfound-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.emp-notfound-btn-primary {
+    background: linear-gradient(135deg, #FF6B35 0%, #E55A2B 100%);
+    color: #fff;
+    box-shadow:
+        0 4px 16px rgba(255, 107, 53, 0.25),
+        0 0 0 1px rgba(255, 107, 53, 0.1);
+}
+
+.emp-notfound-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 28px rgba(255, 107, 53, 0.4),
+        0 0 0 1px rgba(255, 107, 53, 0.2);
+}
+
+.emp-notfound-btn-primary:active {
+    transform: translateY(0);
+}
+
+.emp-notfound-btn-outline {
+    background: rgba(255, 255, 255, 0.04);
+    color: #94A3B8;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+}
+
+.emp-notfound-btn-outline:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #FF6B35;
+    border-color: rgba(255, 107, 53, 0.25);
+    transform: translateY(-2px);
+}
+
+.emp-notfound-btn-outline:active {
+    transform: translateY(0);
+}
+
+/* ─── Status Bar ─── */
+.emp-notfound-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+    animation: empStatusFade 1s 0.5s both;
+}
+
+.emp-notfound-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #FF6B35;
+    animation: statusBlink 2s ease-in-out infinite;
+}
+
+@keyframes statusBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.emp-notfound-status-text {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #475569;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    letter-spacing: 0.05em;
+}
+
+@keyframes empStatusFade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 640px) {
+    .emp-notfound-code {
+        font-size: 5rem;
+    }
+
+    .emp-notfound-title {
+        font-size: 1.3rem;
+    }
+
+    .emp-notfound-description {
+        font-size: 0.875rem;
+    }
+
+    .emp-notfound-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .emp-notfound-btn {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .emp-notfound-alert-badge {
+        width: 52px;
+        height: 52px;
+    }
+
+    .emp-notfound-alert-icon {
+        font-size: 1.2rem;
+    }
+}

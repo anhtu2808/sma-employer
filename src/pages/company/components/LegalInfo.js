@@ -13,7 +13,7 @@ const LegalInfo = ({ form, isEditing }) => {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">Legal Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Form.Item name="taxIdentificationNumber" label="Tax ID">
-                    <Input disabled={!isEditing} />
+                    <Input readOnly />
                 </Form.Item>
                 <Form.Item name="erc" label="ERC Document">
                     {isEditing ? (
@@ -87,12 +87,12 @@ const ERCUpload = ({ form, value, onChange }) => {
                 accept="image/*"
                 style={{ display: 'none' }}
             />
-            
+
             {ercValue ? (
                 <div className="relative group w-full h-32 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-50 shadow-sm transition-all hover:shadow-md">
-                    <img 
-                        src={ercValue} 
-                        alt="ERC Document" 
+                    <img
+                        src={ercValue}
+                        alt="ERC Document"
                         className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 backdrop-blur-[2px]">
@@ -118,7 +118,7 @@ const ERCUpload = ({ form, value, onChange }) => {
                     </div>
                 </div>
             ) : (
-                <div 
+                <div
                     onClick={() => fileInputRef.current?.click()}
                     className="w-full h-32 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary dark:hover:border-primary bg-gray-50/50 dark:bg-gray-800/50 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:bg-primary/5 group"
                 >

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useGetApplicationsQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
 import { useGetJobDetailQuery } from '@/apis/apis';
 import FilterSidebar from '@/pages/application/filterSidebar';
@@ -30,7 +30,7 @@ const JobApplicants = ({ jobId }) => {
         { skip: !jobId }
     );
 
-    const applications = appData?.data?.content || [];
+    const applications = useMemo(() => appData?.data?.content || [], [appData]);
     const totalElements = appData?.data?.totalElements || 0;
     const totalPages = appData?.data?.totalPages || 0;
 
@@ -200,7 +200,6 @@ const JobApplicants = ({ jobId }) => {
                 onPageChange={setPage}
                 onStatusUpdate={handleUpdateStatus}
             />
-
             {/* Filter Drawer */}
             <Drawer
                 title={<span className="font-heading font-bold text-lg">Filter Applicants</span>}

@@ -12,6 +12,14 @@
     opacity: 0.6;
 }
 
+// Ant Design error state
+:global(.ant-form-item-has-error) .simple-text-editor {
+    border-color: #ef4444;
+    &:focus-within {
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+    }
+}
+
 .simple-text-editor__toolbar {
     display: flex;
     align-items: center;

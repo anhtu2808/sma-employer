@@ -3,6 +3,7 @@ import Button from '@/components/Button';
 import { useParams } from 'react-router-dom';
 import { useInviteCandidateMutation } from '@/apis/jobApi';
 import toastMessage from '@/utils/toastMessage';
+import { getCandidateLevelBadgeClasses } from '@/utils/candidateLevel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faWandMagicSparkles } from '../../utils/icons';
 import { Lock, ShieldCheck, Sparkles, FolderPlus } from 'lucide-react';
@@ -16,6 +17,9 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
     const [inviteCandidate, { isLoading: isInviting }] = useInviteCandidateMutation();
     const proposalStatusLabel = getProposalStatusBadgeLabel(proposal?.proposalStatus, proposal?.isUnlocked);
     const canInviteCandidate = Boolean(proposal?.isUnlocked) && canInvite(proposal?.proposalStatus);
+    const currentPool = proposal?.poolInfo || null;
+    const canManagePool = Boolean(proposal?.isUnlocked);
+    const poolActionTitle = currentPool ? 'Move to another pool' : 'Add to Talent Pool';
 
     const openInviteModal = () => {
         if (!proposal?.candidateId || !Number.isInteger(Number(proposedResumeId))) {
@@ -101,17 +105,32 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
 
                     <div className="flex flex-col items-start xl:items-end gap-3">
                         <div className="flex items-center gap-3 flex-wrap">
-                            <Tooltip title="Add to Talent Pool">
-                                <button
-                                    type="button"
-                                    onClick={onOpenAddToPool}
-                                    className="flex items-center justify-center w-9 h-9 rounded-full border border-orange-200 bg-orange-50 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300 dark:border-orange-900/50 dark:bg-orange-900/20"
-                                >
-                                    <FolderPlus size={18} />
-                                </button>
-                            </Tooltip>
+                            {currentPool && (
+                                <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3.5 py-2 text-sm font-semibold text-orange-600">
+                                    <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: currentPool.color || '#f97316' }} />
+                                    <span className="max-w-[200px] truncate">In {currentPool.name}</span>
+                                </div>
+                            )}
+                            {canManagePool && (
+                                <Tooltip title={poolActionTitle}>
+                                    <button
+                                        type="button"
+                                        onClick={onOpenAddToPool}
+                                        className="flex items-center justify-center w-9 h-9 rounded-full border border-orange-200 bg-orange-50 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300 dark:border-orange-900/50 dark:bg-orange-900/20"
+                                    >
+                                        <FolderPlus size={18} />
+                                    </button>
+                                </Tooltip>
+                            )}
                             <InfoPill icon={<ShieldCheck size={14} />} label={proposalStatusLabel} />
                             <InfoPill icon={<Sparkles size={14} />} label={`AI ${formatPercent(proposal?.aiScore)}`} accent />
+                            {proposal?.aiEvaluation?.candidateLevel && (
+                                <InfoPill
+                                    icon={<FontAwesomeIcon icon={faBriefcase} className="text-[13px]" />}
+                                    label={proposal.aiEvaluation.candidateLevel}
+                                    className={getCandidateLevelBadgeClasses(proposal.aiEvaluation.candidateLevel, 'outlined')}
+                                />
+                            )}
                         </div>
                         {canInviteCandidate && (
                             <Button
@@ -185,10 +204,10 @@ const Overview = ({ proposal, proposedResumeId, onUnlock, isUnlocking = false, r
     );
 };
 
-const InfoPill = ({ icon, label, accent = false }) => (
+const InfoPill = ({ icon, label, accent = false, className = '' }) => (
     <div className={`inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-semibold border ${accent
         ? 'border-orange-200 bg-orange-50 text-orange-600'
-        : 'border-gray-200 bg-gray-50 text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300'
+        : className || 'border-gray-200 bg-gray-50 text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300'
         }`}>
         {icon}
         <span>{label}</span>

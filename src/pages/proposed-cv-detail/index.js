@@ -8,8 +8,7 @@ import Overview from './Overview';
 import BasicInformation from '@/pages/application/detail/basic-information';
 import AiAnalysis from '@/pages/application/detail/ai-analysis';
 import CreatePoolModal from '../talent-pool/create-pool-modal';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '../../utils/icons';
+
 import { Lock, Sparkles, Plus } from 'lucide-react';
 import toastMessage from '@/utils/toastMessage';
 import ResumePreviewPanel from './ResumePreviewPanel';
@@ -21,7 +20,7 @@ const TAB_KEYS = {
 
 const ProposedCVDetail = () => {
     const { jobId } = useParams();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(TAB_KEYS.BASIC);
     const proposedResumeIdParam = searchParams.get('proposedResumeId');
@@ -37,10 +36,9 @@ const ProposedCVDetail = () => {
     const [isCreatePoolOpen, setIsCreatePoolOpen] = useState(false);
     const { data: poolsResponse } = useGetTalentPoolsQuery();
     const pools = poolsResponse?.data || [];
-    const [addTalentPoolItemProposed, { isLoading: isAdding }] = useAddTalentPoolItemProposedMutation();
-    const [moveTalentPoolItem, { isLoading: isMoving }] = useMoveTalentPoolItemMutation();
+    const [addTalentPoolItemProposed, { isLoading: isAddingToPool }] = useAddTalentPoolItemProposedMutation();
+    const [moveTalentPoolItem] = useMoveTalentPoolItemMutation();
     const [createTalentPool, { isLoading: isCreatingPool }] = useCreateTalentPoolMutation();
-    const isAddingToPool = isAdding || isMoving;
 
     const cvData = response?.data;
     const proposedCv = normalizeProposedCvDetail(cvData);
@@ -109,27 +107,19 @@ const ProposedCVDetail = () => {
         }
     };
 
-    const handleAddToPool = async (poolId) => {
-        const urlItemId = searchParams.get('itemId');
-        const urlCurrentGroupId = searchParams.get('groupId');
+    const currentPoolInfo = proposedCv?.poolInfo;
 
+    const handleAddToPool = async (poolId) => {
         try {
-            if (urlItemId && urlCurrentGroupId && String(urlCurrentGroupId) !== String(poolId)) {
-                await moveTalentPoolItem({ id: urlItemId, groupId: poolId }).unwrap();
+            if (currentPoolInfo?.poolItemId && currentPoolInfo?.id && String(currentPoolInfo.id) !== String(poolId)) {
+                await moveTalentPoolItem({ id: currentPoolInfo.poolItemId, groupId: poolId }).unwrap();
                 toastMessage.success('Candidate moved to new talent pool');
             } else {
                 await addTalentPoolItemProposed({ proposedId: numericProposedResumeId, groupId: poolId }).unwrap();
                 toastMessage.success('Candidate added to talent pool');
             }
-
-            // Sync URL with new pool
-            setSearchParams(prev => {
-                prev.set('groupId', poolId);
-                return prev;
-            });
-
             setIsPoolModalOpen(false);
-            refetch();
+            await refetch();
         } catch (error) {
             toastMessage.error(error?.data?.message || 'Failed to update talent pool');
         }
@@ -148,7 +138,7 @@ const ProposedCVDetail = () => {
     const renderTabContent = () => {
         switch (activeTab) {
             case TAB_KEYS.AI:
-                return hasAi ? <AiAnalysis aiEvaluation={proposedCv.aiEvaluation} /> : null;
+                return hasAi ? <AiAnalysis aiEvaluation={proposedCv.aiEvaluation} hideOverviewSections /> : null;
             case TAB_KEYS.BASIC:
             default:
                 return (
@@ -168,14 +158,6 @@ const ProposedCVDetail = () => {
 
     return (
         <div className="w-full space-y-4">
-            <button
-                onClick={() => navigate(`/jobs/${jobId}`)}
-                className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors group"
-            >
-                <FontAwesomeIcon icon={faArrowLeft} className="text-lg group-hover:-translate-x-1 transition-transform" />
-                <span className="font-medium">Back to Job pipeline</span>
-            </button>
-
             <div
                 className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-sm overflow-hidden flex flex-col"
                 style={{ height: 'calc(100vh - 20px)' }}
@@ -258,7 +240,7 @@ const ProposedCVDetail = () => {
                         </div>
                     ) : (
                         pools.map(pool => {
-                            const isCurrent = String(pool.id) === String(searchParams.get('groupId'));
+                            const isCurrent = currentPoolInfo?.id != null && String(pool.id) === String(currentPoolInfo.id);
                             return (
                                 <button
                                     key={pool.id}
@@ -304,9 +286,11 @@ const normalizeProposedCvDetail = (payload) => {
     if (!payload) return null;
 
     const isUnlocked = Boolean(payload.unlocked);
-    const aiScore = normalizePercentNumber(payload.ai_overall_score);
+    const aiEvaluation = normalizeProposedAiEvaluation(payload.ai_evaluation || payload.aiEvaluation, payload);
+    const aiScore = normalizePercentNumber(
+        aiEvaluation?.aiOverallScore ?? payload.ai_overall_score ?? payload.aiOverallScore
+    );
     const matchRate = normalizePercentNumber(payload.match_rate);
-    const hasAi = aiScore != null || payload.summary || payload.strengths || payload.weakness;
 
     return {
         candidateId: payload.candidate_id || null,
@@ -324,15 +308,7 @@ const normalizeProposedCvDetail = (payload) => {
         resumeType: payload.resume_type || null,
         answers: [],
         aiScore,
-        aiEvaluation: hasAi
-            ? {
-                aiOverallScore: aiScore ?? 0,
-                summary: payload.summary || null,
-                strengths: payload.strengths || null,
-                weakness: payload.weakness || null,
-                criteriaScores: [],
-            }
-            : null,
+        aiEvaluation,
         resumeUrl: payload.resume_url || null,
         resumeName: isUnlocked ? (payload.file_name || payload.resume_name || payload.full_name || 'Resume') : null,
         proposalStatus: payload.status || null,
@@ -342,6 +318,67 @@ const normalizeProposedCvDetail = (payload) => {
         isUnlocked,
         isSaved: payload.is_saved ?? payload.isSaved ?? false,
         isInTalentPool: payload.is_saved ?? payload.isSaved ?? false,
+        poolInfo: payload.pool_info || null,
+    };
+};
+
+const normalizeProposedAiEvaluation = (evaluation, legacyPayload = {}) => {
+    const criteriaScoresRaw = evaluation?.criteriaScores || evaluation?.criteria_scores || [];
+    const normalizedEvaluation = {
+        id: evaluation?.id ?? null,
+        aiOverallScore: normalizePercentNumber(
+            evaluation?.aiOverallScore ?? evaluation?.ai_overall_score ?? legacyPayload.ai_overall_score ?? legacyPayload.aiOverallScore
+        ),
+        recruiterOverallScore: normalizePercentNumber(
+            evaluation?.recruiterOverallScore ?? evaluation?.recruiter_overall_score
+        ),
+        matchLevel: evaluation?.matchLevel ?? evaluation?.match_level ?? null,
+        summary: evaluation?.summary ?? legacyPayload.summary ?? null,
+        strengths: evaluation?.strengths ?? legacyPayload.strengths ?? null,
+        weakness: evaluation?.weakness ?? legacyPayload.weakness ?? null,
+        candidateLevel: evaluation?.candidateLevel ?? evaluation?.candidate_level ?? null,
+        evaluationStatus: evaluation?.evaluationStatus ?? evaluation?.evaluation_status ?? null,
+        criteriaScores: Array.isArray(criteriaScoresRaw)
+            ? criteriaScoresRaw.map(normalizeCriteriaScore).filter(Boolean)
+            : [],
+    };
+
+    return hasAiEvaluation(normalizedEvaluation) ? normalizedEvaluation : null;
+};
+
+const normalizeCriteriaScore = (criteria) => {
+    if (!criteria) return null;
+
+    const details = Array.isArray(criteria.details)
+        ? criteria.details.map(normalizeCriteriaDetail).filter(Boolean)
+        : [];
+
+    return {
+        id: criteria.id ?? null,
+        scoringCriteriaId: criteria.scoringCriteriaId ?? criteria.scoring_criteria_id ?? null,
+        scoringCriteriaContext: criteria.scoringCriteriaContext ?? criteria.scoring_criteria_context ?? null,
+        criteriaName: criteria.criteriaName ?? criteria.criteria_name ?? null,
+        scoringCriteriaWeight: criteria.scoringCriteriaWeight ?? criteria.scoring_criteria_weight ?? null,
+        aiScore: normalizePercentNumber(criteria.aiScore ?? criteria.ai_score),
+        manualScore: normalizePercentNumber(criteria.manualScore ?? criteria.manual_score),
+        weightedScore: normalizePercentNumber(criteria.weightedScore ?? criteria.weighted_score),
+        aiExplanation: criteria.aiExplanation ?? criteria.ai_explanation ?? null,
+        manualExplanation: criteria.manualExplanation ?? criteria.manual_explanation ?? null,
+        details,
+    };
+};
+
+const normalizeCriteriaDetail = (detail) => {
+    if (!detail) return null;
+
+    return {
+        id: detail.id ?? null,
+        label: detail.label ?? null,
+        description: detail.description ?? null,
+        context: detail.context ?? null,
+        status: detail.status ?? null,
+        fixed: detail.fixed ?? detail.isFixed ?? detail.is_fixed ?? null,
+        suggestionId: detail.suggestionId ?? detail.suggestion_id ?? null,
     };
 };
 

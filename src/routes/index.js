@@ -17,6 +17,7 @@ import BillingPlans from '@/pages/billing-plans';
 import PaymentHistory from '@/pages/payment-history';
 import Checkout from '@/pages/checkout';
 import ApplicationDetail from "@/pages/application/detail";
+import ApplicationCompare from "@/pages/application/compare";
 import Usage from "@/pages/usage";
 import NotificationList from "../pages/notification";
 import CompanyBlacklist from "@/pages/blacklist";
@@ -33,6 +34,7 @@ import LegalPage from '@/pages/legal';
 import ApiManagementPage from '@/pages/api-management';
 import TalentPool from '@/pages/talent-pool';
 import TalentPoolCvDetail from '@/pages/talent-pool/cv-detail';
+import NotFound from '@/pages/not-found';
 
 export const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -49,6 +51,7 @@ export const routes = createBrowserRouter(
                 <Route path="jobs/:jobId/proposed-cvs/:resumeId" element={<ProposedCVDetail />} />
                 <Route path="company" element={<CompanyProfile />} />
                 <Route path="applications" element={<ApplicationManagement />} />
+                <Route path="applications/compare" element={<ApplicationCompare />} />
                 <Route path="applications/:id" element={<ApplicationDetail />} />
                 <Route path="reports" element={<Dashboard />} />
                 <Route path="settings" element={<Settings />} />
@@ -77,6 +80,7 @@ export const routes = createBrowserRouter(
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="reset-password" element={<ResetPassword />} />
             <Route path="legal/:type" element={<LegalPage />} />
+            <Route path="*" element={<NotFound />} />
         </Route>
     )
 );

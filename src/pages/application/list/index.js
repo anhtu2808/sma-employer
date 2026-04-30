@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ExternalLink, Mail, Calendar, Phone, Briefcase, Eye, RotateCcw, Sparkles } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ExternalLink, Mail, Calendar, Phone, Briefcase, Eye, RotateCcw, Sparkles, GitCompareArrows } from 'lucide-react';
 import moment from 'moment';
 import { Table, Select, ConfigProvider, Modal as AntModal } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -27,6 +27,11 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
     const [evalModal, setEvalModal] = useState({ open: false, evaluation: null, candidateName: '' });
     const [retryMatching] = useRetryMatchingMutation();
     const [retryingId, setRetryingId] = useState(null);
+    const [selectedCompareIds, setSelectedCompareIds] = useState([]);
+
+    useEffect(() => {
+        setSelectedCompareIds([]);
+    }, [data, currentPage]);
 
     const handleRetry = async (app) => {
         if (!app?.resumeId || !app?.jobId) {
@@ -265,14 +270,43 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
         <Loading className="py-20" size={96} />
     );
 
+    const rowSelection = {
+        selectedRowKeys: selectedCompareIds,
+        onChange: (selectedRowKeys) => {
+            const nextKeys = selectedRowKeys.slice(-2);
+            setSelectedCompareIds(nextKeys);
+        },
+        getCheckboxProps: (record) => ({
+            disabled: selectedCompareIds.length >= 2 && !selectedCompareIds.includes(record.applicationId),
+        }),
+    };
+
     return (
         <div className="flex flex-col bg-white dark:bg-surface-dark rounded-2xl border border-neutral-100 dark:border-neutral-800">
+            <div className="flex items-center justify-between gap-3 border-b border-neutral-100 px-5 py-4 dark:border-neutral-800">
+                <div>
+                    <p className="text-sm font-semibold text-neutral-800 dark:text-white">Compare Applications</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                        Select exactly 2 candidates from this job to compare side by side.
+                    </p>
+                </div>
+                <button
+                    type="button"
+                    disabled={selectedCompareIds.length !== 2}
+                    onClick={() => navigate(`/applications/compare?left=${selectedCompareIds[0]}&right=${selectedCompareIds[1]}`)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-orange-200 px-4 py-2 text-sm font-medium text-orange-600 transition-colors hover:bg-orange-50 disabled:cursor-not-allowed disabled:border-gray-200 disabled:text-gray-400 disabled:hover:bg-transparent"
+                >
+                    <GitCompareArrows size={16} />
+                    Compare
+                </button>
+            </div>
             <div className="border border-neutral-200 rounded-xl overflow-visible">
                 <ConfigProvider theme={{ token: { colorPrimary: '#f97316' } }}>
                     <Table
                         columns={columns}
                         dataSource={data}
                         rowKey="applicationId"
+                        rowSelection={rowSelection}
                         loading={isLoading}
                         locale={{
                             emptyText: (

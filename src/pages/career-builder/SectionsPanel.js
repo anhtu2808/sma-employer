@@ -117,6 +117,16 @@ const ImageField = ({ label, value, onChange, accept = 'image/*' }) => {
 };
 
 const ColorField = ({ label, value, onChange }) => {
+  const timerRef = useRef(null);
+
+  const handleColorChange = useCallback((e) => {
+    const newValue = e.target.value;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      onChange(newValue);
+    }, 50);
+  }, [onChange]);
+
   return (
     <div className="cb-field">
       <label className="cb-field-label">{label}</label>
@@ -125,8 +135,8 @@ const ColorField = ({ label, value, onChange }) => {
         <div className="cb-color-picker-wrap">
           <input
             type="color"
-            value={value || '#ffffff'}
-            onChange={(e) => onChange(e.target.value)}
+            defaultValue={value || '#ffffff'}
+            onChange={handleColorChange}
             className="cb-color-input"
           />
           <span className="cb-color-hex">{value || '#ffffff'}</span>
@@ -639,7 +649,6 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
       return (
         <div className="cb-section-children">
           <StringField label="Headline" value={props.headline} onChange={(v) => updateProp('headline', v)} />
-          <VisibilityToggle label="Show Filters" isVisible={props.showFilter} onChange={(v) => updateProp('showFilter', v)} />
           {commonSettings}
         </div>
       );
@@ -652,9 +661,10 @@ const SectionEditor = ({ section, onUpdate, allSections = [] }) => {
 
 const SectionsPanel = ({ sections, onSectionsChange, onUpdateSection, activeSection, onSelectSection }) => {
   const [expanded, setExpanded] = useState(new Set());
+  const [draggedIndex, setDraggedIndex] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
 
   const toggleExpand = (id, e) => {
-    e.stopPropagation();
     setExpanded(prev => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -677,26 +687,31 @@ const SectionsPanel = ({ sections, onSectionsChange, onUpdateSection, activeSect
   };
 
   const handleDragStart = (e, index) => {
+    setDraggedIndex(index);
     e.dataTransfer.setData('text/plain', index);
-    e.currentTarget.classList.add('cb-dragging');
+    e.dataTransfer.effectAllowed = 'move';
   };
 
-  const handleDragEnd = (e) => {
-    e.currentTarget.classList.remove('cb-dragging');
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e, index) => {
     e.preventDefault();
-    e.currentTarget.classList.add('cb-drag-over');
+    if (dragOverIndex !== index) {
+      setDragOverIndex(index);
+    }
   };
 
-  const handleDragLeave = (e) => {
-    e.currentTarget.classList.remove('cb-drag-over');
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
   };
 
   const handleDrop = useCallback((e, dropIndex) => {
     e.preventDefault();
-    e.currentTarget.classList.remove('cb-drag-over');
+    setDragOverIndex(null);
+    setDraggedIndex(null);
     const dragIndex = Number(e.dataTransfer.getData('text/plain'));
     if (dragIndex === dropIndex) return;
 
@@ -736,11 +751,11 @@ const SectionsPanel = ({ sections, onSectionsChange, onUpdateSection, activeSect
                 style={{ marginBottom: 4 }}
               >
                 <div
-                  className={`cb-section-item ${isActive ? 'active' : ''}`}
+                  className={`cb-section-item ${isActive ? 'active' : ''} ${draggedIndex === index ? 'cb-dragging' : ''} ${dragOverIndex === index ? 'cb-drag-over' : ''}`}
                   draggable={!isFixed}
                   onDragStart={!isFixed ? (e) => handleDragStart(e, index) : null}
                   onDragEnd={!isFixed ? handleDragEnd : null}
-                  onDragOver={!isFixed ? handleDragOver : null}
+                  onDragOver={!isFixed ? (e) => handleDragOver(e, index) : null}
                   onDragLeave={!isFixed ? handleDragLeave : null}
                   onDrop={!isFixed ? (e) => handleDrop(e, index) : null}
                   onClick={() => onSelectSection(section.id)}

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Input, Checkbox } from 'antd';
 import toastMessage from '@/utils/toastMessage';
-import { useGetApplicationDetailQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
+import { useGetApplicationDetailQuery, useGetApplicationsQuery, useUpdateApplicationStatusMutation } from '@/apis/applicationApi';
 import { useGetTalentPoolsQuery, useAddTalentPoolItemMutation, useCreateTalentPoolMutation, useMoveTalentPoolItemMutation } from '@/apis/talentPoolApi';
 import { APPLICATION_STATUS } from '@/constrant/application';
 import Loading from '@/components/Loading';
@@ -13,7 +13,7 @@ import {
     faUser, faNewspaper,
     faTriangleExclamation, faCircleCheck,
 } from '../../../utils/icons';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Plus } from 'lucide-react';
 import { Select, ConfigProvider } from 'antd';
 import { getAllowedNextStatuses } from '@/constrant/application';
 import CandidateHeader from './candidate-header';
@@ -22,48 +22,7 @@ import AiAnalysis from './ai-analysis';
 import CoverLetter from './cover-letter';
 import PdfViewer from './pdf-viewer';
 import CreatePoolModal from '../../talent-pool/create-pool-modal';
-import { Plus } from 'lucide-react';
-
-const normalizeApplicationDetail = (payload) => {
-    if (!payload) return null;
-
-    const info = payload.applicationInfo || {};
-    const resume = payload.resumeDetail || {};
-    const ai = payload.aiEvaluation || {};
-
-    return {
-        status: info.status,
-        attempt: info.attempt,
-        candidateName: info.fullName,
-        candidateEmail: info.email,
-        candidatePhone: info.phone,
-        jobTitle: info.jobTitle,
-        coverLetter: info.coverLetter,
-        appliedAt: info.appliedAt,
-        resumeId: resume.id,
-        resumeUrl: resume.resumeUrl,
-        resumeName: info.resumeName,
-        location: resume.addressInResume,
-        githubLink: resume.githubLink,
-        linkedinLink: resume.linkedinLink,
-        portfolioLink: resume.portfolioLink,
-        answers: (info.answers || []).map((a) => ({
-            question: a.questionText,
-            answer: a.answerContent,
-        })),
-        aiScore: ai.aiOverallScore,
-        recruiterScore: ai.recruiterOverallScore,
-        evaluationId: ai.id,
-        aiEvaluation: payload.aiEvaluation || null,
-        source: payload.source,
-        rejectReason: info.rejectReason,
-        showRejectReason: info.showRejectReason,
-        reviewedAt: info.reviewedAt,
-        reviewedByEmail: info.reviewedByEmail,
-        isRejectedByAi: info.isRejectedByAi,
-        isInTalentPool: !!info.isInTalentPool,
-    };
-};
+import { normalizeApplicationDetail } from './utils';
 
 const TAB_KEYS = {
     BASIC: 'basic',
@@ -73,7 +32,6 @@ const TAB_KEYS = {
 
 const ApplicationDetail = () => {
     const { id } = useParams();
-    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const { data: appResponse, isLoading, refetch } = useGetApplicationDetailQuery(id, { skip: !id });
     const [updateStatus, { isLoading: isUpdating }] = useUpdateApplicationStatusMutation();
@@ -91,14 +49,23 @@ const ApplicationDetail = () => {
     const [isCreatePoolOpen, setIsCreatePoolOpen] = useState(false);
     const { data: poolsResponse } = useGetTalentPoolsQuery();
     const pools = poolsResponse?.data || [];
-    const [addTalentPoolItem, { isLoading: isAdding }] = useAddTalentPoolItemMutation();
-    const [moveTalentPoolItem, { isLoading: isMoving }] = useMoveTalentPoolItemMutation();
+    const [addTalentPoolItem, { isLoading: isAddingToPool }] = useAddTalentPoolItemMutation();
+    const [moveTalentPoolItem] = useMoveTalentPoolItemMutation();
     const [createTalentPool, { isLoading: isCreatingPool }] = useCreateTalentPoolMutation();
-    const isAddingToPool = isAdding || isMoving;
 
     const candidateId = appResponse?.data?.resumeDetail?.candidateId;
 
     const app = normalizeApplicationDetail(appResponse?.data);
+    const { data: compareCandidatesResponse, isLoading: isCompareCandidatesLoading } = useGetApplicationsQuery(
+        { jobId: app?.jobId, page: 0, size: 500 },
+        { skip: !app?.jobId }
+    );
+    const compareOptions = (compareCandidatesResponse?.data?.content || [])
+        .filter((application) => application.applicationId !== app?.applicationId)
+        .map((application) => ({
+            value: application.applicationId,
+            label: `${application.candidateName} (${application.candidateEmail})`,
+        }));
 
     useEffect(() => {
         if (app?.status === 'APPLIED') {
@@ -163,27 +130,19 @@ const ApplicationDetail = () => {
         }
     };
 
-    const handleAddToPool = async (poolId) => {
-        const urlItemId = searchParams.get('itemId');
-        const urlCurrentGroupId = searchParams.get('groupId');
+    const currentPoolInfo = app?.poolInfo;
 
+    const handleAddToPool = async (poolId) => {
         try {
-            if (urlItemId && urlCurrentGroupId && String(urlCurrentGroupId) !== String(poolId)) {
-                await moveTalentPoolItem({ id: urlItemId, groupId: poolId }).unwrap();
+            if (currentPoolInfo?.poolItemId && currentPoolInfo?.id && String(currentPoolInfo.id) !== String(poolId)) {
+                await moveTalentPoolItem({ id: currentPoolInfo.poolItemId, groupId: poolId }).unwrap();
                 toastMessage.success('Candidate moved to new talent pool');
             } else {
                 await addTalentPoolItem({ applicationId: id, groupId: poolId }).unwrap();
                 toastMessage.success('Candidate added to talent pool');
             }
-
-            // Sync URL with new pool
-            setSearchParams(prev => {
-                prev.set('groupId', poolId);
-                return prev;
-            });
-
             setIsPoolModalOpen(false);
-            refetch();
+            await refetch();
         } catch (error) {
             toastMessage.error(error?.data?.message || 'Failed to update talent pool');
         }
@@ -247,6 +206,20 @@ const ApplicationDetail = () => {
                         ))}
                     </div>
                     <div className="flex items-center gap-3">
+                        <Select
+                            allowClear
+                            showSearch
+                            placeholder="Compare with..."
+                            optionFilterProp="label"
+                            loading={isCompareCandidatesLoading}
+                            className="w-64 h-8"
+                            options={compareOptions}
+                            size="small"
+                            onChange={(applicationId) => {
+                                if (!applicationId || !app?.applicationId) return;
+                                navigate(`/applications/compare?left=${app.applicationId}&right=${applicationId}`);
+                            }}
+                        />
                         {(() => {
                             const allowedStatuses = getAllowedNextStatuses(app.status, app.isRejectedByAi);
                             if (allowedStatuses.length === 0) return null;
@@ -426,7 +399,7 @@ const ApplicationDetail = () => {
                         </div>
                     ) : (
                         pools.map(pool => {
-                            const isCurrent = String(pool.id) === String(searchParams.get('groupId'));
+                            const isCurrent = currentPoolInfo?.id != null && String(pool.id) === String(currentPoolInfo.id);
                             return (
                                 <button
                                     key={pool.id}

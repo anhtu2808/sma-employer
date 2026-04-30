@@ -190,7 +190,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
         <h2 style={{ fontSize: `${40 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 800, color: settings.textColorOverride || textColor, marginBottom: '8px' }}>{headline}</h2>
       </div>
 
-      <div style={{ display: 'flex', gap: '28px', maxWidth: '1280px', margin: '0 auto', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '28px', maxWidth: '1280px', margin: '0 auto', alignItems: 'flex-start' }}>
         {/* ─── Filter Sidebar ──────────────────────────────────────── */}
         <div style={{
           width: '280px', flexShrink: 0,
@@ -356,7 +356,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
         </div>
 
         {/* ─── Job Listings ────────────────────────────────────────── */}
-        <div style={{ flex: 1, minWidth: 0, minHeight: '800px' }}>
+        <div style={{ flex: '1 1 600px', minWidth: 0, minHeight: '800px' }}>
           {/* Search bar */}
           <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
             <input
@@ -382,12 +382,12 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
               <div key={job.id || i} style={{
                 background: '#FFFFFF',
                 borderRadius: `${borderRadius}px`,
-                padding: '24px 28px', display: 'flex', alignItems: 'stretch',
+                padding: '24px 28px', display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start',
                 justifyContent: 'space-between', boxShadow: shadowMap[shadow],
                 border: '1px solid rgba(0,0,0,0.06)', textAlign: 'left',
                 transition: 'box-shadow 0.2s', gap: '20px'
               }}>
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                   {/* Title & Hot Tag */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                     <div style={{ fontSize: `${16 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: textColor }}>
@@ -435,7 +435,7 @@ const FeaturedJobsSection = ({ theme, sectionProps = {}, settings = {} }) => {
                 </div>
 
                 {/* Right Column: Salary & Actions */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'flex-start', flexShrink: 0, gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'flex-start', flex: '1 0 200px', gap: '16px' }}>
                   <div style={{ fontSize: `${14 * ((theme.baseFontSize || 16) / 16)}px`, fontWeight: 700, color: primaryColor, textAlign: 'right' }}>
                     {job.salary}
                   </div>

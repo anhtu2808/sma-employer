@@ -4,11 +4,10 @@ import { useGetInvitationByIdQuery } from '@/apis/invitationApi';
 import { usePageHeader } from '@/hooks/usePageHeader';
 import Loading from '@/components/Loading';
 import Button from '@/components/Button';
-import { ArrowLeft, Briefcase, Mail, Calendar, User, DollarSign, FileX, Download } from 'lucide-react';
+import { Briefcase, Mail, Calendar, User, DollarSign, FileX, Download } from 'lucide-react';
 import { Tag } from 'antd';
 import PdfViewer from '../../application/detail/pdf-viewer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilePdf, faDownload } from '../../../utils/icons';
+
 
 const STATUS_CONFIG = {
     INVITED: { color: 'blue', label: 'Invited' },
@@ -45,17 +44,6 @@ const InvitationDetail = () => {
 
     return (
         <div className="w-full space-y-4">
-            {/* Action Bar */}
-            <div className="flex items-center gap-3">
-                <button
-                    onClick={() => navigate('/invitations')}
-                    className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-orange-500 transition-colors group"
-                >
-                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                    <span className="font-medium">Back to List</span>
-                </button>
-            </div>
-
             {/* Unified Card */}
             <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-sm overflow-clip" style={{ height: 'calc(100vh - 20px)' }}>
                 {/* Tabs Bar & Status */}
