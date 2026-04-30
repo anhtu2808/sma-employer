@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Select, Tag, Spin, DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import Button from '@/components/Button';
-import { Info, MapPin, Briefcase, Brain, X, Languages, CalendarDays } from 'lucide-react';
+import { Info, MapPin, Briefcase, Sparkles, X, Languages, CalendarDays } from 'lucide-react';
 import { useGetSkillsQuery } from '@/apis/skillApi';
 import { useGetCompanyLocationQuery } from '@/apis/companyApi';
 
@@ -203,7 +203,7 @@ const FilterSidebar = ({ onApply, onClose, currentFilters }) => {
                 <div className="space-y-6">
                     <div className="space-y-3">
                         <label className="flex items-center gap-2 text-neutral-900 dark:text-white font-semibold text-sm">
-                            <Brain size={14} className="text-primary" /> AI Match Level
+                            <Sparkles size={14} className="text-primary" /> AI Match Level
                         </label>
                         <Select
                             className="w-full"
@@ -223,7 +223,7 @@ const FilterSidebar = ({ onApply, onClose, currentFilters }) => {
 
                     <div className="space-y-3">
                         <label className="flex items-center gap-2 text-neutral-900 dark:text-white font-semibold text-sm">
-                            <Brain size={14} className="text-primary" /> Candidate Level (AI)
+                            <Sparkles size={14} className="text-primary" /> Candidate Level (AI)
                         </label>
                         <Select
                             mode="multiple"

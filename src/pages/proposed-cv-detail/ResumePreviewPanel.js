@@ -2,9 +2,9 @@ import React, { useMemo } from 'react';
 import Loading from '@/components/Loading';
 import PdfViewer from '@/pages/application/detail/pdf-viewer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Sparkles } from 'lucide-react';
 import {
     faArrowUpRightFromSquare,
-    faBrain,
     faBriefcase,
     faBuilding,
     faEnvelope,
@@ -151,7 +151,7 @@ const ProfileResumePreview = ({ resume }) => {
                 </section>
 
                 {skillGroups.length > 0 && (
-                    <SectionCard icon={faBrain} title="Skills">
+                    <SectionCard icon={<Sparkles size={18} />} title="Skills">
                         <div className="space-y-4">
                             {skillGroups.map((group) => (
                                 <div key={group?.id || group?.name}>
@@ -336,7 +336,7 @@ const SectionCard = ({ icon, title, children }) => (
     <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mb-4 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-500 dark:bg-orange-900/20">
-                <FontAwesomeIcon icon={icon} />
+                {React.isValidElement(icon) ? icon : <FontAwesomeIcon icon={icon} />}
             </div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h2>
         </div>

@@ -88,6 +88,7 @@ const JobDetail = () => {
     const { data: featureUsage = [] } = useGetFeatureUsageQuery();
 
     const [showPublishModal, setShowPublishModal] = useState(false);
+    const [publishOverrides, setPublishOverrides] = useState({});
     const [isExpDateModalVisible, setIsExpDateModalVisible] = useState(false);
     const [newExpDate, setNewExpDate] = useState(null);
 
@@ -384,9 +385,13 @@ const JobDetail = () => {
                 open={showPublishModal}
                 onConfirm={async () => {
                     try {
-                        await publishJob({ id: job.id, body: buildPublishBody(job) }).unwrap();
+                        await publishJob({
+                            id: job.id,
+                            body: { ...buildPublishBody(job), ...publishOverrides },
+                        }).unwrap();
                         toastMessage.success('Job published successfully!');
                         setShowPublishModal(false);
+                        setPublishOverrides({});
                     } catch (error) {
                         const validationErrors = error?.data?.data;
                         if (validationErrors && typeof validationErrors === 'object') {
@@ -396,9 +401,13 @@ const JobDetail = () => {
                         }
                     }
                 }}
-                onCancel={() => setShowPublishModal(false)}
+                onCancel={() => {
+                    setShowPublishModal(false);
+                    setPublishOverrides({});
+                }}
                 loading={isPublishing}
-                values={job}
+                values={{ ...job, ...publishOverrides }}
+                onValuesChange={(changed) => setPublishOverrides((prev) => ({ ...prev, ...changed }))}
                 featureUsage={featureUsage}
                 isEditMode={true}
             />}

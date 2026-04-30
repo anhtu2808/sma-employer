@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Mail, Calendar, MapPin, Brain, Paperclip } from 'lucide-react';
+import { Mail, Calendar, Phone, Briefcase, Sparkles } from 'lucide-react';
 import moment from 'moment';
 import { getApplicationStatusConfig } from '@/constrant/application';
 import { Tooltip } from 'antd';
-
+import toastMessage from '@/utils/toastMessage';
 import { useNavigate } from 'react-router-dom';
 import ManualScorePopover, { getEffectiveScore, isManualScored, ManualScoreBadge } from '../ManualScorePopover';
+import { ScoreBars, getScoreColor } from '../list';
+
+const copyToClipboard = (e, value, label) => {
+    e.stopPropagation();
+    if (!value) return;
+    navigator.clipboard.writeText(value)
+        .then(() => toastMessage.success(`${label} copied!`))
+        .catch(() => toastMessage.error('Copy failed'));
+};
 
 const KANBAN_LEVEL_STYLE = {
     INTERN: 'bg-slate-50 text-slate-600 border-slate-200',
@@ -164,13 +173,13 @@ const KanbanBoard = ({
                                                                                 </span>
                                                                                 {app.evaluation?.candidateLevel && (
                                                                                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${KANBAN_LEVEL_STYLE[app.evaluation.candidateLevel] || 'bg-gray-50 text-gray-600 border-gray-200'}`}>
-                                                                                        <Brain size={10} />
+                                                                                        <Sparkles size={10} />
                                                                                         {app.evaluation.candidateLevel}
                                                                                     </span>
                                                                                 )}
                                                                                 {app.isRejectedByAi && (
                                                                                     <span className="text-[10px] font-bold tracking-wide text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-1.5 py-0.5 rounded flex items-center gap-1 border border-red-100 dark:border-red-800">
-                                                                                        <Brain size={10} />
+                                                                                        <Sparkles size={10} />
                                                                                         AI REJECTED
                                                                                     </span>
                                                                                 )}
@@ -180,11 +189,11 @@ const KanbanBoard = ({
                                                                             {scoreValue != null && (
                                                                                 <div className="shrink-0 flex flex-col items-end gap-1">
                                                                                     <ManualScorePopover evaluation={app.evaluation} applicationId={app.applicationId} placement="bottomRight">
-                                                                                        <span className={`text-sm font-bold ${scoreValue >= 80 ? 'text-emerald-600' :
-                                                                                            scoreValue >= 50 ? 'text-orange-500' :
-                                                                                                'text-red-500'
-                                                                                            }`}>
-                                                                                            {Math.round(scoreValue)}%
+                                                                                        <span className={`inline-flex items-end gap-1.5 cursor-pointer ${getScoreColor(scoreValue)}`}>
+                                                                                            <ScoreBars score={scoreValue} size="sm" />
+                                                                                            <span className="text-sm font-bold leading-none">
+                                                                                                {Math.round(scoreValue)}
+                                                                                            </span>
                                                                                         </span>
                                                                                     </ManualScorePopover>
                                                                                     {manualScored && <ManualScoreBadge evaluation={app.evaluation} />}
@@ -212,28 +221,36 @@ const KanbanBoard = ({
                                                                         </div>
 
                                                                         {/* Email */}
-                                                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-1.5 truncate">
+                                                                        <p
+                                                                            className={`text-sm text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-1.5 truncate ${app.candidateEmail ? 'cursor-pointer hover:text-orange-500 transition-colors' : ''}`}
+                                                                            onClick={(e) => copyToClipboard(e, app.candidateEmail, 'Email')}
+                                                                            title={app.candidateEmail ? 'Click to copy email' : ''}
+                                                                        >
                                                                             <Mail size={12} className="flex-shrink-0" />
                                                                             <span className="truncate">{app.candidateEmail || 'N/A'}</span>
                                                                         </p>
 
                                                                         {/* Footer */}
                                                                         <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
-                                                                            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                                                            <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
                                                                                 <Calendar size={12} />
                                                                                 <span>{app.appliedAt ? moment(app.appliedAt).format('MMM DD') : 'N/A'}</span>
                                                                             </div>
-                                                                            <div className="flex items-center gap-3 text-gray-400 dark:text-gray-500 text-xs">
-                                                                                {app.location && (
-                                                                                    <span className="flex items-center gap-1 truncate max-w-[100px]">
-                                                                                        <MapPin size={12} className="flex-shrink-0" />
-                                                                                        <span className="truncate">{app.location}</span>
+                                                                            <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-xs">
+                                                                                {app.totalExperienceYears > 0 && (
+                                                                                    <span className="flex items-center gap-1">
+                                                                                        <Briefcase size={12} className="flex-shrink-0" />
+                                                                                        {app.totalExperienceYears} yrs
                                                                                     </span>
                                                                                 )}
-                                                                                {app.resumeUrl && (
-                                                                                    <span className="flex items-center gap-1">
-                                                                                        <Paperclip size={12} />
-                                                                                        CV
+                                                                                {app.candidatePhone && (
+                                                                                    <span
+                                                                                        className="flex items-center gap-1 truncate max-w-[120px] cursor-pointer hover:text-orange-500 transition-colors"
+                                                                                        onClick={(e) => copyToClipboard(e, app.candidatePhone, 'Phone')}
+                                                                                        title="Click to copy phone"
+                                                                                    >
+                                                                                        <Phone size={12} className="flex-shrink-0" />
+                                                                                        <span className="truncate">{app.candidatePhone}</span>
                                                                                     </span>
                                                                                 )}
                                                                             </div>

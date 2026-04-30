@@ -12,9 +12,19 @@ import Loading from '@/components/Loading';
 import { ChevronLeft, ChevronRight, ExternalLink, Lock, Mail, Phone, RefreshCw, Trash2, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRocket, faWandMagicSparkles } from '../../../utils/icons';
+import { faRocket, faUser, faWandMagicSparkles } from '../../../utils/icons';
 import toastMessage from '@/utils/toastMessage';
 import { useDispatch } from 'react-redux';
+import { ScoreBars } from '@/pages/application/list';
+
+const copyToClipboard = (e, value, label) => {
+  e.stopPropagation();
+  e.preventDefault();
+  if (!value) return;
+  navigator.clipboard.writeText(value)
+    .then(() => toastMessage.success(`${label} copied!`))
+    .catch(() => toastMessage.error('Copy failed'));
+};
 
 const POLLING_INTERVAL = 5000;
 const DEFAULT_MIN_SCORE = 30;
@@ -315,11 +325,11 @@ const ProposedCVs = ({ jobId }) => {
               <table className="w-full min-w-[1040px] text-left border-collapse table-fixed">
                 <thead className="sticky top-0 z-20 bg-gray-50 dark:bg-neutral-900 shadow-sm">
                   <tr>
-                    <th className="px-6 py-4 w-[22%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
-                    <th className="px-6 py-4 w-[34%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
-                    <th className="px-6 py-4 w-[26%] text-sm font-semibold text-gray-500 tracking-wide">Strengths</th>
-                    <th className="px-6 py-4 w-[10%] text-sm font-semibold text-gray-500 tracking-wide text-center">AI Score</th>
-                    <th className="px-6 py-4 w-[8%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
+                    <th className="px-6 py-4 w-[24%] text-sm font-semibold text-gray-500 tracking-wide">Candidate</th>
+                    <th className="px-6 py-4 w-[30%] text-sm font-semibold text-gray-500 tracking-wide">AI Overview</th>
+                    <th className="px-6 py-4 w-[22%] text-sm font-semibold text-gray-500 tracking-wide">Strengths</th>
+                    <th className="px-6 py-4 w-[14%] text-sm font-semibold text-gray-500 tracking-wide text-center">AI Score</th>
+                    <th className="px-6 py-4 w-[10%] text-center text-sm font-semibold text-gray-500 tracking-wide">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-neutral-800">
@@ -329,36 +339,38 @@ const ProposedCVs = ({ jobId }) => {
                     return (
                       <tr key={app.proposedResumeId ?? app.resumeId} className="hover:bg-gray-50/50 dark:hover:bg-neutral-800/50 transition-colors group">
                         <td className="px-6 py-4">
-                          <div className="min-w-0 space-y-2">
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                              {app.fullName || 'Unknown Candidate'}
-                            </p>
-                            {app.email || app.phone ? (
-                              <div className="min-w-0 space-y-1.5">
-                                {app.email && (
-                                  <a
-                                    href={`mailto:${app.email}`}
-                                    className="flex min-w-0 items-center gap-2 text-xs font-medium text-gray-600 hover:text-orange-500"
-                                    title={app.email}
-                                  >
-                                    <Mail size={13} className="flex-shrink-0 text-gray-400" />
-                                    <span className="truncate">{app.email}</span>
-                                  </a>
-                                )}
-                                {app.phone && (
-                                  <a
-                                    href={`tel:${app.phone}`}
-                                    className="flex min-w-0 items-center gap-2 text-xs font-medium text-gray-600 hover:text-orange-500"
-                                    title={app.phone}
-                                  >
-                                    <Phone size={13} className="flex-shrink-0 text-gray-400" />
-                                    <span className="truncate">{app.phone}</span>
-                                  </a>
-                                )}
-                              </div>
-                            ) : (
-                              <span className="text-xs text-gray-400">No contact available</span>
-                            )}
+                          <div className="flex items-start gap-3 min-w-0">
+                            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 dark:bg-neutral-700 flex items-center justify-center mt-0.5">
+                              <FontAwesomeIcon icon={faUser} className="text-lg text-gray-400" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-base font-semibold text-gray-900 dark:text-white truncate">
+                                {app.fullName || 'Unknown Candidate'}
+                              </p>
+                              {app.email && (
+                                <p
+                                  className="text-sm text-gray-500 flex items-center gap-1 truncate lowercase leading-none mt-1 cursor-pointer hover:text-orange-500 transition-colors"
+                                  onClick={(e) => copyToClipboard(e, app.email, 'Email')}
+                                  title="Click to copy email"
+                                >
+                                  <Mail size={13} className="flex-shrink-0" />
+                                  <span className="truncate">{app.email}</span>
+                                </p>
+                              )}
+                              {app.phone && (
+                                <p
+                                  className="text-sm text-gray-600 flex items-center gap-1 mt-1.5 cursor-pointer hover:text-orange-500 transition-colors w-fit"
+                                  onClick={(e) => copyToClipboard(e, app.phone, 'Phone')}
+                                  title="Click to copy phone"
+                                >
+                                  <Phone size={13} className="flex-shrink-0" />
+                                  <span className="truncate">{app.phone}</span>
+                                </p>
+                              )}
+                              {!app.email && !app.phone && (
+                                <span className="text-xs text-gray-400 mt-1 block">No contact available</span>
+                              )}
+                            </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
@@ -410,9 +422,16 @@ const ProposedCVs = ({ jobId }) => {
                         </td>
                         <td className="px-6 py-4 text-center">
                           <div className="flex flex-col items-center gap-1">
-                            <span className={`text-sm font-semibold ${getScoreColor(app.aiScore)}`}>
-                              {app.aiScore != null ? `${getDisplayRate(app.aiScore)}%` : '--'}
-                            </span>
+                            {app.aiScore != null ? (
+                              <span className={`inline-flex items-end gap-2 ${getScoreColor(app.aiScore)}`}>
+                                <ScoreBars score={getDisplayRate(app.aiScore)} />
+                                <span className="text-2xl font-bold leading-none">
+                                  {getDisplayRate(app.aiScore)}
+                                </span>
+                              </span>
+                            ) : (
+                              <span className="text-sm text-gray-400">--</span>
+                            )}
                             {isEvaluationPendingStatus(app.evaluationStatus) && (
                               <span className="inline-flex items-center gap-1 text-[11px] font-medium text-orange-500">
                                 <RefreshCw size={11} className="animate-spin" />

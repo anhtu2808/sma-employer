@@ -1,7 +1,8 @@
 import React from "react";
 import { Modal } from "antd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileCirclePlus, faPen, faWandMagicSparkles } from '../../../../utils/icons';
+import { Sparkles } from 'lucide-react';
+import { faFileCirclePlus, faPen } from '../../../../utils/icons';
 
 const PostMethodModal = ({ open, onCancel, onSelectManual, onSelectAI }) => {
   return (
@@ -31,7 +32,7 @@ const PostMethodModal = ({ open, onCancel, onSelectManual, onSelectAI }) => {
           className="w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-primary hover:bg-orange-50 dark:hover:bg-orange-900/10 transition-all duration-200 cursor-pointer group"
         >
           <div className="flex items-start gap-3">
-            <FontAwesomeIcon icon={faWandMagicSparkles} className="text-2xl text-primary mt-0.5" />
+            <Sparkles size={24} className="text-primary mt-0.5" />
             <div>
               <div className="font-semibold text-gray-900 dark:text-white group-hover:text-primary transition-colors">
                 Import with AI

@@ -69,7 +69,7 @@ const ManualScorePopover = ({ evaluation, applicationId, children, disabled, pla
             </div>
             {evaluation?.aiScore != null && (
                 <div className="text-xs text-gray-500">
-                    AI suggestion: <span className="font-medium">{Math.round(evaluation.aiScore)}%</span>
+                    AI suggestion: <span className="font-medium">{Math.round(evaluation.aiScore)}</span>
                 </div>
             )}
             <div className="flex justify-end gap-2 pt-1">

@@ -4,7 +4,8 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { useGetCriteriaQuery } from "@/apis/jobApi";
 import { CRITERIA_COLORS } from "@/constants/scoringColors";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBrain, faChevronDown, faChevronUp } from '../../../utils/icons';
+import { Sparkles } from 'lucide-react';
+import { faChevronDown, faChevronUp } from '../../../utils/icons';
 
 const AiScoringCard = ({ job }) => {
   const { data: allCriteria = [] } = useGetCriteriaQuery();
@@ -35,7 +36,7 @@ const AiScoringCard = ({ job }) => {
     <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-          <FontAwesomeIcon icon={faBrain} className="text-orange-500 text-xl" />
+          <Sparkles size={20} className="text-orange-500" />
           AI Scoring
         </h3>
         <span
@@ -51,7 +52,7 @@ const AiScoringCard = ({ job }) => {
 
       {!isEnabled ? (
         <div className="text-center py-6 text-gray-400 dark:text-gray-500">
-          <FontAwesomeIcon icon={faBrain} className="text-3xl mb-2 block" />
+          <Sparkles size={30} className="mb-2 mx-auto" />
           <p className="text-sm">AI Scoring is not enabled for this job</p>
         </div>
       ) : (

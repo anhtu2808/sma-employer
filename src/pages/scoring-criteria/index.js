@@ -6,7 +6,8 @@ import Button from '@/components/Button';
 import Loading from '@/components/Loading';
 import Pagination from '@/components/Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBrain, faFileLines, faMagnifyingGlass, faPenToSquare, faPlus, faSliders, faTrash } from '../../utils/icons';
+import { Sparkles } from 'lucide-react';
+import { faFileLines, faMagnifyingGlass, faPenToSquare, faPlus, faSliders, faTrash } from '../../utils/icons';
 import {
   useGetCriteriaPaginatedQuery,
   useCreateCriteriaMutation,
@@ -188,7 +189,7 @@ const ScoringCriteria = () => {
       ) : criteriaList.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
           <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FontAwesomeIcon icon={faBrain} className="text-gray-400 text-3xl" />
+            <Sparkles size={30} className="text-gray-400" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">No scoring criteria found</h3>
           <p className="text-gray-500 dark:text-gray-400 mt-1 mb-6">

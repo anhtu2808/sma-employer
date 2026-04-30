@@ -6,7 +6,8 @@ import { useGetCriteriaQuery, useCreateCriteriaMutation } from "@/apis/jobApi";
 import Loading from "@/components/Loading";
 import { CRITERIA_COLORS } from "@/constants/scoringColors";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleExclamation, faMagnifyingGlass, faPen, faPlus, faWandMagicSparkles, faXmark } from '../../../../utils/icons';
+import { Sparkles } from 'lucide-react';
+import { faCircleExclamation, faMagnifyingGlass, faPen, faPlus, faXmark } from '../../../../utils/icons';
 
 const ActiveCriterionRow = ({ criteriaItem, index, isAiActive, getFieldValue, setFieldsValue, remainingWeight, onRemove, onEditRule }) => {
   const currentWeight = getFieldValue(`weight_${criteriaItem.id}`) || 0;
@@ -260,7 +261,7 @@ const ScoringWeights = () => {
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                   <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-orange-400 to-amber-500 shadow-sm">
-                    <FontAwesomeIcon icon={faWandMagicSparkles} className="text-white text-lg" />
+                    <Sparkles size={18} className="text-white" />
                   </span>
                   AI Scoring Weights
                   <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-gradient-to-r from-orange-500 to-amber-500 text-white leading-none">Pro</span>

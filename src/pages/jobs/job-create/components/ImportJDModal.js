@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Modal, Input, Spin } from "antd";
 import toastMessage from "@/utils/toastMessage";
 import { useParseJobDescriptionMutation } from "@/apis/jobApi";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWandMagicSparkles } from '../../../../utils/icons';
+import { Sparkles } from 'lucide-react';
 
 const MIN_TEXT_LENGTH = 50;
 const MAX_TEXT_LENGTH = 4000;
@@ -51,7 +50,7 @@ const ImportJDModal = ({ open, onCancel, onImported, masterData }) => {
     <Modal
       title={
         <span className="flex items-center gap-2 text-lg font-semibold">
-          <FontAwesomeIcon icon={faWandMagicSparkles} className="text-primary text-xl" />
+          <Sparkles size={20} className="text-primary" />
           Import JD with AI
         </span>
       }
@@ -111,7 +110,7 @@ const ImportJDModal = ({ open, onCancel, onImported, masterData }) => {
               </>
             ) : (
               <>
-                <FontAwesomeIcon icon={faWandMagicSparkles} className="text-base" />
+                <Sparkles size={16} />
                 <span>Parse with AI</span>
               </>
             )}
