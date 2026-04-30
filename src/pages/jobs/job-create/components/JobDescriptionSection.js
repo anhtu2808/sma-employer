@@ -47,7 +47,13 @@ const JobDescriptionSection = () => {
                     <SimpleTextEditor placeholder="List key duties..." showCount maxLength={5000} />
                 </Form.Item>
 
-                <Form.Item name="requirement" label={<span className="text-base font-semibold">Requirements</span>} className="mb-0" required>
+                <Form.Item
+                    name="requirement"
+                    label={<span className="text-gray-500 uppercase text-xs font-bold tracking-wider">Requirements</span>}
+                    className="mb-0"
+                    required
+                    rules={[richTextRequired('Please provide the requirements')]}
+                >
                     <SimpleTextEditor placeholder="List qualifications..." showCount maxLength={5000} />
                 </Form.Item>
             </div>
