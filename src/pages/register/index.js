@@ -10,7 +10,8 @@ import { Listbox, Transition } from '@headlessui/react';
 import { ChevronDown, Check } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleExclamation, faFileArrowUp } from '../../utils/icons';
-
+import { Tooltip } from "antd";
+import { InfoCircleOutlined } from "@ant-design/icons";
 const RecruiterRegister = () => {
     const navigate = useNavigate();
     const [uploadFile, { isLoading: isUploading }] = useUploadFileMutation();
@@ -21,6 +22,8 @@ const RecruiterRegister = () => {
     const generalErrorRef = useRef(null);
     const phoneRef = useRef(null);
     const companyNameRef = useRef(null);
+    const industryRef = useRef(null);
+    const companyTypeRef = useRef(null);
     const addressRef = useRef(null);
     const [ercFile, setErcFile] = useState(null);
     const [errors, setErrors] = useState({
@@ -29,6 +32,8 @@ const RecruiterRegister = () => {
         taxIdentificationNumber: "",
         password: "",
         phone: "",
+        companyIndustry: "",
+        companyType: "",
         companyName: "",
         address: "",
         general: ""
@@ -110,30 +115,46 @@ const RecruiterRegister = () => {
     });
 
     const handleSelectAddress = async (description) => {
-        setValue(description, false);
+        const shortAddress = description.split(',')[0];
+        setValue(shortAddress, false);
         clearSuggestions();
 
         try {
             const results = await getGeocode({ address: description });
             const addressComponents = results[0].address_components;
-            let city = "";
-            let district = "";
 
-            addressComponents.forEach(component => {
-                if (component.types.includes("administrative_area_level_1")) {
-                    city = component.long_name;
-                }
-                if (component.types.includes("administrative_area_level_2")) {
-                    district = component.long_name;
-                }
-            });
+            const getComp = (types) => {
+                const res = addressComponents.find(c => types.some(t => c.types.includes(t)));
+                return res ? res.long_name : "";
+            };
 
-            setFormData(prev => ({
+            // Lấy City và Country trước
+            const city = getComp(["administrative_area_level_1"]);
+            const country = getComp(["country"]) || "Vietnam";
+
+            /**
+             * GOM CHUNG VÀO DISTRICT:
+             * Logic: Tìm Quận/Huyện trước -> Nếu không có thì lấy Phường/Xã -> Nếu không có thì lấy Khu vực (Locality)
+             */
+            const district = getComp(["administrative_area_level_2"]) ||
+                getComp(["sublocality_level_1"]) ||
+                getComp(["sublocality"]) ||
+                getComp(["locality"]);
+
+            // Nếu district trùng với city (như trường hợp TP.HCM bạn gặp), hãy ưu tiên lấy cái nhỏ hơn
+            let finalDistrict = district;
+            if (district === city) {
+                finalDistrict = getComp(["sublocality_level_1"]) || getComp(["sublocality"]) || "";
+            }
+
+            setFormData((prev) => ({
                 ...prev,
-                address: description,
+                address: description.split(',')[0],
+                district: finalDistrict,
                 city: city,
-                district: district
+                country: country,
             }));
+
         } catch (error) {
             console.error("Error: ", error);
         }
@@ -150,7 +171,17 @@ const RecruiterRegister = () => {
             setTimeout(() => scrollToElement(passwordRef), 100);
             return;
         }
+        if (!formData.companyIndustry) {
+            setErrors(prev => ({ ...prev, companyIndustry: "Please select an industry" }));
+            setTimeout(() => scrollToElement(industryRef), 100);
+            return;
+        }
 
+        if (!formData.companyType) {
+            setErrors(prev => ({ ...prev, companyType: "Please select a company type" }));
+            setTimeout(() => scrollToElement(companyTypeRef), 100);
+            return;
+        }
         if (Number(formData.minSize) > Number(formData.maxSize)) {
             setErrors(prev => ({ ...prev, general: "Min size cannot be greater than Max size." }));
             setTimeout(() => scrollToElement(generalErrorRef), 100);
@@ -289,15 +320,9 @@ const RecruiterRegister = () => {
                                 label={
                                     <>
                                         Company Name <span className="text-red-500">*</span>
-                                        <div className="group relative inline-block ml-1">
-                                            <span className="cursor-pointer text-primary font-bold">ⓘ</span>
-
-                                            <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-72 p-3 bg-white/90 backdrop-blur-xl text-neutral-700 text-xs leading-relaxed rounded-xl shadow-xl border border-neutral-200 z-50">
-                                                Please enter the official company name as it appears on your Tax ID/Business License.
-
-                                                <div className="absolute top-full left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-r border-b border-neutral-200 rotate-45"></div>
-                                            </div>
-                                        </div>
+                                        <Tooltip title="Please enter the official company name as it appears on your Tax ID/Business License.">
+                                            <InfoCircleOutlined className="ml-1 text-primary cursor-pointer" />
+                                        </Tooltip>
                                     </>
                                 }
                                 name="companyName"
@@ -306,18 +331,23 @@ const RecruiterRegister = () => {
                             />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Industry Dropdown */}
-                                <div className="space-y-2">
+                                <div className="space-y-2" ref={industryRef}>
                                     <label className="block text-sm font-bold text-neutral-700">
                                         Industry <span className="text-red-500">*</span>
                                     </label>
                                     <Listbox
                                         value={formData.companyIndustry}
-                                        onChange={(val) => setFormData({ ...formData, companyIndustry: val })}
+                                        onChange={(val) => {
+                                            setFormData({ ...formData, companyIndustry: val });
+                                            if (errors.companyIndustry) {
+                                                setErrors(prev => ({ ...prev, companyIndustry: "" }));
+                                            }
+                                        }}
                                     >
                                         {({ open }) => (
                                             <div className="relative mt-1">
                                                 <Listbox.Button className={`relative w-full cursor-default rounded-2xl bg-white border border-neutral-200 py-4 pl-4 pr-10 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all ${open ? 'ring-2 ring-primary/20' : ''}`}>
-                                                    <span className="block truncate text-sm font-medium text-neutral-700 uppercase">
+                                                    <span className="block truncate text-sm font-medium text-neutral-700">
                                                         {industryOptions.find(opt => opt.id === formData.companyIndustry)?.name || 'Select Industry'}
                                                     </span>
                                                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
@@ -341,21 +371,29 @@ const RecruiterRegister = () => {
                                             </div>
                                         )}
                                     </Listbox>
+                                    {errors.companyIndustry && (
+                                        <p className="text-xs text-red-500 mt-1 font-medium">{errors.companyIndustry}</p>
+                                    )}
                                 </div>
 
                                 {/* Company Type Dropdown - NEW */}
-                                <div className="space-y-2">
+                                <div className="space-y-2" ref={companyTypeRef}>
                                     <label className="block text-sm font-bold text-neutral-700">
                                         Company Type <span className="text-red-500">*</span>
                                     </label>
                                     <Listbox
                                         value={formData.companyType}
-                                        onChange={(val) => setFormData({ ...formData, companyType: val })}
+                                        onChange={(val) => {
+                                            setFormData({ ...formData, companyType: val });
+                                            if (errors.companyType) {
+                                                setErrors(prev => ({ ...prev, companyType: "" }));
+                                            }
+                                        }}
                                     >
                                         {({ open }) => (
                                             <div className="relative mt-1">
                                                 <Listbox.Button className={`relative w-full cursor-default rounded-2xl bg-white border border-neutral-200 py-4 pl-4 pr-10 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all ${open ? 'ring-2 ring-primary/20' : ''}`}>
-                                                    <span className="block truncate text-sm font-medium text-neutral-700 uppercase">
+                                                    <span className="block truncate text-sm font-medium text-neutral-700">
                                                         {companyTypeOptions.find(opt => opt.id === formData.companyType)?.name || 'Select Type'}
                                                     </span>
                                                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
@@ -380,6 +418,9 @@ const RecruiterRegister = () => {
                                         )}
                                     </Listbox>
                                 </div>
+                                {errors.companyType && (
+                                    <p className="text-xs text-red-500 mt-1 font-medium">{errors.companyType}</p>
+                                )}
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <Input
@@ -458,15 +499,17 @@ const RecruiterRegister = () => {
                                     label={<>District <span className="text-red-500">*</span></>}
                                     name="district"
                                     value={formData.district}
-                                    // readOnly
                                     onChange={handleChange}
+                                    error={!!errors.district}
+                                    helperText={errors.district}
                                 />
                                 <Input
                                     label={<>City <span className="text-red-500">*</span></>}
                                     name="city"
                                     value={formData.city}
-                                    // readOnly
                                     onChange={handleChange}
+                                    error={!!errors.city}
+                                    helperText={errors.city}
                                 />
                             </div>
 
@@ -474,16 +517,15 @@ const RecruiterRegister = () => {
                                 <Input
                                     label={<>Country <span className="text-red-500">*</span></>}
                                     name="country"
-                                    placeholder="Vietnam"
-                                    required
-                                    defaultValue="Vietnam"
+                                    value={formData.country}
                                     onChange={handleChange}
                                 />
                                 <Input
                                     label="Website"
                                     name="companyLink"
-                                    placeholder="https://..."
+                                    value={formData.companyLink}
                                     onChange={handleChange}
+                                    placeholder="https://..."
                                 />
                             </div>
                         </div>
@@ -559,9 +601,6 @@ const RecruiterRegister = () => {
                     </form>
                 </Card>
 
-                <footer className="mt-12 text-center text-[10px] text-neutral-400 uppercase tracking-[0.3em]">
-                    SmartRecruit AI Security Protocol
-                </footer>
             </div>
         </div>
     );
