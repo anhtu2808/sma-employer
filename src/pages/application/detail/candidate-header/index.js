@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBan, faClockRotateLeft } from '../../../../utils/icons';
 import { FolderPlus } from 'lucide-react';
 
-const CandidateHeader = ({ app, onOpenBlock, onOpenAddToPool, compact = false }) => {
+const CandidateHeader = ({ app, onOpenBlock, onOpenAddToPool, compareControl = null, compact = false }) => {
     const currentPool = app.poolInfo || null;
     const isInTalentPool = Boolean(currentPool || app.isInTalentPool);
     const poolActionTitle = isInTalentPool ? 'Move to another pool' : 'Add to Talent Pool';
@@ -26,6 +26,7 @@ const CandidateHeader = ({ app, onOpenBlock, onOpenAddToPool, compact = false })
                         <span className="max-w-[110px] truncate">{currentPool.name}</span>
                     </div>
                 )}
+                {compareControl}
                 {onOpenAddToPool && (
                     <Tooltip title={poolActionTitle}>
                         <button
@@ -75,6 +76,7 @@ const CandidateHeader = ({ app, onOpenBlock, onOpenAddToPool, compact = false })
                 )}
             </div>
             <div className="flex items-center gap-2">
+                {compareControl}
                 {onOpenAddToPool && (
                     <Tooltip title={poolActionTitle}>
                         <button
