@@ -238,6 +238,12 @@ const KanbanBoard = ({
                                                                                             AI REJECTED
                                                                                         </span>
                                                                                     )}
+                                                                                    {app.poolInfo && (
+                                                                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wider border whitespace-nowrap" style={{ backgroundColor: `${app.poolInfo.color}15`, color: app.poolInfo.color, borderColor: `${app.poolInfo.color}30` }}>
+                                                                                            <FolderPlus size={10} />
+                                                                                            {app.poolInfo.name}
+                                                                                        </span>
+                                                                                    )}
                                                                                 </div>
 
                                                                                 {/* SCORE (manual prioritized) */}
@@ -332,26 +338,26 @@ const KanbanBoard = ({
             <div
                 data-pool-dropzone="true"
                 className={`absolute bottom-0 left-0 right-0 z-[60] transition-all duration-300 ease-out ${isDragging
-                        ? 'opacity-100 translate-y-0 pointer-events-auto'
-                        : 'opacity-0 translate-y-full pointer-events-none'
+                    ? 'opacity-100 translate-y-0 pointer-events-auto'
+                    : 'opacity-0 translate-y-full pointer-events-none'
                     }`}
             >
                 <div
                     className={`mx-3 mb-3 flex items-center justify-center gap-3 py-5 rounded-2xl border-2 border-dashed transition-all duration-200 ${isHoveringPool
-                            ? 'border-orange-400 bg-orange-50 dark:bg-orange-900/20 shadow-2xl shadow-orange-500/15 scale-[1.01]'
-                            : 'border-orange-300 dark:border-orange-700 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl shadow-xl'
+                        ? 'border-orange-400 bg-orange-50 dark:bg-orange-900/20 shadow-2xl shadow-orange-500/15 scale-[1.01]'
+                        : 'border-orange-300 dark:border-orange-700 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl shadow-xl'
                         }`}
                 >
                     <div className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${isHoveringPool
-                            ? 'bg-orange-500 text-white scale-110'
-                            : 'bg-orange-100 dark:bg-orange-900/40 text-orange-500'
+                        ? 'bg-orange-500 text-white scale-110'
+                        : 'bg-orange-100 dark:bg-orange-900/40 text-orange-500'
                         }`}>
                         <FolderPlus size={20} />
                     </div>
                     <div>
                         <p className={`text-sm font-semibold transition-colors duration-200 ${isHoveringPool
-                                ? 'text-orange-600 dark:text-orange-400'
-                                : 'text-gray-700 dark:text-gray-200'
+                            ? 'text-orange-600 dark:text-orange-400'
+                            : 'text-gray-700 dark:text-gray-200'
                             }`}>
                             {isHoveringPool ? 'Release to add to Talent Pool' : 'Drop here to add to Talent Pool'}
                         </p>

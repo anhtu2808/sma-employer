@@ -6,12 +6,19 @@ import Button from '@/components/Button';
 const Hero = () => {
     return (
         <section
-            className="relative min-h-[85vh] flex items-center pt-40 pb-32 md:pt-52 md:pb-40 px-6 text-center bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/Background.png)` }}
+            className="relative min-h-[85vh] flex items-center pt-40 pb-32 md:pt-52 md:pb-40 px-6 text-center overflow-hidden"
         >
+            <video
+                className="absolute inset-0 w-full h-full object-cover"
+                src={`${process.env.PUBLIC_URL}/Video.mp4`}
+                autoPlay
+                loop
+                muted
+                playsInline
+            />
             {/* Dark overlay for text readability */}
             <div className="absolute inset-0 bg-black/50" />
-            <div className="relative container mx-auto max-w-4xl">
+            <div className="relative container mx-auto max-w-4xl z-10">
                 <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-20 text-white font-heading">
                     Welcome to <br /><span className="text-primary">SmartRecruit Employer</span>
                 </h1>
