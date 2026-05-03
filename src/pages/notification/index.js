@@ -95,7 +95,7 @@ const NotificationList = () => {
             <div className="flex-1 overflow-y-auto space-y-4 pr-2 pt-4">
                 {isLoading ? (
                     <div className="bg-white rounded-xl border border-dashed">
-                        <Loading size={96} className="py-12" />
+                        <Loading className="py-12" />
                     </div>
                 ) : notifications.length > 0 ? (
                     notifications.map((noti) => (

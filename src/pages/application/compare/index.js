@@ -71,7 +71,7 @@ const ApplicationCompare = () => {
     }
 
     if (isLeftLoading || isRightLoading) {
-        return <Loading className="py-20" size={96} />;
+        return <Loading className="py-20" />;
     }
 
     if (!leftApp || !rightApp) {

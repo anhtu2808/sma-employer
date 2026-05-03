@@ -267,7 +267,7 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
     ];
 
     if (isLoading) return (
-        <Loading className="py-20" size={96} />
+        <Loading className="py-20" />
     );
 
     const rowSelection = {

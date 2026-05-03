@@ -33,7 +33,7 @@ const ResumePreviewPanel = ({
         if (isProfileResumeLoading) {
             return (
                 <div className="flex h-full min-h-[720px] items-center justify-center">
-                    <Loading size={96} className="py-0" />
+                    <Loading className="py-0" />
                 </div>
             );
         }

@@ -310,7 +310,7 @@ const ProposedCVs = ({ jobId }) => {
       {/* Table */}
       <div className="bg-white dark:bg-surface-dark shadow-sm border border-neutral-100 dark:border-neutral-800 rounded-2xl overflow-hidden flex flex-col" style={{ minHeight: 320 }}>
         {isLoading ? (
-          <Loading className="py-20" size={96} />
+          <Loading className="py-20" />
         ) : applications.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center py-20 gap-3">
             <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center">
