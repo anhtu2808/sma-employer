@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ExternalLink, Mail, Calendar, Phone, Briefcase, Eye, RotateCcw, Sparkles, GitCompareArrows } from 'lucide-react';
+import { ExternalLink, Mail, Calendar, Phone, Briefcase, Eye, RotateCcw, Sparkles, GitCompareArrows, FolderPlus } from 'lucide-react';
 import moment from 'moment';
 import { Table, Select, ConfigProvider, Modal as AntModal } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -82,6 +82,12 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                                     <span className="text-[10px] font-bold tracking-wide text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-md border border-red-200 dark:border-red-800/50 flex items-center gap-1">
                                         <Sparkles size={10} className="flex-shrink-0" />
                                         AI REJECTED
+                                    </span>
+                                )}
+                                {app.poolInfo && (
+                                    <span className="text-[10px] font-bold tracking-wide px-2 py-0.5 rounded-md border flex items-center gap-1 whitespace-nowrap" style={{ backgroundColor: `${app.poolInfo.color}15`, color: app.poolInfo.color, borderColor: `${app.poolInfo.color}30` }}>
+                                        <FolderPlus size={10} className="flex-shrink-0" />
+                                        {app.poolInfo.name}
                                     </span>
                                 )}
                             </div>
@@ -407,14 +413,14 @@ const ApplicationList = ({ data, isLoading, totalElements, totalPages, currentPa
                                     {[...evalModal.evaluation.criteriaScores]
                                         .sort((a, b) => (a.criteriaName || '').localeCompare(b.criteriaName || ''))
                                         .map((cs, idx) => (
-                                        <span key={idx} className="inline-flex items-center gap-2 text-base text-gray-700 dark:text-gray-400">
-                                            <ScoreBars score={cs.aiScore} size="sm" />
-                                            {cs.criteriaName}
-                                            <span className={`font-semibold tabular-nums ${getScoreColor(cs.aiScore)}`}>
-                                                {cs.aiScore != null ? Math.round(cs.aiScore) : '--'}
+                                            <span key={idx} className="inline-flex items-center gap-2 text-base text-gray-700 dark:text-gray-400">
+                                                <ScoreBars score={cs.aiScore} size="sm" />
+                                                {cs.criteriaName}
+                                                <span className={`font-semibold tabular-nums ${getScoreColor(cs.aiScore)}`}>
+                                                    {cs.aiScore != null ? Math.round(cs.aiScore) : '--'}
+                                                </span>
                                             </span>
-                                        </span>
-                                    ))}
+                                        ))}
                                 </div>
                             )}
                         </div>
