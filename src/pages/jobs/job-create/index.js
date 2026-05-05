@@ -33,6 +33,7 @@ import ScreeningQuestions from "./components/ScreeningQuestions";
 import Preloader from "@/components/Preloader";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faWandMagicSparkles } from '../../../utils/icons';
+import { getPublishHighlightErrorMessage } from "@/utils/highlightJobQuota";
 
 const BENEFIT_TYPES = [
   "FINANCIAL", "INSURANCE", "TIME_OFF", "FLEXIBILITY",
@@ -90,6 +91,7 @@ const JobCreate = () => {
       formInitialized.current = true;
       const initialValues = {
         ...clonedJob,
+        highlightJob: clonedJob.highlightJob ?? clonedJob.isHighlight ?? false,
         expDate: clonedJob.expDate ? dayjs(clonedJob.expDate) : undefined,
         skillIds: clonedJob.skills?.map(s => s.id) || clonedJob.skillIds,
         domainIds: clonedJob.domains?.map(d => d.id) || clonedJob.domainIds,
@@ -247,7 +249,13 @@ const JobCreate = () => {
       if (validationErrors && typeof validationErrors === "object") {
         Object.values(validationErrors).forEach((msg) => toastMessage.error(msg));
       } else {
-        toastMessage.error(error?.data?.message || "Failed to publish job. Please try again.");
+        toastMessage.error(
+          getPublishHighlightErrorMessage(error, {
+            wantsHighlight: submitData.highlightJob === true,
+            featureUsage,
+          }) ||
+            "Failed to publish job. Please try again."
+        );
       }
     }
   };
