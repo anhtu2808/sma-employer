@@ -191,7 +191,7 @@ const PaymentHistory = () => {
               {isLoading ? (
                 <tr>
                   <td className="px-6 py-10" colSpan={6}>
-                    <Loading size={88} className="py-0" />
+                    <Loading className="py-0" />
                   </td>
                 </tr>
               ) : isError ? (

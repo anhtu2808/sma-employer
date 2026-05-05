@@ -23,7 +23,7 @@ const mapPlanToCard = (plan, currentPlanId, currentLevel) => {
   const description = plan?.description || "";
   const detailsHtml = typeof plan?.planDetails === "string" ? plan.planDetails.trim() : "";
   const isPopular = Boolean(plan?.isPopular);
-  const isDowngrade = !isCurrent && plan?.planLevel > currentLevel;
+  const isDowngrade = !isCurrent && plan?.planLevel < currentLevel;
   if (lifetimePrice) {
     const total = Number(lifetimePrice.salePrice ?? lifetimePrice.originalPrice ?? 0);
     const currency = "VND";
@@ -131,7 +131,7 @@ const Plans = ({ plans = [], currentPlanId = null, onOpenPaymentModal }) => {
     return sortedPlans.map((plan) => {
       const cardData = mapPlanToCard(plan, currentPlanId);
       const isCurrent = plan.isCurrent || plan.id === currentPlanId;
-      const isDowngrade = !isCurrent && plan.planLevel > currentLevel;
+      const isDowngrade = !isCurrent && plan.planLevel < currentLevel;
 
       return {
         ...cardData,

@@ -79,7 +79,7 @@ const CompanyBlacklist = () => {
                                 {isLoading ? (
                                     <tr>
                                         <td colSpan="5" className="px-6 py-10">
-                                            <Loading size={88} className="py-0" />
+                                            <Loading className="py-0" />
                                         </td>
                                     </tr>
                                 ) : response?.data?.content?.length === 0 ? (

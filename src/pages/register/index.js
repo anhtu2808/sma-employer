@@ -10,10 +10,11 @@ import { Listbox, Transition } from '@headlessui/react';
 import { ChevronDown, Check } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleExclamation, faFileArrowUp } from '../../utils/icons';
-import { Tooltip } from "antd";
+import { Select, Tooltip, Form, Input as AntInput, Row, Col } from 'antd';
 import { InfoCircleOutlined } from "@ant-design/icons";
 const RecruiterRegister = () => {
     const navigate = useNavigate();
+    const [form] = Form.useForm();
     const [uploadFile, { isLoading: isUploading }] = useUploadFileMutation();
     const [register, { isLoading: isRegistering }] = useRegisterRecruiterMutation();
     const emailRef = useRef(null);
@@ -127,21 +128,14 @@ const RecruiterRegister = () => {
                 const res = addressComponents.find(c => types.some(t => c.types.includes(t)));
                 return res ? res.long_name : "";
             };
-
-            // Lấy City và Country trước
             const city = getComp(["administrative_area_level_1"]);
             const country = getComp(["country"]) || "Vietnam";
 
-            /**
-             * GOM CHUNG VÀO DISTRICT:
-             * Logic: Tìm Quận/Huyện trước -> Nếu không có thì lấy Phường/Xã -> Nếu không có thì lấy Khu vực (Locality)
-             */
             const district = getComp(["administrative_area_level_2"]) ||
                 getComp(["sublocality_level_1"]) ||
                 getComp(["sublocality"]) ||
                 getComp(["locality"]);
 
-            // Nếu district trùng với city (như trường hợp TP.HCM bạn gặp), hãy ưu tiên lấy cái nhỏ hơn
             let finalDistrict = district;
             if (district === city) {
                 finalDistrict = getComp(["sublocality_level_1"]) || getComp(["sublocality"]) || "";
@@ -335,92 +329,53 @@ const RecruiterRegister = () => {
                                     <label className="block text-sm font-bold text-neutral-700">
                                         Industry <span className="text-red-500">*</span>
                                     </label>
-                                    <Listbox
-                                        value={formData.companyIndustry}
+                                    <Select
+                                        className="w-full custom-ant-select"
+                                        placeholder="Select Industry"
+                                        size="large"
+                                        value={formData.companyIndustry || undefined}
                                         onChange={(val) => {
                                             setFormData({ ...formData, companyIndustry: val });
                                             if (errors.companyIndustry) {
-                                                setErrors(prev => ({ ...prev, companyIndustry: "" }));
+                                                setErrors((prev) => ({ ...prev, companyIndustry: "" }));
                                             }
                                         }}
-                                    >
-                                        {({ open }) => (
-                                            <div className="relative mt-1">
-                                                <Listbox.Button className={`relative w-full cursor-default rounded-2xl bg-white border border-neutral-200 py-4 pl-4 pr-10 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all ${open ? 'ring-2 ring-primary/20' : ''}`}>
-                                                    <span className="block truncate text-sm font-medium text-neutral-700">
-                                                        {industryOptions.find(opt => opt.id === formData.companyIndustry)?.name || 'Select Industry'}
-                                                    </span>
-                                                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-                                                        <ChevronDown className={`h-4 w-4 text-neutral-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
-                                                    </span>
-                                                </Listbox.Button>
-                                                <Transition as={React.Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
-                                                    <Listbox.Options className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-2xl bg-white py-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none border border-neutral-100 animate-in fade-in zoom-in duration-200">
-                                                        {industryOptions.map((option) => (
-                                                            <Listbox.Option key={option.id} value={option.id} className={({ active }) => `relative cursor-pointer select-none py-3 pl-10 pr-4 transition-colors ${active ? 'bg-primary/5 text-primary' : 'text-neutral-700'}`}>
-                                                                {({ selected }) => (
-                                                                    <>
-                                                                        <span className={`block truncate text-sm ${selected ? 'font-black' : 'font-medium'}`}>{option.name}</span>
-                                                                        {selected ? <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary"><Check size={16} strokeWidth={3} /></span> : null}
-                                                                    </>
-                                                                )}
-                                                            </Listbox.Option>
-                                                        ))}
-                                                    </Listbox.Options>
-                                                </Transition>
-                                            </div>
-                                        )}
-                                    </Listbox>
+                                        options={industryOptions.map(opt => ({
+                                            value: opt.id,
+                                            label: opt.name
+                                        }))}
+
+                                    />
                                     {errors.companyIndustry && (
                                         <p className="text-xs text-red-500 mt-1 font-medium">{errors.companyIndustry}</p>
                                     )}
                                 </div>
 
-                                {/* Company Type Dropdown - NEW */}
+                                {/* Company Type Dropdown */}
                                 <div className="space-y-2" ref={companyTypeRef}>
                                     <label className="block text-sm font-bold text-neutral-700">
                                         Company Type <span className="text-red-500">*</span>
                                     </label>
-                                    <Listbox
-                                        value={formData.companyType}
+                                    <Select
+                                        className="w-full custom-ant-select"
+                                        placeholder="Select Type"
+                                        size="large"
+                                        value={formData.companyType || undefined}
                                         onChange={(val) => {
                                             setFormData({ ...formData, companyType: val });
                                             if (errors.companyType) {
-                                                setErrors(prev => ({ ...prev, companyType: "" }));
+                                                setErrors((prev) => ({ ...prev, companyType: "" }));
                                             }
                                         }}
-                                    >
-                                        {({ open }) => (
-                                            <div className="relative mt-1">
-                                                <Listbox.Button className={`relative w-full cursor-default rounded-2xl bg-white border border-neutral-200 py-4 pl-4 pr-10 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all ${open ? 'ring-2 ring-primary/20' : ''}`}>
-                                                    <span className="block truncate text-sm font-medium text-neutral-700">
-                                                        {companyTypeOptions.find(opt => opt.id === formData.companyType)?.name || 'Select Type'}
-                                                    </span>
-                                                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-                                                        <ChevronDown className={`h-4 w-4 text-neutral-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
-                                                    </span>
-                                                </Listbox.Button>
-                                                <Transition as={React.Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
-                                                    <Listbox.Options className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-2xl bg-white py-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none border border-neutral-100 animate-in fade-in zoom-in duration-200">
-                                                        {companyTypeOptions.map((option) => (
-                                                            <Listbox.Option key={option.id} value={option.id} className={({ active }) => `relative cursor-pointer select-none py-3 pl-10 pr-4 transition-colors ${active ? 'bg-primary/5 text-primary' : 'text-neutral-700'}`}>
-                                                                {({ selected }) => (
-                                                                    <>
-                                                                        <span className={`block truncate text-sm ${selected ? 'font-black' : 'font-medium'}`}>{option.name}</span>
-                                                                        {selected ? <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary"><Check size={16} strokeWidth={3} /></span> : null}
-                                                                    </>
-                                                                )}
-                                                            </Listbox.Option>
-                                                        ))}
-                                                    </Listbox.Options>
-                                                </Transition>
-                                            </div>
-                                        )}
-                                    </Listbox>
+                                        options={companyTypeOptions.map(opt => ({
+                                            value: opt.id,
+                                            label: opt.name
+                                        }))}
+                                    />
+                                    {errors.companyType && (
+                                        <p className="text-xs text-red-500 mt-1 font-medium">{errors.companyType}</p>
+                                    )}
                                 </div>
-                                {errors.companyType && (
-                                    <p className="text-xs text-red-500 mt-1 font-medium">{errors.companyType}</p>
-                                )}
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <Input
