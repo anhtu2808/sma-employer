@@ -4,6 +4,11 @@ import dayjs from "dayjs";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Sparkles } from 'lucide-react';
 import { faBolt, faCalendarDay, faChartSimple, faTriangleExclamation } from '../../../../utils/icons';
+import toastMessage from "@/utils/toastMessage";
+import {
+  getHighlightJobQuotaState,
+  getHighlightJobUnavailableMessage,
+} from "@/utils/highlightJobQuota";
 
 const PublishConfirmModal = ({
   open,
@@ -12,7 +17,6 @@ const PublishConfirmModal = ({
   loading,
   values,
   featureUsage = [],
-  isEditMode,
   onValuesChange,
 }) => {
   const jobPostQuota = featureUsage.find(
@@ -25,10 +29,26 @@ const PublishConfirmModal = ({
     jobPostQuota && jobPostQuota.maxQuota > 0 &&
     !isAtLimit &&
     jobPostQuota.used / jobPostQuota.maxQuota >= 0.8;
+  const highlightQuotaState = getHighlightJobQuotaState(featureUsage);
+  const highlightUnavailableMessage = getHighlightJobUnavailableMessage(featureUsage);
+  const willUseHighlightSlot = values?.highlightJob === true;
+  const projectedJobPostUsage = jobPostQuota ? Number(jobPostQuota.used ?? 0) + 1 : null;
+  const projectedHighlightUsage = highlightQuotaState.quota
+    ? highlightQuotaState.used + (willUseHighlightSlot ? 1 : 0)
+    : null;
 
   const formattedDeadline = values?.expDate
     ? dayjs(values.expDate).format("MMM DD, YYYY HH:mm")
     : null;
+
+  const handleHighlightChange = (checked) => {
+    if (checked && highlightUnavailableMessage) {
+      toastMessage.warning(highlightUnavailableMessage);
+      return;
+    }
+
+    onValuesChange?.({ highlightJob: checked });
+  };
 
   return (
     <Modal
@@ -46,6 +66,7 @@ const PublishConfirmModal = ({
       confirmLoading={loading}
       okButtonProps={{
         style: { backgroundColor: "#FF6B35", borderColor: "#FF6B35" },
+        disabled: isAtLimit || (willUseHighlightSlot && Boolean(highlightUnavailableMessage)),
       }}
       centered
       width={480}
@@ -87,7 +108,7 @@ const PublishConfirmModal = ({
                 size="small"
                 checked={values?.highlightJob === true}
                 style={values?.highlightJob ? { backgroundColor: "#FF6B35" } : undefined}
-                onChange={(checked) => onValuesChange?.({ highlightJob: checked })}
+                onChange={handleHighlightChange}
               />
             </div>
             <div className="flex items-center justify-between">
@@ -114,9 +135,9 @@ const PublishConfirmModal = ({
               <span className="font-medium">
                 {jobPostQuota.used}/{jobPostQuota.maxQuota}
               </span>
-              {!isEditMode && (
+              {projectedJobPostUsage != null && (
                 <span className="text-gray-400">
-                  {" "}&rarr; {jobPostQuota.used + 1}/{jobPostQuota.maxQuota}
+                  {" "}&rarr; {projectedJobPostUsage}/{jobPostQuota.maxQuota}
                 </span>
               )}
             </div>
@@ -133,6 +154,37 @@ const PublishConfirmModal = ({
                 <FontAwesomeIcon icon={faTriangleExclamation} className="mt-px text-sm text-amber-600" />
                 <span>
                   You are approaching your job post quota limit. Consider upgrading your plan for more posts.
+                </span>
+              </div>
+            )}
+            <div className="mt-3 text-sm text-gray-700 dark:text-gray-300">
+              Highlighted Jobs:{" "}
+              {highlightQuotaState.quota ? (
+                <>
+                  <span className="font-medium">
+                    {highlightQuotaState.used}/{highlightQuotaState.maxQuota}
+                  </span>
+                  {projectedHighlightUsage != null && willUseHighlightSlot && (
+                    <span className="text-gray-400">
+                      {" "}&rarr; {projectedHighlightUsage}/{highlightQuotaState.maxQuota}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span className="font-medium text-gray-500">Not included in current plan</span>
+              )}
+            </div>
+            {highlightUnavailableMessage && (
+              <div className="mt-2 flex items-start gap-1.5 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200">
+                <FontAwesomeIcon icon={faTriangleExclamation} className="mt-px text-sm text-red-600" />
+                <span>{highlightUnavailableMessage}</span>
+              </div>
+            )}
+            {!highlightUnavailableMessage && highlightQuotaState.isNearLimit && (
+              <div className="mt-2 flex items-start gap-1.5 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-100">
+                <FontAwesomeIcon icon={faTriangleExclamation} className="mt-px text-sm text-amber-600" />
+                <span>
+                  Your highlighted job slots are running low. Consider freeing up a live highlighted job or upgrading your plan.
                 </span>
               </div>
             )}

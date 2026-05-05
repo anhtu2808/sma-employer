@@ -52,7 +52,7 @@ export const jobApi = api.injectEndpoints({
         method: "PUT",
         body: { jobStatus: status },
       }),
-      invalidatesTags: ["Jobs"],
+      invalidatesTags: ["Jobs", "FeatureUsage"],
     }),
     publishJob: builder.mutation({
       query: ({ id, body }) => ({

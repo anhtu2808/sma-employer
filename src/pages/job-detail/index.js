@@ -18,6 +18,7 @@ import { PageHeaderContext } from '@/contexts/PageHeaderContext';
 import AiScoringCard from './components/AiScoringCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faBoxArchive, faCircleXmark, faPenToSquare, faTrash, faUpload } from '../../utils/icons';
+import { getPublishHighlightErrorMessage } from '@/utils/highlightJobQuota';
 
 const buildPublishBody = (job) => ({
     name: job.name,
@@ -49,7 +50,7 @@ const buildPublishBody = (job) => ({
         enable: true,
         rule: c.rule || null,
     })),
-    highlightJob: job.highlightJob ?? false,
+    highlightJob: job.highlightJob ?? job.isHighlight ?? false,
 });
 
 const JobDetail = () => {
@@ -393,11 +394,18 @@ const JobDetail = () => {
                         setShowPublishModal(false);
                         setPublishOverrides({});
                     } catch (error) {
+                        const requestBody = { ...buildPublishBody(job), ...publishOverrides };
                         const validationErrors = error?.data?.data;
                         if (validationErrors && typeof validationErrors === 'object') {
                             Object.values(validationErrors).forEach((msg) => toastMessage.error(msg));
                         } else {
-                            toastMessage.error(error?.data?.message || 'Failed to publish job');
+                            toastMessage.error(
+                                getPublishHighlightErrorMessage(error, {
+                                    wantsHighlight: requestBody.highlightJob === true,
+                                    featureUsage,
+                                }) ||
+                                'Failed to publish job'
+                            );
                         }
                     }
                 }}
@@ -406,7 +414,7 @@ const JobDetail = () => {
                     setPublishOverrides({});
                 }}
                 loading={isPublishing}
-                values={{ ...job, ...publishOverrides }}
+                values={{ ...job, highlightJob: job.highlightJob ?? job.isHighlight ?? false, ...publishOverrides }}
                 onValuesChange={(changed) => setPublishOverrides((prev) => ({ ...prev, ...changed }))}
                 featureUsage={featureUsage}
                 isEditMode={true}
