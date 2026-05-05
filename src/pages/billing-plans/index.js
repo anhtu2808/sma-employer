@@ -5,6 +5,7 @@ import Plans from "./plans";
 import Addons from "./addons";
 import Loading from "@/components/Loading";
 import PaymentModal from "@/pages/checkout/components/PaymentModal";
+import { Tabs, ConfigProvider } from "antd";
 
 const BillingPlans = () => {
   const { data: plans = [], isLoading: isPlansLoading, refetch: refetchPlans } = useGetPlansQuery({
@@ -55,19 +56,42 @@ const BillingPlans = () => {
     return <Loading />
   }
 
+  const items = [
+    {
+      key: '1',
+      label: 'Main Plans',
+      children: (
+        <div className="w-full">
+          <Plans plans={plans} currentPlanId={currentPlanId} onOpenPaymentModal={handleOpenPaymentModal} />
+        </div>
+      ),
+    },
+    {
+      key: '2',
+      label: 'Extras',
+      children: (
+        <div className="w-full">
+          <Addons
+            quotaPlans={addons}
+            featurePlans={addonsFeature}
+            onOpenPaymentModal={handleOpenPaymentModal}
+          />
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="w-full">
-        <Plans plans={plans} currentPlanId={currentPlanId} onOpenPaymentModal={handleOpenPaymentModal} />
-      </div>
-
-      <div className="w-full">
-        <Addons
-          quotaPlans={addons}
-          featurePlans={addonsFeature}
-          onOpenPaymentModal={handleOpenPaymentModal}
-        />
-      </div>
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: '#ff6b00',
+          },
+        }}
+      >
+        <Tabs defaultActiveKey="1" items={items} />
+      </ConfigProvider>
 
       <PaymentModal
         isOpen={isPaymentModalOpen}
