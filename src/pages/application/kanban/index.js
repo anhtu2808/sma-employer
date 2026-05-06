@@ -67,7 +67,7 @@ const KanbanBoard = ({
         if (!draggingColumn) return true;
         if (sourceId === targetId) return true;
         if (sourceId === 'APPLIED') {
-            return ['VIEWED'].includes(targetId);
+            return ['VIEWED', 'SHORTLISTED', 'REJECTED', 'APPROVED'].includes(targetId);
         }
         if (sourceId === 'VIEWED') {
             return ['SHORTLISTED', 'APPROVED', 'REJECTED'].includes(targetId);
