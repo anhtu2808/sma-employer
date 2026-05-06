@@ -1,13 +1,12 @@
 import React, { useRef } from 'react';
 import Input from '@/components/Input';
 import Form from '@/components/Form';
-import { Image } from 'antd';
 import { useUploadFileMutation } from '@/apis/apis';
 import toastMessage from '@/utils/toastMessage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileImage, faCloudArrowUp, faXmark, faImage } from '../../../utils/icons';
+import { faFileImage, faCloudArrowUp, faXmark } from '../../../utils/icons';
 
-const LegalInfo = ({ form, isEditing }) => {
+const LegalInfo = ({ form, onChange }) => {
     return (
         <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">Legal Information</h3>
@@ -16,11 +15,13 @@ const LegalInfo = ({ form, isEditing }) => {
                     <Input readOnly />
                 </Form.Item>
                 <Form.Item name="erc" label="ERC Document">
-                    {isEditing ? (
-                        <ERCUpload form={form} />
-                    ) : (
-                        <ErcPreview />
-                    )}
+                    <ERCUpload 
+                        form={form} 
+                        onChange={(val) => {
+                            form.setFieldsValue({ erc: val });
+                            if (onChange) onChange();
+                        }}
+                    />
                 </Form.Item>
             </div>
         </div>
@@ -139,22 +140,6 @@ const ERCUpload = ({ form, value, onChange }) => {
                 </div>
             )}
         </div>
-    );
-};
-
-const ErcPreview = ({ value }) => {
-    if (!value) {
-        return <span className="text-gray-400 text-sm">No document</span>;
-    }
-    return (
-        <Image
-            src={value}
-            width={80}
-            height={80}
-            className="rounded-lg object-contain bg-gray-50"
-            style={{ borderRadius: 8, objectFit: 'contain' }}
-            preview={{ mask: <span className="text-xs">Click to preview</span> }}
-        />
     );
 };
 
