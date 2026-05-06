@@ -12,14 +12,14 @@ import Location from './components/Location';
 import LegalInfo from './components/LegalInfo';
 import CompanyImages from './components/CompanyImages';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faCircleExclamation } from '../../utils/icons';
+import { faCircleExclamation } from '../../utils/icons';
 
 const CompanyProfile = () => {
     const { data: companyData, isLoading, refetch } = useGetCompanyProfileQuery();
     const [updateCompany, { isLoading: isUpdating }] = useUpdateCompanyProfileMutation();
     const [uploadFile] = useUploadFileMutation();
     const [form] = Form.useForm();
-    const [isEditing, setIsEditing] = useState(false);
+    const [hasChanges, setHasChanges] = useState(false);
 
     useEffect(() => {
         if (companyData && companyData.data) {
@@ -32,6 +32,7 @@ const CompanyProfile = () => {
                 email: data.email || data.companyEmail,
                 logo: data.logo || "",
             });
+            setHasChanges(false);
         }
     }, [companyData, form]);
 
@@ -107,7 +108,7 @@ const CompanyProfile = () => {
             } else {
                 toastMessage.success('Company profile updated successfully');
             }
-            setIsEditing(false);
+            setHasChanges(false);
             refetch();
         } catch (error) {
             console.error('Update failed logic:', error);
@@ -115,11 +116,8 @@ const CompanyProfile = () => {
         }
     };
 
-    const handleCancel = () => {
-        if (companyData?.data) {
-            form.setFieldsValue(companyData.data);
-        }
-        setIsEditing(false);
+    const handleFormChange = () => {
+        setHasChanges(true);
     };
 
     if (isLoading) return <Loading className="py-16" />;
@@ -136,41 +134,27 @@ const CompanyProfile = () => {
                         </span>
                     </div>
                 )}
-                <Form form={form} onFinish={onFinish} className="space-y-6" disabled={!isEditing}>
-                    <GeneralInfo form={form} isEditing={isEditing} />
+                <Form 
+                    form={form} 
+                    onFinish={onFinish} 
+                    className="space-y-6" 
+                    onValuesChange={handleFormChange}
+                >
+                    <GeneralInfo form={form} onChange={handleFormChange} />
                     <Classification />
                     <ContactInfo />
-                    <Location form={form} isEditing={isEditing} />
-                    <LegalInfo form={form} isEditing={isEditing} />
-                    <CompanyImages form={form} isEditing={isEditing} />
+                    <Location form={form} />
+                    <LegalInfo form={form} onChange={handleFormChange} />
+                    <CompanyImages form={form} onChange={handleFormChange} />
 
                     <div className="flex justify-start gap-3 pt-4">
-                        {isEditing ? (
-                            <>
-                                <Button
-                                    mode="primary"
-                                    type="submit"
-                                    disabled={isUpdating}
-                                >
-                                    {isUpdating ? 'Saving...' : 'Save Changes'}
-                                </Button>
-                                <Button
-                                    mode="ghost"
-                                    onClick={handleCancel}
-                                    disabled={isUpdating}
-                                >
-                                    Cancel
-                                </Button>
-                            </>
-                        ) : (
-                            <Button
-                                mode="primary"
-                                onClick={(e) => { e.preventDefault(); setIsEditing(true); }}
-                                iconLeft={<FontAwesomeIcon icon={faPenToSquare} className="text-sm" />}
-                            >
-                                Edit Information
-                            </Button>
-                        )}
+                        <Button
+                            mode="primary"
+                            type="submit"
+                            disabled={isUpdating || !hasChanges}
+                        >
+                            {isUpdating ? 'Saving...' : 'Save Changes'}
+                        </Button>
                     </div>
                 </Form>
             </Card>
