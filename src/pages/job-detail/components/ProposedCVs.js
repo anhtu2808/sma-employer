@@ -16,6 +16,12 @@ import { faRocket, faUser, faWandMagicSparkles } from '../../../utils/icons';
 import toastMessage from '@/utils/toastMessage';
 import { useDispatch } from 'react-redux';
 import { ScoreBars } from '@/pages/application/list';
+import {
+  DEFAULT_MIN_SCORE,
+  MAX_SCORE,
+  getRefreshMinScoreConstraint,
+  normalizeMinScore,
+} from './proposedCvRefreshValidation';
 
 const copyToClipboard = (e, value, label) => {
   e.stopPropagation();
@@ -27,9 +33,6 @@ const copyToClipboard = (e, value, label) => {
 };
 
 const POLLING_INTERVAL = 5000;
-const DEFAULT_MIN_SCORE = 30;
-const MIN_SCORE = 0;
-const MAX_SCORE = 100;
 
 const ProposedCVs = ({ jobId }) => {
   const navigate = useNavigate();
@@ -86,7 +89,14 @@ const ProposedCVs = ({ jobId }) => {
   const totalPages = data.totalPages;
   const isBusyRefreshing = isRefreshingRequest;
   const isMutatingProposal = isUnlocking || isRemoving;
-  const canSubmitRefresh = !isRefreshingRequest && !isRefreshPending && !hasUnscoredProposal;
+  const minScoreConstraint = getRefreshMinScoreConstraint({
+    draftMinScore,
+    autoRejectThreshold: jobData?.data?.autoRejectThreshold,
+  });
+  const canSubmitRefresh = !isRefreshingRequest
+    && !isRefreshPending
+    && !hasUnscoredProposal
+    && minScoreConstraint.isValid;
   const hasNoProposedCvs = !isLoading && !isRefreshPending && applications.length === 0;
 
   useEffect(() => {
@@ -125,6 +135,10 @@ const ProposedCVs = ({ jobId }) => {
 
   const handleRefreshProposedCvs = async () => {
     if (!jobId) return;
+    if (!minScoreConstraint.isValid) {
+      toastMessage.error(minScoreConstraint.errorMessage || 'Minimum score is invalid.');
+      return;
+    }
 
     try {
       const normalizedMinScore = normalizeMinScore(draftMinScore);
@@ -230,7 +244,7 @@ const ProposedCVs = ({ jobId }) => {
               <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Minimum score</p>
               <div className="mt-1 flex h-[42px] items-stretch overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-colors focus-within:border-orange-400">
                 <InputNumber
-                  min={MIN_SCORE}
+                  min={minScoreConstraint.lowerBound}
                   max={MAX_SCORE}
                   value={draftMinScore}
                   onChange={handleDraftMinScoreChange}
@@ -242,6 +256,15 @@ const ProposedCVs = ({ jobId }) => {
                   %
                 </div>
               </div>
+              {minScoreConstraint.errorMessage ? (
+                <p className="mt-1 text-xs font-medium text-red-500">
+                  {minScoreConstraint.errorMessage}
+                </p>
+              ) : minScoreConstraint.isEnabled ? (
+                <p className="mt-1 text-xs text-neutral-400">
+                  Auto-reject is enabled, so the minimum score cannot go below {minScoreConstraint.lowerBound}%.
+                </p>
+              ) : null}
             </div>
             <button
               type="button"
@@ -251,7 +274,11 @@ const ProposedCVs = ({ jobId }) => {
                 ? 'cursor-not-allowed bg-orange-50 text-orange-300 border border-orange-100'
                 : 'bg-orange-500 text-white hover:bg-orange-600 shadow-sm'
                 }`}
-              title={getRefreshButtonTitle({ isRefreshPending, hasUnscoredProposal })}
+              title={getRefreshButtonTitle({
+                isRefreshPending,
+                hasUnscoredProposal,
+                minScoreErrorMessage: minScoreConstraint.errorMessage,
+              })}
             >
               <RefreshCw size={15} className={isRefreshingRequest ? 'animate-spin' : ''} />
               Get Propose CV
@@ -261,11 +288,13 @@ const ProposedCVs = ({ jobId }) => {
         <p className="mt-3 text-xs text-neutral-400">
           {isRefreshPending
             ? `A refresh is running with the current ${requestedMinScore}% minimum score for AI score and match rate. The list will update automatically when it finishes.`
-            : hasUnscoredProposal
-              ? 'Refresh will be available after every proposed candidate has finished AI scoring.'
-              : isDraftDirty
-                ? `Refresh to apply the new ${normalizeMinScore(draftMinScore)}% minimum score for AI score and match rate.`
-                : `Only candidates meeting the ${appliedMinScore}% match-rate threshold and AI score threshold will stay visible after scoring.`}
+                : hasUnscoredProposal
+                  ? 'Refresh will be available after every proposed candidate has finished AI scoring.'
+                  : minScoreConstraint.errorMessage
+                    ? minScoreConstraint.errorMessage
+                  : isDraftDirty
+                    ? `Refresh to apply the new ${normalizeMinScore(draftMinScore)}% minimum score for AI score and match rate.`
+                    : `Only candidates meeting the ${appliedMinScore}% match-rate threshold and AI score threshold will stay visible after scoring.`}
         </p>
       </div>
 
@@ -697,12 +726,15 @@ const isProposalScored = (proposal) => {
   return proposal.aiScore != null;
 };
 
-const getRefreshButtonTitle = ({ isRefreshPending, hasUnscoredProposal }) => {
+const getRefreshButtonTitle = ({ isRefreshPending, hasUnscoredProposal, minScoreErrorMessage }) => {
   if (isRefreshPending) {
     return 'Refresh is already running';
   }
   if (hasUnscoredProposal) {
     return 'Wait until all proposed candidates finish AI scoring';
+  }
+  if (minScoreErrorMessage) {
+    return minScoreErrorMessage;
   }
   return 'Get propose CVs';
 };
@@ -866,13 +898,6 @@ const getProposalStatusConfig = (status) => {
         className: 'bg-gray-100 text-gray-700',
       };
   }
-};
-
-const normalizeMinScore = (value) => {
-  if (value == null || value === '') return DEFAULT_MIN_SCORE;
-  const numericValue = Number(value);
-  if (Number.isNaN(numericValue)) return DEFAULT_MIN_SCORE;
-  return Math.min(MAX_SCORE, Math.max(MIN_SCORE, Math.round(numericValue)));
 };
 
 export default ProposedCVs;
