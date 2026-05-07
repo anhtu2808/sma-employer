@@ -187,11 +187,12 @@ const RecruiteeConfigModal = ({ open, onClose, jobs }) => {
                                                         placeholder="Our Job"
                                                         value={map.localJobId}
                                                         onChange={v => updateMapping(idx, 'localJobId', v)}
-                                                        options={jobs?.map(j => ({
-                                                            label: j.name,
-                                                            value: j.id,
-                                                            disabled: selectedLocalJobIds.includes(j.id) && map.localJobId !== j.id
-                                                        }))}
+                                                        options={jobs
+                                                            ?.filter(j => j.status === 'PUBLISHED').map(j => ({
+                                                                label: j.name,
+                                                                value: j.id,
+                                                                disabled: selectedLocalJobIds.includes(j.id) && map.localJobId !== j.id
+                                                            }))}
                                                     />
                                                     <FontAwesomeIcon icon={faLink} className="text-gray-300 mx-1" />
                                                     <Select

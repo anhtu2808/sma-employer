@@ -153,6 +153,18 @@ const RecruiterRegister = () => {
             console.error("Error: ", error);
         }
     };
+
+    const handleTaxIdChange = (e) => {
+        const { name, value } = e.target;
+        const onlyNums = value.replace(/[^0-9]/g, '');
+        if (onlyNums.length <= 13) {
+            setFormData(prev => ({ ...prev, [name]: onlyNums }));
+
+            if (errors[name]) {
+                setErrors(prev => ({ ...prev, [name]: "" }));
+            }
+        }
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({ fullName: "", recruiterEmail: "", taxIdentificationNumber: "", password: "", general: "" });
@@ -400,7 +412,8 @@ const RecruiterRegister = () => {
                                     label={<>Tax ID <span className="text-red-500">*</span></>}
                                     name="taxIdentificationNumber"
                                     required
-                                    onChange={handleChange}
+                                    value={formData.taxIdentificationNumber}
+                                    onChange={handleTaxIdChange}
                                     error={!!errors.taxIdentificationNumber}
                                     helperText={errors.taxIdentificationNumber}
                                 />
