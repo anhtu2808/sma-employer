@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Mail, Calendar, Phone, Briefcase, Brain, FolderPlus, Sparkles } from 'lucide-react';
+import { Mail, Calendar, Phone, Briefcase, Brain, FolderPlus, Sparkles, RotateCcw } from 'lucide-react';
 import moment from 'moment';
 import { getApplicationStatusConfig } from '@/constrant/application';
 import { Tooltip } from 'antd';
@@ -8,6 +8,7 @@ import toastMessage from '@/utils/toastMessage';
 import { useNavigate } from 'react-router-dom';
 import ManualScorePopover, { getEffectiveScore, isManualScored, ManualScoreBadge } from '../ManualScorePopover';
 import { ScoreBars, getScoreColor } from '../list';
+import { useRetryMatchingMutation } from '@/apis/applicationApi';
 
 const copyToClipboard = (e, value, label) => {
     e.stopPropagation();
@@ -39,9 +40,28 @@ const KanbanBoard = ({
     const [isDragging, setIsDragging] = useState(false);
     const [draggingAppId, setDraggingAppId] = useState(null);
     const [isHoveringPool, setIsHoveringPool] = useState(false);
+    const [retryMatching] = useRetryMatchingMutation();
+    const [retryingId, setRetryingId] = useState(null);
 
     // Track mouse position during drag
     const mousePos = useRef({ x: 0, y: 0 });
+
+    const handleRetry = async (app, e) => {
+        if (e) e.stopPropagation();
+        if (!app?.resumeId || !app?.jobId) {
+            toastMessage.error('Missing job or resume reference for retry');
+            return;
+        }
+        try {
+            setRetryingId(app.applicationId);
+            await retryMatching({ jobId: app.jobId, resumeId: app.resumeId }).unwrap();
+            toastMessage.success('Retry triggered. Evaluation in progress...');
+        } catch (error) {
+            toastMessage.error(error?.data?.message || 'Failed to retry evaluation');
+        } finally {
+            setRetryingId(null);
+        }
+    };
 
     useEffect(() => {
         if (!isDragging) return;
@@ -228,6 +248,21 @@ const KanbanBoard = ({
                                                                                             <Sparkles size={10} className="animate-spin-slow" />
                                                                                             Evaluating...
                                                                                         </span>
+                                                                                    ) : app.evaluation?.status === 'FAIL' ? (
+                                                                                        <div className="flex items-center gap-1.5">
+                                                                                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
+                                                                                                Failed
+                                                                                            </span>
+                                                                                            <button
+                                                                                                onClick={(e) => handleRetry(app, e)}
+                                                                                                disabled={retryingId === app.applicationId || !app.resumeId || !app.jobId}
+                                                                                                className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-orange-600 hover:text-white bg-orange-50 hover:bg-orange-500 border border-orange-200 hover:border-orange-500 rounded transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                                                title="Retry AI evaluation"
+                                                                                            >
+                                                                                                <RotateCcw size={10} className={retryingId === app.applicationId ? 'animate-spin' : ''} />
+                                                                                                {retryingId === app.applicationId ? 'Retrying...' : 'Retry'}
+                                                                                            </button>
+                                                                                        </div>
                                                                                     ) : (
                                                                                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${matchTag.bg} ${matchTag.text}`}>
                                                                                             {matchTag.label}

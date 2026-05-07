@@ -127,10 +127,23 @@ const ApplicationManagement = () => {
         }));
     };
 
+    const [pollInterval, setPollInterval] = useState(0);
+
     const { data: appData, isLoading: isAppLoading } = useGetApplicationsQuery(
         { ...filter, jobId: selectedJob?.id, sortBy: showAiSort ? sortBy : undefined },
-        { skip: !selectedJob?.id }
+        { 
+            skip: !selectedJob?.id,
+            pollingInterval: pollInterval
+        }
     );
+
+    useEffect(() => {
+        const hasPending = appData?.data?.content?.some(app => 
+            app.evaluation?.status === 'WAITING' || app.evaluation?.status === 'PARTIAL'
+        );
+        setPollInterval(hasPending ? 5000 : 0);
+    }, [appData]);
+
     useEffect(() => {
         setFilter(prev => ({ ...prev, page: page }));
     }, [page]);
