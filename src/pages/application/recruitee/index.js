@@ -120,7 +120,7 @@ const RecruiteeConfigModal = ({ open, onClose, jobs }) => {
                                 type="password"
                                 className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg dark:bg-neutral-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                                 value={formData.apiToken}
-                                onChange={e => { setFormData({ ...formData, apiToken: e.target.value }); setIsConnected(false); }}
+                                onChange={e => { setFormData({ ...formData, apiToken: e.target.value.trim() }); setIsConnected(false); }}
                                 placeholder="Enter token"
                             />
                         </div>
@@ -130,7 +130,7 @@ const RecruiteeConfigModal = ({ open, onClose, jobs }) => {
                                 type="text"
                                 className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg dark:bg-neutral-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                                 value={formData.recruiteeCompanyId}
-                                onChange={e => { setFormData({ ...formData, recruiteeCompanyId: e.target.value }); setIsConnected(false); }}
+                                onChange={e => { setFormData({ ...formData, recruiteeCompanyId: e.target.value.trim() }); setIsConnected(false); }}
                                 placeholder="e.g. 12345"
                             />
                         </div>
