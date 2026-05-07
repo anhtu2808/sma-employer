@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Mail, Calendar, Phone, Briefcase, Brain, FolderPlus } from 'lucide-react';
+import { Mail, Calendar, Phone, Briefcase, Brain, FolderPlus, Sparkles } from 'lucide-react';
 import moment from 'moment';
 import { getApplicationStatusConfig } from '@/constrant/application';
 import { Tooltip } from 'antd';
@@ -67,7 +67,7 @@ const KanbanBoard = ({
         if (!draggingColumn) return true;
         if (sourceId === targetId) return true;
         if (sourceId === 'APPLIED') {
-            return ['VIEWED'].includes(targetId);
+            return ['VIEWED', 'SHORTLISTED', 'REJECTED', 'APPROVED'].includes(targetId);
         }
         if (sourceId === 'VIEWED') {
             return ['SHORTLISTED', 'APPROVED', 'REJECTED'].includes(targetId);
@@ -220,12 +220,19 @@ const KanbanBoard = ({
                                                                         className={`${snapshot.isDragging ? 'z-50 shadow-2xl scale-[1.02]' : ''}`}
                                                                     >
                                                                         <div className={`bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-shadow ${!isNotDraggable ? 'hover:shadow-md cursor-grab active:cursor-grabbing' : ''} group`}>
-                                                                            {/* Top Row: AI Match Tag + Status */}
+                                                                                {/* Top Row: AI Match Tag + Status */}
                                                                             <div className="flex justify-between items-start mb-3">
                                                                                 <div className="flex flex-wrap gap-1.5 flex-1 pr-2">
-                                                                                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${matchTag.bg} ${matchTag.text}`}>
-                                                                                        {matchTag.label}
-                                                                                    </span>
+                                                                                    {app.evaluation?.status === 'WAITING' || app.evaluation?.status === 'PARTIAL' ? (
+                                                                                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-800 animate-pulse">
+                                                                                            <Sparkles size={10} className="animate-spin-slow" />
+                                                                                            Evaluating...
+                                                                                        </span>
+                                                                                    ) : (
+                                                                                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${matchTag.bg} ${matchTag.text}`}>
+                                                                                            {matchTag.label}
+                                                                                        </span>
+                                                                                    )}
                                                                                     {app.evaluation?.candidateLevel && (
                                                                                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${KANBAN_LEVEL_STYLE[app.evaluation.candidateLevel] || 'bg-gray-50 text-gray-600 border-gray-200'}`}>
                                                                                             <Brain size={10} />
@@ -247,7 +254,7 @@ const KanbanBoard = ({
                                                                                 </div>
 
                                                                                 {/* SCORE (manual prioritized) */}
-                                                                                {scoreValue != null && (
+                                                                                {!(app.evaluation?.status === 'WAITING' || app.evaluation?.status === 'PARTIAL') && scoreValue != null && (
                                                                                     <div className="shrink-0 flex flex-col items-end gap-1">
                                                                                         <ManualScorePopover evaluation={app.evaluation} applicationId={app.applicationId} placement="bottomRight">
                                                                                             <span className={`inline-flex items-end gap-1.5 cursor-pointer ${getScoreColor(scoreValue)}`}>

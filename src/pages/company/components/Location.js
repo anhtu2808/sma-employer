@@ -3,9 +3,9 @@ import Input from '@/components/Input';
 import Form from '@/components/Form';
 import { Select } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpRightFromSquare, faPlus, faTrashCan } from '../../../utils/icons';
+import { faPlus, faTrashCan } from '../../../utils/icons';
 
-const Location = ({ form, isEditing }) => {
+const Location = ({ form }) => {
     const [activeIndex, setActiveIndex] = useState(0);
     const locationsWatch = Form.useWatch('locations', form) || [];
 
@@ -33,34 +33,30 @@ const Location = ({ form, isEditing }) => {
                                     notFoundContent="No locations"
                                     disabled={false} // Override form disabled context so users can flip locations
                                 />
-                                {isEditing && (
-                                    <>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                add();
-                                                setActiveIndex(fields.length);
-                                            }}
-                                            className="flex items-center justify-center py-1.5 px-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                                        >
-                                            <FontAwesomeIcon icon={faPlus} className="mr-1 text-sm" />
-                                            Add
-                                        </button>
-                                        {fields.length > 1 && (
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    remove(activeIndex);
-                                                    setActiveIndex(Math.max(0, activeIndex - 1));
-                                                }}
-                                                className="flex items-center justify-center py-1.5 px-3 border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg text-sm font-medium transition-colors"
-                                                title="Remove location"
-                                            >
-                                                <FontAwesomeIcon icon={faTrashCan} className="mr-1 text-sm" />
-                                                Remove
-                                            </button>
-                                        )}
-                                    </>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        add();
+                                        setActiveIndex(fields.length);
+                                    }}
+                                    className="flex items-center justify-center py-1.5 px-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={faPlus} className="mr-1 text-sm" />
+                                    Add
+                                </button>
+                                {fields.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            remove(activeIndex);
+                                            setActiveIndex(Math.max(0, activeIndex - 1));
+                                        }}
+                                        className="flex items-center justify-center py-1.5 px-3 border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg text-sm font-medium transition-colors"
+                                        title="Remove location"
+                                    >
+                                        <FontAwesomeIcon icon={faTrashCan} className="mr-1 text-sm" />
+                                        Remove
+                                    </button>
                                 )}
                             </div>
 
@@ -88,11 +84,7 @@ const Location = ({ form, isEditing }) => {
                                             <Input className="bg-gray-50 dark:bg-gray-800" />
                                         </Form.Item>
                                         <Form.Item {...restField} name={[name, 'googleMapLink']} label="Google Maps Link">
-                                            {isEditing ? (
-                                                <Input placeholder="https://goo.gl/maps/..." className="bg-gray-50 dark:bg-gray-800" />
-                                            ) : (
-                                                <GoogleMapLinkDisplay />
-                                            )}
+                                            <Input placeholder="https://goo.gl/maps/..." className="bg-gray-50 dark:bg-gray-800" />
                                         </Form.Item>
                                     </div>
                                 </div>
@@ -102,23 +94,6 @@ const Location = ({ form, isEditing }) => {
                 }}
             </Form.List>
         </div>
-    );
-};
-
-const GoogleMapLinkDisplay = ({ value }) => {
-    if (!value) {
-        return <span className="text-gray-400 text-sm">No link</span>;
-    }
-    return (
-        <a
-            href={value}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 text-sm font-medium"
-        >
-            <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-sm" />
-            Open in Google Maps
-        </a>
     );
 };
 
