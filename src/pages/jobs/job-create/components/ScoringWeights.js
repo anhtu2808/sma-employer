@@ -251,8 +251,8 @@ const ScoringWeights = () => {
         const ringClass = isOver100
           ? "ring-2 ring-red-300"
           : isPerfect
-          ? "ring-2 ring-green-300"
-          : "";
+            ? "ring-2 ring-green-300"
+            : "";
 
         return (
           <div className={`bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm space-y-6 transition-all ${ringClass}`}>
@@ -363,22 +363,20 @@ const ScoringWeights = () => {
                     <button
                       type="button"
                       onClick={() => setActiveTab("active")}
-                      className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                        activeTab === "active"
-                          ? "border-orange-500 text-orange-600"
-                          : "border-transparent text-gray-500 hover:text-gray-700"
-                      }`}
+                      className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === "active"
+                        ? "border-orange-500 text-orange-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700"
+                        }`}
                     >
                       Active ({activeCriteriaAll.length})
                     </button>
                     <button
                       type="button"
                       onClick={() => setActiveTab("available")}
-                      className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                        activeTab === "available"
-                          ? "border-orange-500 text-orange-600"
-                          : "border-transparent text-gray-500 hover:text-gray-700"
-                      }`}
+                      className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === "available"
+                        ? "border-orange-500 text-orange-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700"
+                        }`}
                     >
                       Available ({availableCriteriaAll.length})
                     </button>
@@ -466,7 +464,7 @@ const ScoringWeights = () => {
                       <div className="flex items-center gap-2">
                         {autoRejectEnabled && (
                           <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">
-                            Below {getFieldValue("autoRejectThreshold") || 40}%
+                            Below {getFieldValue("autoRejectThreshold") || 40}
                           </span>
                         )}
                         <Form.Item name="enableAutoReject" valuePropName="checked" initialValue={true} noStyle>
@@ -497,8 +495,8 @@ const ScoringWeights = () => {
                       {autoRejectEnabled
                         ? "Candidates scoring below this will be automatically moved to 'Rejected'."
                         : isAiActive
-                        ? "Auto-reject is disabled. Candidates will not be automatically rejected."
-                        : "AI Scoring is disabled. Candidates will not be auto-rejected."}
+                          ? "Auto-reject is disabled. Candidates will not be automatically rejected."
+                          : "AI Scoring is disabled. Candidates will not be auto-rejected."}
                     </p>
                   </div>
                 );
